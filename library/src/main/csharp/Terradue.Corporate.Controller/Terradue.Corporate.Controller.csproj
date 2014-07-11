@@ -29,10 +29,52 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Terradue\TepQW\Controller\User\UserT2.cs" />
+    <Compile Include="Terradue\TepQW\Controller\Catalogue\MasterCatalogue.cs" />
+    <Compile Include="Terradue\TepQW\Controller\Catalogue\UrlBasedOpenSearchable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Terradue\TepQW\Controller\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Terradue.Portal\Terradue.Portal.csproj">
+      <Project>{2E8D7875-8347-4205-936B-F1BBA2164D87}</Project>
+      <Name>Terradue.Portal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenNebula\Terradue.OpenNebula.csproj">
+      <Project>{E488F0B0-3464-4D03-8E2E-8DA1936E3699}</Project>
+      <Name>Terradue.OpenNebula</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.Certification\Terradue.Certification.csproj">
+      <Project>{FF303408-6151-4E9E-93A5-B2B6EC0207A0}</Project>
+      <Name>Terradue.Certification</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenSearch\Terradue.OpenSearch.csproj">
+      <Project>{EA911C65-7F54-4909-97AB-AF66C8069D3A}</Project>
+      <Name>Terradue.OpenSearch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenSearch.GeoJson\Terradue.OpenSearch.GeoJson.csproj">
+      <Project>{EA911DE5-7F54-4943-97AB-AF66C8069D3A}</Project>
+      <Name>Terradue.OpenSearch.GeoJson</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.ServiceModel.Syndication\Terradue.ServiceModel.Syndication.csproj">
+      <Project>{729A82DF-D3CE-4A1A-BA83-0508F0362DB5}</Project>
+      <Name>Terradue.ServiceModel.Syndication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.Util\Terradue.Util.csproj">
+      <Project>{1B3335F3-B67D-4DCB-984E-88234A479AB2}</Project>
+      <Name>Terradue.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.Metadata\Terradue.Metadata.csproj">
+      <Project>{49136166-254E-470F-B315-AD984D13C3ED}</Project>
+      <Name>Terradue.Metadata</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
