@@ -1,2 +1,2 @@
-<%@ Application Inherits="Terradue.TepQW.WebServer.Global" %>
+<%@ Application Inherits="Terradue.Corporate.WebServer.Global" %>
 

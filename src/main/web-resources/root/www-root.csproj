@@ -42,7 +42,7 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties VerifyCodeBehindFields="True" VerifyCodeBehindEvents="True">
-        <XspParameters Port="8080" Address="127.0.0.1" SslMode="None" SslProtocol="Default" KeyType="None" CertFile="" KeyFile="" PasswordOptions="None" Password="" Verbose="True" />
+        <XspParameters Port="8081" Address="127.0.0.1" SslMode="None" SslProtocol="Default" KeyType="None" CertFile="" KeyFile="" PasswordOptions="None" Password="" Verbose="True" />
         <WebDeployTargets>
           <Target Name="">
             <FileCopier Handler="MonoDevelop.Deployment.SshFuseFileCopyHandler" TargetDirectory="root@10.10.31.11:/usr/local/tepqw/webserver/sites/tepqw/root" ExtraMountArguments="" ctype="SshFuseFileCopyConfiguration" />
@@ -63,5 +63,11 @@
   <Import Project="$(ProjectDir).nuget\nuget.targets" />
   <ItemGroup>
     <Compile Include="Goodies.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Terradue.Corporate.WebServer\Terradue.Corporate.WebServer.csproj">
+      <Project>{76CBD7B6-4156-424C-9662-CDEDE1548781}</Project>
+      <Name>Terradue.Corporate.WebServer</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
