@@ -1,25 +1,25 @@
 #!/bin/sh
 #
-# tepqw-agent          Start/Stop the TepQuichWin WebServer Agent daemon.
+# t2portal-agent          Start/Stop the TepQuichWin WebServer Agent daemon.
 #
 # chkconfig: - 80 20
 # description: Tep QuickWin WebServer agent is program that runs Tep QuickWin WebServer actions \
 #              at periodic scheduled times. 
 
 ### BEGIN INIT INFO
-# Provides: tepqw-agent
+# Provides: t2portal-agent
 # Required-Start: $local_fs $syslog $network
 # Required-Stop: $local_fs $syslog $network
 # Default-Start:  3 5
 # Default-Stop: 0 1 2 6
-# Short-Description: tepqw Agent Daemon
-# Description: tepqw WebServer agent is program that runs tepqw WebServer actions
+# Short-Description: t2portal Agent Daemon
+# Description: t2portal WebServer agent is program that runs t2portal WebServer actions
 #              at periodic scheduled times. 
 ### END INIT INFO
 
-agentpath="/usr/local/tepqw/webserver/sites/tepqw/root/bin"
+agentpath="/usr/local/t2portal/webserver/sites/t2portal/root/bin"
 prog="portal-core-agent.exe"
-pidfile=/var/run/tepqw-agent.pid
+pidfile=/var/run/t2portal-agent.pid
 lockfile=/var/lock/subsys/$prog
 
 RETVAL=0
@@ -41,7 +41,7 @@ start() {
         export tepqwAGENTD_PID=$pidfile
         touch $pidfile
         # Handle transition from root to non-root packages.
-        mono $agentpath/$prog > /var/log/tepqw-agent.log 2>&1 &
+        mono $agentpath/$prog > /var/log/t2portal-agent.log 2>&1 &
         pid=$!
         echo $pid >$pidfile
 
