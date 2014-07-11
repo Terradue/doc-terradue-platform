@@ -49,12 +49,26 @@
     <Reference Include="ServiceStack.Text">
       <HintPath>..\packages\ServiceStack.Text.3.9.71\lib\net35\ServiceStack.Text.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Mono.Addins">
+      <HintPath>..\packages\Mono.Addins.1.1\lib\Mono.Addins.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Common\CustomHttpHandler.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Common\CustomMessages.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Common\T2CorporateContext.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\AppHost.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Global.asax.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\User\Login.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\User\Login.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\User\User.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\User\WebUserT2.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\News\RssNews.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\News\TumblrNews.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\News\TwitterNews.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\News\News.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -67,5 +81,48 @@
       <Project>{2E8D7875-8347-4205-936B-F1BBA2164D87}</Project>
       <Name>Terradue.Portal</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Terradue.ServiceModel.Syndication\Terradue.ServiceModel.Syndication.csproj">
+      <Project>{729A82DF-D3CE-4A1A-BA83-0508F0362DB5}</Project>
+      <Name>Terradue.ServiceModel.Syndication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.WebService.Model\Terradue.WebService.Model.csproj">
+      <Project>{52346D96-A50D-416C-BA49-361B925418EB}</Project>
+      <Name>Terradue.WebService.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenId\Terradue.OpenId.csproj">
+      <Project>{368A87F9-0ED5-4423-B32D-F3411189A8F8}</Project>
+      <Name>Terradue.OpenId</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenNebula\Terradue.OpenNebula.csproj">
+      <Project>{E488F0B0-3464-4D03-8E2E-8DA1936E3699}</Project>
+      <Name>Terradue.OpenNebula</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.Certification\Terradue.Certification.csproj">
+      <Project>{FF303408-6151-4E9E-93A5-B2B6EC0207A0}</Project>
+      <Name>Terradue.Certification</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.Corporate.Controller\Terradue.Corporate.Controller.csproj">
+      <Project>{24105DB9-4C39-4A04-883D-2FBFF911A8E0}</Project>
+      <Name>Terradue.Corporate.Controller</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenSearch\Terradue.OpenSearch.csproj">
+      <Project>{EA911C65-7F54-4909-97AB-AF66C8069D3A}</Project>
+      <Name>Terradue.OpenSearch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.News\Terradue.News.csproj">
+      <Project>{0769052E-E7AB-414F-AD4C-D96D64BF8B4A}</Project>
+      <Name>Terradue.News</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenSearch.Tumblr\Terradue.OpenSearch.Tumblr.csproj">
+      <Project>{B068DB08-34CC-4F0B-9752-FCEEC71B1AC9}</Project>
+      <Name>Terradue.OpenSearch.Tumblr</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenSearch.Twitter\Terradue.OpenSearch.Twitter.csproj">
+      <Project>{F5BDC1AD-3355-4EA7-85A3-16F8358D1F50}</Project>
+      <Name>Terradue.OpenSearch.Twitter</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

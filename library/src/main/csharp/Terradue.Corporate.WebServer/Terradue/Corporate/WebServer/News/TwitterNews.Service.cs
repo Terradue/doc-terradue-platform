@@ -1,0 +1,124 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using ServiceStack.Common.Web;
+using ServiceStack.ServiceHost;
+using Terradue.Corporate.Controller;
+using Terradue.News;
+using Terradue.OpenSearch;
+using Terradue.OpenSearch.Engine;
+using Terradue.OpenSearch.Result;
+using Terradue.OpenSearch.Twitter;
+using Terradue.Portal;
+using Terradue.WebService.Model;
+using Terradue.Corporate.WebServer.Common;
+
+namespace Terradue.TepQW.WebServer {
+    [Api("Tep-QuickWin Terradue webserver")]
+    [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
+              EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
+    public class TwitterNewsService : ServiceStack.ServiceInterface.Service {
+
+        public object Get(SearchTwitterNews request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            IOpenSearchResult result = null;
+            try{
+                context.Open();
+
+                // Load the complete request
+                HttpRequest httpRequest = HttpContext.Current.Request;
+
+                OpenSearchEngine ose = MasterCatalogue.OpenSearchEngine;
+
+                Type type = OpenSearchFactory.ResolveTypeFromRequest(httpRequest, ose);
+
+                List<TwitterFeed> twitters = TwitterNews.LoadTwitterFeeds(context);
+
+                MultiGenericOpenSearchable multiOSE = new MultiGenericOpenSearchable(twitters.Cast<IOpenSearchable>().ToList(), ose, false);
+                result = ose.Query(multiOSE, httpRequest.QueryString, type);
+
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+
+            return new HttpResult(result.Result.SerializeToString(), result.Result.ContentType);
+        }
+
+        public object Get(GetTwitterNewsFeeds request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            List<WebNews> result = new List<WebNews>();
+            try{
+                context.Open();
+
+                List<TwitterFeed> twitters = TwitterNews.LoadTwitterFeeds(context);
+                List<TwitterNews> tweetsfeeds = new List<TwitterNews>();
+                foreach(TwitterFeed tweet in twitters) tweetsfeeds.AddRange(TwitterNews.FromFeeds(context, tweet.GetFeeds()));
+                foreach(TwitterNews tweetfeed in tweetsfeeds) result.Add(new WebNews(tweetfeed));
+                
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+
+            return result;
+        }
+
+        public object Get(GetAllTwitterNews request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            List<WebNews> result = new List<WebNews>();
+            try{
+                context.Open();
+
+                EntityList<TwitterNews> articles = new EntityList<TwitterNews>(context);
+                articles.Load();
+                foreach(TwitterNews article in articles) result.Add(new WebNews(article));
+
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+
+            return result;
+        }
+
+        public object Post(CreateTwitterNews request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            WebNews result = null;
+            try{
+                context.Open();
+
+                TwitterNews article = new TwitterNews(context);
+                article = (TwitterNews)request.ToEntity(context, article);
+                article.Store();
+                result = new WebNews(article);
+
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+
+            return result;
+        }
+
+    }
+
+    [Route("/twitter", "GET", Summary = "GET a list of twitter news", Notes = "")]
+    public class GetAllTwitterNews : IReturn<List<WebNews>>{}
+
+    [Route("/twitter/feeds", "GET", Summary = "GET a list of twitter news", Notes = "")]
+    public class GetTwitterNewsFeeds : IReturn<List<WebNews>>{}
+
+    [Route("/twitter", "POST", Summary = "POST a twitter news", Notes = "")]
+    public class CreateTwitterNews : WebNews, IReturn<WebNews>{}
+
+    [Route("/twitter/search", "GET", Summary = "GET a list of twitter news via opensearch", Notes = "")]
+    public class SearchTwitterNews {}
+
+}
+
