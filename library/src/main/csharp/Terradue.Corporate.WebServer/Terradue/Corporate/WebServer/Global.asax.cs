@@ -34,6 +34,9 @@ namespace Terradue.Corporate.WebServer {
 
 		protected void Application_BeginRequest(object sender, EventArgs e) {
 			string urlPath = Request.Path.ToLower();
+
+			if (urlPath.StartsWith("/portal/"))
+				HttpContext.Current.RewritePath("/index.html");
 		}
 	}
 }
