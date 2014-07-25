@@ -10,6 +10,7 @@ require.config({
 		loadmask: 'libs/jquery.loadmask/jquery.loadmask.min',
 		can: 'libs/canjs/can.jquery',
 		supercan: 'libs/canjs/can.construct.super',
+		canroutepushstate: 'libs/canjs/can.route.pushstate',
 		underscorestring: 'libs/underscore/underscore.string.min',
 		skrollr: 'libs/skrollr/skrollr.min',
 		moment: 'libs/moment/moment.min',
@@ -27,6 +28,7 @@ require.config({
 			exports: 'can',
 		},
 		supercan: ['can'],
+		canroutepushstate: ['can'],
 		underscorestring: ['underscore'],
 	}
 });
@@ -37,7 +39,6 @@ require([
 	'router',
 	'config',
 ], function(App, Router, Config) {
-	window.App = App;
 	App.init(Config); // app init
 	Router.init(); // router init
 });

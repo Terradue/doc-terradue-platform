@@ -4,13 +4,15 @@ define([
 	'underscore',
 	'app',
 	'modules/pages/controllers/pages',
-	'underscorestring'
-], function($, can, _, App, Pages){
+	'config',
+	'underscorestring',
+	'canroutepushstate'
+], function($, can, _, App, Pages, Config){
 	// merge string plugin to underscore namespace
 	_.mixin(_.str.exports());
 	
-	window.iii=0;
-
+	can.route.bindings.pushstate.root = "/portal/";
+		
 	var Router = can.Control ({
 		init: function () {},
 
@@ -31,11 +33,6 @@ define([
 			Pages.index({ fade: false });
 		},
 		
-		// contact route action (static open of static page)
-//		contact: function () {
-//			Pages.contact();
-//		},
-		
 		// pages route action (dynamic open of static pages)
 		pages: function (data) {
 			Pages.load(data);
@@ -44,26 +41,37 @@ define([
 		// rest route actions
 		dispatch: function (data) {
 			var me = this;
-
-			//SCRUB URL PARAMS IF APPLICABLE
+			
+			// dispatch static
+			var resPage = data.controller+(data.action ? '/'+data.action : '');
+			if (Config.staticPages[resPage])
+				return this.dispatchStatic(resPage);
+			
 			var ControllerName = _.capitalize (data.controller);
-			//CONVERT URL PARAM TO ACTION NAMING CONVENTION
+			
 			var actionName = data.action
 					? data.action.charAt(0).toLowerCase() + _.camelize(data.action.slice(1))
 					: 'index'; // default to index action
 
-			//DYNAMICALLY REQUEST CONTROLLER AND PERFORM ACTION
+			// dinamically load controller
 			App.loadController (ControllerName, function (controller) {
-				//CALL ACTION WITH PARAMETERS IF APPLICABLE
+				// call action if applicable
 				if (controller && controller[actionName])
 					controller[actionName](data);
-//				TODO: FIX BUG, ONLY WORKS ON FIRST HIT
-//				DUE TO HOW REUIREJS ERROR EVENT WORKS
 				else Pages.errorView({}, "Controller not found: "+ControllerName);
 			}, function(err){
 				Pages.errorView({}, "Controller not found: "+ControllerName);
 				window.err=err;
 			});
+		},
+		
+		dispatchStatic: function(resPage){
+			if (typeof(Config.staticPages[resPage])=='string')
+				Config.staticPages[resPage] = { url: Config.staticPages[resPage] };
+			if (Config.staticPages[resPage].selector==null)
+				Config.staticPages[resPage].selector = Config.mainContainer;
+			Pages.view(Config.staticPages[resPage]);
+			return false;
 		}
 	});
 	

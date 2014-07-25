@@ -48,13 +48,6 @@ if (App.controllers.Pages==null)
 
 			},
 			
-//			contact: function (options) {
-//				this.view({
-//					url: 'modules/pages/views/contact.html',
-//					selector: Config.mainContainer,
-//				});
-//			},
-		
 			load: function (options) {
 				this.view({
 					url: options.url ? options.url
@@ -67,7 +60,15 @@ if (App.controllers.Pages==null)
 						});
 					}
 				});
-			}
+			},
+			
+			loadStatic: function (url) {
+				this.view({
+					url: url+'.html',
+					selector: Config.mainContainer,
+				});
+			},		
+			
 		}
 	))(document);
 	

@@ -115,9 +115,10 @@ define([
 			return this.toUrl(baseScriptsUrl + '/' + url);
 		},	
 		toViewsUrl: function(url) {
-			//HANDLE RELATIVE PATH OF URL INPUT
-			return this.toScriptsUrl(url);
-				//_.startsWith(url, 'views/') ? this.toScriptsUrl(url) : this.toUrl(url);
+			if (url[0]=='/')
+				return url;
+			else
+				return this.toScriptsUrl(url);
 		},
 		
 		error: function(msg){

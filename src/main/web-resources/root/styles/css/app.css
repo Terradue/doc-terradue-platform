@@ -8,3 +8,25 @@
 footer {
 	text-align: center;
 }
+
+div.boh {
+	background-image: url(http://www.e-marketkhas.com/2326-thickbox/boh-tea-100s-x-2g.jpg);
+    height: 509px;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-position-x: 50%;
+    background-position-y: -50px;
+}
+
+.contact.well {
+	width: 250px;
+	display: inline-block;
+	height: 88px;
+	margin-right: 20px;
+}
+
+.contact>img {
+	float: left;
+	margin-right: 10px;
+}
+
