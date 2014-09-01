@@ -70,7 +70,7 @@ namespace Terradue.TepQW.WebServer {
         /// <returns>The entity.</returns>
         /// <param name="context">Context.</param>
         public UserT2 ToEntity(IfyContext context){
-            UserT2 user = new UserT2(context, base.ToEntity(context));
+            UserT2 user = new UserT2(context, this.ToEntity(context));
             user.GithubName = this.GithubName;
             return user;
         }

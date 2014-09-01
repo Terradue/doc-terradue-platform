@@ -53,6 +53,9 @@
     <Reference Include="Mono.Addins">
       <HintPath>..\packages\Mono.Addins.1.1\lib\Mono.Addins.dll</HintPath>
     </Reference>
+    <Reference Include="Terradue.ServiceModel.Syndication">
+      <HintPath>..\packages\Terradue.ServiceModel.Syndication.1.0.0.0\lib\net40\Terradue.ServiceModel.Syndication.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,10 +83,6 @@
     <ProjectReference Include="..\Terradue.Portal\Terradue.Portal.csproj">
       <Project>{2E8D7875-8347-4205-936B-F1BBA2164D87}</Project>
       <Name>Terradue.Portal</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Terradue.ServiceModel.Syndication\Terradue.ServiceModel.Syndication.csproj">
-      <Project>{729A82DF-D3CE-4A1A-BA83-0508F0362DB5}</Project>
-      <Name>Terradue.ServiceModel.Syndication</Name>
     </ProjectReference>
     <ProjectReference Include="..\Terradue.WebService.Model\Terradue.WebService.Model.csproj">
       <Project>{52346D96-A50D-416C-BA49-361B925418EB}</Project>
