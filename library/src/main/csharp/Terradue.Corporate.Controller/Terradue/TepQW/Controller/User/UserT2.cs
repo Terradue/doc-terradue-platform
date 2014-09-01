@@ -91,7 +91,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="context">Context.</param>
         public UserT2(IfyContext context) : base(context) {
-            oneClient = new OneClient(context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+            oneClient = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Terradue.Corporate.Controller {
         /// <returns>The identifier.</returns>
         /// <param name="context">Context.</param>
         /// <param name="id">Identifier.</param>
-        public static UserT2 FromId(IfyContext context, int id){
+        public static new UserT2 FromId(IfyContext context, int id){
             UserT2 user = new UserT2(context);
             user.Id = id;
             user.Load();

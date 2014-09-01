@@ -32,6 +32,9 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
+    <Reference Include="Terradue.ServiceModel.Syndication">
+      <HintPath>..\packages\Terradue.ServiceModel.Syndication.1.0.0.0\lib\net40\Terradue.ServiceModel.Syndication.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,10 +67,6 @@
       <Project>{EA911DE5-7F54-4943-97AB-AF66C8069D3A}</Project>
       <Name>Terradue.OpenSearch.GeoJson</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Terradue.ServiceModel.Syndication\Terradue.ServiceModel.Syndication.csproj">
-      <Project>{729A82DF-D3CE-4A1A-BA83-0508F0362DB5}</Project>
-      <Name>Terradue.ServiceModel.Syndication</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Terradue.Util\Terradue.Util.csproj">
       <Project>{1B3335F3-B67D-4DCB-984E-88234A479AB2}</Project>
       <Name>Terradue.Util</Name>
@@ -76,5 +75,8 @@
       <Project>{49136166-254E-470F-B315-AD984D13C3ED}</Project>
       <Name>Terradue.Metadata</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
