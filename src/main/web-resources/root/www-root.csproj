@@ -41,13 +41,8 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties VerifyCodeBehindFields="True" VerifyCodeBehindEvents="True">
+      <Properties>
         <XspParameters Port="8081" Address="10.9.10.10" SslMode="None" SslProtocol="Default" KeyType="None" CertFile="" KeyFile="" PasswordOptions="None" Password="" Verbose="True" />
-        <WebDeployTargets>
-          <Target Name="">
-            <FileCopier Handler="MonoDevelop.Deployment.SshFuseFileCopyHandler" TargetDirectory="root@10.10.31.11:/usr/local/tepqw/webserver/sites/tepqw/root" ExtraMountArguments="" ctype="SshFuseFileCopyConfiguration" />
-          </Target>
-        </WebDeployTargets>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
@@ -60,7 +55,6 @@
   <ItemGroup>
     <Folder Include="files\" />
   </ItemGroup>
-  <Import Project="$(ProjectDir).nuget\nuget.targets" />
   <ItemGroup>
     <Compile Include="Goodies.cs" />
   </ItemGroup>
