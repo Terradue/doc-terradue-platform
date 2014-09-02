@@ -1,0 +1,192 @@
+/* Global Styles */
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+.vert-text {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  color: #fff;
+}
+
+.vert-text h1 {
+  padding: 0;
+  margin: 0;
+  font-size: 4.5em;
+  font-weight: 700;
+  color: #fff;
+}
+
+
+
+/* Top page menu */
+
+.navbar-header {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+
+
+/* Full Page Image Header Area */
+
+.header {
+  display: table;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  background: url(../../modules/pages/img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+
+/* Intro area */
+
+.intro {
+  padding: 50px 0;
+}
+
+/* Services area */
+
+.services {
+  background: #7fbbda;
+  padding: 50px 0;
+  color: #ffffff;
+}
+
+.service-item {
+  margin-bottom: 15px;
+}
+
+i.service-icon {
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 56px;
+  width: 140px;
+  height: 140px;
+  line-height: 136px;
+  vertical-align: middle; 
+  text-align: center;
+}
+
+/* Callout area */
+
+.callout {
+  color: #ffffff;
+  padding: 50px 0;
+  display: table;
+  height: 300px;
+  width: 100%;
+  background: url(../../modules/pages/img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.summary {
+  color: #ffffff;
+  padding: 50px 0;
+  display: table;
+  height: 300px;
+  width: 100%;
+  background: url(../../modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+/* Portfolio area */
+
+.thumbnail {
+  padding: 20px;
+  color: #333333;
+}
+
+.caption {
+  padding: 9px;
+  color: #333333;
+}
+
+.portfolio {
+  padding: 50px 0;
+}
+
+.portfolio-item {
+  margin-bottom: 25px;
+}
+
+.img-portfolio {
+  margin: 0 auto;
+}
+
+
+/* Call to Action area */
+
+.call-to-action {
+  color: #ffffff;
+  background: #0a5175;
+  padding: 50px 0;
+}
+
+.call-to-action .btn {
+  margin: 10px;
+}
+
+
+
+/* Footer */
+
+footer {
+  padding: 100px 0;
+}
+
+.top-scroll {
+  margin-top: 50px;
+}
+
+.top-scroll a {
+  text-decoration: none;
+  color: inherit;
+}
+
+i.scroll {
+  color: #333333;
+}
+
+i.scroll:hover {
+  color: #0a5175;
+}
+
+
+
+/* Responsive */
+
+@media (max-width: 768px) {
+	
+  .header {
+	background: url(../../modules/pages/img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.jpg) no-repeat center center scroll; 
+  }
+
+  .callout {
+	background: url(../../modules/pages/img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.jpg) no-repeat center center scroll; 
+  }
+
+  .summary {
+	background: url(../../modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.jpg) no-repeat center center scroll; 
+  }
+  
+  .map {
+	height: 75%;
+  }
+
+}
