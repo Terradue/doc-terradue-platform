@@ -190,3 +190,11 @@ i.scroll:hover {
   }
 
 }
+
+
+/* Main container */
+#mainContainer {
+	height: 100%;
+	padding-top: 50px;
+}
+

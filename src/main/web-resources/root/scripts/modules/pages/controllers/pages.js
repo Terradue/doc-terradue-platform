@@ -41,7 +41,7 @@ if (App.controllers.Pages==null)
 				
 				// load base index page
 				self.view({
-					url: 'modules/pages/views/index.html',
+					url: Config.firstPage ? Config.firstPage : 'modules/pages/views/index.html',
 					selector: Config.mainContainer,
 					fade: false,
 				});
