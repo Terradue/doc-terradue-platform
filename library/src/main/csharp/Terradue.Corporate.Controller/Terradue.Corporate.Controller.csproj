@@ -75,6 +75,10 @@
       <Project>{49136166-254E-470F-B315-AD984D13C3ED}</Project>
       <Name>Terradue.Metadata</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Terradue.Metadata.EarthObservation\Terradue.Metadata.EarthObservation.csproj">
+      <Project>{E084B86A-8B40-414E-95FA-760F3C6BFDCB}</Project>
+      <Name>Terradue.Metadata.EarthObservation</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

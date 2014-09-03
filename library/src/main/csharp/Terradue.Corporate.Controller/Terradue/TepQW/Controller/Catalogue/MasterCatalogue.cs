@@ -29,6 +29,7 @@ using Terradue.Util;
  */
 using Terradue.OpenSearch.Request;
 using Terradue.ServiceModel.Syndication;
+using Terradue.Metadata.EarthObservation;
 
 
 
@@ -130,11 +131,13 @@ namespace Terradue.Corporate.Controller
         }
 
         #region IOpenSearchable implementation
+
         /// <summary>
-        /// Applies the result filters.
+        /// Optional function that apply to the result after the search and before the result is returned by OpenSearchEngine.
         /// </summary>
-        /// <param name="osr">Osr.</param>
-        public void ApplyResultFilters(ref IOpenSearchResult osr){}
+        /// <param name="osr">IOpenSearchResult cotnaing the result of the a search</param>
+        /// <param name="request">Request.</param>
+        public void ApplyResultFilters(OpenSearchRequest request, ref IOpenSearchResultCollection osr) {}
 
         public QuerySettings GetQuerySettings(OpenSearchEngine ose) {
             IOpenSearchEngineExtension osee = ose.GetExtensionByContentTypeAbility(this.DefaultMimeType);
@@ -291,12 +294,12 @@ namespace Terradue.Corporate.Controller
 
         }
 
-        public static void ProxyOpenSearchResult(IOpenSearchResult osr) {
+        public static void ProxyOpenSearchResult(IOpenSearchable entity, OpenSearchRequest request, IOpenSearchResultCollection osr) {
 
-            if (!(osr.OpenSearchableEntity is IProxiedOpenSearchable)) return;
+            if (!(entity is IProxiedOpenSearchable)) return;
 
-            OpenSearchFactory.ReplaceSelfLinks(osr, EOProductFactory.EntrySelfLinkTemplate);   
-            OpenSearchFactory.ReplaceOpenSearchDescriptionLinks(osr);                    
+            OpenSearchFactory.ReplaceSelfLinks(entity, request, osr, EarthObservationOpenSearchResultHelpers.EntrySelfLinkTemplate);
+            OpenSearchFactory.ReplaceOpenSearchDescriptionLinks(entity, osr);                    
 
         }
 
