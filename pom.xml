@@ -173,7 +173,7 @@
 							<configuration>noreplace</configuration>
 							<sources>
 								<source>
-									<location>${project.build.directory}/staged/sites/t2portal/root/web.config</location>
+									<location>${project.build.directory}/staged/sites/t2portal/config/web.config</location>
 								</source>
 							</sources>
 						</mapping>
