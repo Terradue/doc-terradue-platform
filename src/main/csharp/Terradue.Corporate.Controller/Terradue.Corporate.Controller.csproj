@@ -35,6 +35,9 @@
     <Reference Include="Terradue.ServiceModel.Syndication">
       <HintPath>..\packages\Terradue.ServiceModel.Syndication.1.0.0.0\lib\net40\Terradue.ServiceModel.Syndication.dll</HintPath>
     </Reference>
+    <Reference Include="Terradue.Util">
+      <HintPath>..\packages\Terradue.Util.1.4.0\lib\net40\Terradue.Util.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,17 +70,13 @@
       <Project>{EA911DE5-7F54-4943-97AB-AF66C8069D3A}</Project>
       <Name>Terradue.OpenSearch.GeoJson</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Terradue.Util\Terradue.Util.csproj">
-      <Project>{1B3335F3-B67D-4DCB-984E-88234A479AB2}</Project>
-      <Name>Terradue.Util</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Terradue.Metadata\Terradue.Metadata.csproj">
-      <Project>{49136166-254E-470F-B315-AD984D13C3ED}</Project>
-      <Name>Terradue.Metadata</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Terradue.Metadata.EarthObservation\Terradue.Metadata.EarthObservation.csproj">
       <Project>{E084B86A-8B40-414E-95FA-760F3C6BFDCB}</Project>
       <Name>Terradue.Metadata.EarthObservation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.OpenSearch.RdfEO\Terradue.OpenSearch.RdfEO.csproj">
+      <Project>{B05C09EF-A126-488E-9D9D-E313552B4CD4}</Project>
+      <Name>Terradue.OpenSearch.RdfEO</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -134,17 +134,21 @@ namespace Terradue.Corporate.Controller {
             return null;
         }
 
-        public ulong TotalResults() {
-            if (IsProduct) return 1;
-            NameValueCollection nvc = new NameValueCollection();
-            nvc.Add("count", "0");
-            IOpenSearchResult osr = ose.Query(Entity, nvc, typeof(AtomFeed));
-            AtomFeed feed = (AtomFeed)osr.Result;
-            try{
-                string s = feed.ElementExtensions.ReadElementExtensions<string>("totalResults", "http://a9.com/-/spec/opensearch/1.1/").Single();
-                return ulong.Parse(s);
-            }catch(Exception e){}
-            return 0;
+        public long TotalResults {
+            get {
+                if (IsProduct)
+                    return 1;
+                NameValueCollection nvc = new NameValueCollection();
+                nvc.Add("count", "0");
+                IOpenSearchResult osr = ose.Query(Entity, nvc, typeof(AtomFeed));
+                AtomFeed feed = (AtomFeed)osr.Result;
+                try {
+                    string s = feed.ElementExtensions.ReadElementExtensions<string>("totalResults", "http://a9.com/-/spec/opensearch/1.1/").Single();
+                    return long.Parse(s);
+                } catch (Exception e) {
+                }
+                return 0;
+            }
         }
 
         /// <summary>

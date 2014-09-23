@@ -7,7 +7,6 @@ using System.Linq;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
-using Terradue.Metadata.Model;
 using Terradue.OpenSearch;
 using Terradue.OpenSearch.Engine;
 using Terradue.OpenSearch.Engine.Extensions;
@@ -30,8 +29,6 @@ using Terradue.Util;
 using Terradue.OpenSearch.Request;
 using Terradue.ServiceModel.Syndication;
 using Terradue.Metadata.EarthObservation;
-
-
 
 
 namespace Terradue.Corporate.Controller
@@ -200,8 +197,10 @@ namespace Terradue.Corporate.Controller
             }
         }
 
-        public ulong TotalResults() {
-            return 0;
+        public long TotalResults {
+            get {
+                return 0;
+            }
         }
 
         #endregion
