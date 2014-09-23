@@ -33,23 +33,10 @@
 				</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${project.build.directory}/live/Terradue.Corporate.WebServer</directory>
+			<directory>${project.build.directory}/live/www-root</directory>
 			<outputDirectory>sites/${deploy.site}/root</outputDirectory>
 			<includes>
 				<include>bin/**/*.dll</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>${project.build.directory}/live/Terradue.Portal.Agent</directory>
-			<outputDirectory>sites/${deploy.site}/root</outputDirectory>
-			<includes>
-				<include>bin/**/*.exe</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>${project.build.directory}/live/Terradue.Portal.AdminTool</directory>
-			<outputDirectory>sites/${deploy.site}/root</outputDirectory>
-			<includes>
 				<include>bin/**/*.exe</include>
 			</includes>
 		</fileSet>
@@ -58,7 +45,6 @@
 			<filtered>true</filtered>
 			<outputDirectory>sites/${deploy.site}</outputDirectory>
 			<includes>
-				<include>root/web.config</include>
 				<include>config/*</include>
 			</includes>
 		</fileSet>
