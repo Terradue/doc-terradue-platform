@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.terradue</groupId>
 		<artifactId>t2-parent</artifactId>
-		<version>11</version>
+		<version>12-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.terradue.t2portal</groupId>
@@ -26,7 +26,7 @@
 		<deploy.dir>/usr/local/t2portal/webserver</deploy.dir>
 		<deploy.site>t2portal</deploy.site>
 		<rpmOSArch>noarch</rpmOSArch>
-		<redmine.projectID>t2portal</redmine.projectID>
+		<redmine.projectID>t2-portal</redmine.projectID>
 		<monoConfig>DEBUG</monoConfig>
 	</properties>
 	

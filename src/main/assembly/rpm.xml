@@ -57,48 +57,19 @@
 			<directory>${basedir}/src/main/web-resources</directory>
 			<filtered>true</filtered>
 			<outputDirectory>sites/${deploy.site}</outputDirectory>
-			<excludes>
-				<exclude>root/scripts/libs/bootstrap/img/*</exclude>
-				<exclude>root/scripts/libs/jquery.opensearchNavigator/img/*</exclude>
-				<exclude>root/scripts/libs/jsonViewer/img/*</exclude>
-				<exclude>root/scripts/libs/leaflet.draw/img/*</exclude>
-				<exclude>root/scripts/modules/pages/img/*</exclude>
-				<exclude>root/scripts/modules/processing/img/*</exclude>
-				<exclude>root/styles/img/*</exclude>
-				<exclude>root/scripts/libs/jquery-ui/images/*</exclude>
-				<exclude>root/scripts/libs//bootstrap/img/*</exclude>
-				<exclude>root/scripts/libs//jquery-ui/images/*</exclude>
-				<exclude>root/scripts/libs//jsonViewer/img/*</exclude>
-				<exclude>root/scripts/libs//leaflet.draw/img/*</exclude>
-				<exclude>root/scripts/libs//jquery.loadmask/*</exclude>
-				<exclude>root/scripts/libs//tumbax/*</exclude>
-				<exclude>root/scripts/libs//font-awesome/font/*</exclude>
-				<exclude>root/scripts/libs/font-awesome-4.1.0/fonts/*</exclude>
-				<exclude>root/styles/fonts/*</exclude>
-			</excludes>
+			<includes>
+				<include>root/web.config</include>
+				<include>config/*</include>
+			</includes>
 		</fileSet>
 		<fileSet>
 			<directory>${basedir}/src/main/web-resources</directory>
 			<outputDirectory>sites/${deploy.site}</outputDirectory>
-			<includes>
-				<include>root/scripts/libs/bootstrap/img/*</include>
-				<include>root/scripts/libs/jquery.opensearchNavigator/img/*</include>
-				<include>root/scripts/libs/jsonViewer/img/*</include>
-				<include>root/scripts/libs/leaflet.draw/img/*</include>
-				<include>root/scripts/modules/pages/img/*</include>
-				<include>root/scripts/modules/processing/img/*</include>
-				<include>root/styles/img/*</include>
-				<include>root/scripts/libs/jquery-ui/images/*</include>
-				<include>root/scripts/libs//bootstrap/img/*</include>
-				<include>root/scripts/libs//jquery-ui/images/*</include>
-				<include>root/scripts/libs//jsonViewer/img/*</include>
-				<include>root/scripts/libs//leaflet.draw/img/*</include>
-				<include>root/scripts/libs//jquery.loadmask/*</include>
-				<include>root/scripts/libs//tumbax/*</include>
-				<include>root/scripts/libs//font-awesome/font/*</include>
-				<include>root/scripts/libs/font-awesome-4.1.0/fonts/*</include>
-				<include>root/styles/fonts/*</include>
-			</includes>
+			<excludes>
+				<exclude>root/web.config</exclude>		
+				<exclude>config/*</exclude>
+			</excludes>
+			<filtered>false</filtered>
 		</fileSet>
 	</fileSets>
 
