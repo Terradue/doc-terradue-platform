@@ -22,6 +22,7 @@
     <ConsolePause>False</ConsolePause>
     <CustomCommands>
       <CustomCommands>
+        <Command type="Custom" name="create db" command="mono www-root/bin/Terradue.Portal.AdminTool.exe create -r sites/t2portal/root -u root -S t2portal" workingdir="${SolutionDir}" externalConsole="True" pauseExternalConsole="True" />
         <Command type="Custom" name="run webtest" command="rm -f ${ProjectDir}/files/* &amp;&amp; ../webtest/build-webtest.sh" workingdir="" externalConsole="True" />
       </CustomCommands>
     </CustomCommands>

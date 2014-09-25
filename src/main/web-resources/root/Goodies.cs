@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Terradue.TepQW.Goodies
+namespace Terradue.Corporate.Goodies
 {
     public class None {}
 }
