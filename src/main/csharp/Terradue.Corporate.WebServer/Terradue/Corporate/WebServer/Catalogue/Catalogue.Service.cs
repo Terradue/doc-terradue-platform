@@ -6,9 +6,9 @@ using System.Web;
 using ServiceStack.Common.Web;
 using ServiceStack.ServiceHost;
 using Terradue.Portal;
-using Terradue.TepQW.Controller;
+using Terradue.Corporate.Controller;
 using Terradue.WebService.Model;
-using Terradue.TepQW.WebServer.Common;
+using Terradue.Corporate.WebServer.Common;
 using Terradue.OpenSearch.Schema;
 using Terradue.OpenSearch.Engine;
 using Terradue.OpenSearch.Result;
@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using ServiceStack.Text;
 using Terradue.OpenSearch;
 
-namespace Terradue.TepQW.WebServer
+namespace Terradue.Corporate.WebServer
 {
     [Api("Tep-QuickWin Terradue webserver")]
 	[Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
@@ -38,9 +38,9 @@ namespace Terradue.TepQW.WebServer
 				UriBuilder baseUrl = new UriBuilder ( context.BaseUrl );
 
 				if ( request.serieId == null )
-                    throw new ArgumentNullException(Terradue.TepQW.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
+                    throw new ArgumentNullException(Terradue.Corporate.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
 					
-                Terradue.TepQW.Controller.DataSeries serie = Terradue.TepQW.Controller.DataSeries.FromIdentifier(context,request.serieId);
+                Terradue.Corporate.Controller.DataSeries serie = Terradue.Corporate.Controller.DataSeries.FromIdentifier(context,request.serieId);
 
 				// The new URL template list 
 				Hashtable newUrls = new Hashtable();
@@ -115,9 +115,9 @@ namespace Terradue.TepQW.WebServer
                 HttpRequest httpRequest = HttpContext.Current.Request;
 
               	if ( request.serieId == null )
-                    throw new ArgumentNullException(Terradue.TepQW.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
+                    throw new ArgumentNullException(Terradue.Corporate.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
 
-                Terradue.TepQW.Controller.DataSeries serie = Terradue.TepQW.Controller.DataSeries.FromIdentifier(context,request.serieId);
+                Terradue.Corporate.Controller.DataSeries serie = Terradue.Corporate.Controller.DataSeries.FromIdentifier(context,request.serieId);
 
                 OpenSearchEngine ose = MasterCatalogue.OpenSearchEngine;
                 ose.DefaultTimeOut = 60000;
@@ -177,13 +177,13 @@ namespace Terradue.TepQW.WebServer
             IOpenSearchResult result = null;
             try {
                 context.Open();
-                Terradue.TepQW.Controller.DataPackage datapackage;
+                Terradue.Corporate.Controller.DataPackage datapackage;
                 if(!context.IsUserAuthenticated && request.Key != null){
                     context.RestrictedMode = false;
-                    datapackage = Terradue.TepQW.Controller.DataPackage.FromIdentifier(context, request.DataPackageId);
+                    datapackage = Terradue.Corporate.Controller.DataPackage.FromIdentifier(context, request.DataPackageId);
                     if(!request.Key.Equals(datapackage.AccessKey)) throw new UnauthorizedAccessException(CustomErrorMessages.WRONG_ACCESSKEY);
                 } else {
-                    datapackage = Terradue.TepQW.Controller.DataPackage.FromIdentifier(context, request.DataPackageId);
+                    datapackage = Terradue.Corporate.Controller.DataPackage.FromIdentifier(context, request.DataPackageId);
                 }
 
                 datapackage.SetOpenSearchEngine(MasterCatalogue.OpenSearchEngine);
@@ -212,13 +212,13 @@ namespace Terradue.TepQW.WebServer
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-                Terradue.TepQW.Controller.DataPackage datapackage;
+                Terradue.Corporate.Controller.DataPackage datapackage;
                 if(!context.IsUserAuthenticated && request.Key != null){
                     context.RestrictedMode = false;
-                    datapackage = Terradue.TepQW.Controller.DataPackage.FromIdentifier(context, request.DataPackageId);
+                    datapackage = Terradue.Corporate.Controller.DataPackage.FromIdentifier(context, request.DataPackageId);
                     if(!request.Key.Equals(datapackage.AccessKey)) throw new UnauthorizedAccessException(CustomErrorMessages.WRONG_ACCESSKEY);
                 } else
-                    datapackage = Terradue.TepQW.Controller.DataPackage.FromIdentifier(context, request.DataPackageId);
+                    datapackage = Terradue.Corporate.Controller.DataPackage.FromIdentifier(context, request.DataPackageId);
 
                 OpenSearchDescription osd = datapackage.GetLocalOpenSearchDescription();
 

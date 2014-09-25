@@ -6,9 +6,8 @@ using Terradue.Corporate.WebServer.Common;
 using System.Collections.Generic;
 using ServiceStack.ServiceInterface;
 using Terradue.OpenNebula;
-using Terradue.Security.Certification;
-using Terradue.TepQW.WebServer;
 using Terradue.Corporate.Controller;
+using Terradue.Security.Certification;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Tep-QuickWin Terradue webserver")]
@@ -91,7 +90,8 @@ namespace Terradue.Corporate.WebServer {
             WebUserT2 result;
             try {
                 context.Open();
-                UserT2 user = request.ToEntity(context);
+				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
+                user = request.ToEntity(context, user);
                 user.Store();
                 result = new WebUserT2(user);
                 context.Close();
@@ -112,7 +112,8 @@ namespace Terradue.Corporate.WebServer {
             WebUserT2 result;
             try{
                 context.Open();
-                UserT2 user = request.ToEntity(context);
+				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
+				user = request.ToEntity(context, user);
                 if(request.Id != 0 && context.UserLevel == UserLevel.Administrator){
                     user.AccountStatus = AccountStatusType.Enabled;
                 }
@@ -150,75 +151,9 @@ namespace Terradue.Corporate.WebServer {
                 context.Close();
                 throw e;
             }
-            return true;
+            return new WebResponseBool(true);
         }
 
-        public object Put(UpdateUserCertT2 request){
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            try {
-                context.Open();
-                CertificateUser certUser = CertificateUser.FromId(context,request.Id);
-                //certUser.CertificateSubject = request.CertSubject;
-                certUser.Store();
-                context.Close();
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-            return true;
-        }
-
-        public object Post(RequestCertificate request) {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            CertificateUser certUser;
-            WebUserCertificate userCert;
-
-            try {
-                context.Open();
-                certUser = (CertificateUser)CertificateUser.FromId(context, context.UserId);
-
-            } catch (EntityNotFoundException e) {
-                certUser = new CertificateUser(context);
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-
-            try {
-                certUser.RequestCertificate(request.password);
-                userCert = new WebUserCertificate(certUser);
-                context.Close();
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-            return null;
-            //return userCert;
-        }
-
-        public object Delete(DeleteUserCertificate request) {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            UserT2 user;
-
-            try {
-                context.Open();
-                user = UserT2.FromId(context, context.UserId);
-
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-
-            try {
-                user.RemoveCertificate();
-                context.Close();
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-
-            return true;
-        }
     }
 }
 

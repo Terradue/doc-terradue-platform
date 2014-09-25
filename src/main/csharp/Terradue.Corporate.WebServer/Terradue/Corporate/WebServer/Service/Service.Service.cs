@@ -78,28 +78,6 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
-//        public object Get(SearchWPSService request){
-//            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-//            object result;
-//            try{
-//                context.Open();
-//                // Load the complete request
-//                HttpRequest httpRequest = HttpContext.Current.Request;
-//
-//                if ( request.wpsId == null )
-//                    throw new IncorrectRequestFormatException(Terradue.TepQW.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
-//
-//                Terradue.Portal.WpsProcessOffering wps = Terradue.Portal.WpsProcessOffering.FromIdentifier(context,request.wpsId);
-//
-//
-//                context.Close ();
-//            }catch(Exception e) {
-//                context.Close ();
-//                throw e;
-//            }
-//
-//            return result;
-//        }
     }
 }
 

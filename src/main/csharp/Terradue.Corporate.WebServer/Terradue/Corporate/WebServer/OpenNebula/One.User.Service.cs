@@ -2,12 +2,12 @@
 using ServiceStack.ServiceHost;
 using Terradue.WebService.Model;
 using Terradue.Portal;
-using Terradue.TepQW.WebServer.Common;
+using Terradue.Corporate.WebServer.Common;
 using System.Collections.Generic;
 using ServiceStack.ServiceInterface;
 using Terradue.OpenNebula;
 
-namespace Terradue.TepQW.WebServer {
+namespace Terradue.Corporate.WebServer {
     [Api("Tep-QuickWin Terradue webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]

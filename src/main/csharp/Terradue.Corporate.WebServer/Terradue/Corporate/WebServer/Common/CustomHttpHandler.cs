@@ -15,7 +15,7 @@ namespace Terradue.Corporate.WebServer.Common
 		/// <value>The handler.</value>
 		private IHttpHandler Handler { get; set; }
         /// <summary>
-        /// Initializes a new instance of the <see cref="Terradue.TepQW.WebServer.Common.SessionHandlerDecorator"/> class.
+        /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.Common.SessionHandlerDecorator"/> class.
         /// </summary>
         /// <param name="handler">Handler.</param>
 		internal SessionHandlerDecorator(IHttpHandler handler) {

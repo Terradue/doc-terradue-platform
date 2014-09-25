@@ -72,6 +72,8 @@
     <Compile Include="Terradue\Corporate\WebServer\News\TumblrNews.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\News\TwitterNews.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\News\News.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\User\User.Certificate.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\User\User.Github.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -119,6 +121,10 @@
     <ProjectReference Include="..\Terradue.OpenSearch.Twitter\Terradue.OpenSearch.Twitter.csproj">
       <Project>{F5BDC1AD-3355-4EA7-85A3-16F8358D1F50}</Project>
       <Name>Terradue.OpenSearch.Twitter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.Github\Terradue.Github.csproj">
+      <Project>{85A6ADB6-DF16-4A4A-BF6A-E27463FFC81C}</Project>
+      <Name>Terradue.Github</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

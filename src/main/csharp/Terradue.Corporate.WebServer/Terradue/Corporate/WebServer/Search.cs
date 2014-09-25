@@ -14,47 +14,6 @@ namespace Terradue.TepQW.WebServer {
               EndpointAttributes.Secure   | EndpointAttributes.External | EndpointAttributes.Json)]
     public class SearchService : ServiceStack.ServiceInterface.Service
     {       
-//        public object Get(GetAllSearch request){
-//            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-//            IEnumerable<System.ServiceModel.Syndication.SyndicationFeed> result = new IEnumerable<System.ServiceModel.Syndication.SyndicationFeed>();
-//            try{
-//                context.Open();
-//
-//                // Load the complete request
-//                HttpRequest httpRequest = HttpContext.Current.Request;
-//                OpenSearchEngine ose = MasterCatalogue.OpenSearchEngine;
-//
-//                string format;
-//                if ( Request.QueryString["format"] == null ) format = "atom";
-//                else format = Request.QueryString["format"];
-//
-//                Type responseType = MasterCatalogue.GetTypeFromFormat (format);
-//                IOpenSearchResult osr;
-//
-//                List<Terradue.OpenSearch.IOpenSearchable> entities;
-//
-//                //services
-//                EntityList<Terradue.Portal.WpsProcessOffering> services = new EntityList<Terradue.Portal.WpsProcessOffering>(context);
-//                services.Load();
-//                osr = ose.Query(services, httpRequest.QueryString, responseType);
-//                result.
-//                result.AddRange(osr.Result);
-//
-//                //series
-//                MasterCatalogue cat = new MasterCatalogue(context);
-//                osr = MasterCatalogue.OpenSearchEngine.Query(cat, httpRequest.QueryString, responseType);
-//                result.AddRange(osr.Result);
-//
-//
-//
-//                context.Close ();
-//            }catch(Exception e) {
-//                context.Close ();
-//                throw e;
-//            }
-//
-//            return result;
-//        }
     }
         [Route("/search", "GET", Summary = "GET the result of a search", Notes = "")]
         public class GetAllSearch

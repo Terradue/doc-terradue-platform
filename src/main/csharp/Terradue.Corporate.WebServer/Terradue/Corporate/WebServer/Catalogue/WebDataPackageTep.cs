@@ -3,9 +3,9 @@ using ServiceStack.ServiceHost;
 using System.Collections.Generic;
 using Terradue.WebService.Model;
 using Terradue.Portal;
-using Terradue.TepQW.Controller;
+using Terradue.Corporate.Controller;
 
-namespace Terradue.TepQW.WebServer {
+namespace Terradue.Corporate.WebServer {
 
     [Route("/datapackage", "POST", Summary = "POST a datapackage", Notes = "Add a new datapackage in database")]
     public class CreateDataPackageTep : WebDataPackageTep, IReturn<WebDataPackageTep>{}

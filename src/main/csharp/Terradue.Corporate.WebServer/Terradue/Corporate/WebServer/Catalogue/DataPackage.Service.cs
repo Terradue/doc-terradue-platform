@@ -11,12 +11,12 @@ using ServiceStack.ServiceInterface.ServiceModel;
 using Terradue.OpenSearch;
 using Terradue.Portal;
 using Terradue.WebService.Model;
-using Terradue.TepQW.WebServer.Common;
-using Terradue.TepQW.Controller;
+using Terradue.Corporate.WebServer.Common;
+using Terradue.Corporate.Controller;
 
 
 
-namespace Terradue.TepQW.WebServer
+namespace Terradue.Corporate.WebServer
 {
 
     [Api("Tep-Quickwin Terradue webserver")]
