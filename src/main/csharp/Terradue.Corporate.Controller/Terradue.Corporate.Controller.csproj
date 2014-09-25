@@ -78,6 +78,10 @@
       <Project>{B05C09EF-A126-488E-9D9D-E313552B4CD4}</Project>
       <Name>Terradue.OpenSearch.RdfEO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Terradue.Github\Terradue.Github.csproj">
+      <Project>{85A6ADB6-DF16-4A4A-BF6A-E27463FFC81C}</Project>
+      <Name>Terradue.Github</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

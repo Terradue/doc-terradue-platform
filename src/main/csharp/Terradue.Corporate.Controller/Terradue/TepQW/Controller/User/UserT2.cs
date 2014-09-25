@@ -1,34 +1,31 @@
 ﻿using System;
 using Terradue.Portal;
 using Terradue.OpenNebula;
+using Terradue.Github;
+using Terradue.Util;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
-    [EntityReferenceTable("usr_github", USERGIT_TABLE, ReferenceField = "id", IdField = "id_usr")]
     public class UserT2 : User {
 
-        private const int USERGIT_TABLE = 1;
-
-        /// <summary>
-        /// Gets or sets the name of the github.
-        /// </summary>
-        /// <value>The name of the github.</value>
-        [EntityForeignField("username", USERGIT_TABLE)]
-        public string GithubName { get; set; }
+        #region T2Certificate
 
         /// <summary>
         /// Gets the cert subject.
         /// </summary>
         /// <value>The cert subject.</value>
+        private string certsubject { get; set; }
         public string CertSubject {
             get {
-                try {
-                    Terradue.Security.Certification.CertificateUser certUser = Terradue.Security.Certification.CertificateUser.FromId(context,Id);
-                    return certUser.CertificateSubject;
+                if (certsubject == null) {
+                    try {
+                        Terradue.Security.Certification.CertificateUser certUser = Terradue.Security.Certification.CertificateUser.FromId(context, Id);
+                        certsubject = certUser.CertificateSubject;
+                    } catch (EntityNotFoundException e) {
+                        certsubject = null;
+                    }
                 }
-                catch ( EntityNotFoundException e ){
-                    return null;
-                }
+                return certsubject;
             }
         }
 
@@ -47,6 +44,10 @@ namespace Terradue.Corporate.Controller {
                 }
             }
         }
+
+        #endregion
+
+        #region OpenNebula
 
         /// <summary>
         /// Gets or sets the one password.
@@ -86,8 +87,10 @@ namespace Terradue.Corporate.Controller {
         private int oneId { get; set; }
         private OneClient oneClient { get; set; }
 
+        #endregion
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="Terradue.TepQW.Controller.UserTep"/> class.
+        /// Initializes a new instance of the <see cref="Terradue.Corporate.Controller.UserT2"/> class.
         /// </summary>
         /// <param name="context">Context.</param>
         public UserT2(IfyContext context) : base(context) {
@@ -95,11 +98,13 @@ namespace Terradue.Corporate.Controller {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Terradue.TepQW.Controller.UserTep"/> class.
+        /// Initializes a new instance of the <see cref="Terradue.Corporate.Controller.UserT2"/> class.
         /// </summary>
         /// <param name="user">User.</param>
-        public UserT2(IfyContext context, User user) : base(context) {
+        public UserT2(IfyContext context, User user) : this(context) {
             this.Id = user.Id;
+            this.Load();
+
             this.Username = user.Username;
             this.FirstName = user.FirstName;
             this.LastName = user.LastName;
@@ -109,19 +114,28 @@ namespace Terradue.Corporate.Controller {
             this.Level = user.Level;
         }
 
+        public override void Store(){
+            bool isnew = (this.Id == 0);
+            base.Store();
+            if (isnew) {
+                //create github profile
+                GithubProfile github = new GithubProfile(context, this.Id);
+                github.Store();
+                //create certificate record
+                context.Execute(String.Format("INSERT INTO usrcert (id_usr) VALUES ({0});", this.Id));
+            }
+        }
+
         /// <summary>
         /// Creates a new User instance representing the user with the specified ID.
         /// </summary>
         /// <returns>The identifier.</returns>
         /// <param name="context">Context.</param>
         /// <param name="id">Identifier.</param>
-        public static new UserT2 FromId(IfyContext context, int id){
+        public new static UserT2 FromId(IfyContext context, int id){
             UserT2 user = new UserT2(context);
             user.Id = id;
             user.Load();
-
-            string sql = String.Format("SELECT username FROM usr_github WHERE id_usr={0};",id);
-            user.GithubName = context.GetQueryStringValue(sql);
             return user;
         }
 
