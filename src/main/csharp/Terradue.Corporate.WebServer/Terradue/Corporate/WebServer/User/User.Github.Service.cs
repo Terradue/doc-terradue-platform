@@ -27,7 +27,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
                 GithubProfile user = GithubProfile.FromId(context, context.UserId);
 
-                user.GetNewAuthorizationToken(request.Password, "write:public_key", "Terradue Sandboxes Application");
+                user.GetNewAuthorizationToken(request.Password, request.Scope, request.Description);
                 result = new WebGithubProfile(user);
 
                 context.Close();
