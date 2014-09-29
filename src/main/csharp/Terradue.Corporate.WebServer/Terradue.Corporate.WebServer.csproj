@@ -74,6 +74,7 @@
     <Compile Include="Terradue\Corporate\WebServer\News\News.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Certificate.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Github.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\User\User.Crowd.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
