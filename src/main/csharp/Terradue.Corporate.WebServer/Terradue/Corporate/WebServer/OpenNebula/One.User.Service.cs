@@ -66,7 +66,7 @@ namespace Terradue.Corporate.WebServer {
                 foreach(object u in pool.Items){
                     if(u is USER_POOLUSER){
                         USER_POOLUSER oneuser = u as USER_POOLUSER;
-                        if(oneuser.NAME == user.Username){
+                        if(oneuser.NAME == user.Email){
                             result = new WebOneUser{ Id = oneuser.ID, Name = oneuser.NAME, Password = oneuser.PASSWORD, AuthDriver = oneuser.AUTH_DRIVER};
                             break;
                         }
@@ -103,7 +103,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
                 User user = User.FromId(context, context.UserId);
                 OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
-                int id = one.UserAllocate(user.Username, request.Password, (request.AuthDriver == null || request.AuthDriver == "" ? "x509" : request.AuthDriver));
+                int id = one.UserAllocate(user.Email, request.Password, (request.AuthDriver == null || request.AuthDriver == "" ? "x509" : request.AuthDriver));
                 USER oneuser = one.UserGetInfo(id);
                 result = new WebOneUser{ Id = oneuser.ID, Name = oneuser.NAME, Password = oneuser.PASSWORD, AuthDriver = oneuser.AUTH_DRIVER};
                 context.Close();
