@@ -10,6 +10,8 @@ using System.Diagnostics;
 using Terradue.Corporate.WebServer.Common;
 using System.Web;
 using Terradue.OpenId;
+using Terradue.Authentication.Crowd;
+using Terradue.WebService.Model;
 
 namespace Terradue.Corporate.WebServer.Services
 {
@@ -70,6 +72,30 @@ namespace Terradue.Corporate.WebServer.Services
             return response;
         }
 		
+        /// <summary>
+        /// OpenId login
+        /// </summary>
+        /// <param name="request">Request.</param>
+        public object Get(CrowdLogin request) 
+        {
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            Terradue.WebService.Model.WebUser response = null;
+            CrowdAuthenticationType crowdAuth;
+            User user = null;
+            try{
+                context.Open();
+                crowdAuth = new CrowdAuthenticationType(context);
+                user = crowdAuth.Authenticate(request.username, request.password);
+                response = new Terradue.WebService.Model.WebUser(user);
+                context.Close();
+            }
+            catch (Exception e){
+                context.Close();
+                throw e;
+            }
+            return response;
+        }
+
         /// <summary>
         /// Username/password login
         /// </summary>

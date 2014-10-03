@@ -127,6 +127,14 @@
       <Project>{85A6ADB6-DF16-4A4A-BF6A-E27463FFC81C}</Project>
       <Name>Terradue.Github</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Terradue.Crowd\Terradue.Crowd.csproj">
+      <Project>{E5D6E4A7-FF6C-4F9E-9C31-614CE78B3641}</Project>
+      <Name>Terradue.Crowd</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.Authentication.Crowd\Terradue.Authentication.Crowd.csproj">
+      <Project>{C88BFF86-3D09-4174-8CD9-8B03754E7402}</Project>
+      <Name>Terradue.Authentication.Crowd</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
