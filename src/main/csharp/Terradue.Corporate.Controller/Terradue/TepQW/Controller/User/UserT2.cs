@@ -139,6 +139,13 @@ namespace Terradue.Corporate.Controller {
             return user;
         }
 
+        public new static UserT2 FromUsername(IfyContext context, string username){
+            UserT2 user = new UserT2(context);
+            user.Identifier = username;
+            user.Load();
+            return user;
+        }
+
         /// <summary>
         /// Removes the certificate.
         /// </summary>
