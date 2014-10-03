@@ -74,5 +74,9 @@
       <Project>{76CBD7B6-4156-424C-9662-CDEDE1548781}</Project>
       <Name>Terradue.Corporate.WebServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Terradue.Authentication.Crowd\Terradue.Authentication.Crowd.csproj">
+      <Project>{C88BFF86-3D09-4174-8CD9-8B03754E7402}</Project>
+      <Name>Terradue.Authentication.Crowd</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
