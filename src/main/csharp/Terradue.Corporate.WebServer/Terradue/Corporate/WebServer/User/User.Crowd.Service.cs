@@ -34,26 +34,6 @@ namespace Terradue.Corporate.WebServer {
             return true;
         }
 
-//        public object Get(AuthenticateCrowdUser request){
-//            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
-//
-//            try {
-//                context.Open();
-//                CrowdClient client = new CrowdClient("http://ldap.terradue.int:8095/crowd/rest", "enguecrowd", "enguercrowd");
-//                string session = (string)client.Authenticate(request.username, request.password);
-////                HttpContext.Current.Response.Cookies.Add(new HttpCookie(CrowdClient.COOKIE, session));
-//                CrowdUser cUser = client.GetUser(request.username);
-//                UserT2 user = UserT2.FromUsername(context, cUser.email);
-//
-//                context.Close();
-//            } catch (Exception e) {
-//                context.Close();
-//                throw e;
-//            }
-//
-//            return true;
-//        }
-
     }
 }
 

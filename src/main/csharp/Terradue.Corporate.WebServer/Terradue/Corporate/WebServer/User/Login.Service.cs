@@ -76,17 +76,17 @@ namespace Terradue.Corporate.WebServer.Services
         /// OpenId login
         /// </summary>
         /// <param name="request">Request.</param>
-        public object Get(CrowdLogin request) 
+        public object Post(CrowdLogin request) 
         {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
-            Terradue.WebService.Model.WebUser response = null;
+            WebUser response = null;
             CrowdAuthenticationType crowdAuth;
             User user = null;
             try{
                 context.Open();
                 crowdAuth = new CrowdAuthenticationType(context);
                 user = crowdAuth.Authenticate(request.username, request.password);
-                response = new Terradue.WebService.Model.WebUser(user);
+                response = new WebUser(user);
                 context.Close();
             }
             catch (Exception e){
