@@ -7,7 +7,7 @@ define({
 	mainContainer: '#mainContainer',
 	page404: "modules/pages/views/404.html",
 	firstPage: '/static/home.html',
-//	api: "t2api",
+	api: "t2api",
 	
 	staticPages: {
 		about: '/static/about.html',

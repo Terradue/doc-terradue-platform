@@ -11,9 +11,15 @@ require.config({
 		can: 'libs/canjs/can.jquery',
 		supercan: 'libs/canjs/can.construct.super',
 		canroutepushstate: 'libs/canjs/can.route.pushstate',
+		canpromise: 'libs/canjs/can.list.promise',
 		underscorestring: 'libs/underscore/underscore.string.min',
 		skrollr: 'libs/skrollr/skrollr.min',
 		moment: 'libs/moment/moment.min',
+		messenger: 'libs/messenger/js/messenger.min',
+		messengerThemeFlat: 'libs/messenger/js/messenger-theme-flat',
+		ajaxFileUpload: 'libs/ajaxFileUpload/ajaxfileupload',
+		jqueryValidate: 'libs/jquery.validate/js/jquery.validate',//.additional-methods.js
+		bootstrapFileUpload: 'libs/bootstrap-fileupload/bootstrap-fileupload.min',
 	},
 	shim: {
 		underscore: {
@@ -29,7 +35,12 @@ require.config({
 		},
 		supercan: ['can'],
 		canroutepushstate: ['can'],
+		canpromise: ['can'],
 		underscorestring: ['underscore'],
+		messenger: ['jquery'],
+		ajaxFileUpload: ['jquery'],
+		jqueryValidate: ['jquery'], 
+		bootstrapFileUpload: ['jquery', 'bootstrap'],
 	}
 });
 
@@ -39,6 +50,7 @@ require([
 	'router',
 	'config',
 ], function(App, Router, Config) {
+	window.App = App;
 	App.init(Config); // app init
 	Router.init(); // router init
 });

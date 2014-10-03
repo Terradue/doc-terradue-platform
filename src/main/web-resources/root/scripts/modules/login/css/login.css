@@ -1,0 +1,65 @@
+
+#loginFormContainer {
+	background: white;
+	overflow: hidden;
+	height: 0px;
+	width: 100%;
+}
+
+#loginForm {
+	/* width: 644px; */
+	/* margin: auto; */
+	padding-bottom: 20px;
+	/* background-color: #eee; */
+	border-radius: 0px 0px 0px 6px;
+	/* color: black; */
+	float: right;
+	position: relative;
+}
+
+#loginFormContainer .span6 {
+	padding-left: 20px;
+	
+}
+#loginFormContainer .verticalLine {
+	border-right: 1px solid #eee;
+}
+
+.loginMenu {
+	padding-top: 8px;
+}
+
+/* #loginForm h2 {
+	margin-left: 24px;
+	line-height: 30px;
+	margin-bottom: 19px;
+}
+ */
+#loginForm h2 small {
+	margin-right: 20px;
+}
+
+#loginForm > .loginForm-userPwd {
+	width: 366px;
+	float: left;
+}
+
+#loginForm > .loginForm-openId {
+	float: left;
+	width: 250px;
+	margin-left: 30px;
+}
+
+#loginOpenidButton {
+background: url(../img/t2logo.png);
+text-indent: 100%;
+display: block;
+width: 106px;
+height: 34px;
+background-size: 94px;
+background-position: 50%;
+border: 1px solid #ccc;
+padding: 5px;
+background-repeat: no-repeat;
+border-radius: 5px;
+}

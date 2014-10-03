@@ -34,6 +34,16 @@ define([
 			// set the identifier name
 			can.Model.id = 'Id';
 			
+			// configure ajax requests
+			$.ajaxSetup({
+			    contentType : 'application/json',
+			    processData : false,
+			});
+			$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+			    if (options.data)
+			        options.data=JSON.stringify(options.data);
+			});
+
 			// merge string plugin to underscore namespace
 			_.mixin(_.str.exports());
 			

@@ -1,0 +1,22 @@
+<div class="newses newses-min">
+	{{#each this}}
+		<div class="news news-{{ Type }}">
+			<p class="newsTitle">
+				{{#ifEquals Type "tweet" }}
+					<i class="fa fa-twitter-square"></i>
+				{{/ifEquals}}
+				{{#ifEquals Type "rss" }}
+					<i class="fa fa-rss-square"></i>
+				{{/ifEquals}}
+				{{#ifEquals Type "news" }}
+					<i class="fa fa-file"></i>
+				{{/ifEquals}}
+				<b><a href="{{ Url }}">{{ Title }}</a></b>
+			</p>
+			<p class="newsAbstract"><small>{{ Abstract }}</small></p>
+			<p class="newsContent">{{{ truncate Content 300 }}}</p>
+			<p class="newsDate"><small><i class="fa fa-clock-o "></i> {{ fromNow Date }}<br/><!-- {{ Date }} --></small></p>
+			<hr style="clear:both" />
+		</div>
+	{{/each}}
+</div>

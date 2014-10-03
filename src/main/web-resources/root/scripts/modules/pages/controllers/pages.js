@@ -10,9 +10,10 @@ define([
     	'config',
     	'utils/baseControl',
     	'utils/menu',
+    	'modules/login/controllers/login',
     	'skrollr',
     	'loadmask',
-], function($, _, can, App, Config, BaseControl, Menu, skrollr){
+], function($, _, can, App, Config, BaseControl, Menu, Login, skrollr){
 	
 if (App.controllers.Pages==null)
 	App.controllers.Pages = new (BaseControl(
@@ -28,7 +29,10 @@ if (App.controllers.Pages==null)
 				});
 				
 				// set login public accessible
-				//App.Login = Login;
+				App.Login = Login;
+				
+				// set dropdown
+				$('.dropdown-toggle').dropdown();
 			},
 			
 			initMenu: function () {
@@ -42,10 +46,18 @@ if (App.controllers.Pages==null)
 				// load base index page
 				self.view({
 					url: Config.firstPage ? Config.firstPage : 'modules/pages/views/index.html',
-					selector: Config.mainContainer,
-					fade: false,
+							selector: Config.mainContainer,
+							fade: false,
+				});				
+				
+				// login
+				console.log('init login...');
+				App.Login.isLoggedDeferred.always(function(user){
+					if (user.state && user.state()=='rejected')
+						user = {};
+					
+					console.log('...init login done.');
 				});
-
 			},
 			
 			load: function (options) {
@@ -58,6 +70,7 @@ if (App.controllers.Pages==null)
 						skrollr.init({
 							forceHeight: false
 						});
+						$('.dropdown-toggle').dropdown();
 					}
 				});
 			},

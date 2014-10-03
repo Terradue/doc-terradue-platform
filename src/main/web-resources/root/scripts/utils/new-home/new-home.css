@@ -198,3 +198,6 @@ i.scroll:hover {
 	padding-top: 50px;
 }
 
+.collapse.navbar-collapse {
+	background-color: white;
+}

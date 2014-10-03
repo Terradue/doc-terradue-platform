@@ -59,6 +59,7 @@ define([
 				if (controller && controller[actionName])
 					controller[actionName](data);
 				else Pages.errorView({}, "Controller not found: "+ControllerName);
+				$('.dropdown-toggle').dropdown();
 			}, function(err){
 				Pages.errorView({}, "Controller not found: "+ControllerName);
 				window.err=err;
