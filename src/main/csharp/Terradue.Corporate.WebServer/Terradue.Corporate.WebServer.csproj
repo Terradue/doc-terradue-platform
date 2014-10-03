@@ -91,10 +91,6 @@
       <Project>{52346D96-A50D-416C-BA49-361B925418EB}</Project>
       <Name>Terradue.WebService.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Terradue.OpenId\Terradue.OpenId.csproj">
-      <Project>{368A87F9-0ED5-4423-B32D-F3411189A8F8}</Project>
-      <Name>Terradue.OpenId</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Terradue.OpenNebula\Terradue.OpenNebula.csproj">
       <Project>{E488F0B0-3464-4D03-8E2E-8DA1936E3699}</Project>
       <Name>Terradue.OpenNebula</Name>
@@ -134,6 +130,10 @@
     <ProjectReference Include="..\Terradue.Authentication.Crowd\Terradue.Authentication.Crowd.csproj">
       <Project>{C88BFF86-3D09-4174-8CD9-8B03754E7402}</Project>
       <Name>Terradue.Authentication.Crowd</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Terradue.Authentication.OpenId\Terradue.Authentication.OpenId.csproj">
+      <Project>{368A87F9-0ED5-4423-B32D-F3411189A8F8}</Project>
+      <Name>Terradue.Authentication.OpenId</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

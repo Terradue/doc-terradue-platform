@@ -9,7 +9,7 @@ using System.Web.SessionState;
 using System.Diagnostics;
 using Terradue.Corporate.WebServer.Common;
 using System.Web;
-using Terradue.OpenId;
+using Terradue.Authentication.OpenId;
 using Terradue.Authentication.Crowd;
 using Terradue.WebService.Model;
 
