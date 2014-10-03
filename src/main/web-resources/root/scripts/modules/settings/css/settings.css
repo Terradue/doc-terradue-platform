@@ -1,3 +1,7 @@
+.settings-profile input[type="text"] {
+	width: 400px;
+}
+
 .settings-github  .panel {
 	width: 350px;
 	height: 62px;
