@@ -2,27 +2,31 @@
 using ServiceStack.ServiceHost;
 using Terradue.WebService.Model;
 using Terradue.Portal;
-using Terradue.Corporate.WebServer.Common;
 using System.Collections.Generic;
 using ServiceStack.ServiceInterface;
 using Terradue.OpenNebula;
+using Terradue.Corporate.WebServer.Common;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class OneUserService : ServiceStack.ServiceInterface.Service {
 
-        public object Get(GetUsers4One request) {
-            List<System.Collections.Generic.KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
+        public object Get(GetOneUsers request) {
+            List<WebOneUser> result = new List<WebOneUser>();
 
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
             try {
                 context.Open();
-                OneClient one = new OneClient(context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
                 USER_POOL pool = one.UserGetPoolInfo();
                 foreach(object u in pool.Items){
-                    if(u is USER_POOLUSER) result.Add(new KeyValuePair<string, string>((((USER_POOLUSER)u).ID),(((USER_POOLUSER)u).NAME)));
+                    if(u is USER_POOLUSER){
+                        USER_POOLUSER oneuser = u as USER_POOLUSER;
+                        WebOneUser wu = new WebOneUser{ Id = oneuser.ID, Name = oneuser.NAME, Password = oneuser.PASSWORD, AuthDriver = oneuser.AUTH_DRIVER};
+                        result.Add(wu);
+                    }
                 }
                 context.Close();
             } catch (Exception e) {
@@ -32,15 +36,16 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
-        public object Get(GetUser4One request) {
-            string result = null;
+        public object Get(GetOneUser request) {
+            WebOneUser result = null;
 
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-                OneClient one = new OneClient(context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
                 USER oneuser = one.UserGetInfo(request.Id);
-                result = oneuser.NAME;
+                result = new WebOneUser{ Id = oneuser.ID, Name = oneuser.NAME, Password = oneuser.PASSWORD, AuthDriver = oneuser.AUTH_DRIVER};
+
                 context.Close();
             } catch (Exception e) {
                 context.Close();
@@ -49,13 +54,40 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
-        public object Put(UpdateUser4OnePassword request) {
+        public object Get(GetOneCurrentUser request) {
+            WebOneUser result = new WebOneUser();
+
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            try {
+                context.Open();
+                User user = User.FromId(context, context.UserId);
+                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                USER_POOL pool = one.UserGetPoolInfo();
+                foreach(object u in pool.Items){
+                    if(u is USER_POOLUSER){
+                        USER_POOLUSER oneuser = u as USER_POOLUSER;
+                        if(oneuser.NAME == user.Username){
+                            result = new WebOneUser{ Id = oneuser.ID, Name = oneuser.NAME, Password = oneuser.PASSWORD, AuthDriver = oneuser.AUTH_DRIVER};
+                            break;
+                        }
+                    }
+                }
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Put(UpdateOneUser request) {
             bool result;
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-                OneClient one = new OneClient(context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
-                result = one.UserUpdatePassword(request.Id, request.Password);
+                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                result = one.UserUpdatePassword(Int32.Parse(request.Id), request.Password);
                 context.Close();
             } catch (Exception e) {
                 context.Close();
@@ -64,22 +96,23 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
-    }
+        public object Post(CreateOneUser request){
+            WebOneUser result;
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            try {
+                context.Open();
+                User user = User.FromId(context, context.UserId);
+                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                int id = one.UserAllocate(user.Username, request.Password, (request.AuthDriver == null || request.AuthDriver == "" ? "x509" : request.AuthDriver));
+                USER oneuser = one.UserGetInfo(id);
+                result = new WebOneUser{ Id = oneuser.ID, Name = oneuser.NAME, Password = oneuser.PASSWORD, AuthDriver = oneuser.AUTH_DRIVER};
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }
 
-    [Route("/one/user", "GET", Summary = "GET a list of users of opennebula", Notes = "Get list of OpenNebula users")]
-    public class GetUsers4One : IReturn<List<System.Collections.Generic.KeyValuePair<string, string>>> {}
-
-    [Route("/one/user/{id}", "GET", Summary = "GET a user of opennebula", Notes = "Get OpenNebula user")]
-    public class GetUser4One : IReturn<List<string>> {
-        [ApiMember(Name = "id", Description = "User id", ParameterType = "query", DataType = "int", IsRequired = true)]
-        public int Id { get; set; }
-    }
-
-    [Route("/one/user/pwd", "PUT", Summary = "PUT the password of an opennebula user", Notes = "")]
-    public class UpdateUser4OnePassword : IReturn<bool> {
-        [ApiMember(Name = "id", Description = "User id", ParameterType = "query", DataType = "int", IsRequired = true)]
-        public int Id { get; set; }
-        [ApiMember(Name = "password", Description = "User password", ParameterType = "query", DataType = "string", IsRequired = true)]
-        public string Password { get; set; }
     }
 }

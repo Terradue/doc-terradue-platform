@@ -2,13 +2,13 @@
 using ServiceStack.ServiceHost;
 using Terradue.WebService.Model;
 using Terradue.Portal;
-using Terradue.Corporate.WebServer.Common;
 using System.Collections.Generic;
 using ServiceStack.ServiceInterface;
 using Terradue.OpenNebula;
+using Terradue.Corporate.WebServer.Common;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class OneImageService : ServiceStack.ServiceInterface.Service {
@@ -19,7 +19,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-                OneClient one = new OneClient(context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
                 IMAGE oneuser = one.ImageGetInfo(request.Id);
                 result = oneuser.NAME;
                 context.Close();
