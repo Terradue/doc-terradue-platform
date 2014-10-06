@@ -62,7 +62,7 @@ namespace Terradue.Corporate.Controller {
                             foreach (object item in oneUsers.Items) {
                                 if (item is USER_POOLUSER) {
                                     USER_POOLUSER oneUser = item as USER_POOLUSER;
-                                    if (oneUser.NAME == this.Username) {
+                                    if (oneUser.NAME == this.Email) {
                                         oneId = Int32.Parse(oneUser.ID);
                                         onepwd = oneUser.PASSWORD;
                                         break;
