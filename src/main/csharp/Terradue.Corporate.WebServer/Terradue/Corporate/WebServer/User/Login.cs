@@ -22,7 +22,7 @@ namespace Terradue.Corporate.WebServer
 
 	}
 
-    [Route("/auth/openId", "POST", Summary = "GET a login", Notes = "Login to the platform with openId")]
+    [Route("/auth/openId", "GET", Summary = "GET a login", Notes = "Login to the platform with openId")]
     public class OpenIdLogin : IReturn<Terradue.WebService.Model.WebUser>
     {
         [ApiMember(Name="provider", Description = "provider", ParameterType = "path", DataType = "String", IsRequired = true)]
