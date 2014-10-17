@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.ServiceModel.Syndication;
+using Terradue.ServiceModel.Syndication;
 using System.Web;
 using ServiceStack.Common.Web;
 using ServiceStack.ServiceHost;
@@ -29,56 +29,56 @@ namespace Terradue.Corporate.WebServer
 		 * \param request request content
 		 * \return the series list
 		 */
-		public object Get(GetOpensearchDescription request)
-		{
-			OpenSearchDescription OSDD;
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-			try{
-				context.Open();
-				UriBuilder baseUrl = new UriBuilder ( context.BaseUrl );
-
-				if ( request.serieId == null )
-                    throw new ArgumentNullException(Terradue.Corporate.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
-					
-                Terradue.Corporate.Controller.DataSeries serie = Terradue.Corporate.Controller.DataSeries.FromIdentifier(context,request.serieId);
-
-				// The new URL template list 
-				Hashtable newUrls = new Hashtable();
-				UriBuilder urib;
-				NameValueCollection query = new NameValueCollection();
-				string[] queryString;
-
-				urib = new UriBuilder( baseUrl.ToString() );
-
-                OSDD = serie.GetOpenSearchDescription();
-				urib.Path = baseUrl.Path + "/catalogue/" + serie.Identifier + "/search";
-				query.Set("format","atom");
-                query.Add(serie.GetOpenSearchParameters("application/atom+xml"));
-
-				queryString = Array.ConvertAll(query.AllKeys, key => string.Format("{0}={1}", key, query[key]));
-				urib.Query = string.Join("&", queryString);
-				newUrls.Add("application/atom+xml",new OpenSearchDescriptionUrl("application/atom+xml", urib.ToString(), "search"));
-
-				query.Set("format","json");
-				queryString = Array.ConvertAll(query.AllKeys, key => string.Format("{0}={1}", key, query[key]));
-				urib.Query = string.Join("&", queryString);
-				newUrls.Add("application/json",new OpenSearchDescriptionUrl("application/json", urib.ToString(), "search"));
-
-				query.Set("format","html");
-				queryString = Array.ConvertAll(query.AllKeys, key => string.Format("{0}={1}", key, query[key]));
-				urib.Query = string.Join("&", queryString);
-				newUrls.Add("text/html",new OpenSearchDescriptionUrl("application/html", urib.ToString(), "search"));
-				OSDD.Url = new OpenSearchDescriptionUrl[newUrls.Count];
-
-				newUrls.Values.CopyTo(OSDD.Url,0);
-				context.Close ();
-			}catch(Exception e) {
-				context.Close ();
-                throw e;
-			}
-			HttpResult hr = new HttpResult ( OSDD, "application/opensearchdescription+xml" );
-			return hr;
-		}
+//		public object Get(GetOpensearchDescription request)
+//		{
+//			OpenSearchDescription OSDD;
+//            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+//			try{
+//				context.Open();
+//				UriBuilder baseUrl = new UriBuilder ( context.BaseUrl );
+//
+//				if ( request.serieId == null )
+//                    throw new ArgumentNullException(Terradue.Corporate.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
+//					
+//                Terradue.Corporate.Controller.DataSeries serie = Terradue.Corporate.Controller.DataSeries.FromIdentifier(context,request.serieId);
+//
+//				// The new URL template list 
+//				Hashtable newUrls = new Hashtable();
+//				UriBuilder urib;
+//				NameValueCollection query = new NameValueCollection();
+//				string[] queryString;
+//
+//				urib = new UriBuilder( baseUrl.ToString() );
+//
+//                OSDD = serie.GetOpenSearchDescription();
+//				urib.Path = baseUrl.Path + "/catalogue/" + serie.Identifier + "/search";
+//				query.Set("format","atom");
+//                query.Add(serie.GetOpenSearchParameters("application/atom+xml"));
+//
+//				queryString = Array.ConvertAll(query.AllKeys, key => string.Format("{0}={1}", key, query[key]));
+//				urib.Query = string.Join("&", queryString);
+//				newUrls.Add("application/atom+xml",new OpenSearchDescriptionUrl("application/atom+xml", urib.ToString(), "search"));
+//
+//				query.Set("format","json");
+//				queryString = Array.ConvertAll(query.AllKeys, key => string.Format("{0}={1}", key, query[key]));
+//				urib.Query = string.Join("&", queryString);
+//				newUrls.Add("application/json",new OpenSearchDescriptionUrl("application/json", urib.ToString(), "search"));
+//
+//				query.Set("format","html");
+//				queryString = Array.ConvertAll(query.AllKeys, key => string.Format("{0}={1}", key, query[key]));
+//				urib.Query = string.Join("&", queryString);
+//				newUrls.Add("text/html",new OpenSearchDescriptionUrl("application/html", urib.ToString(), "search"));
+//				OSDD.Url = new OpenSearchDescriptionUrl[newUrls.Count];
+//
+//				newUrls.Values.CopyTo(OSDD.Url,0);
+//				context.Close ();
+//			}catch(Exception e) {
+//				context.Close ();
+//                throw e;
+//			}
+//			HttpResult hr = new HttpResult ( OSDD, "application/opensearchdescription+xml" );
+//			return hr;
+//		}
 
 		/// <summary>
 		/// Get the specified request.
@@ -106,35 +106,35 @@ namespace Terradue.Corporate.WebServer
 		/// Get the specified request.
 		/// </summary>
 		/// <param name="request">Request.</param>
-		public object Get(GetOpensearchSearch request){
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            IOpenSearchResult result = null;
-			try{
-				context.Open();
-				// Load the complete request
-                HttpRequest httpRequest = HttpContext.Current.Request;
-
-              	if ( request.serieId == null )
-                    throw new ArgumentNullException(Terradue.Corporate.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
-
-                Terradue.Corporate.Controller.DataSeries serie = Terradue.Corporate.Controller.DataSeries.FromIdentifier(context,request.serieId);
-
-                OpenSearchEngine ose = MasterCatalogue.OpenSearchEngine;
-                ose.DefaultTimeOut = 60000;
-
-                Type type = OpenSearchFactory.ResolveTypeFromRequest(httpRequest, ose);
-
-                result = ose.Query(serie, httpRequest.QueryString, type);
-
-				context.Close ();
-
-			}catch(Exception e) {
-				context.Close ();
-                throw e;
-			}
-
-            return new HttpResult(result.Result.SerializeToString(), result.Result.ContentType);
-		}
+//		public object Get(GetOpensearchSearch request){
+//            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+//            IOpenSearchResult result = null;
+//			try{
+//				context.Open();
+//				// Load the complete request
+//                HttpRequest httpRequest = HttpContext.Current.Request;
+//
+//              	if ( request.serieId == null )
+//                    throw new ArgumentNullException(Terradue.Corporate.WebServer.CustomErrorMessages.WRONG_IDENTIFIER);
+//
+//                Terradue.Corporate.Controller.DataSeries serie = Terradue.Corporate.Controller.DataSeries.FromIdentifier(context,request.serieId);
+//
+//                OpenSearchEngine ose = MasterCatalogue.OpenSearchEngine;
+//                ose.DefaultTimeOut = 60000;
+//
+//                Type type = OpenSearchFactory.ResolveTypeFromRequest(httpRequest, ose);
+//
+//                result = ose.Query(serie, httpRequest.QueryString, type);
+//
+//				context.Close ();
+//
+//			}catch(Exception e) {
+//				context.Close ();
+//                throw e;
+//			}
+//
+//            return new HttpResult(result.Result.SerializeToString(), result.Result.ContentType);
+//		}
 
 		/// <summary>
 		/// Get the specified request.

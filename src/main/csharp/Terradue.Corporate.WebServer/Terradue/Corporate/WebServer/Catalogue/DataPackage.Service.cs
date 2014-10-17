@@ -19,7 +19,7 @@ using Terradue.Corporate.Controller;
 namespace Terradue.Corporate.WebServer
 {
 
-    [Api("Tep-Quickwin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
 	[Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
 	          EndpointAttributes.Secure   | EndpointAttributes.External | EndpointAttributes.Json)]
 	public class DataPackageService : ServiceStack.ServiceInterface.Service
@@ -32,13 +32,13 @@ namespace Terradue.Corporate.WebServer
 		{
 			//Get all requests from database
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-			List<WebDataPackageTep> result = new List<WebDataPackageTep> ();
+			List<WebDataPackageT2> result = new List<WebDataPackageT2> ();
 			try{
 				context.Open();
                 EntityList<DataPackage> tmpList = new EntityList<DataPackage>(context);
                 tmpList.Load();
                 foreach(DataPackage a in tmpList)
-                    result.Add(new WebDataPackageTep(a));
+                    result.Add(new WebDataPackageT2(a));
 				context.Close ();
 			}catch(Exception e) {
 				context.Close ();
@@ -56,11 +56,11 @@ namespace Terradue.Corporate.WebServer
 		{
 			//Get all requests from database
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-			WebDataPackageTep result;
+			WebDataPackageT2 result;
 			try{
 				context.Open();
                 DataPackage tmp = DataPackage.FromId(context,request.Id);
-                result = new WebDataPackageTep(tmp);
+                result = new WebDataPackageT2(tmp);
 				context.Close ();
 			}catch(Exception e) {
 				context.Close ();
@@ -74,17 +74,17 @@ namespace Terradue.Corporate.WebServer
 		/// Post the specified request.
 		/// </summary>
 		/// <param name="request">Request.</param>
-        public object Post(CreateDataPackageTep request)
+        public object Post(CreateDataPackageT2 request)
 		{
 			//Get all requests from database
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-			WebDataPackageTep result;
+			WebDataPackageT2 result;
 			try{
 				context.Open();
                 DataPackage tmp = new DataPackage(context);
                 tmp = (DataPackage)request.ToEntity(context, tmp);
 				tmp.Store();
-                result = new WebDataPackageTep(tmp);
+                result = new WebDataPackageT2(tmp);
 				context.Close ();
 			}catch(Exception e) {
 				context.Close ();
@@ -98,16 +98,16 @@ namespace Terradue.Corporate.WebServer
 		/// Put the specified request.
 		/// </summary>
 		/// <param name="request">Request.</param>
-        public object Put(UpdateDataPackageTep request)
+        public object Put(UpdateDataPackageT2 request)
 		{
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-			WebDataPackageTep result;
+			WebDataPackageT2 result;
 			try{
 				context.Open();
                 DataPackage tmp = DataPackage.FromId(context, request.Id);
                 tmp = (DataPackage)request.ToEntity(context, tmp);
 				tmp.Store();
-                result = new WebDataPackageTep(tmp);
+                result = new WebDataPackageT2(tmp);
 				context.Close ();
 			}catch(Exception e) {
 				context.Close ();
@@ -145,13 +145,14 @@ namespace Terradue.Corporate.WebServer
         {
             //Get all requests from database
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            WebDataPackageTep result;
+            WebDataPackageT2 result;
             try{
                 context.Open();
                 DataPackage tmp = DataPackage.FromId(context,request.DpId);
-                RemoteResource tmp2 = request.ToEntity(context);
+                RemoteResource tmp2 = new RemoteResource(context);
+                tmp2 = request.ToEntity(context, tmp2);
                 tmp.AddResourceItem(tmp2);
-                result = new WebDataPackageTep(tmp);
+                result = new WebDataPackageT2(tmp);
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();
@@ -168,13 +169,13 @@ namespace Terradue.Corporate.WebServer
 		public object Delete(RemoveItemFromDataPackage request)
 		{
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-			WebDataPackageTep result;
+			WebDataPackageT2 result;
 			try{
 				context.Open();
                 RemoteResource tmp = RemoteResource.FromId(context,request.Id);
 				tmp.Delete();
                 DataPackage dp = DataPackage.FromId(context,request.DpId);
-                result = new WebDataPackageTep(dp);
+                result = new WebDataPackageT2(dp);
 				context.Close ();
 			}catch(Exception e) {
 				context.Close ();

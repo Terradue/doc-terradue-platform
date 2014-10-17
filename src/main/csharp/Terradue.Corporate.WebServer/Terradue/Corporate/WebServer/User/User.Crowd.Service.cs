@@ -5,7 +5,6 @@ using Terradue.Portal;
 using Terradue.Corporate.WebServer.Common;
 using System.Collections.Generic;
 using ServiceStack.ServiceInterface;
-using Terradue.OpenNebula;
 using Terradue.Corporate.Controller;
 using Terradue.Security.Certification;
 using Terradue.Crowd;

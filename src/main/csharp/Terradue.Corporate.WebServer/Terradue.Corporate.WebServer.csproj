@@ -56,6 +56,30 @@
     <Reference Include="Terradue.ServiceModel.Syndication">
       <HintPath>..\packages\Terradue.ServiceModel.Syndication.1.0.0.0\lib\net40\Terradue.ServiceModel.Syndication.dll</HintPath>
     </Reference>
+    <Reference Include="Terradue.OpenSearch">
+      <HintPath>..\packages\Terradue.OpenSearch.1.7.0.1\lib\net40\Terradue.OpenSearch.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Util">
+      <HintPath>..\packages\Terradue.Util.1.4.0\lib\net40\Terradue.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\packages\MySql.Data.1.0.7.30073\lib\net40\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Portal">
+      <HintPath>..\packages\Terradue.Portal.2.5.2\lib\net40\Terradue.Portal.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Portal.AdminTool">
+      <HintPath>..\packages\Terradue.Portal.2.5.2\lib\net40\Terradue.Portal.AdminTool.exe</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Portal.Agent">
+      <HintPath>..\packages\Terradue.Portal.2.5.2\lib\net40\Terradue.Portal.Agent.exe</HintPath>
+    </Reference>
+    <Reference Include="Terradue.OpenNebula">
+      <HintPath>..\packages\Terradue.OpenNebula.1.0.0-beta\lib\net40\Terradue.OpenNebula.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,7 +89,6 @@
     <Compile Include="Terradue\Corporate\WebServer\AppHost.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Global.asax.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\Login.cs" />
-    <Compile Include="Terradue\Corporate\WebServer\User\Login.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\WebUserT2.cs" />
     <Compile Include="Terradue\Corporate\WebServer\News\RssNews.Service.cs" />
@@ -78,6 +101,10 @@
     <Compile Include="Terradue\Corporate\WebServer\OpenNebula\One.Image.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OpenNebula\One.User.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OpenNebula\One.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\User\Login.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Catalogue\Catalogue.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Catalogue\DataPackage.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Catalogue\WebDataPackageT2.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -86,17 +113,9 @@
     <Folder Include="Terradue\Corporate\WebServer\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Terradue.Portal\Terradue.Portal.csproj">
-      <Project>{2E8D7875-8347-4205-936B-F1BBA2164D87}</Project>
-      <Name>Terradue.Portal</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Terradue.WebService.Model\Terradue.WebService.Model.csproj">
       <Project>{52346D96-A50D-416C-BA49-361B925418EB}</Project>
       <Name>Terradue.WebService.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Terradue.OpenNebula\Terradue.OpenNebula.csproj">
-      <Project>{E488F0B0-3464-4D03-8E2E-8DA1936E3699}</Project>
-      <Name>Terradue.OpenNebula</Name>
     </ProjectReference>
     <ProjectReference Include="..\Terradue.Certification\Terradue.Certification.csproj">
       <Project>{FF303408-6151-4E9E-93A5-B2B6EC0207A0}</Project>
@@ -105,10 +124,6 @@
     <ProjectReference Include="..\Terradue.Corporate.Controller\Terradue.Corporate.Controller.csproj">
       <Project>{24105DB9-4C39-4A04-883D-2FBFF911A8E0}</Project>
       <Name>Terradue.Corporate.Controller</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Terradue.OpenSearch\Terradue.OpenSearch.csproj">
-      <Project>{EA911C65-7F54-4909-97AB-AF66C8069D3A}</Project>
-      <Name>Terradue.OpenSearch</Name>
     </ProjectReference>
     <ProjectReference Include="..\Terradue.News\Terradue.News.csproj">
       <Project>{0769052E-E7AB-414F-AD4C-D96D64BF8B4A}</Project>
