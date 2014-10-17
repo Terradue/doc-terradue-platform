@@ -53,7 +53,7 @@ define([
 		
 		// TODO manage this
 		'#loginOpenidButton click': function(){
-			var url = Conf.api + '/openId?provider=t2openid&url=' + document.location.href;
+			var url = "/" + Conf.api + '/auth/openId?provider=t2openid&url=' + document.location.origin;
 			document.location = url;
 		},
 		
