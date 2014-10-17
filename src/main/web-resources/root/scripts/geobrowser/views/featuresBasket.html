@@ -1,0 +1,42 @@
+<div class="dropMessage">
+	<p>Drop here<small>To add features to the basket</small></p>
+</div>
+<div class="header">
+	{{#if length }}
+		<span class="text-info">You have <strong>{{length}}</strong> features in your basket.</span>
+	{{else}}
+		<span class="text-info">You have no features in your basket.</span>
+	{{/if}}
+	
+	<span class="menu">
+		<a class="showServices" href="javascript://"><strong><i class="fa fa-cube"></i> Services</strong></a>
+		 | <a class="removeAll{{#unless length}} disabledLink{{/unless}}" href="javascript://"><strong><i class="fa fa-times-circle"></i> Remove all</strong></a>
+		 | <a class="loadDataPackage" href="javascript://"><strong><i class="fa fa-folder-open-o"></i> Load</strong></a>
+		 | <a class="saveDataPackage{{#unless length}} disabledLink{{/unless}}" href="javascript://"><strong><i class="fa fa-floppy-o"></i> Save</strong></a>
+	</span>
+</div>
+
+<table class="table table-striped table-condensed featuresBasketTable">
+	{{#each this}}
+		<tr data-id={{ id }}>
+			<td class="removeItem"><a href="javscript://"><i class="fa fa-times-circle"></i></a></td>
+			<td>{{ properties.title }}</td>
+		</tr>
+	{{/each}}
+</table>
+
+<div class="dataPackages"></div>
+
+<!-- <div class="featuresBasket">
+	{{#each this}}
+		<div class="feature">
+			<h6><i class="fa fa-folder"></i> {{properties.title}}</h6>
+			<p class="links">Links:
+				{{#each properties.links}}
+					<a href="{{ @href }}" target="_blank">{{ @title }}</a>
+				{{/each}}
+			</p>
+			<a href="javascript://" target="_blank"><i class="fa fa-file-text-o"></i> Show Json</a>
+		</div>
+	{{/each}}
+</div> -->

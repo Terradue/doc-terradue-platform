@@ -5,7 +5,8 @@ require.config({
 	paths: {
 		jquery: 'libs/jquery/jquery-1.10.2',
 		underscore: 'libs/underscore/underscore-min',
-		bootstrap: 'libs/bootstrap/js/bootstrap.min',
+//		bootstrap: 'libs/bootstrap/js/bootstrap.min',
+		bootstrap: 'libs/bootstrap-3.2.0-dist/js/bootstrap',
 		bootbox: 'libs/bootbox/bootbox.min',
 		loadmask: 'libs/jquery.loadmask/jquery.loadmask.min',
 		can: 'libs/canjs/can.jquery',
@@ -19,7 +20,8 @@ require.config({
 		messengerThemeFlat: 'libs/messenger/js/messenger-theme-flat',
 		ajaxFileUpload: 'libs/ajaxFileUpload/ajaxfileupload',
 		jqueryValidate: 'libs/jquery.validate/js/jquery.validate',//.additional-methods.js
-		bootstrapFileUpload: 'libs/bootstrap-fileupload/bootstrap-fileupload.min',
+		//bootstrapFileUpload: 'libs/bootstrap-fileupload/bootstrap-fileupload.min',
+		jasnyBootstrap: 'libs/jasny-bootstrap/js/jasny-bootstrap.min',
 	},
 	shim: {
 		underscore: {
@@ -40,7 +42,7 @@ require.config({
 		messenger: ['jquery'],
 		ajaxFileUpload: ['jquery'],
 		jqueryValidate: ['jquery'], 
-		bootstrapFileUpload: ['jquery', 'bootstrap'],
+		jasnyBootstrap: ['jquery', 'bootstrap'],
 	}
 });
 

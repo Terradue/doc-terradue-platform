@@ -71,9 +71,15 @@
 					<button class="btn btn-success btn-small addPublicKey">Add your public key</button>
 				</div>
 			{{else}}
-				<p class="text-warning"><i class="fa fa-warning"></i> 
-					<strong>Warning!</strong> Certificate is missing.</p>
-				<p>Please add your certificate <a href="#!settings/certificate">here.</a></p>
+				{{#unless user.Email}}
+					<p class="text-warning"><i class="icon-warning-sign"></i> 
+						<strong>Warning!</strong> Your E-mail is missing.</p>
+					<p>Please set your e-mail <a href="#!settings/profile">here.</a></p>
+				{{else}}
+					<p class="text-warning"><i class="fa fa-warning"></i> 
+						<strong>Warning!</strong> Certificate is missing.</p>
+					<p>Please add your certificate <a href="#!settings/certificate">here.</a></p>
+				{{/if}}
 			{{/if}}
 		{{/if}}
 	{{/if}}{{/if}}

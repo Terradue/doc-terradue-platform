@@ -13,7 +13,7 @@ define([
 	'modules/settings/models/oneUser',
 	'canpromise',
 	'messenger',
-	'bootstrapFileUpload',
+	'jasnyBootstrap',//'bootstrapFileUpload',
 	'jqueryValidate',
 	'ajaxFileUpload',
 ], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel){
@@ -151,7 +151,7 @@ define([
 			'.settings-profile .submit click': function(){
 				// get data
 				var usr = Helpers.retrieveDataFromForm('.settings-profile form',
-						['FirstName','LastName','Email','Affiliation','Country','EmailNotification']);
+						['FirstName','LastName','Email','Affiliation','Country']);//,'EmailNotification']);
 				
 				// update
 				App.Login.User.current.attr(usr); 
@@ -288,37 +288,42 @@ define([
 				$('#askPasswordModal').remove();
 
 				var passwordModal = $(''
-				+ '<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
-				+ '<form name="passForm" id="passForm" method="post" action="/t2api/cert">'
-				+ '<div class="modal-header">'
-				+ '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>'
-				+ '<h4 id="askPasswordTitle">' + title + '</h4>'
-				+ '</div>'
-				+ '<div class="modal-body">'
-				+ '<p>You must now enter a password to protect the key of your certificate</p><br />'
-				+ '<div class="fieldContainer">'
-				+ '<div class="fieldDescription">Password</div>'
-				+ '<input class="password" name="password" id="password" type="password" placeholder="Your password"/>'
-				+ '</div>'
-				+ '<br/>'
-				+ '<div class="fieldContainer">'
-				+ '<div class="fieldDescription">Confirm your password</div>'
-				+ '<input name="password_confirm" id="password_confirm" type="password" placeholder="Confirm your password" />'
-				+ '</div>'
-				+ '<span class="label label-important">Important</span> This password is not recoverable. Please choose it wisely!'
-				+ "<br>It must have:<ul>"
-				+ "<li>length at least 8 characters</li>"
-				+ "<li>at least one uppercase character</li>"
-				+ "<li>at least one lowercase character</li>"
-				+ "<li>at least one number</li>"
-				+ "<li>at least one special character</li>"
-				+ "</ul><span class='label label-important' id='askPasswordErrors'></span>"
-				+ '</div>'
-				+ '<div class="modal-footer">'
-				+ '<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>'
-				+ '<button type="submit" value="OK" class="btn btn-primary">OK</button>'
-				+ '</div></form>'
-				+ '</div>').attr('id','askPasswordModal').appendTo('body');  
+					+ '<div class="modal fade">'
+					+ '  <div class="modal-dialog">'
+					+ '    <div class="modal-content">'
+					+ '      <div class="modal-header">'
+					+ '        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'
+					+ '        <h4 id="askPasswordTitle" class="modal-title">' + title + '</h4>'
+					+ '      </div>'
+					+ '		<form name="passForm" id="passForm" method="post" action="/t2api/cert">'
+					+ '			<div class="modal-body">'
+					+ '				<p>You must now enter a password to protect the key of your certificate</p><br />'
+					+ '				<div class="fieldContainer">'
+					+ '					<div class="fieldDescription">Password</div>'
+					+ '					<input class="password" name="password" id="password" type="password" placeholder="Your password"/>'
+					+ '				</div>'
+					+ '				<br/>'
+					+ '				<div class="fieldContainer">'
+					+ '					<div class="fieldDescription">Confirm your password</div>'
+					+ '					<input name="password_confirm" id="password_confirm" type="password" placeholder="Confirm your password" />'
+					+ '				</div>'
+					+ '				<span class="label label-important">Important</span> This password is not recoverable. Please choose it wisely!'
+					+ "				<br>It must have:<ul>"
+					+ "				<li>length at least 8 characters</li>"
+					+ "				<li>at least one uppercase character</li>"
+					+ "				<li>at least one lowercase character</li>"
+					+ "				<li>at least one number</li>"
+					+ "				<li>at least one special character</li>"
+					+ "				</ul><span class='label label-important' id='askPasswordErrors'></span>"
+					+ '			</div>'
+					+ '			<div class="modal-footer">'
+					+ '				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>'
+					+ '				<button type="submit" class="btn btn-primary">Save changes</button>'
+					+ '			</div>'
+					+ '		</form>'
+					+ '    </div><!-- /.modal-content -->'
+					+ '  </div><!-- /.modal-dialog -->'
+					+ '</div><!-- /.modal -->').attr('id','askPasswordModal').appendTo('body');  
 
 				// Validator extensions
 				jQuery.validator.addMethod(
