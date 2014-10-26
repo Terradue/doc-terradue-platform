@@ -59,6 +59,7 @@
   <ItemGroup>
     <None Include="Global.asax" />
     <None Include="scripts\modules\pages\views\index.save" />
+    <None Include="www-root.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="web.config" />
@@ -250,6 +251,7 @@
     <Content Include="styles\img\avatars\2.jpg" />
     <Content Include="styles\img\avatars\3.jpg" />
     <Content Include="styles\img\avatars\4.jpg" />
+    <Content Include="index.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\" />
@@ -261,10 +263,6 @@
     <ProjectReference Include="..\Terradue.Corporate.WebServer\Terradue.Corporate.WebServer.csproj">
       <Project>{76CBD7B6-4156-424C-9662-CDEDE1548781}</Project>
       <Name>Terradue.Corporate.WebServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Terradue.Authentication.Crowd\Terradue.Authentication.Crowd.csproj">
-      <Project>{C88BFF86-3D09-4174-8CD9-8B03754E7402}</Project>
-      <Name>Terradue.Authentication.Crowd</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@ define({
 	staticPages: {
 		about: '/static/about.html',
 		people: '/static/people.html',
+		partners: '/static/partners.html',
 		tour: '/static/tour.html',
 		resources: '/static/resources.html',
 	},
