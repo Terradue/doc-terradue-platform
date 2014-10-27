@@ -485,6 +485,11 @@ define([
 			return objectNew;
 		},
 		
+		// scroll to top
+		scrollToTop: function(){
+			$('html, body').scrollTop(0);
+		},
+		
 		logoInConsole: function(){
 			var myVar = ""
 				+ "                                                                                                         \n"
