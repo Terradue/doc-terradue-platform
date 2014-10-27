@@ -16,7 +16,7 @@ namespace Terradue.Corporate.WebServer {
     public class UserGithubService : ServiceStack.ServiceInterface.Service {
 
         public object Put(GetNewGithubToken request) {
-            if (request.Password == null)
+            if (request.Code == null)
                 throw new Exception("Password is empty");
 
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
@@ -26,7 +26,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
                 GithubProfile user = GithubProfile.FromId(context, context.UserId);
 
-                user.GetNewAuthorizationToken(request.Password, request.Scope, request.Description);
+				user.GetNewAuthorizationToken(request.Code);
                 result = new WebGithubProfile(user);
 
                 context.Close();
