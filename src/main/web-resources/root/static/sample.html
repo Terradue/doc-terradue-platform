@@ -1,0 +1,31 @@
+<style>
+.peopleList>div{
+	background: white;
+	margin-bottom: 25px;
+	font-size: 20px;
+	padding-left: 20px;
+}
+.peopleList>div>p {
+	display: inline-block;
+	margin-left: 20px;
+}
+.peopleList>div>img {
+	margin-right: 20px;
+}
+
+</style>
+<div class="container">
+	<h2>Sample People page</h2>
+	<div class="well peopleList">
+	
+		{{#each this}}
+			<div>
+				<img src="http://lorempixel.com/b/150/150/" />
+				<a href="javascript://"><i class="fa fa-twitter"></i></a>
+				<a href="javascript://"><i class="fa fa-linkedin"></i></a>
+				<p class="lead">{{name}} {{surname}}</p>
+			</div>
+		{{/each}}
+		
+	</div>
+</div>
