@@ -31,21 +31,6 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
-    <Reference Include="ServiceStack.ServiceInterface">
-      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack">
-      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Common">
-      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Redis">
-      <HintPath>..\packages\ServiceStack.Redis.3.9.71\lib\net35\ServiceStack.Redis.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Addins">
       <HintPath>..\packages\Mono.Addins.1.1\lib\Mono.Addins.dll</HintPath>
@@ -64,9 +49,6 @@
     </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.1.0.7.30073\lib\net40\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue.OpenNebula">
-      <HintPath>..\packages\Terradue.OpenNebula.1.0.0-beta\lib\net40\Terradue.OpenNebula.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.ServiceModel.Ogc.OwsContext">
       <HintPath>..\packages\Terradue.ServiceModel.Ogc.OwsContext.1.0.0\lib\net40\Terradue.ServiceModel.Ogc.OwsContext.dll</HintPath>
@@ -101,8 +83,50 @@
     <Reference Include="Terradue.News">
       <HintPath>..\packages\Terradue.News.1.0.0\lib\net40\Terradue.News.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\packages\ServiceStack.Redis.3.9.71\lib\net35\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite">
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.14\lib\ServiceStack.OrmLite.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.SqlServer">
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.14\lib\ServiceStack.OrmLite.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.ServiceInterface">
+      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="CookComputing.XmlRpcV2">
+      <HintPath>..\packages\xmlrpcnet.2.5.0\lib\net20\CookComputing.XmlRpcV2.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.OpenNebula">
+      <HintPath>..\packages\Terradue.OpenNebula.1.0.0\lib\net40\Terradue.OpenNebula.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.OpenNebula.WebService">
+      <HintPath>..\packages\Terradue.OpenNebula.WebService.1.0.0\lib\net40\Terradue.OpenNebula.WebService.dll</HintPath>
+    </Reference>
     <Reference Include="Terradue.Certification">
-      <HintPath>..\packages\Terradue.Certification.1.4.1\lib\net40\Terradue.Certification.dll</HintPath>
+      <HintPath>..\packages\Terradue.Certification.1.4.3\lib\net40\Terradue.Certification.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Github">
+      <HintPath>..\packages\Terradue.Github.1.0.0\lib\net40\Terradue.Github.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Github.WebService">
+      <HintPath>..\packages\Terradue.Github.WebService.1.0.0\lib\net40\Terradue.Github.WebService.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.WebService.Model">
+      <HintPath>..\packages\Terradue.WebService.Model.1.0.1\lib\net40\Terradue.WebService.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Certification.WebService">
+      <HintPath>..\packages\Terradue.Certification.WebService.1.0.0\lib\net40\Terradue.Certification.WebService.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -137,17 +161,9 @@
     <Folder Include="Terradue\Corporate\WebServer\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Terradue.WebService.Model\Terradue.WebService.Model.csproj">
-      <Project>{52346D96-A50D-416C-BA49-361B925418EB}</Project>
-      <Name>Terradue.WebService.Model</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Terradue.Corporate.Controller\Terradue.Corporate.Controller.csproj">
       <Project>{24105DB9-4C39-4A04-883D-2FBFF911A8E0}</Project>
       <Name>Terradue.Corporate.Controller</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Terradue.Github\Terradue.Github.csproj">
-      <Project>{85A6ADB6-DF16-4A4A-BF6A-E27463FFC81C}</Project>
-      <Name>Terradue.Github</Name>
     </ProjectReference>
     <ProjectReference Include="..\Terradue.Crowd\Terradue.Crowd.csproj">
       <Project>{E5D6E4A7-FF6C-4F9E-9C31-614CE78B3641}</Project>

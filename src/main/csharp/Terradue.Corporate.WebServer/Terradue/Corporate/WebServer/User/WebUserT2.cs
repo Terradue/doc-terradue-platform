@@ -8,6 +8,7 @@ using ServiceStack.ServiceInterface;
 using Terradue.Portal;
 using Terradue.WebService.Model;
 using Terradue.Corporate.Controller;
+using Terradue.Certification.WebService;
 
 namespace Terradue.Corporate.WebServer {
 

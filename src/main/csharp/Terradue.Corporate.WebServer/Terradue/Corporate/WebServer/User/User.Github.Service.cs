@@ -8,6 +8,7 @@ using ServiceStack.ServiceInterface;
 using Terradue.Corporate.Controller;
 using Terradue.Security.Certification;
 using Terradue.Github;
+using Terradue.Github.WebService;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Tep-QuickWin Terradue webserver")]

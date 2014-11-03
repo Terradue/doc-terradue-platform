@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ServiceStack.ServiceInterface;
 using Terradue.OpenNebula;
 using Terradue.Corporate.WebServer.Common;
+using Terradue.OpenNebula.WebService;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using ServiceStack.ServiceInterface;
 using Terradue.Corporate.Controller;
 using Terradue.Security.Certification;
+using Terradue.Certification.WebService;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Tep-QuickWin Terradue webserver")]
