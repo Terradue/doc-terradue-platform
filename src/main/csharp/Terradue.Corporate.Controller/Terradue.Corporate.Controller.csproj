@@ -81,7 +81,10 @@
       <HintPath>..\packages\Terradue.Portal.2.5.5\lib\net40\Terradue.Portal.Agent.exe</HintPath>
     </Reference>
     <Reference Include="Terradue.Certification">
-      <HintPath>..\packages\Terradue.Certification.1.4.1\lib\net40\Terradue.Certification.dll</HintPath>
+      <HintPath>..\packages\Terradue.Certification.1.4.3\lib\net40\Terradue.Certification.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Github">
+      <HintPath>..\packages\Terradue.Github.1.0.0\lib\net40\Terradue.Github.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -94,12 +97,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Terradue\Corporate\Controller\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Terradue.Github\Terradue.Github.csproj">
-      <Project>{85A6ADB6-DF16-4A4A-BF6A-E27463FFC81C}</Project>
-      <Name>Terradue.Github</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
