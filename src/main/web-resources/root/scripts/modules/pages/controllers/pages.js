@@ -46,17 +46,15 @@ if (App.controllers.Pages==null)
 				// load base index page
 				self.view({
 					url: Config.firstPage ? Config.firstPage : 'modules/pages/views/index.html',
-							selector: Config.mainContainer,
-							fade: false,
+					selector: Config.mainContainer,
+					fade: options.fade,
+					fnLoad: options.fnLoad,
 				});				
 				
 				// login
-				console.log('init login...');
 				App.Login.isLoggedDeferred.always(function(user){
 					if (user.state && user.state()=='rejected')
 						user = {};
-					
-					console.log('...init login done.');
 				});
 			},
 			
@@ -66,10 +64,10 @@ if (App.controllers.Pages==null)
 							: 'modules/pages/views/' + options.id + '.html',
 					selector: options.selector || Config.mainContainer,
 					fnLoad: function(el){
-						window.skrollr=skrollr;
 						skrollr.init({
 							forceHeight: false
 						});
+						App.updateDynamicElements();
 						$('.dropdown-toggle').dropdown();
 					}
 				});

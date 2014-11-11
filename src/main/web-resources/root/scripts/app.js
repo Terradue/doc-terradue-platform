@@ -24,7 +24,6 @@ define([
 		init: function(options){
 			
 			Helpers.logoInConsole();
-			window.gotoInnerLink = Helpers.gotoInnerLink;
 			
 			options = options || {};
 			
@@ -134,7 +133,34 @@ define([
 		error: function(msg){
 			// TODO: improve
 			alert(msg);			
-		}
+		},
+		
+		updateDynamicElements: function(){
+			var self = this;
+			
+			$('.dropdown-toggle').dropdown();
+			
+			$('a.innerLink').click(function(){
+				var data = can.route.attr(),
+					href = $(this).attr('href'),
+					toLink = Helpers.getUrlParameters(href).to;
+				
+				//if (toLink && toLink==data.to){
+					console.log('---REDIRECT FROM CLICK');
+					Helpers.scrollToInnerLink(toLink);
+					//return false;
+				//}
+			});
+			
+			App.tryInnerLinkRedirect();
+		},
+
+		
+		tryInnerLinkRedirect: function(){
+			if (can.route.attr().to)
+				Helpers.scrollToInnerLink(can.route.attr().to);
+		},
+
 	}
 	
 });

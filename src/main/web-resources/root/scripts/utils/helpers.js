@@ -19,6 +19,7 @@ define([
 	window.req = function(lib){ require([lib.toLowerCase()], function(ris){window[lib] = ris}) };
 
 	/* JS HELPERS */
+	
 	if (!String.prototype.startsWith)
 		String.prototype.startsWith = function(needle) {
 			return(this.indexOf(needle) == 0);
@@ -261,6 +262,19 @@ define([
 			return (data);
 		},
 		
+		jsonEquals: function(o1, o2){
+			var keys1 = Object.keys(o1).sort();
+			var keys2 = Object.keys(o2).sort();
+			if (keys1.length != keys2.length)
+				return false;
+			
+			for (k in o1){
+				if (o1[k]!=o2[k])
+					return false;
+			}
+			return true;
+		},
+		
 		getUrlParameters: function(url) {
 			var pageUrl = url ? url.split('?')[1] : window.location.search.substring(1);
 			var urlParams = pageUrl.split('&');
@@ -454,13 +468,12 @@ define([
 			}
 		},
 		
-		gotoInnerLink: function(aName){
-			$el = $("a[name='"+aName+"'");
-			if ($el.size)
-				$('html,body').animate({
-					scrollTop: $el.offset().top
-				},'slow');
-			return false;
+		scrollToInnerLink: function(innerLink){
+			var $a = $('a[name="'+innerLink+'"]');
+			if ($a.length){
+				$('body, html').animate({scrollTop: $a.offset().top-100}, 'slow')
+				console.log('goto!')
+			}
 		},
 		
 		findById: function(list, Id){

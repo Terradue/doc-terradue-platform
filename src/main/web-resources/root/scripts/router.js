@@ -5,16 +5,19 @@ define([
 	'app',
 	'modules/pages/controllers/pages',
 	'config',
+	'utils/helpers',
 	'underscorestring',
 	'canroutepushstate'
-], function($, can, _, App, Pages, Config){
+], function($, can, _, App, Pages, Config, Helpers){
 	// merge string plugin to underscore namespace
 	_.mixin(_.str.exports());
 	
 	can.route.bindings.pushstate.root = "/portal/";
 		
 	var Router = can.Control ({
-		init: function () {},
+		init: function () {
+			this.previousPage = null;
+		},
 
 		// ROUTES
 		'route': 'index',
@@ -25,25 +28,52 @@ define([
 		':controller/:action/:id route': 'dispatch',
 		':controller/:action route': 'dispatch',
 		':controller route': 'dispatch',
-
+		
 		// ACTIONS
 		
 		// index
-		index: function () {
-			Pages.index({ fade: false });
+		index: function (data) {
+			var self = this;
+			
+			// don't do anything if the page is the same of previous
+			if (this.previousPage!=''){
+				Pages.index({
+					fade: false,
+					fnLoad: function(){
+						App.updateDynamicElements();
+					},
+				});
+				this.previousPage = '';			
+			}
 		},
 		
 		// pages route action (dynamic open of static pages)
 		pages: function (data) {
-			Pages.load(data);
+			// inner links management
+			var pageUrl = 'pages/'+data.id;
+			
+			// don't do anything if the page is the same of previous
+			if (this.previousPage!=pageUrl){
+				Pages.load(data);
+				this.previousPage = pageUrl;
+			}
 		},
 
 		// rest route actions
 		dispatch: function (data) {
+			console.log('DATA', data);
 			var me = this;
 			
 			// dispatch static
 			var resPage = data.controller+(data.action ? '/'+data.action : '');
+			
+			// don't do anything if the page is the same of previous
+			if (resPage==this.previousPage)
+				return; 
+			
+			this.previousPage = resPage;
+			
+			// static pages management
 			if (Config.staticPages[resPage])
 				return this.dispatchStatic(resPage);
 			
@@ -59,20 +89,29 @@ define([
 				if (controller && controller[actionName]){
 					controller[actionName](data);
 					Helpers.scrollToTop();
-				}
-				else Pages.errorView({}, "Controller not found: "+ControllerName);
-				$('.dropdown-toggle').dropdown();
+				} else
+					Pages.errorView({}, "Controller not found: "+ControllerName);
+				
+				App.updateDynamicElements();
 			}, function(err){
 				Pages.errorView({}, "Controller not found: "+ControllerName);
-				window.err=err;
 			});
 		},
 		
 		dispatchStatic: function(resPage){
+			var self = this;
 			if (typeof(Config.staticPages[resPage])=='string')
 				Config.staticPages[resPage] = { url: Config.staticPages[resPage] };
 			if (Config.staticPages[resPage].selector==null)
 				Config.staticPages[resPage].selector = Config.mainContainer;
+			
+			var fnLoad = Config.staticPages[resPage].fnLoad;
+			Config.staticPages[resPage].fnLoad = function(){
+				if (fnLoad)
+					fnLoad();
+				App.updateDynamicElements();
+			}
+			
 			Pages.view(Config.staticPages[resPage]);
 			return false;
 		}
@@ -80,107 +119,33 @@ define([
 	
 	return {
 		init: function() {
+			var self = this;
 			// route on document.ready
 			$(function() {
 				// deactivate routing until it's not instantiated
 				//can.route.ready(false);
 
 				// init
-				new Router(document);
+				self.router = new Router(document);
 
 				// events
 				can.route.bind('change', function(ev, attr, how, newVal, oldVal) {
+					console.log(ev, attr, how, newVal, oldVal);
 					// menu change
 					if (how === 'set') Pages.initMenu();
 					else if (attr=='route' && how=='add' && newVal==""){
 						console.log("INDEX");
 						Pages.initMenu();
-					}
+					}					
 				});
-
+	
+//				can.route.bind('to', function(ev, newVal, oldVal) {
+//					console.log('TO', newVal, oldVal);
+//				});
+				
 				// activate routing
 				can.route.ready();
 			});
-		}
+		},
 	};
 });
-
-
-/*
-//MERGE STRING PLUGIN TO UNDERSCORE NAMESPACE
-_.mixin(_.str.exports());
-
-var Router = can.Control ({
-
-	init: function () {},
-
-	//ROUTES
-	'route': 'index',
-	'contact route': 'contact',
-	
-	'pages/:id&:selector route': 'pages',
-	'pages/:id route': 'pages',
-	
-	':controller/:action/:id route': 'dispatch',
-	':controller/:action route': 'dispatch',
-	':controller route': 'dispatch',
-
-	//ACTIONS
-	index: function () {
-		Pages.index({ fade: false });
-	},
-
-	contact: function () {
-		Pages.contact();
-	},
-
-	pages: function (data) {
-		Pages.load(data);
-	},
-
-	//	ROUTES TO CONTROLER / ACTION
-	dispatch: function (data) {
-		var me = this;
-
-		//SCRUB URL PARAMS IF APPLICABLE
-		var ControllerName = _.capitalize (data.controller);
-		//CONVERT URL PARAM TO ACTION NAMING CONVENTION
-		var actionName = data.action
-		? data.action.charAt(0).toLowerCase() + _.camelize(data.action.slice(1))
-				: 'index'; //DEFAULT TO INDEX ACTION
-
-		//DYNAMICALLY REQUEST CONTROLLER AND PERFORM ACTION
-		App.loadController (ControllerName, function (controller) {
-			//CALL ACTION WITH PARAMETERS IF APPLICABLE
-			if (controller && controller[actionName])
-				controller[actionName](data);
-//			TODO: FIX BUG, ONLY WORKS ON FIRST HIT
-//			DUE TO HOW REUIREJS ERROR EVENT WORKS
-			else App.navigate('pages/404');
-		}, function(){
-			console.log("noooooou");
-			App.navigate('pages/404')
-		});
-	}
-});
-
-//ROUTE ON DOCUMENT READY
-$(function () {
-	//PAUSE ROUTING UNTIL INSTANTIATED
-	//OTHERWISE ROUTER MUST BE INSTANTIATED BEFORE DOCUMENT READY
-	// https://forum.javascriptmvc.com/ # Topic/32525000001070159
-	//can.route.ready(false);
-
-	//INITIALIZE ROUTER FOR LISTENING
-	new Router(document);
-
-	//EVENTS
-	can.route.bind('change', function(ev, attr, how, newVal, oldVal) {
-		//HANDLE ACTIVE MENU SELECTION BASED ON ROUTE SET ONLY
-		if (how === 'set') Pages.initMenu();
-	});
-
-	//ACTIVATE ROUTING
-	can.route.ready();
-});
-*/
