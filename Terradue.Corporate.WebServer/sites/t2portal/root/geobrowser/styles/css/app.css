@@ -1,0 +1,216 @@
+
+/* LAYOUT */
+.ui-layout-pane {
+	padding: 0px;
+	border: none;
+}
+.ui-layout-south {
+	padding: 2px 8px;
+}
+.ui-layout-south>div { display: none; } /* hidden at startup */
+/* hide map attribution */
+.leaflet-control-attribution {
+	display: none;
+}
+.ui-layout-resizer {
+	background: white;
+}
+.ui-layout-toggler {
+	border: 1px solid #DDD;
+	background-color: #DDD;
+}
+
+.wpsServiceLabel {
+	transform: rotate(-90deg);
+	white-space: nowrap;
+	text-align: center;
+	margin: 0px 3px 0px -63px;
+	padding: 0px 0px 0px 0px;
+	transform-origin: right bottom 0px;
+	font-size: 19px;
+}
+.wpsServiceLabel:hover{
+	cursor: pointer;
+}
+
+#topBar {
+	background: white; 
+	padding: 5px 10px;
+}
+
+#topBar > a {
+	float: left;
+	height: 20px;
+	background: white;
+	padding-left: 10px;
+	height: 40px;
+}
+
+#topBar > a > img {
+	height: 40px;
+	margin-right: 10px;
+}
+
+#myMap {
+	padding: 0px;
+}
+
+#myMap > .alert.alert-error {
+	width: 400px;
+	margin: auto;
+	margin-top: 100px;
+}
+
+#myMap .topBar {
+	position: absolute;
+	background: white; 
+		/* rgba(255, 255, 255, 0.8); */
+	/* width: 100%; */
+	z-index: 1;
+	padding: 5px 10px;
+	right: 0px;
+	left: 0px;
+	top: 0px;
+}
+
+#myMap .topBar > a {
+	float: left;
+	height: 20px;
+	background: white;
+	padding-left: 10px;
+	height: 40px;
+}
+
+#myMap .topBar > a > img {
+	height: 40px;
+	margin-right: 10px;
+}
+
+#myMap .osn-loader {
+	top: 55px;
+	background-color: white;
+	padding: 5px 10px;
+	border-radius: 5px;
+	opacity: 0.8;
+}
+
+#mapLayoutContainer {
+	height: 100%;
+}
+
+.jqrangeContainer {
+	position: absolute;
+	z-index: 10000;
+	bottom: 10px;
+	left: 44px;
+	right: 44px;
+}
+
+#featureContainer {
+	height: 100%;
+	font-size: 10px;
+	position: relative;
+	border-left: 1px solid gray;
+	padding-left: 5px;
+}
+
+#osResults {
+	height: 100%;
+	overflow-y: scroll;
+	margin-left: 20px;
+	border-left: 1px solid gray;
+	padding-left: 5px;
+	font-size: 10px;
+}
+
+#osResults tr.highlight {
+	border: 2px solid red; /* TOREMOVE */
+}
+
+#osResults .osn-results-tableContainer {
+	padding-top: 27px;	
+}
+#osResults tbody>tr {
+	border: 1px solid gray;
+	margin: 5px;
+	display: block;
+	border-radius: 5px;
+	padding: 5px 11px;
+	background-color: #eee;
+}
+#osResults tbody>tr:hover {
+	background-color: #ddd;
+}
+#osResults tbody>tr.ui-selected { background: #ADD8E6; }
+#osResults tbody>tr.ui-selecting { background: #CBE0E7; }
+
+.osResultsLabel {
+	position: absolute;
+	transform: rotate(-90deg);
+	left: -34px;
+	top: 38px;
+	color: gray;
+}
+.featureContainerLabel {
+	position: absolute;
+	transform: rotate(-90deg);
+	left: -62px;
+	top: 48px;
+	color: gray;
+}
+
+.osn-modeSwitcher {
+	bottom: 100px;
+}
+
+.osn-results-pagination .pagination {
+	position: absolute;
+	width: 100%;
+	background: white;
+	padding: 0px 0px 4px 4px;
+	margin: 0px 0px 10px 0px;
+	text-align: left !important;
+}
+
+/* various */
+
+/* disabled link */
+a.disabledLink { color: gray; }
+a.disabledLink:hover {
+	color: gray;
+	cursor: default;
+	text-decoration: none;
+}
+
+/* popups */
+.osn-popup-title {
+	line-height: 25px;
+}
+.leaflet-popup-content .links {
+	font-size: 10px;
+}
+
+/* json views */
+
+.jsonView .object, .jsonView .array {
+	background-color: #F3F3F3;
+	border: thin solid #E9E9E9;
+}
+.jsonDiv table {
+	font-size: 10px;
+}
+.jsonDiv table td {
+	padding: 0px 2px;
+}
+.jsonDiv.jsonView>div {
+	margin: 0px;
+}
+/* overlay fix  */
+.leaflet-overlay-pane > svg {
+	z-index: 10000;
+}
+/* google layer fix */
+.leaflet-google-layer {
+	z-index: 0;
+}
+

@@ -1,0 +1,80 @@
+
+.osfi-form {
+	margin-bottom: 0px;	
+}
+
+.osfi-form label.valid {
+	display: inline-block;
+	/*width: 24px;
+	height: 24px;
+	background: url(assets/img/valid.png) center center no-repeat;*/
+	background: none;
+	margin: 0px 0px 0px 10px;
+}
+
+.osfi-form label.error {
+	display: inline-block;
+	font-weight: bold;
+	color: red;
+	padding: 0px;
+	background: none;
+	margin: 0px 0px 0px 10px;
+}
+
+.osfi-form textarea {
+	line-height: 12px;
+}
+
+.osfi-fieldRow {
+	margin: 8px 0px;
+}
+
+.osfi-form .control-group {
+	margin-bottom: 5px;
+}
+
+.osfi-form.form-horizontal .control-label {
+	float: left;
+	width: 129px;
+	padding-top: 0px;
+	margin-right: 8px;
+	margin-bottom: 0px;
+	text-align: right;
+	font-size: 13px;
+}
+
+.ofsi-fieldRow span {
+	display: inline-block;
+	width: 129px;
+	margin-right: 8px;
+	font-size: 13px;
+	text-align: right;
+	color: gray;
+}
+
+input.osfi-form-field, textarea.osfi-form-field {
+	width: 200px;	
+	font-size: 11px;
+}
+
+input.osfi-form-field {
+	height: 20px !important;
+}
+
+.osfi-form-showHideParameters {
+	font-size: 11px;
+	/*border-bottom: 1px solid gray;*/
+	margin-top: 15px;
+	font-weight: 200;
+}
+.osfi-form-showHideParameters:hover {
+	cursor: pointer;
+}
+
+.osfi-searchButton {
+	margin-top: 5px;
+}
+
+input.dateInput {
+	width: 150px
+}

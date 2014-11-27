@@ -38,7 +38,7 @@ define([
 				self.on();
 
 				// scroll to top
-				//TODO: App.scrollTop(); 
+				Helpers.scrollToTop();
 			};
 
 			// load and merge data if applicable
@@ -64,6 +64,7 @@ define([
 				} else callback(frag);
 			}, function(){
 				self.errorView(options, "Unable to load " + options.url + " view.");
+				Helpers.scrollToTop();
 			});
 		},
 		

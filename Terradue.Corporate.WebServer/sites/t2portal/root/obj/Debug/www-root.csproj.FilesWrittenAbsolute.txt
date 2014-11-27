@@ -1,5 +1,0 @@
-/Users/enguerran/Terradue/dev/platforms/t2portal/Terradue.Corporate.WebServer/sites/t2portal/root/obj/Debug/.NETFramework,Version=v4.0.AssemblyAttribute.cs
-/Users/enguerran/Terradue/dev/platforms/t2portal/Terradue.Corporate.WebServer/sites/t2portal/root/bin/live.dll.mdb
-/Users/enguerran/Terradue/dev/platforms/t2portal/Terradue.Corporate.WebServer/sites/t2portal/root/bin/live.dll
-/Users/enguerran/Terradue/dev/platforms/t2portal/Terradue.Corporate.WebServer/sites/t2portal/root/obj/Debug/live.dll
-/Users/enguerran/Terradue/dev/platforms/t2portal/Terradue.Corporate.WebServer/sites/t2portal/root/obj/Debug/live.dll.mdb

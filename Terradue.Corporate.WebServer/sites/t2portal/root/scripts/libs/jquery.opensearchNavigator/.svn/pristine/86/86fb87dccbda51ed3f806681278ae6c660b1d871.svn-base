@@ -1,0 +1,272 @@
+
+/* map */
+
+/*
+.osn-mapContainer:after, .osn-mapContainer:before {
+	content: "";
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 10px;
+	z-index: 100;
+	-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, .8);
+	-moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, .8);
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, .8);
+}
+
+.osn-mapContainer:after {
+	bottom: -10px;
+}
+.osn-mapContainer:before {
+	top: -10px;
+}*/
+
+.osn-mapContainer {
+	position: relative;
+}
+
+.osn-map {
+	height: 100%;
+}
+
+/* search form */
+
+.osn-searchForm {
+	width: 210px;
+	height: 185px;
+	padding: 15px;
+}
+
+.osn-innerShadow {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	box-shadow: inset 0 0 10px #555;
+	-moz-box-shadow: inset 0 0 10px #555;
+	pointer-events: none;
+}
+
+/* loader */
+
+.osn-loader {
+	position: absolute;
+	z-index: 10000;
+	left: 50%;
+	font-size: 12px;
+	font-weight: bolder;
+	color: #888;
+	display: none;
+	top: 10px;
+	text-align: center;
+}
+
+.osn-loader i {
+	font-size: 30px;
+	line-height: 30px;
+}
+
+/* mode switcher */
+.osn-modeSwitcher {
+	position: absolute;
+	z-index: 10000;
+	right: 50%;
+	bottom: 10px;
+	margin-right: -87px;
+}
+.osn-modeSwitcher .navigationModeBtn {
+	-webkit-border-radius: 14px 0 0 14px;
+	-moz-border-radius: 14px 0 0 14px;
+	border-radius: 14px 0 0 14px;
+	margin-right: -1px;
+}
+.osn-modeSwitcher .selectionModeBtn {
+	-webkit-border-radius: 0 14px 14px 0;
+	-moz-border-radius: 0 14px 14px 0;
+	border-radius: 0 14px 14px 0;
+	margin-left: -1px;
+}
+
+.osn-modeSwitcher a.disabled:hover {
+	cursor: pointer;
+	opacity: initial;	
+}
+.osn-modeSwitcher a.btn-info:hover {
+	cursor: default;
+}
+
+/* popup */
+
+.osn-popup-title {
+	font-size: 14px;
+	margin: 0px;
+}
+.osn-popup-title a {
+	color: #0088cc;
+}
+
+.osn-popup-content p {
+	margin: 0px 0px 10px 0px !important;	
+}
+.osn-popup-content img {
+	float: left;
+	clear: left;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	border: none;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	box-shadow: 0px 0px 11px black;
+}
+
+.osn-popup-content img:hover {
+	opacity: 0.7;
+}
+
+.osn-popup-icon {
+	position: absolute;
+	top: -10px;
+	left: -10px;
+	background-color: white;
+	border-radius: 100%;
+	padding: 2px;
+	margin: 0px;
+	width: 23px;
+	text-align: center;
+	color: grey;
+}
+
+.clearBoth {
+	clear: both;
+}
+
+.osn-json {
+	minWidth: 50%;
+}
+
+/* TODO delete it! */
+.kateUpton {
+	background-image: url("../img/Kate_Upton_Hot_Bikini_08-e1349377976284-200x100.jpg");
+	width: 200px;
+	height: 100px;
+}
+
+
+/* results */
+.osn-results {
+	/*overflow-y: auto;*/
+	/*width: 100%;*/
+	/*height: 250px;*/
+}
+
+.osn-results-tableContainer {
+}
+
+.osn-results-tableContainer-internal {
+	position: absolute;
+	bottom: 0px;
+	top: 42px;
+	left:0px;
+	right:0px;
+	padding: 2px;
+	overflow: auto;
+}
+
+.osn-results-table td {
+	line-height: 12px;
+}
+
+.osn-results-tableContainer.ui-state-disabled {
+	opacity: inherit;
+	filter: inherit;
+	background-image: inherit;
+}
+.osn-results-table .ui-selected, .osn-results-table .ui-selected td {
+	background: #ADD8E6 !important;
+}
+.osn-results-table .ui-draggable {
+	cursor: move;
+}
+
+.osn-results-table .ui-selecting, .osn-results-table .ui-selecting td {
+	background: #ADD8E6 !important;
+}
+
+.osn-results-selectBtn{
+	margin-top: 4px;
+}
+
+.osn-dragHelper > i {
+	background: red;
+	border-radius: 5px 0px 0px 5px;
+	position: absolute;
+	left: 0px;
+	padding: 3px 6px;
+}
+.osn-dragHelper {
+	background: black;
+	color: #eee;
+	border-radius: 5px;
+	box-shadow: 1px 1px 10px #555;
+	text-align: right;
+	padding-right: 10px;
+	padding-left: 33px;
+}
+
+/* pagination */
+.osn-results-pagination .pagination {
+	margin: 5px;
+	margin: 5px;
+	width: 240px;
+	float: left;
+}
+
+/* search on map move control */
+.searchOnMapMove i {
+	font-size: 18px;
+	padding: 4px;
+	width: 19px;
+	text-align: center;
+}
+.searchOnMapMove.enabled i {
+	background: #D7F0FF;
+	border-radius: 4px;
+}
+
+/* custom */
+
+/* for text overflow */
+.textOverflow:hover {
+	text-overflow: inherit;
+	overflow: inherit;
+}
+.textOverflow {
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	width: 100%;
+}
+
+.osn-searchFailPanel {
+	position: absolute;
+	top: 35%;
+	left: 50%;
+	width: 450px;
+	margin-left: -225px;
+	z-index: 100000000000;
+}
+
+/* leaflet-bootstrap conflict fixies */
+.leaflet-control-layers label {
+	font-size: 12px;
+	font-weight: bold;
+	margin: 4px;
+	line-height: normal;
+}
+.leaflet-control-layers form { margin: 0px }
+.leaflet-control-layers input {	vertical-align: initial; }
+.leaflet-control-layers label > span { vertical-align: middle; }
+

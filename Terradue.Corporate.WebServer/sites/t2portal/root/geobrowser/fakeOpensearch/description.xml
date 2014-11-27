@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<OpenSearchDescription xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://a9.com/-/spec/opensearch/1.1/">
+	<ShortName>E-CEO Catalogue</ShortName>
+	<Description>This Search Service performs queries in the available data
+		series of E-CEO catalogue. There are several URL templates that return
+		the results in different formats (RDF, ATOM or KML). This search
+		service is in accordance with the OGC 10-032r3 specification.
+	</Description>
+	<Tags>G-POD, ESA, Earth Observation, Digital Repository, Digital Earth
+		Communities</Tags>
+	<Contact>info@esa.int</Contact>
+	<Url type="application/json"
+		template="fakeOpensearch/search.json?resourcetype={ws:type?}&amp;protocol={ws:protocol?}&amp;ce={ws:ce?}&amp;count={count?}&amp;startPage={startPage?}&amp;startIndex={startIndex?}&amp;sort={sru:sortKeys?}&amp;q={searchTerms?}&amp;start={time:start?}&amp;stop={time:end?}&amp;ingested={dct:modified?}&amp;bbox={geo:box?}&amp;geometry={geo:geometry?}&amp;uid={geo:uid?}&amp;processingCenter={eop:processingCenter?}&amp;processorVersion={eop:processorVersion?}&amp;acquisitionStation={eop:acquisitionStation?}&amp;size={eop:size?}&amp;orbitNumber={eop:orbitNumber?}&amp;trackNumber={eop:trackNumber?}&amp;format=json"
+		rel="search" pageOffset="1" indexOffset="1" />
+	<Url type="application/html"
+		template="http://challenges.terradue.com:80/eceo/catalogue/MER_RR_1P/search?resourcetype={ws:type?}&amp;protocol={ws:protocol?}&amp;ce={ws:ce?}&amp;count={count?}&amp;startPage={startPage?}&amp;startIndex={startIndex?}&amp;sort={sru:sortKeys?}&amp;q={searchTerms?}&amp;start={time:start?}&amp;stop={time:end?}&amp;ingested={dct:modified?}&amp;bbox={geo:box?}&amp;geometry={geo:geometry?}&amp;uid={geo:uid?}&amp;processingCenter={eop:processingCenter?}&amp;processorVersion={eop:processorVersion?}&amp;acquisitionStation={eop:acquisitionStation?}&amp;size={eop:size?}&amp;orbitNumber={eop:orbitNumber?}&amp;trackNumber={eop:trackNumber?}&amp;format=html"
+		rel="search" pageOffset="1" indexOffset="1" />
+	<Url type="application/atom+xml"
+		template="http://challenges.terradue.com:80/eceo/catalogue/MER_RR_1P/search?resourcetype={ws:type?}&amp;protocol={ws:protocol?}&amp;ce={ws:ce?}&amp;count={count?}&amp;startPage={startPage?}&amp;startIndex={startIndex?}&amp;sort={sru:sortKeys?}&amp;q={searchTerms?}&amp;start={time:start?}&amp;stop={time:end?}&amp;ingested={dct:modified?}&amp;bbox={geo:box?}&amp;geometry={geo:geometry?}&amp;uid={geo:uid?}&amp;processingCenter={eop:processingCenter?}&amp;processorVersion={eop:processorVersion?}&amp;acquisitionStation={eop:acquisitionStation?}&amp;size={eop:size?}&amp;orbitNumber={eop:orbitNumber?}&amp;trackNumber={eop:trackNumber?}&amp;format=atom"
+		rel="search" pageOffset="1" indexOffset="1" />
+	<Url type="application/opensearch+xml"
+		template="http://challenges.terradue.com:80/eceo/catalogue/MER_RR_1P/description"
+		rel="self" pageOffset="1" indexOffset="1" />
+	<LongName>Dataset Search MER_RR__1P</LongName>
+	<Image height="55" width="150" type="image/png">http://gpod.eo.esa.int/template/images/logo_gpod_transparent.png
+	</Image>
+	<Image height="16" width="16" type="image/vnd.microsoft.icon">http://gpod.eo.esa.int/favicon.ico
+	</Image>
+	<Query role="example" />
+	<Developer>Terradue GeoSpatial Development Team</Developer>
+	<Attribution>European Space Agency</Attribution>
+	<SyndicationRight>open</SyndicationRight>
+	<AdultContent>false</AdultContent>
+	<Language>en-us</Language>
+	<OutputEncoding>UTF-8</OutputEncoding>
+	<InputEncoding>UTF-8</InputEncoding>
+</OpenSearchDescription>

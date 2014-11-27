@@ -18,7 +18,7 @@ define([
 	return {
 
 		// controller cache
-		controllers: [],
+		controllers: {},
 
 		// init
 		init: function(options){

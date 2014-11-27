@@ -56,8 +56,10 @@ define([
 			// dinamically load controller
 			App.loadController (ControllerName, function (controller) {
 				// call action if applicable
-				if (controller && controller[actionName])
+				if (controller && controller[actionName]){
 					controller[actionName](data);
+					Helpers.scrollToTop();
+				}
 				else Pages.errorView({}, "Controller not found: "+ControllerName);
 				$('.dropdown-toggle').dropdown();
 			}, function(err){

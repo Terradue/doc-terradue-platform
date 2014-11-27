@@ -1,0 +1,77 @@
+<div class="jobsList">
+	{{#if jobs.length }}
+		{{ jobs.length }} jobs found.<br/><br/>
+	{{else}}
+		No jobs found.
+	{{/if}}
+	
+	<div id="jobsTable">
+		{{#each jobs}}
+			{{#ifInOffset @index pagination.offset pagination.limit}}
+			<div>
+				{{#ifEquals status "TO_CHECK"}}
+					<div class='titleCell'><small>&nbsp;&nbsp;<i class="icon-spinner icon-spin icon-large"></i> {{ jobName }}</small></div>
+					<div class='statusCell'>
+						<div class="progress progress-warning jobProgress">
+							<div class="bar jobProgressMessage">checking</div>
+						</div>
+					</div>
+				{{/ifEquals}}
+				
+				{{#ifEquals status "TO_REMOVE"}}
+					<div class='titleCell'><small>&nbsp;&nbsp;<i class='icon-minus-sign'></i> <i>job not found</i></small></div>
+					<div class='statusCell'></div>
+				{{/ifEquals}}
+				
+				{{#ifEquals status "PENDING"}}
+					<div class='titleCell'>
+						<small><a data-uuid="{{ uuid }}" href="javascript://" class="selectJob">{{ jobName }}</a><span>{{ fromNow time }}</span></small>
+					</div>
+					<div class='statusCell'>
+						<div class="progress progress-warning jobProgress">
+							<div class="bar jobProgressMessage">pending</div>
+						</div>
+					</div>
+				{{/ifEquals}}
+				{{#ifEquals status "SUCCESS"}}
+					<div class='titleCell'>
+						<small><a data-uuid="{{ uuid }}" href="javascript://" class="selectJob">{{ jobName }}</a><span>{{ fromNow time }}</span></small>
+					</div>
+					<div class='statusCell'>
+						<div class="progress progress-success jobProgress">
+							<div class="bar jobProgressMessage">success</div>
+						</div>
+					</div>
+				{{/ifEquals}}
+				{{#ifEquals status "ERROR"}}
+					<div class='titleCell'>
+						<small><a data-uuid="{{ uuid }}" href="javascript://" class="selectJob">{{ jobName }}</a><span>{{ fromNow time }}</span></small>
+					</div>
+					<div class='statusCell'>
+						<div class="progress progress-danger jobProgress">
+							<div class="bar jobProgressMessage">failed</div>
+						</div>
+					</div>
+				{{/ifEquals}}
+				{{#ifEquals status "RUNNING"}}
+					<div class='titleCell'>
+						<small><a data-uuid="{{ uuid }}" href="javascript://" class="selectJob">{{ jobName }}</a><span>{{ fromNow time }}</span></small>
+					</div>
+					<div class='statusCell'>
+						<div class="progress progress-striped active jobProgress">
+			 				<div class="bar" style="width: {{ percent }}%;">{{ percent }}</div>
+						</div>
+					</div>
+				{{/ifEquals}}
+			</div>
+			{{/ifInOffset}}
+		{{/each}}
+	</div>
+	
+	{{#pagination}}
+		<div class='pagination'>
+			<p>{{showPagination offset limit jobs.length}}</p>
+		</div>
+	{{/pagination}}
+
+</div>
