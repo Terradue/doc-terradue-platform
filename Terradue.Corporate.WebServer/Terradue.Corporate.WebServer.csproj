@@ -95,9 +95,6 @@
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Crowd">
-      <HintPath>..\packages\Terradue.Crowd.1.0.0\lib\net40\Terradue.Crowd.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.Authentication.Crowd">
       <HintPath>..\packages\Terradue.Authentication.Crowd.1.0.0\lib\net40\Terradue.Authentication.Crowd.dll</HintPath>
     </Reference>
@@ -150,11 +147,17 @@
     <Reference Include="DotNetOpenAuth">
       <HintPath>..\packages\DotNetOpenAuth.Ultimate.4.3.4.13329\lib\net40-full\DotNetOpenAuth.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Authentication.OpenId">
-      <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.1\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.OpenSearch.RdfEO">
       <HintPath>..\packages\Terradue.OpenSearch.RdfEO.1.0.2\lib\net40\Terradue.OpenSearch.RdfEO.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Authentication.OpenId">
+      <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.2\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Crowd">
+      <HintPath>..\packages\Terradue.Crowd.1.0.1\lib\net40\Terradue.Crowd.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\packages\MySql.Data.1.0.7.30073\lib\net40\MySql.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -190,5 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="modules\openid\db\db-create.sql" />
+    <None Include="modules\crowd\db\db-create.sql" />
   </ItemGroup>
 </Project>
