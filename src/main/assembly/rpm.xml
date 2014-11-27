@@ -47,6 +47,7 @@
 			<excludes>
 				<exclude>bin/live.dll</exclude>
 				<exclude>bin/*.mdb</exclude>
+				<exclude>obj</exclude>
 				<exclude>web.config</exclude>		
 			</excludes>
 		</fileSet>
