@@ -12,32 +12,24 @@
 	
 	<fileSets>
 		<fileSet>
-			<directory>${project.build.directory}/live/services</directory>
-			<outputDirectory>services</outputDirectory>
-			<includes>
-					<include>**/db/*</include>
-				</includes>
-		</fileSet>
-		<fileSet>
-			<directory>${project.build.directory}/live/modules</directory>
+			<directory>${basedir}/${projectDir}/modules</directory>
 			<outputDirectory>modules</outputDirectory>
 			<includes>
-					<include>**/db/*</include>
-				</includes>
+				<include>**/db/*</include>
+			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${project.build.directory}/live/core</directory>
+			<directory>${basedir}/${projectDir}/core</directory>
 			<outputDirectory>core</outputDirectory>
 			<includes>
-					<include>**/db/*</include>
-				</includes>
+				<include>db/*</include>
+			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${project.build.directory}/live/www-root</directory>
-			<outputDirectory>sites/${deploy.site}/root</outputDirectory>
+			<directory>${basedir}/${projectDir}/sites</directory>
+			<outputDirectory>sites</outputDirectory>
 			<includes>
-				<include>bin/**/*.dll</include>
-				<include>bin/**/*.exe</include>
+				<include>**/db/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -46,16 +38,17 @@
 			<outputDirectory>sites/${deploy.site}</outputDirectory>
 			<includes>
 				<include>config/*</include>
+				<include>etc/shibboleth/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${basedir}/src/main/web-resources</directory>
-			<outputDirectory>sites/${deploy.site}</outputDirectory>
+			<directory>${basedir}/www-root</directory>
+			<outputDirectory>sites/${deploy.site}/root</outputDirectory>
 			<excludes>
-				<exclude>root/web.config</exclude>		
-				<exclude>config/*</exclude>
+				<exclude>bin/live.dll</exclude>
+				<exclude>bin/*.mdb</exclude>
+				<exclude>web.config</exclude>		
 			</excludes>
-			<filtered>false</filtered>
 		</fileSet>
 	</fileSets>
 

@@ -25,6 +25,7 @@
 	<properties>
 		<deploy.dir>/usr/local/t2portal/webserver</deploy.dir>
 		<deploy.site>t2portal</deploy.site>
+		<projectDir>Terradue.Corporate.WebServer</projectDir>
 		<rpmOSArch>noarch</rpmOSArch>
 		<redmine.projectID>t2-portal</redmine.projectID>
 		<monoConfig>DEBUG</monoConfig>
@@ -41,44 +42,17 @@
 				<inherited>false</inherited>
 			</plugin>
 			<plugin>
-		        <artifactId>maven-resources-plugin</artifactId>
-		        <version>2.6</version>
-		        <executions>
-		          <execution>
-		            <id>copy-resources</id>
-		            <phase>validate</phase>
-		            <goals>
-		              <goal>copy-resources</goal>
-		            </goals>
-		            <configuration>
-		              <outputDirectory>${project.build.directory}/live</outputDirectory>
-		              <resources>          
-		                <resource>
-		                  <directory>src/live</directory>
-		                  <filtering>false</filtering>
-		                </resource>
-		              </resources>              
-		            </configuration>            
-		          </execution>
-		        </executions>
-		      </plugin>
-		      <plugin>
 		        <groupId>org.codehaus.mojo</groupId>
 		        <artifactId>exec-maven-plugin</artifactId>
 		        <version>1.2.1</version>
-		        <executions>
-		          <execution>
+		        <execution>
 		          	<id>nuget</id>
 					<phase>process-resources</phase>
 		            <goals>
 		              <goal>exec</goal>
 		            </goals>
 		            <configuration>
-			          <executable>nuget</executable>
-			          <arguments>
-			          	<argument>restore</argument>
-			          </arguments>
-			          <workingDirectory>${project.build.directory}/live</workingDirectory>
+			          <executable>${basedir}/src/main/scripts/nuget-install.sh</executable>
 			        </configuration>
 		          </execution>
 		          <execution>
@@ -89,7 +63,6 @@
 		            </goals>
 		            <configuration>
 			          <executable>xbuild</executable>
-			          <workingDirectory>${project.build.directory}/live</workingDirectory>
 			        </configuration>
 		          </execution>
 		        </executions>
@@ -152,7 +125,7 @@
 							<groupname>apache</groupname>
 							<sources>
 								<source>
-									<location>${project.build.directory}/staged/sites/t2portal/config/t2portal-webserver-httpd.conf</location>
+									<location>${project.build.directory}/staged/sites/${deploy.site}/config/t2portal-webserver-httpd.conf</location>
 								</source>
 							</sources>
 						</mapping>
@@ -173,7 +146,7 @@
 							<configuration>noreplace</configuration>
 							<sources>
 								<source>
-									<location>${project.build.directory}/staged/sites/t2portal/config/web.config</location>
+									<location>${project.build.directory}/staged/sites/${deploy.site}/config/web.config</location>
 								</source>
 							</sources>
 						</mapping>
