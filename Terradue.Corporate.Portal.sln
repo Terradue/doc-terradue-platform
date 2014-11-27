@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terradue.Corporate.WebServer", "Terradue.Corporate.WebServer\Terradue.Corporate.WebServer.csproj", "{76CBD7B6-4156-424C-9662-CDEDE1548781}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "www-root", "www-root\www-root.csproj", "{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		List OSEE|x86 = List OSEE|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{76CBD7B6-4156-424C-9662-CDEDE1548781}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CBD7B6-4156-424C-9662-CDEDE1548781}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CBD7B6-4156-424C-9662-CDEDE1548781}.List OSEE|x86.ActiveCfg = Debug|Any CPU
+		{76CBD7B6-4156-424C-9662-CDEDE1548781}.List OSEE|x86.Build.0 = Debug|Any CPU
+		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.List OSEE|x86.ActiveCfg = Debug|Any CPU
+		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.List OSEE|x86.Build.0 = Debug|Any CPU
+		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = www-root\www-root.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.TextStylePolicy = $2
+		$2.inheritsSet = null
+		$2.scope = application/xml
+		$0.XmlFormattingPolicy = $3
+		$3.inheritsSet = Mono
+		$3.inheritsScope = application/xml
+		$3.scope = application/xml
+		$0.VersionControlPolicy = $4
+		$4.inheritsSet = Mono
+	EndGlobalSection
+EndGlobal
