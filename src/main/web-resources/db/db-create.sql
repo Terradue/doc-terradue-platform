@@ -6,7 +6,7 @@ USE $MAIN$;
 
 /*****************************************************************************/
 
-UPDATE type SET custom_class = 'Terradue.Corporate.Controller.UserT2, Terradue.Corporate.Controller' WHERE class = 'Terradue.Portal.User, Terradue.Portal';
+UPDATE type SET custom_class = 'Terradue.Corporate.Controller.UserT2, Terradue.Corporate.WebServer' WHERE class = 'Terradue.Portal.User, Terradue.Portal';
 
 /*****************************************************************************/
 

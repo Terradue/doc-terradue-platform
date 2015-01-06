@@ -57,10 +57,10 @@
       <HintPath>..\packages\Terradue.ServiceModel.Syndication.1.0.0.0\lib\net40\Terradue.ServiceModel.Syndication.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.Portal">
-      <HintPath>..\packages\Terradue.Portal.2.5.12\lib\net40\Terradue.Portal.dll</HintPath>
+      <HintPath>..\packages\Terradue.Portal.2.6.6\lib\net40\Terradue.Portal.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.Portal.AdminTool">
-      <HintPath>..\packages\Terradue.Portal.2.5.12\lib\net40\Terradue.Portal.AdminTool.exe</HintPath>
+      <HintPath>..\packages\Terradue.Portal.2.6.6\lib\net40\Terradue.Portal.AdminTool.exe</HintPath>
     </Reference>
     <Reference Include="Terradue.Github">
       <HintPath>..\packages\Terradue.Github.1.0.2\lib\net40\Terradue.Github.dll</HintPath>
@@ -72,31 +72,28 @@
       <HintPath>..\packages\Terradue.Certification.WebService.1.0.0\lib\net40\Terradue.Certification.WebService.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.Certification">
-      <HintPath>..\packages\Terradue.Certification.1.4.4\lib\net40\Terradue.Certification.dll</HintPath>
+      <HintPath>..\packages\Terradue.Certification.1.4.5\lib\net40\Terradue.Certification.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.News">
-      <HintPath>..\packages\Terradue.News.1.0.2\lib\net40\Terradue.News.dll</HintPath>
+      <HintPath>..\packages\Terradue.News.1.0.3\lib\net40\Terradue.News.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.OpenSearch.Tumblr">
-      <HintPath>..\packages\Terradue.OpenSearch.Tumblr.1.0.1\lib\net40\Terradue.OpenSearch.Tumblr.dll</HintPath>
+      <HintPath>..\packages\Terradue.OpenSearch.Tumblr.1.0.2\lib\net40\Terradue.OpenSearch.Tumblr.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.OpenSearch">
-      <HintPath>..\packages\Terradue.OpenSearch.1.7.7\lib\net40\Terradue.OpenSearch.dll</HintPath>
+      <HintPath>..\packages\Terradue.OpenSearch.1.8.4\lib\net40\Terradue.OpenSearch.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.OpenSearch.Twitter">
-      <HintPath>..\packages\Terradue.OpenSearch.Twitter.1.0.1\lib\net40\Terradue.OpenSearch.Twitter.dll</HintPath>
+      <HintPath>..\packages\Terradue.OpenSearch.Twitter.1.0.2\lib\net40\Terradue.OpenSearch.Twitter.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.WebService.Model">
-      <HintPath>..\packages\Terradue.WebService.Model.1.0.2\lib\net40\Terradue.WebService.Model.dll</HintPath>
+      <HintPath>..\packages\Terradue.WebService.Model.1.0.5\lib\net40\Terradue.WebService.Model.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.ServiceModel.Ogc.OwsContext">
-      <HintPath>..\packages\Terradue.ServiceModel.Ogc.OwsContext.1.0.0\lib\net40\Terradue.ServiceModel.Ogc.OwsContext.dll</HintPath>
+      <HintPath>..\packages\Terradue.ServiceModel.Ogc.OwsContext.1.0.6\lib\net40\Terradue.ServiceModel.Ogc.OwsContext.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue.Authentication.Crowd">
-      <HintPath>..\packages\Terradue.Authentication.Crowd.1.0.0\lib\net40\Terradue.Authentication.Crowd.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.Crowd.WebService">
       <HintPath>..\packages\Terradue.Crowd.WebService.1.0.0\lib\net40\Terradue.Crowd.WebService.dll</HintPath>
@@ -111,7 +108,7 @@
       <HintPath>..\packages\Terradue.OpenNebula.WebService.1.0.0\lib\net40\Terradue.OpenNebula.WebService.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.GeoJson">
-      <HintPath>..\packages\Terradue.GeoJson.1.4.1\lib\net40\Terradue.GeoJson.dll</HintPath>
+      <HintPath>..\packages\Terradue.GeoJson.1.4.7\lib\net40\Terradue.GeoJson.dll</HintPath>
     </Reference>
     <Reference Include="System.IO">
       <HintPath>..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.IO.dll</HintPath>
@@ -135,29 +132,32 @@
       <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\net40\System.Net.Http.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.OpenSearch.GeoJson">
-      <HintPath>..\packages\Terradue.OpenSearch.GeoJson.1.1.0\lib\net40\Terradue.OpenSearch.GeoJson.dll</HintPath>
+      <HintPath>..\packages\Terradue.OpenSearch.GeoJson.1.1.6\lib\net40\Terradue.OpenSearch.GeoJson.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Terradue.Util">
       <HintPath>..\packages\Terradue.Util.1.4.0\lib\net40\Terradue.Util.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Metadata.EarthObservation">
-      <HintPath>..\packages\Terradue.Metadata.EarthObservation.1.0.2\lib\net40\Terradue.Metadata.EarthObservation.dll</HintPath>
-    </Reference>
     <Reference Include="DotNetOpenAuth">
       <HintPath>..\packages\DotNetOpenAuth.Ultimate.4.3.4.13329\lib\net40-full\DotNetOpenAuth.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.OpenSearch.RdfEO">
-      <HintPath>..\packages\Terradue.OpenSearch.RdfEO.1.0.2\lib\net40\Terradue.OpenSearch.RdfEO.dll</HintPath>
+      <HintPath>..\packages\Terradue.OpenSearch.RdfEO.1.1.0\lib\net40\Terradue.OpenSearch.RdfEO.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.Authentication.OpenId">
-      <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.2\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
+      <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.4\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.Crowd">
-      <HintPath>..\packages\Terradue.Crowd.1.0.1\lib\net40\Terradue.Crowd.dll</HintPath>
+      <HintPath>..\packages\Terradue.Crowd.1.0.2\lib\net40\Terradue.Crowd.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.1.0.7.30073\lib\net40\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Metadata.EarthObservation">
+      <HintPath>..\packages\Terradue.Metadata.EarthObservation.1.0.3\lib\net40\Terradue.Metadata.EarthObservation.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Authentication.Crowd">
+      <HintPath>..\packages\Terradue.Authentication.Crowd.1.0.2\lib\net40\Terradue.Authentication.Crowd.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

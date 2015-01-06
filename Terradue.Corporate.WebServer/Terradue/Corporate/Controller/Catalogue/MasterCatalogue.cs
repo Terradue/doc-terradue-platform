@@ -302,6 +302,9 @@ namespace Terradue.Corporate.Controller
 
         }
 
+        public ParametersResult DescribeParameters() {
+            return OpenSearchFactory.GetDefaultParametersResult();
+        }
     }
 
 }

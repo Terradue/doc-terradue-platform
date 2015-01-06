@@ -24,7 +24,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, context.UserId);
                 CrowdClient client = new CrowdClient(context.GetConfigValue("Crowd-api-url"), context.GetConfigValue("Crowd-app-name"), context.GetConfigValue("Crowd-app-pwd"));
-                client.GetUser("eboissier");
+                client.GetUser(user.Identifier);
                 context.Close();
             } catch (Exception e) {
                 context.Close();

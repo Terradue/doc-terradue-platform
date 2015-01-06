@@ -160,6 +160,10 @@ namespace Terradue.Corporate.Controller {
             Entity.ApplyResultFilters(request, ref osr);
         }
 
+
+        public ParametersResult DescribeParameters() {
+            return OpenSearchFactory.GetDefaultParametersResult();
+        }
         #endregion
     }
 
