@@ -1,0 +1,136 @@
+<div class='settings-certificate'>
+
+<h3>Certificate</h3>
+
+<p class="text-info">
+	<i class='icon-info-sign'></i> Certificate is the key to your cloud environment.
+</p>
+<br/><br/>
+
+{{#if resultMessage }}
+	<div id="resultMessage" class="alert alert-{{ resultMessageType }}">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<span>{{{ resultMessage }}}</span>
+	</div>
+{{/if}}
+
+
+{{#if certificate}}
+	<div id="certInfo">
+		{{#if certificate.ExpirationDate}}
+			<br\>
+			<div class='alert alert-success alert-no-bottom-margin'><i class="fa fa-check-square"></i><strong> Well done! Certificate correctly registered!</strong></div>
+			
+			<table class="table table-bordered table-striped">
+				<tbody>
+					<tr>
+						<td><span>Subject</span></td>
+						<td>{{ certificate.Subject }}</td>
+					</tr>
+					<tr>
+						<td><span>Valid until</span></td>
+						<td>{{ certificate.ExpirationDate }}</td>
+					</tr>
+					<tr>
+						<td><span>Issuer</span></td>
+						<td>{{ certificate.Issuer }}</td>
+					</tr>
+					<tr>
+						<td><span>Encoded PEM</span></td>
+						<td>
+							<button class="btn" id="showEncodedPem"><i class="fa fa-info-sign"></i> Show Base64</button>
+							<div class="encodedPem">{{ certificate.Base64Cert }}</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<button id="removeCertificate" class="btn btn-warning"><i class="fa fa-trash-o"> Remove Certificate</i></button>
+			
+		{{else}}
+			<div class='alert alert-warning alert-no-bottom-margin'><i class="fa fa-warning"></i><strong>Well done! You have a certificate under request.</strong></div>
+			<code>{{ certificate.Subject }}</code>
+			<p>As soon as you receive the approval email, come back here, it will be automatically recognized.</p>
+		{{/if}}
+	</div>
+{{/if}}
+
+
+{{#if certRequest}}
+	<div class='alert alert-danger alert-no-bottom-margin'><i class="fa fa-warning"></i><strong> This is were you will see your certificate when you've gone through one of the options below:</strong></div>
+	<br><p>2 options for registering a certificate:</p>
+
+	<div class="panel-group" id="certifOptions">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#certifOptions" href="#collapseOne">No certificate? We can provide one for you</a>
+				</h4>
+			</div>
+			<div id="collapseOne" class="panel-collapse collapse">
+				<div class="panel-body">
+					<p>The new certificate will be associated to the email address "<strong>{{ user.Email }}</strong>".</p>
+					{{#if profileComplete}}
+						<button id="submitCertRequest" class="btn btn-warning" type="submit">Request certificate</button>
+					{{else}}
+						<div class="alert alert-danger">
+							<button type="button" class="close" data-dismiss="alert">&times;</button>
+							<strong>Oups! Profile not complete</strong> Update your <a href="/portal/profile">profile</a> to be able to make your request.
+						</div>
+					{{/if}}
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#certifOptions" href="#collapseTwo"> Have already a certificate? Simply drop it here </a>
+				</h4>
+			</div>
+			<div id="collapseTwo" class="panel-collapse collapse">
+				<div class="panel-body">
+					<p>Simply upload your pem file here:</p>
+
+
+					<form id="formUpload" target="_blank" action="/t2api/cert/_upload" method="POST">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<br />
+							<br />
+							<div class="fileinput fileinput-new input-group" data-provides="fileinput">
+								<div class="form-control" data-trigger="fileinput">
+									<i class="glyphicon glyphicon-file fileinput-exists"></i>
+									<span class="fileinput-filename"></span>
+								</div>
+								<span class="input-group-addon btn btn-default btn-file">
+									<span class="fileinput-new">Select file</span>
+									<span class="fileinput-exists">Change</span>
+									<input type="file" name="...">
+								</span>
+								<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+							</div>
+							
+<!-- 							<div class="input-append">
+								<div class="uneditable-input span3">
+									<i class="icon-file"></i> <span class="fileupload-preview"></span>
+								</div>
+								<span class="btn btn-file"> 
+									<span class="fileupload-new">Select file</span> 
+									<span class="fileupload-exists">Change</span> 
+									<input type="file" class="toDisable" name="fileUpload" id="fileUpload" />
+								</span>
+								<a href="#" class="btn btn-warning fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+ -->
+ 							<p id="selectFileError" class="text-error hidden">Please select a file.</p>
+						</div>
+						<div class="dragBox" id="dragBox">Drag certificate here</div>
+						<button class="btn toDisable" type="submit">Upload file</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{{/if}}
+
+</div>
