@@ -95,9 +95,6 @@
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Crowd.WebService">
-      <HintPath>..\packages\Terradue.Crowd.WebService.1.0.0\lib\net40\Terradue.Crowd.WebService.dll</HintPath>
-    </Reference>
     <Reference Include="CookComputing.XmlRpcV2">
       <HintPath>..\packages\xmlrpcnet.2.5.0\lib\net20\CookComputing.XmlRpcV2.dll</HintPath>
     </Reference>
@@ -158,6 +155,9 @@
     </Reference>
     <Reference Include="Terradue.Authentication.Crowd">
       <HintPath>..\packages\Terradue.Authentication.Crowd.1.0.2\lib\net40\Terradue.Authentication.Crowd.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Crowd.WebService">
+      <HintPath>..\packages\Terradue.Crowd.WebService.1.0.1\lib\net40\Terradue.Crowd.WebService.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
