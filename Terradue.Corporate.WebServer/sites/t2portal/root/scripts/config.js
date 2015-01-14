@@ -11,23 +11,34 @@ define({
 	
 	staticPages: {
 		about: '/static/about.html',
-		people: '/static/people.html',
+
 		partners: '/static/partners.html',
 		tour: '/static/tour.html',
 		resources: '/static/resources.html',
 		
-		samplePeople: {
-			url: '/static/sample.html',
+		people: {
+			url: '/static/people.html',
 			data: [
-				{id:1, name: 'Kate', surname: 'Upton', image: 'http://images.ak.instagram.com/profiles/profile_1085312802_75sq_1394674277.jpg'},
-				{id:2, name: 'Charlize', surname: 'Theron', image: 'http://img3.rnkr-static.com/list_img/2434/102434/150/charlize-theron-movies-and-films-and-filmography-u4.jpg'},
-				{id:3, name: 'Alana', surname: 'Blanchard', image: 'http://coolspotters.com/files/photos/230994/alana-blanchard-large.jpg'},
-				{id:4, name: 'Sophia', surname: 'Loren', image: 'http://www.milanolifestyle.it/wp-content/uploads/2014/09/sophia-loren-150x150.jpg'},
+				{id:1, name: 'Gonçalves', surname: 'Pedro', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:2, name: 'Brito', surname: 'Fabrice', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:3, name: 'Maiozzi', surname: 'Francesca', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:4, name: 'Loeschau', surname: 'Frank', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:5, name: 'D\'Andria', surname: 'Fabio', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:6, name: 'Barchetta', surname: 'Francesco', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:7, name: 'Mathot', surname: 'Emmanuel', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:8, name: 'Caumont', surname: 'Hervé', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:9, name: 'Boissier', surname: 'Enguerran', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:10, name: 'Rossi', surname: 'Cesare', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:11, name: 'Cerasuolo', surname: 'Francesco', image: '/modules/pages/img/corporate/terradue_2.0.png'},
+				{id:12, name: 'D\'Andelis', surname: 'Costanzo', image: '/modules/pages/img/corporate/terradue_2.0.png'},
 			],
 			fnLoad: function(){
 				// eventual javascript stuff
 			}
 		}
+
+		
+
 	},
 	
 });
