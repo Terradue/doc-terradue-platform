@@ -12,17 +12,23 @@
 .peopleList>div>img {
 	margin-right: 20px;
 }
-
 </style>
+
 <div class="container">
-	<h2>Sample People page</h2>
+	<h3>Team</h3>
 	<div class="well peopleList">
 	
 		{{#each this}}
 			<div>
 				<img src="{{image}}" />
+				<p class="lead">{{focus1}}</p>
 				<a href="javascript://"><i class="fa fa-twitter"></i></a>
 				<a href="javascript://"><i class="fa fa-linkedin"></i></a>
+<!-- 				<p class="sidelist">{{}}</p>
+				<p class="sidelist">{{}}</p>
+				<p class="sidelist">{{}}</p>
+				<p class="sidelist">{{}}</p> --> 
+				</br>
 				<p class="lead">{{surname}} {{name}}</p>
 			</div>
 		{{/each}}
