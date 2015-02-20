@@ -54,7 +54,7 @@ define({
 			focus4: {title: 'Monitoring', url: 'http://geek-and-poke.com/geekandpoke/2011/8/22/hudsonjenkins-status-monitor.html'},
 			profile: '',
 			linkedin: '<!--http://it.linkedin.com/pub/fabio-d-andria/0/5a0/aa6/-->',
-			twitter: ''},
+			},
 		{id:6, 
 			name: 'Francesco', 
 			surname: 'Barchetta', 

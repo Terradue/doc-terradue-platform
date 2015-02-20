@@ -63,12 +63,12 @@
 					</ul>
 					
 					<div class="social">
-						<xsl:if test="{{linkedin}} != ''">
+						{{#if linkedin}}
 							<a href={{linkedin}} target="_blank"><img src="/styles/img/icons/linkedin_small_icon.png" /></a>
-						</xsl:if>
-						<xsl:if test="{{twitter}} != ''">
+						{{/if}}
+						{{#if twitter}}
 							<a href={{twitter}} target="_blank"><img src="/styles/img/icons/twitter_small_icon.png" /></a>
-						</xsl:if>
+						{{/if}}
 					</div>
 				</div>
                     <!-- member's social links 
