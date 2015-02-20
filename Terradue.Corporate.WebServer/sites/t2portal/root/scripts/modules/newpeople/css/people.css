@@ -1,0 +1,88 @@
+.teamup {
+  color: #ffffff;
+  padding: 50px 0;
+  display: table;
+  height: 300px;
+  width: 100%;
+  background-color: #0a5175;  /* deep blue */
+  /* background: url(../scripts/modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.jpg) no-repeat center center fixed; */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.approach {
+  padding: 20px 20px;
+  color: #ffffff;
+  height: 80px;
+  background: url(../scripts/modules/pages/img/separators/shapes.jpg) no-repeat center center fixed;
+  background-attachment: inherit;
+}
+
+.peopleList>div{
+	background: white;
+	margin-bottom: 25px;
+	font-size: 20px;
+	padding-left: 20px;
+}
+.peopleList>div>p {
+	display: inline-block;
+	margin-left: 20px;
+}
+.peopleList>div>img {
+	margin-right: 20px;
+}
+
+
+.peopleAreaItem {
+	padding-bottom: 12px;
+}
+
+ 
+.members {
+    list-style:none;
+    margin-left:0px;
+    width:100%;
+}
+
+.photo {
+	width: 205px;
+	text-align: center;
+}
+
+.photo {
+	float: left;
+	margin: 0px 7px 10px 0px;
+	border-radius: 6px;
+}
+
+p.small {
+	margin: 0px;
+	font-size: 18px;
+	font-variant: small-caps;
+}
+
+.social {
+	margin: 5px 0px 0px 0px;
+	padding: 20px 0px 0px 10px;
+}
+
+.tags {
+	height: 150px;
+}
+.tags li {
+	display: block;
+	font-size: 11px;
+	font-weight: 300;
+	line-height: 12px;
+	padding-top: 8px;
+/*	font-size: 12px;
+	font-weight: bold;*/
+}
+.tags li a {
+	color: #149fcd;
+}
+.tags li a:hover {
+	opacity: 0.6;
+}
