@@ -16,7 +16,7 @@
   padding: 20px 20px;
   color: #ffffff;
   height: 80px;
-  background: url(../scripts/modules/pages/img/separators/shapes.jpg) no-repeat center center fixed;
+  background: url(../img/separators/shapes.jpg) no-repeat center center fixed;
   background-attachment: inherit;
 }
 
@@ -57,11 +57,17 @@
 	border-radius: 6px;
 }
 
-p.small {
-	margin: 0px;
-	font-size: 18px;
-	font-variant: small-caps;
+.h4.small {
+	font-size: 28px;	
 }
+
+h5.small {
+	margin: 0px;
+	font-size: 16px;
+	font-variant: small-caps;
+	width: 205px;
+}
+
 
 .social {
 	margin: 5px 0px 0px 0px;
@@ -73,7 +79,7 @@ p.small {
 }
 .tags li {
 	display: block;
-	font-size: 11px;
+	font-size: 11px;  /* Focus lists */
 	font-weight: 300;
 	line-height: 12px;
 	padding-top: 8px;
@@ -85,4 +91,60 @@ p.small {
 }
 .tags li a:hover {
 	opacity: 0.6;
+}
+
+
+@media (min-width: 1200px) {
+	.photo, h5 { 
+		width: 230px; 
+	}
+	h4.small {
+		font-size: 18px;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+	.photo, h5 { width: 148px; }
+	h4.small {
+		font-size: 18px;
+	}
+	.tags {
+		height: 95px;
+	}
+	.tags li {
+		font-size: 9px;
+		padding-left: 131px;
+	}	
+	.social {
+		margin-top: 0px;
+		padding-top: 0px;
+		width: 60px;
+		float: right;
+	}
+}
+
+@media (max-width: 767px) {
+	.peopleAreaItem {
+		width: 300px;
+		margin: auto;
+	}
+	h4.small {
+		font-size: 18px;
+	}
+}
+
+@media (max-width: 480px) {
+	h4.small {
+		margin: auto;
+		font-size: 14px;
+	}
+	.peopleAreaItem {
+	    width: 100%;
+	}
+	.photo {
+		width: 65%;
+	}
+	.tags {
+		height: 111px;
+	}
 }

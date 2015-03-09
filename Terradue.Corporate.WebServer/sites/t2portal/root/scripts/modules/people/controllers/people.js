@@ -3,7 +3,7 @@ define([
 	'can',
 	'config',
 	'utils/baseControl',
-	'modules/newpeople/models/peopleData', // data loaded by require.js
+	'modules/people/models/peopleData', // data loaded by require.js
 	'bootbox'
 ], function(can, Config, BaseControl, peopleData, bootbox){
 	
@@ -15,35 +15,28 @@ define([
 				// all you want to init, i.e. some data
 				
 				// dynamic loading of css (this is to test)
-				this.loadCSS('modules/newpeople/css/people.css');
+				this.loadCSS('modules/people/css/people.css');
 			},
 			
-			// first level page : /newpeople
+			// first level page : /people
 			index: function (options) {
 				// view is an utility method
 				this.view({
-					url: 'modules/newpeople/views/people.html',
+					url: 'modules/people/views/people.html',
 					data: peopleData,
 				});
 				
 				// you can also use directly canjs
-				//this.element.html(can.view('modules/newpeople/views/people.html', peopleData));
+				//this.element.html(can.view('modules/people/views/people.html', peopleData));
 			},
 			
-			// subpage sample (second level page: /newpeople/fabio)
-			fabio: function(options){
-				var $fabioImg = $('<img>')
-						.attr('src', '/styles/img/two-wrecking-balls.jpg')
-						.css('width', '100%')
-				
-				this.element.html($fabioImg);
-			},
+
 			
-			// custom subpage sample (third level page: /newpeople/details/<id>)
+			// custom subpage sample (third level page: /people/details/<id>)
 			details: function(options){
 				// the pattern of each route url is <controller>/<action>/<id>
 				// in this case you have
-				// - options.controller = 'newpeople'
+				// - options.controller = 'people'
 				// - options.action = 'details'
 				// - options.id = the t2 people id choosen
 				console.log(options);
@@ -53,11 +46,11 @@ define([
 				
 				// search the user inside the data
 				var search = $.grep(peopleData.list, function(p){
-					return (p.name+'.'+p.surname == completeName);
+					return (p.surname+'.'+p.name == completeName);
 				});
 				if (search[0]) // if found
 					this.view({
-						url: 'modules/newpeople/views/peopleDetails.html',
+						url: 'modules/people/views/peopleDetails.html',
 						data: search[0],
 					});
 			},

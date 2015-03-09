@@ -10,10 +10,6 @@
                  <h3>
                    We are passionate with strategic views,<br> real partnerships and daily operations
                  </h3>
-                 
-                 <h3>
-                   <a href="newpeople/fabio">Show Fabio's page</a>
-                 </h3>
              </div>
          </div>
  	</div>
@@ -25,8 +21,8 @@
      <div class="container">
  		<div class="row">
      	    <div class="col-md-8 col-md-offset-2 text-center">
-                 <h4>
-                 	Year after year we innovate and build advanced solutions for digital Earth Sciences</p>
+                 <h4 class="small">
+                 	Year after year we innovate and build advanced solutions for digital Earth Sciences
                  </h4>
              </div>
         </div>
@@ -40,12 +36,10 @@
 	<br><br>
     <ul class="members">
 		{{#each list}}
-		<li class="col-md-4 peopleAreaItem">
+		<div class="col-md-4 peopleAreaItem">
+			
 			<div class="peopleAreaItem">
-				<a href="newpeople/details/{{name}}.{{surname}}">
-					<img src="{{image}}" class="photo img-responsive" />
-				</a>
-
+				<img class="photo img-responsive" src="{{image}}" />
 				<div>
 					<ul class="tags">
 						<li>
@@ -69,16 +63,21 @@
 						{{#if twitter}}
 							<a href={{twitter}} target="_blank"><img src="/styles/img/icons/twitter_small_icon.png" /></a>
 						{{/if}}
+						{{#unless linkedin}}
+							{{#unless twitter}}
+							<br>
+							{{/unless}}
+						{{/unless}}					
 					</div>
 				</div>
+				
                     <!-- member's social links 
                     <a href="javascript://"><span class="social fa fa-twitter"></span></a>
                     <a href="javascript://"><span class="social fa fa-linkedin"></span></a> -->
-				</br>
-				<p class="small">{{name}} {{surname}}</p>
-				</br>
+				<br>
+				<h5 class="small">{{surname}} {{name}}</h5>
 			</div>
-		</li>	
+		</div>	
 		{{/each}}
 	</ul>   	
 </div>
