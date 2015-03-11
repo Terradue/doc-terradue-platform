@@ -1,0 +1,115 @@
+<!-- IMAGE - teamup -->
+ <div id="whyjoinus" class="teamup">
+     <div class="container">
+              <div class="row">
+     	    <div class="col-md-6 col-md-offset-3 text-center">
+                 <h1>
+                 	Dreamers. Teamers. Scalers.
+                 </h1>
+                 <br>
+                 <h3>
+                   We are passionate with strategic views,<br> real partnerships and daily operations
+                 </h3>
+             </div>
+         </div>
+ 	</div>
+ </div>
+ <!-- /team up -->
+
+<!-- approach -->
+ <div id="whyjoinus" class="approach">
+     <div class="container">
+ 		<div class="row">
+     	    <div class="col-md-8 col-md-offset-2 text-center">
+                 <h4 class="small">
+                 	Year after year we innovate and build advanced solutions for digital Earth Sciences
+                 </h4>
+             </div>
+        </div>
+    </div>
+ </div>
+ <!-- /approach -->
+ 
+ 
+<div class="container">
+	<!-- Team -->
+	<br><br>
+    <ul class="members">
+		{{#each list}}
+		<div class="col-md-4 peopleAreaItem">
+			
+			<div class="peopleAreaItem">
+				<img class="photo img-responsive" src="{{image}}" />
+				<div>
+					<ul class="tags">
+						<li>
+							<a href={{focus1.url}} target="_blank">{{focus1.title}}</a>
+						</li>
+						<li>
+							<a href={{focus2.url}} target="_blank">{{focus2.title}}</a>
+						</li>
+						<li>
+							<a href={{focus3.url}} target="_blank">{{focus3.title}}</a>
+						</li>
+						<li>
+							<a href={{focus4.url}} target="_blank">{{focus4.title}}</a>
+						</li>
+					</ul>
+					
+					<div class="social">
+						{{#if linkedin}}
+							<a href={{linkedin}} target="_blank"><img src="/styles/img/icons/linkedin_small_icon.png" /></a>
+						{{/if}}
+						{{#if twitter}}
+							<a href={{twitter}} target="_blank"><img src="/styles/img/icons/twitter_small_icon.png" /></a>
+						{{/if}}
+						{{#unless linkedin}}
+							{{#unless twitter}}
+							<br>
+							{{/unless}}
+						{{/unless}}					
+					</div>
+				</div>
+				
+                    <!-- member's social links 
+                    <a href="javascript://"><span class="social fa fa-twitter"></span></a>
+                    <a href="javascript://"><span class="social fa fa-linkedin"></span></a> -->
+				<br>
+				<h5 class="small">{{surname}} {{name}}</h5>
+			</div>
+		</div>	
+		{{/each}}
+	</ul>   	
+</div>
+
+<!-- IMAGE - our philosophy -->
+ <div id="philo" class="teamup">
+     <div class="container">
+         <div class="row">
+     	    <div class="col-md-8 col-md-offset-2 text-center">
+                 <h3>
+                 	We enjoy teaming up with bright and dynamic people,</p> 
+                 	interested in Earth Sciences and innovation</p>
+                 </h3>
+             </div>
+         </div>
+         <div class="row">
+     	    <div class="col-md-8 col-md-offset-2 text-center">
+                 <h3>	
+                 	No matter where in the world you might be,</p>
+                 	join us with your vision of the future !
+                 </h3> 
+			</div>
+		</div>
+ 	</div>
+ </div>
+ <!-- /team up -->
+
+<div id="end" class="approach">
+<div class="container">
+         <div class="row">
+         </div>
+</div>
+</div>
+
+

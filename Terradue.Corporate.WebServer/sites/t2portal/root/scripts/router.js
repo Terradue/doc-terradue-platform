@@ -5,9 +5,10 @@ define([
 	'app',
 	'modules/pages/controllers/pages',
 	'config',
+	'utils/helpers',
 	'underscorestring',
 	'canroutepushstate'
-], function($, can, _, App, Pages, Config){
+], function($, can, _, App, Pages, Config, Helpers){
 	// merge string plugin to underscore namespace
 	_.mixin(_.str.exports());
 	
@@ -58,7 +59,9 @@ define([
 				// call action if applicable
 				if (controller && controller[actionName]){
 					controller[actionName](data);
-					Helpers.scrollToTop();
+					setTimeout(function(){
+						Helpers.scrollToTop();
+					}, 100);
 				}
 				else Pages.errorView({}, "Controller not found: "+ControllerName);
 				$('.dropdown-toggle').dropdown();
