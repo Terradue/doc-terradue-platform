@@ -125,6 +125,7 @@ namespace Terradue.Corporate.WebServer {
                 user.Level = UserLevel.User;
 
                 user.Store();
+                user.StorePassword(request.Password);
 
                 result = new WebUserT2(user);
                 context.Close ();
