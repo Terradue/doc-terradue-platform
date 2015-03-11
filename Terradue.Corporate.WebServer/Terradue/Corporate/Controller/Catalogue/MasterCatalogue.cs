@@ -252,7 +252,7 @@ namespace Terradue.Corporate.Controller
             // Load all avaialable Datasets according to the context
             EntityList<Series> series = new EntityList<Series>(context);
             series.Load();
-            PaginatedList<Series> pds = new PaginatedList<Series>();
+            var pds = new Terradue.OpenSearch.Request.PaginatedList<Series>();
 
             int startIndex = 0;
             if (parameters["startIndex"] != null) startIndex = int.Parse(parameters["startIndex"]);
@@ -297,7 +297,7 @@ namespace Terradue.Corporate.Controller
 
             if (!(entity is IProxiedOpenSearchable)) return;
 
-            OpenSearchFactory.ReplaceSelfLinks(entity, request, osr, EarthObservationOpenSearchResultHelpers.EntrySelfLinkTemplate);
+            OpenSearchFactory.ReplaceSelfLinks(entity, request, osr, Terradue.Metadata.EarthObservation.OpenSearch.EarthObservationOpenSearchResultHelpers.EntrySelfLinkTemplate);
             OpenSearchFactory.ReplaceOpenSearchDescriptionLinks(entity, osr);                    
 
         }

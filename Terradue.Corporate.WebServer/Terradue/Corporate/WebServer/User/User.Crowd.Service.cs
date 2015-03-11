@@ -41,7 +41,7 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 CrowdClient client = new CrowdClient(context.GetConfigValue("Crowd-api-url"), context.GetConfigValue("Crowd-app-name"), context.GetConfigValue("Crowd-app-pwd"));
-                client.CreateUser(request);
+                client.CreateUser(request.ToEntity(new CrowdUser()));
                 context.Close();
             } catch (Exception e) {
                 context.Close();
@@ -67,7 +67,7 @@ namespace Terradue.Corporate.WebServer {
                 cuser.password = "changeme"; //TODO: get real password
 
                 CrowdClient client = new CrowdClient(context.GetConfigValue("Crowd-api-url"), context.GetConfigValue("Crowd-app-name"), context.GetConfigValue("Crowd-app-pwd"));
-                client.CreateUser();
+                client.CreateUser(cuser);
                 context.Close();
             } catch (Exception e) {
                 context.Close();
