@@ -30,30 +30,6 @@ define([
 				//this.element.html(can.view('modules/people/views/people.html', peopleData));
 			},
 			
-
-			
-			// custom subpage sample (third level page: /people/details/<id>)
-			details: function(options){
-				// the pattern of each route url is <controller>/<action>/<id>
-				// in this case you have
-				// - options.controller = 'people'
-				// - options.action = 'details'
-				// - options.id = the t2 people id choosen
-				console.log(options);
-
-				// get the complete name (name.surname)
-				var completeName = options.id;
-				
-				// search the user inside the data
-				var search = $.grep(peopleData.list, function(p){
-					return (p.surname+'.'+p.name == completeName);
-				});
-				if (search[0]) // if found
-					this.view({
-						url: 'modules/people/views/peopleDetails.html',
-						data: search[0],
-					});
-			},
 			
 			// sample event
 			'ul.tags>li click': function(elem){

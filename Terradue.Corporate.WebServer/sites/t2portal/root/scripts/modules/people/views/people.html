@@ -30,32 +30,32 @@
  </div>
  <!-- /approach -->
  
- 
+
 <div class="container">
-	<!-- Team -->
+	<!-- Simple spacing before -->
 	<br><br>
-    <ul class="members">
+    <div class="members" class="span12">
+	<!-- Team members -->
+		<div class="row-fluid">
 		{{#each list}}
-		<div class="col-md-4 peopleAreaItem">
-			
+			<div class="col-md-4 peopleAreaItem">		
 			<div class="peopleAreaItem">
-				<img class="photo img-responsive" src="{{image}}" />
+				<img class="img-responsive photo" src="{{image}}" />					
 				<div>
 					<ul class="tags">
-						<li>
-							<a href={{focus1.url}} target="_blank">{{focus1.title}}</a>
-						</li>
-						<li>
-							<a href={{focus2.url}} target="_blank">{{focus2.title}}</a>
-						</li>
-						<li>
-							<a href={{focus3.url}} target="_blank">{{focus3.title}}</a>
-						</li>
-						<li>
-							<a href={{focus4.url}} target="_blank">{{focus4.title}}</a>
-						</li>
+					<li>
+						<a href={{focus1.url}} target="_blank">{{focus1.title}}</a>
+					</li>
+					<li>
+						<a href={{focus2.url}} target="_blank">{{focus2.title}}</a>
+					</li>
+					<li>
+						<a href={{focus3.url}} target="_blank">{{focus3.title}}</a>
+					</li>
+					<li>
+						<a href={{focus4.url}} target="_blank">{{focus4.title}}</a>
+					</li>
 					</ul>
-					
 					<div class="social">
 						{{#if linkedin}}
 							<a href={{linkedin}} target="_blank"><img src="/styles/img/icons/linkedin_small_icon.png" /></a>
@@ -70,16 +70,14 @@
 						{{/unless}}					
 					</div>
 				</div>
-				
-                    <!-- member's social links 
-                    <a href="javascript://"><span class="social fa fa-twitter"></span></a>
-                    <a href="javascript://"><span class="social fa fa-linkedin"></span></a> -->
-				<br>
-				<h5 class="small">{{surname}} {{name}}</h5>
-			</div>
-		</div>	
+			</div>								
+			<h5 class="small">{{surname}} {{name}}</h5>
+			</div>	
 		{{/each}}
-	</ul>   	
+		</div>
+		<!-- Simple spacing after -->
+		<br><br>
+	</div>   	
 </div>
 
 <!-- IMAGE - our philosophy -->
