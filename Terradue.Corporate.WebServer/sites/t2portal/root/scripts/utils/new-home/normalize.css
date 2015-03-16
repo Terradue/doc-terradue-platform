@@ -3468,10 +3468,11 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   position: relative;
   display: block;
 }
-.nav > li > a {
+.nav > li > a {			/* dropdown menu */
   position: relative;
   display: block;
   padding: 10px 15px;
+  margin-left: 20px;
 }
 .nav > li > a:hover,
 .nav > li > a:focus {
@@ -3966,7 +3967,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   color: #777;
 }
 .navbar-default .navbar-nav > li > a:hover {
-	  color: #333;
+  color: #333;
   background-color: #ddd;
 }
 .navbar-default .navbar-nav > li > a:focus {
@@ -5719,7 +5720,7 @@ th.visible-sm,
 td.visible-sm {
   display: none !important;
 }
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 768px) and (max-width: 991px) {   /* one */
   .visible-sm {
     display: block !important;
   }
@@ -5784,7 +5785,7 @@ td.visible-lg {
     display: none !important;
   }
 }
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 768px) and (max-width: 991px) {   /* two */
   .hidden-sm,
   tr.hidden-sm,
   th.hidden-sm,
