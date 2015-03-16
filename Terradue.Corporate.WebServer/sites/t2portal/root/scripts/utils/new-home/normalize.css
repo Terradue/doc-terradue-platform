@@ -238,7 +238,7 @@ th {
     display: none;
   }
   .navbar-default {
-  	background-color:#ffffff;
+  	background-color:#fff;
   	border-color:#e7e7e7;
   }
   .table td,
@@ -595,7 +595,8 @@ ol ol {
 .list-inline > li:first-child {
   padding-left: 0;
 }
-dl {
+
+dl {    /* Description lists (dl), Description terms (dt) and Description definitions (dd) */
   margin-top: 0;
   margin-bottom: 20px;
 }
@@ -623,6 +624,7 @@ dd {
     margin-left: 180px;
   }
 }
+
 abbr[title],
 abbr[data-original-title] {
   cursor: help;
@@ -632,6 +634,7 @@ abbr[data-original-title] {
   font-size: 90%;
   text-transform: uppercase;
 }
+
 blockquote {
   padding: 10px 20px;
   margin: 0 0 20px;
@@ -684,6 +687,7 @@ blockquote:before,
 blockquote:after {
   content: "";
 }
+
 address {
   margin-bottom: 20px;
   font-style: normal;
@@ -736,27 +740,14 @@ pre code {
   max-height: 340px;
   overflow-y: scroll;
 }
+
 .container {
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
 }
-@media (min-width: 768px) {
-  .container {
-    width: 750px;
-  }
-}
-@media (min-width: 992px) {
-  .container {
-    width: 970px;
-  }
-}
-@media (min-width: 1200px) {
-  .container {
-    width: 1170px;
-  }
-}
+
 .container-fluid {
   padding-right: 15px;
   padding-left: 15px;
@@ -3468,11 +3459,11 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   position: relative;
   display: block;
 }
-.nav > li > a {			/* dropdown menu */
+.nav > li > a {			/* menu bar */
   position: relative;
   display: block;
   padding: 10px 15px;
-  margin-left: 20px;
+  margin-left: 0px;    /* if extra spacing between menu entries -- NEED TO BE ADDED for dropdown menu style (mobile) */
 }
 .nav > li > a:hover,
 .nav > li > a:focus {
