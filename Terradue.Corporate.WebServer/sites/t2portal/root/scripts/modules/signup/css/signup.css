@@ -40,3 +40,7 @@
 .signupPage .recaptchaWrapper {
 	min-height: 78px;
 }
+
+.signupPage .userLogged {
+	text-align: center;
+}

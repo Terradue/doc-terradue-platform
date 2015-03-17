@@ -10,23 +10,10 @@ define([
 ], function($, can, Config, BaseControl, Helpers, SignupModel, bootbox){
 	
 var SignupControl = BaseControl(
-	{
-		defaults: { fade: 'slow' },
-		EMAIL_REQUIRED: 'Insert your email',
-		EMAIL_WELL_FORMED: 'The provided email is not valid',
-	    PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters',
-	    PASSWORD_REQUIRED: 'Create a password',
-	    PASSWORD_AT_LEAST_ONE_UPPER_CASE: 'Password must include at least one uppercase character',
-	    PASSWORD_AT_LEAST_ONE_LOWER_CASE: 'Password must include at least one lowercase character',
-	    PASSWORD_AT_LEAST_ONE_NUMBER: 'Password must include at least one number',
-	    PASSWORD_AT_LEAST_SPECIAL_CHAR: 'Password must include at least one special character in the list !@#$%^&*()_+',
-	    PASSWORD_NO_OTHER_CHAR: 'Password can\'t include special characters different from the list !@#$%^&*()_+',
-	    PASSWORD_CONFIRM: 'The password is not equal with the first',
-	},
+	{ defaults: { fade: 'slow' }, },
 	{
 		// init
 		init: function (element, options) {
-			window.Helpers=Helpers;
 			this.setupValidation();
 		},
 		
