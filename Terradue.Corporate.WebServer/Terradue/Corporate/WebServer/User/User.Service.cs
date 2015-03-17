@@ -152,7 +152,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 //validate catcha
-//                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
+                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
 
                 bool exists = false;
                 try{
@@ -172,6 +172,7 @@ namespace Terradue.Corporate.WebServer {
                 user.StorePassword(request.Password);
                 user.SendMail(UserMailType.Registration, true);
 
+                user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
                 result = new WebUserT2(new UserT2(context, user));
                 context.Close ();
             }catch(Exception e) {
