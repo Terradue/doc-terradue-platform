@@ -1,0 +1,42 @@
+
+.pageHeader {
+	color: #ffffff;
+	padding: 50px 0;
+	display: table;
+	height: 200px;
+	width: 100%;
+	background-color: #0a5175;
+	/* background: url(../scripts/modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.jpg) no-repeat center center fixed; */
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.pageSubHeader {
+	padding: 20px 20px;
+	color: #ffffff;
+	height: 80px;
+	background: url(/scripts/modules/pages/img/separators/shapes.jpg) no-repeat center center fixed;
+	background-attachment: inherit;
+}
+
+.signupPage .signupForm {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.signupPage form .form-group {
+	max-width: 450px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.signupPage form label.error {
+	font-size: 11px;
+	color: rgb(200, 0, 0);
+}
+
+.signupPage .recaptchaWrapper {
+	min-height: 78px;
+}
