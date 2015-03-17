@@ -35,10 +35,10 @@ var SignupControl = BaseControl(
 			var self = this;
 			
 			this.data = new can.Observe({
-				recaptchaPublicKey: Config.recaptchaPublicKey
+				recaptchaPublicKey: Config.recaptchaPublicKey,
 			});
 			App.Login.isLoggedDeferred.then(function(user){
-				self.data.user = user;
+				self.data.attr('user', user);
 			});
 
 			this.view({
@@ -130,6 +130,8 @@ var SignupControl = BaseControl(
 					loading: false, 
 					errorMessage: Helpers.getErrMsg(xhr, 'Unable to register. Please contact the Administrator.'),
 				});
+				// reload captcha
+				grecaptcha.reset();
 			});
 			return false;
 		},
