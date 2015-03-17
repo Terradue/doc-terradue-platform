@@ -1,5 +1,6 @@
 
 define({
+	
 	template: 'mustache',
 	api: "t2api",
 	errorNotify: true,
@@ -17,5 +18,8 @@ define({
 		resources: '/static/resources.html',
 
 	},
+	
+	recaptchaPublicKey: '6Lc1ZgMTAAAAAFB21z0ElV23MU1friFPmkBXTtNc',
+		//'6LeXcwMTAAAAAFoiZaGEqfI2WwzSDcXQVfm64H0J', // ciccio test
 	
 });
