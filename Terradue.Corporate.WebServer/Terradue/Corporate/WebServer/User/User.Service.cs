@@ -152,19 +152,22 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 //validate catcha
-                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
+//                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
 
-                EntityType userEntityType = EntityType.GetEntityType(typeof(User));
-                AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(Terradue.Portal.PasswordAuthenticationType));
-
-                bool exists = User.DoesUserExist(context, request.Email, authType);
+                bool exists = false;
+                try{
+                    User.FromUsername(context, request.Email);
+                    exists = true;
+                }catch(Exception){}
                 if(exists) throw new Exception("User already exists");
 
-                UserT2 user = (UserT2)(User.GetOrCreate(context, request.Email, authType));
-                user.Email = request.Email;
+                UserT2 user = request.ToEntity(context, new UserT2(context));
+                user.Username = user.Email;
                 user.NeedsEmailConfirmation = false;
                 user.AccountStatus = AccountStatusType.PendingActivation;
                 user.Level = UserLevel.User;
+                user.PasswordAuthenticationAllowed = true;
+
                 user.Store();
                 user.StorePassword(request.Password);
                 user.SendMail(UserMailType.Registration, true);
