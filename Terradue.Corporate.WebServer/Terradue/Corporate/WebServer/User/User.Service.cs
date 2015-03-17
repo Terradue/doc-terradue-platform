@@ -8,6 +8,10 @@ using ServiceStack.ServiceInterface;
 using Terradue.OpenNebula;
 using Terradue.Corporate.Controller;
 using Terradue.Security.Certification;
+using System.Net;
+using System.IO;
+using ServiceStack.Text;
+using System.Runtime.Serialization;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Tep-QuickWin Terradue webserver")]
@@ -137,6 +141,44 @@ namespace Terradue.Corporate.WebServer {
         }
 
         /// <summary>
+        /// Post the specified request.
+        /// </summary>
+        /// <param name="request">Request.</param>
+        public object Post(RegisterUserT2 request)
+        {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            WebUserT2 result;
+            try{
+                context.Open();
+
+                //validate catcha
+                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
+
+                EntityType userEntityType = EntityType.GetEntityType(typeof(User));
+                AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(Terradue.Portal.PasswordAuthenticationType));
+
+                bool exists = User.DoesUserExist(context, request.Email, authType);
+                if(exists) throw new Exception("User already exists");
+
+                User user = User.GetOrCreate(context, request.Email, authType);
+                user.NeedsEmailConfirmation = false;
+                user.AccountStatus = AccountStatusType.PendingActivation;
+                user.Level = UserLevel.User;
+                user.DomainId = 0;
+                user.Store();
+                user.StorePassword(request.Password); //check rules
+                user.SendMail(UserMailType.Registration, true);
+
+                result = new WebUserT2(new UserT2(context, user));
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Delete the specified request.
         /// </summary>
         /// <param name="request">Request.</param>
@@ -155,6 +197,75 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
+        public void ValidateCaptcha(string secret, string response){
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.Accept = "application/json";
+//            request.UserAgent = this.ClientName;
+//            request.Headers.Add(HttpRequestHeader.Authorization, "Basic " + Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(this.ClientId + ":" + this.ClientSecret)));
+
+            string json = "{" +
+                "\"secret\":\"" + secret+"\"," +
+                "\"response\":\"" + response+"\"," +
+                "}";
+
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+
+                var httpResponse = (HttpWebResponse)request.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream())) {
+                    string result = streamReader.ReadToEnd();
+                    try{
+                        CaptchaResponse captchaResponse = JsonSerializer.DeserializeFromString<CaptchaResponse>(result);
+                        if (!captchaResponse.Success)
+                        {
+                            if (captchaResponse.ErrorCodes.Count <= 0) throw new Exception("error but no error message");
+
+                            var error = captchaResponse.ErrorCodes[0].ToLower();
+                            switch (error)
+                            {
+                                case ("missing-input-secret"):
+                                    throw new Exception("The secret parameter is missing.");
+                                    break;
+                                case ("invalid-input-secret"):
+                                    throw new Exception("The secret parameter is invalid or malformed.");
+                                    break;
+
+                                case ("missing-input-response"):
+                                    throw new Exception("The response parameter is missing.");
+                                    break;
+                                case ("invalid-input-response"):
+                                    throw new Exception("The response parameter is invalid or malformed.");
+                                    break;
+
+                                default:
+                                    throw new Exception("Error occured. Please try again");
+                                    break;
+                            }
+                        }
+                    }catch(Exception e){
+                        throw new Exception(result);
+                    }
+                }
+            }
+        }
+
     }
+        
+    [DataContract]
+    public class CaptchaResponse{
+        [DataMember(Name="success")]
+        public bool Success { get; set; }
+
+        [DataMember(Name="error-codes")]
+        public List<string> ErrorCodes { get; set; }
+    }
+
+
+
 }
 

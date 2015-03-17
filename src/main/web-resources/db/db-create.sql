@@ -17,6 +17,7 @@ INSERT IGNORE INTO usrcert (id_usr) SELECT id from usr;
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-default-provider', 'int', 'OpenNebula default provider', 'Enter the value of the identifier of the Opennebula default provider', @prov_id, '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-access', 'string', 'OpenNebula access url', 'Enter the value of the Opennebula access url', 'https://cloud-dev.terradue.int', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-GEP-grpID', 'int', 'Id of GEP group on ONE controller', 'Enter the Id of GEP group on ONE controller', '141', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('reCaptcha-secret', 'string', 'Google reCaptcha secret', 'Enter the name of the Google reCaptcha secret', '6Lc1ZgMTAAAAAIeEknASbDZ2Kn0N20Br-7a_jIAk', '0');
 
 UPDATE config SET value='terradue.com' WHERE name='Github-client-name';
 UPDATE config SET value='64e9f7050a5dba093679' WHERE name='Github-client-id';
@@ -36,6 +37,11 @@ UPDATE config SET value='support@terradue.com' WHERE name='MailSenderAddress';
 UPDATE config SET value='relay.terradue.int' WHERE name='SmtpHostname';
 UPDATE config SET value='Dear $(USERNAME)\n\nYour account has been created on $(SITEURL). We must verify your email authenticity. To do so, please click on the following link: $(ACTIVATIONURL)\nThank you.\n\nRegards\n\nTerradue Support Team' WHERE name='RegistrationMailBody';
 UPDATE config SET value='$(BASEURL)/#!emailconfirm?token=$(TOKEN)' WHERE name='EmailConfirmationUrl';
+
+
+/*****************************************************************************/
+
+UPDATE auth SET `activation_rule`='2' WHERE `identifier`='umsso';
 
 /*****************************************************************************/
 
