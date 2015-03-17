@@ -238,7 +238,7 @@ th {
     display: none;
   }
   .navbar-default {
-  	background-color:#ffffff;
+  	background-color:#fff;
   	border-color:#e7e7e7;
   }
   .table td,
@@ -595,7 +595,8 @@ ol ol {
 .list-inline > li:first-child {
   padding-left: 0;
 }
-dl {
+
+dl {    /* Description lists (dl), Description terms (dt) and Description definitions (dd) */
   margin-top: 0;
   margin-bottom: 20px;
 }
@@ -623,6 +624,7 @@ dd {
     margin-left: 180px;
   }
 }
+
 abbr[title],
 abbr[data-original-title] {
   cursor: help;
@@ -632,6 +634,7 @@ abbr[data-original-title] {
   font-size: 90%;
   text-transform: uppercase;
 }
+
 blockquote {
   padding: 10px 20px;
   margin: 0 0 20px;
@@ -684,6 +687,7 @@ blockquote:before,
 blockquote:after {
   content: "";
 }
+
 address {
   margin-bottom: 20px;
   font-style: normal;
@@ -736,33 +740,21 @@ pre code {
   max-height: 340px;
   overflow-y: scroll;
 }
+
 .container {
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
 }
-@media (min-width: 768px) {
-  .container {
-    width: 750px;
-  }
-}
-@media (min-width: 992px) {
-  .container {
-    width: 970px;
-  }
-}
-@media (min-width: 1200px) {
-  .container {
-    width: 1170px;
-  }
-}
+
 .container-fluid {
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
 }
+
 .row {
   margin-right: -15px;
   margin-left: -15px;
@@ -929,6 +921,8 @@ pre code {
 .col-xs-offset-0 {
   margin-left: 0;
 }
+
+/* NEEDS TESTING and SIMPLIFICATION */
 @media (min-width: 768px) {
   .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
     float: left;
@@ -1087,6 +1081,8 @@ pre code {
     margin-left: 0;
   }
 }
+
+/* NEEDS TESTING and SIMPLIFICATION */
 @media (min-width: 992px) {
   .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
     float: left;
@@ -1245,6 +1241,8 @@ pre code {
     margin-left: 0;
   }
 }
+
+/* NEEDS TESTING and SIMPLIFICATION */
 @media (min-width: 1200px) {
   .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12 {
     float: left;
@@ -1403,6 +1401,7 @@ pre code {
     margin-left: 0;
   }
 }
+
 table {
   max-width: 100%;
   background-color: transparent;
@@ -3468,10 +3467,11 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   position: relative;
   display: block;
 }
-.nav > li > a {
+.nav > li > a {			/* menu bar */
   position: relative;
   display: block;
   padding: 10px 15px;
+  margin-left: 0px;    /* if extra spacing between menu entries -- NEED TO BE ADDED for dropdown menu style (mobile) */
 }
 .nav > li > a:hover,
 .nav > li > a:focus {
@@ -3966,7 +3966,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   color: #777;
 }
 .navbar-default .navbar-nav > li > a:hover {
-	  color: #333;
+  color: #333;
   background-color: #ddd;
 }
 .navbar-default .navbar-nav > li > a:focus {
@@ -5719,7 +5719,7 @@ th.visible-sm,
 td.visible-sm {
   display: none !important;
 }
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 768px) and (max-width: 991px) {   /* one */
   .visible-sm {
     display: block !important;
   }
@@ -5784,7 +5784,7 @@ td.visible-lg {
     display: none !important;
   }
 }
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 768px) and (max-width: 991px) {   /* two */
   .hidden-sm,
   tr.hidden-sm,
   th.hidden-sm,
