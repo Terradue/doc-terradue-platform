@@ -249,7 +249,7 @@ namespace Terradue.Corporate.WebServer {
                             }
                         }
                     }catch(Exception e){
-                        throw new Exception(result);
+                        throw new Exception("Error occured. Please try again.");
                     }
                 }
             }
