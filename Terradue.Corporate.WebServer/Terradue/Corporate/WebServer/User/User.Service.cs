@@ -152,7 +152,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 //validate catcha
-//                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
+                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
 
                 EntityType userEntityType = EntityType.GetEntityType(typeof(User));
                 AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(Terradue.Portal.PasswordAuthenticationType));
