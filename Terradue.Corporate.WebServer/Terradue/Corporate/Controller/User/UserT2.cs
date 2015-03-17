@@ -3,50 +3,12 @@ using Terradue.Portal;
 using Terradue.OpenNebula;
 using Terradue.Github;
 using Terradue.Util;
+using Terradue.Cloud;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
     public class UserT2 : User {
-
-        #region T2Certificate
-
-        /// <summary>
-        /// Gets the cert subject.
-        /// </summary>
-        /// <value>The cert subject.</value>
-        private string certsubject { get; set; }
-        public string CertSubject {
-            get {
-                if (certsubject == null) {
-                    try {
-                        Terradue.Security.Certification.CertificateUser certUser = Terradue.Security.Certification.CertificateUser.FromId(context, Id);
-                        certsubject = certUser.CertificateSubject;
-                    } catch (EntityNotFoundException e) {
-                        certsubject = null;
-                    }
-                }
-                return certsubject;
-            }
-        }
-
-        /// <summary>
-        /// Gets the x509 certificate.
-        /// </summary>
-        /// <value>The x509 certificate.</value>
-        public System.Security.Cryptography.X509Certificates.X509Certificate2 X509Certificate {
-            get {
-                try {
-                    Terradue.Security.Certification.CertificateUser certUser = Terradue.Security.Certification.CertificateUser.FromId(context,Id);
-                    return certUser.X509Certificate;
-                }
-                catch ( EntityNotFoundException e ){
-                    return null;
-                }
-            }
-        }
-
-        #endregion
-
+        
         #region OpenNebula
 
         /// <summary>
@@ -55,7 +17,7 @@ namespace Terradue.Corporate.Controller {
         /// <value>The one password.</value>
         public string OnePassword { 
             get{ 
-                if (onepwd == null) {
+                if (onepwd == null && this.IsPaying()) {
                     if (oneId == 0) {
                         try{
                             USER_POOL oneUsers = oneClient.UserGetPoolInfo();
@@ -94,7 +56,8 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="context">Context.</param>
         public UserT2(IfyContext context) : base(context) {
-            oneClient = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+            OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
+            oneClient = oneCloud.XmlRpc;
         }
 
         /// <summary>
@@ -114,15 +77,38 @@ namespace Terradue.Corporate.Controller {
             this.Level = user.Level;
         }
 
+        public bool IsPaying(){
+            return context.GetQueryBooleanValue(String.Format("SELECT id_domain IS NOT NULL FROM usr WHERE id={0};", this.Id));
+        }
+
         public override void Store(){
             bool isnew = (this.Id == 0);
             base.Store();
-            if (isnew) {
+            if (isnew && IsPaying()) {
                 //create github profile
-                GithubProfile github = new GithubProfile(context, this.Id);
-                github.Store();
-                //create certificate record
-                context.Execute(String.Format("INSERT INTO usrcert (id_usr) VALUES ({0});", this.Id));
+                CreateGithubProfile();
+                //create cloud user profile
+                CreateCloudProfile();
+            }
+        }
+
+        public new void StorePassword(string pwd){
+            //password check
+            //...
+
+            base.StorePassword(pwd);
+        }
+
+        protected void CreateGithubProfile(){
+            GithubProfile github = new GithubProfile(context, this.Id);
+            github.Store();
+        }
+
+        protected void CreateCloudProfile(){
+            EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
+            provs.Load();
+            foreach (CloudProvider prov in provs) {
+                context.Execute(String.Format("INSERT INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Email)));
             }
         }
 

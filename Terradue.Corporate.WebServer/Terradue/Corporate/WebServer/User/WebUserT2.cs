@@ -30,10 +30,39 @@ namespace Terradue.Corporate.WebServer {
     [Route("/user/cert", "PUT", Summary = "Update user cert", Notes = "User is contained in the PUT data. Only non UMSSO data can be updated, e.g redmineApiKey or certField")]
     public class UpdateUserCertTep : WebUserT2, IReturn<WebUserT2> {}
 
+    [Route("/user/registration", "POST", Summary = "Register a new user", Notes = "User is contained in the POST data.")]
+    public class RegisterUserT2 : WebUserRegistrationT2, IReturn<WebUserT2> {}
+
 
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
+
+    public class WebUserRegistrationT2 : WebUser{
+        [ApiMember(Name = "captchaValue", Description = "User recaptcha captchaValue", ParameterType = "query", DataType = "String", IsRequired = true)]
+        public String captchaValue { get; set; }
+
+        [ApiMember(Name = "captchaPublicKey", Description = "User recaptcha captchaPublicKey", ParameterType = "query", DataType = "String", IsRequired = true)]
+        public String captchaPublicKey { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
+        /// </summary>
+        public WebUserRegistrationT2() {}
+
+        /// <summary>
+        /// Tos the entity.
+        /// </summary>
+        /// <returns>The entity.</returns>
+        /// <param name="context">Context.</param>
+        public UserT2 ToEntity(IfyContext context, UserT2 input) {
+            UserT2 user = (input == null ? new UserT2(context) : input);
+            base.ToEntity(context, user);
+
+            return user;
+        }
+    }
+
 
     /// <summary>
     /// User.
@@ -42,9 +71,6 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name = "onepassword", Description = "User password on OpenNebula", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String OnePassword { get; set; }
-
-        [ApiMember(Name = "certsubject", Description = "User certificate subject", ParameterType = "query", DataType = "String", IsRequired = false)]
-        public String CertSubject { get; set; }
 
         [ApiMember(Name = "EmailNotification", Description = "User email notification tag", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool EmailNotification { get; set; }
@@ -61,7 +87,6 @@ namespace Terradue.Corporate.WebServer {
         /// <param name="entity">Entity.</param>
         public WebUserT2(UserT2 entity) : base(entity) {
             this.OnePassword = entity.OnePassword;
-            this.CertSubject = WebUserCertificate.TransformInOpenNebulaFormat(entity.CertSubject);
         }
 
         /// <summary>
