@@ -75,11 +75,13 @@ define([
 	});
 	
 	can.mustache.registerHelper('fromNow', function(dateStr, options) {
-		return moment(dateStr()).fromNow();
+		var dateStr = (dateStr==null || typeof(dateStr)!='function' ? dateStr : dateStr());
+		return moment(dateStr).fromNow();
 	});
 	
 	can.mustache.registerHelper('simpleDate', function(dateStr, options) {
-		return moment(dateStr()).format("MMM Do YYYY");
+		var dateStr = (dateStr==null || typeof(dateStr)!='function' ? dateStr : dateStr());
+		return moment(dateStr).format("MMM Do YYYY");
 	});
 	
 	can.mustache.registerHelper('spacer', function(width) {
@@ -200,14 +202,53 @@ define([
 			return id;
 		},
 		
-		// get the href parameter with @rel==<rel> from a links list
-		getHrefFromLinks: function(links, rel){
+		arrayToObject: function(ar, keyName){
+			var obj = {};
+			if ($.isArray(ar))
+				$.each(ar, function(){
+					if (this[keyName])
+						obj[this[keyName]] = this;
+				});
+			return obj;
+		},
+		
+		// get the link parameter with @rel==<rel> from a links list
+		getLinkFromLinks: function(links, rel, title){
 			try {
-				var link = links.filter(function(l){return l["@rel"]==rel})[0];
-				return link["@href"] ? link["@href"] : "";
+				return links.filter(function(l){return (l["@rel"]==rel && (title ? l['@title']==title : true))})[0];
 			} catch(e){
-				return "";
+				return null;
 			}
+		},
+		
+		forceToArray: function(a){
+			if ($.isArray(a) || (a.attr && $.isArray(a.attr())))
+				return a;
+			else
+				return [a];
+		},
+		
+		// get the href parameter with @rel==<rel> from a links list
+		getHrefFromLinks: function(links, rel, title){
+			var link = this.getLinkFromLinks(links, rel, title);
+			return (link && link["@href"]) ? link["@href"] : "";
+		},
+
+		getCategoryFromCategories: function(categories, term){
+			try {
+				return categories.filter(function(l){return (l["@term"]==term)})[0];
+			} catch(e){
+				return null;
+			}
+		},
+
+		getLabelFromCategories: function(categories, term){
+			var category = this.getCategoryFromCategories(categories, term);
+			return (category && category["@term"]==term) ? category["@label"] : "";
+		},
+		
+		getSelfFromFeature: function(feature){
+			return this.getHrefFromLinks(feature.properties.links, 'self');
 		},
 		
 		truncateText: function(text, limit){
@@ -262,15 +303,35 @@ define([
 		},
 		
 		getUrlParameters: function(url) {
-			var pageUrl = url ? url.split('?')[1] : window.location.search.substring(1);
-			var urlParams = pageUrl.split('&');
-			var params={};
-			for (var i=0; i<urlParams.length; i++) {
-				var param = urlParams[i].split('=');
-				if (param.length==2)
-					params[param[0]] = param[1];
+			var parametersUrl = url ? url.split('?')[1] : window.location.search.substring(1),
+				params={
+					'__baseUrl' : url ? url.split('?')[0] : window.location.origin + window.location.pathname,
+					'__length' : 0,
+				};
+			
+			if (parametersUrl){
+				var urlParams = parametersUrl.split('&');
+				
+				for (var i=0; i<urlParams.length; i++) {
+					var param = urlParams[i].split('=');
+					if (param.length==2)
+						params[param[0]] = param[1];
+				}
+				params['__length'] = urlParams.length;
 			}
 			return params;
+		},
+		
+		addFormatJsonToUrl: function(url){
+			var params = this.getUrlParameters(url)
+			
+			if (params.__length==0)
+				url += (url[url.length-1]=='?' ? 'format=json' : '?format=json'); 
+			else
+				if (!params.format)
+					url += '&format=json';
+			
+			return url;
 		},
 		
 		// map x into a range to y in another range
@@ -299,6 +360,11 @@ define([
 
 		    // proportion
 		    return vnorm * range2 + min2;
+		},
+		
+		// scroll to top
+		scrollToTop: function(){
+			$('html, body').scrollTop(0);
 		},
 		
 		scrollTop: function() {
@@ -485,11 +551,57 @@ define([
 			return objectNew;
 		},
 		
-		// scroll to top
-		scrollToTop: function(){
-			$('html, body').scrollTop(0);
+		initCollapsiblePanel: function($panel){
+			if ($panel.hasClass('panel-collapsible-init'))
+				return;
+			$panel.addClass('panel-collapsible-init');
+			
+			var $header = $panel.find('.panel-header'),
+				$body = $panel.find('.panel-body'),
+				isOpen = !$panel.hasClass('panel-closed'),
+				$i = $('<i class="fa fa-chevron-circle-'+ (isOpen?'down':'right') + '"></i>').appendTo($header);
+			
+			$body.css({
+				'background-color': $body.css('background-color'),
+				'padding': $body.css('padding'),
+				'border-radius': $body.css('border-radius'),
+			});
+			
+			var show = function(){
+				$panel.removeClass('panel-closed');
+				$body.show('blind', function(){					
+					$i.removeClass('fa-chevron-circle-right').addClass('fa-chevron-circle-down');
+				});
+				isOpen = true;
+			};
+			var hide = function(){
+				$body.hide('blind', function(){
+					$panel.addClass('panel-closed');
+					$i.removeClass('fa-chevron-circle-down').addClass('fa-chevron-circle-right');
+				});
+				isOpen = false;
+			}
+			
+			if (!isOpen)
+				hide();
+			
+			$header.click(function(){
+				if (isOpen)
+					hide();
+				else
+					show();
+			});
 		},
 		
+		
+/*
+ * 
+<div class="panel panel-collapsible panel-closed">
+  <div class="panel-header">This is the title</div>
+  <div class="panel-body">This is the body <br>This is the body <br>This is the body <br>This is the body <br></div>
+</div>
+
+*/		
 		logoInConsole: function(){
 			var myVar = ""
 				+ "                                                                                                         \n"

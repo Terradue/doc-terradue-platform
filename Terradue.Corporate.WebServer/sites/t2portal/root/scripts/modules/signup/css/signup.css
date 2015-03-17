@@ -21,11 +21,22 @@
 	background-attachment: inherit;
 }
 
-.signupForm {
+.signupPage .signupForm {
 	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
-.signupForm > form {
-	width: 450px;
-	margin: auto;
+.signupPage form .form-group {
+	max-width: 450px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.signupPage form label.error {
+	font-size: 11px;
+	color: rgb(200, 0, 0);
+}
+
+.signupPage .recaptchaWrapper {
+	min-height: 78px;
 }

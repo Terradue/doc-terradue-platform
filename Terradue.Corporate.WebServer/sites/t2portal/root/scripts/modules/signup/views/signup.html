@@ -1,4 +1,5 @@
 <link href="/scripts/modules/signup/css/signup.css" rel="stylesheet">
+<script src='https://www.google.com/recaptcha/api.js'></script>
 
 <div class="signupPage">
 
@@ -15,40 +16,59 @@
 			</div>
 		</div>
 	</div>
-
-</div>
-
-
-<div class="pageSubHeader">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-8 col-md-offset-2 text-center">
-				<h4>
-					bla bla bla bla...
-				</h4>
+	
+	<div class="pageSubHeader">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2 text-center">
+					<h4>
+						bla bla bla bla...
+					</h4>
+				</div>
 			</div>
 		</div>
 	</div>
+	
+	{{#if user}}
+		<div class="container">
+			<h3>Well done! You successfully registered on the Platform. Please verify that you received our confirmation email.	</h3>
+		</div>
+	{{else}}
+		<div class="container signupForm">
+			<form>
+				<div class="form-group">
+					<label for="email">Email address</label>
+					<input type="email" class="form-control" name="email" placeholder="Enter email">
+				</div>
+				<div class="form-group">
+					<label for="password">Password</label>
+					<input type="password" class="form-control" name="password" id="signupPassword" placeholder="Password">
+				</div>
+				<div class="form-group">
+					<label for="passwordRepeat">Repeat Password</label>
+					<input type="password" class="form-control" name="passwordRepeat" placeholder="Repeat Password">
+				</div>
+				<div class="form-group recaptchaWrapper">
+					<div class="g-recaptcha" data-sitekey="{{ recaptchaPublicKey }}"></div>
+					{{#if recaptchaError }}<label class="error">Please perform the captcha test</label>{{/if}}
+				</div>
+				
+				{{#if loading}}
+					<p><i class="fa fa-spin fa-spinner"></i>Register User..</p>
+				{{else}}
+					{{#if errorMessage}}
+						<div class="alert alert-danger" role="alert">
+							<strong>Oups!</strong> {{errorMessage}}
+						</div>
+					{{/if}}
+					<div class="form-group">
+						<button type="submit" class="btn btn-default">Submit</button>
+					</div>
+				{{/if}}
+			</form>
+		</div>
+	{{/if}}
+	
+
 </div>
-
-
-<div class="container signupForm">
-	<form>
-		<div class="form-group">
-			<label for="email">Email address</label>
-			<input type="email" class="form-control" id="email" placeholder="Enter email">
-		</div>
-		<div class="form-group">
-			<label for="password">Password</label>
-			<input type="password" class="form-control" id="password" placeholder="Password">
-		</div>
-		<div class="form-group">
-			<label for="passwordRepeat">Repeat Password</label>
-			<input type="password" class="form-control" id="passwordRepeat" placeholder="Repeat Password">
-		</div>
-		<button type="submit" class="btn btn-default">Submit</button>
-	</form>
-</div>
-
-
 
