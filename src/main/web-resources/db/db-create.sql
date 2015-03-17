@@ -14,6 +14,13 @@ INSERT IGNORE INTO usrcert (id_usr) SELECT id from usr;
 
 /*****************************************************************************/
 
+SET @type_id = (SELECT id FROM type WHERE class = 'Terradue.Cloud.OneCloudProvider, Terradue.Cloud');
+INSERT INTO cloudprov (id_type, caption, address, web_admin_url) VALUES (@type_id, 'Terradue ONE server', 'http://cloud.terradue.int:2633/RPC2', 'http://cloud.terradue.int:2633/RPC2');
+INSERT INTO onecloudprov (id, admin_usr, admin_pwd) VALUES (@@IDENTITY, 'serveradmin', '71f1fc3805e49031fb534606efcc8fc1eefa7d69');
+SET @prov_id = (SELECT LAST_INSERT_ID());
+
+/*****************************************************************************/
+
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-default-provider', 'int', 'OpenNebula default provider', 'Enter the value of the identifier of the Opennebula default provider', @prov_id, '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-access', 'string', 'OpenNebula access url', 'Enter the value of the Opennebula access url', 'https://cloud-dev.terradue.int', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-GEP-grpID', 'int', 'Id of GEP group on ONE controller', 'Enter the Id of GEP group on ONE controller', '141', '0');
@@ -42,13 +49,6 @@ UPDATE config SET value='$(BASEURL)/#!emailconfirm?token=$(TOKEN)' WHERE name='E
 /*****************************************************************************/
 
 UPDATE auth SET `activation_rule`='2' WHERE `identifier`='umsso';
-
-/*****************************************************************************/
-
-SET @type_id = (SELECT id FROM type WHERE class = 'Terradue.Cloud.OneCloudProvider, Terradue.Cloud');
-INSERT INTO cloudprov (id_type, caption, address, web_admin_url) VALUES (@type_id, 'Terradue ONE server', 'http://cloud.terradue.int:2633/RPC2', 'http://cloud.terradue.int:2633/RPC2');
-INSERT INTO onecloudprov (id, admin_usr, admin_pwd) VALUES (@@IDENTITY, 'serveradmin', '71f1fc3805e49031fb534606efcc8fc1eefa7d69');
-SET @prov_id = (SELECT LAST_INSERT_ID());
 
 /*****************************************************************************/
 

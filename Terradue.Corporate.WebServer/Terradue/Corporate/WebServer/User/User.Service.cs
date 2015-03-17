@@ -152,7 +152,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 //validate catcha
-                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
+//                ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
 
                 EntityType userEntityType = EntityType.GetEntityType(typeof(User));
                 AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(Terradue.Portal.PasswordAuthenticationType));
@@ -160,13 +160,13 @@ namespace Terradue.Corporate.WebServer {
                 bool exists = User.DoesUserExist(context, request.Email, authType);
                 if(exists) throw new Exception("User already exists");
 
-                User user = User.GetOrCreate(context, request.Email, authType);
+                UserT2 user = (UserT2)(User.GetOrCreate(context, request.Email, authType));
+                user.Email = request.Email;
                 user.NeedsEmailConfirmation = false;
                 user.AccountStatus = AccountStatusType.PendingActivation;
                 user.Level = UserLevel.User;
-                user.DomainId = 0;
                 user.Store();
-                user.StorePassword(request.Password); //check rules
+                user.StorePassword(request.Password);
                 user.SendMail(UserMailType.Registration, true);
 
                 result = new WebUserT2(new UserT2(context, user));
@@ -202,15 +202,12 @@ namespace Terradue.Corporate.WebServer {
             request.Method = "POST";
             request.ContentType = "application/json";
             request.Accept = "application/json";
-//            request.UserAgent = this.ClientName;
-//            request.Headers.Add(HttpRequestHeader.Authorization, "Basic " + Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(this.ClientId + ":" + this.ClientSecret)));
 
             string json = "{" +
                 "\"secret\":\"" + secret+"\"," +
                 "\"response\":\"" + response+"\"," +
                 "}";
-
-
+            
             using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
                 streamWriter.Write(json);
                 streamWriter.Flush();
@@ -223,7 +220,7 @@ namespace Terradue.Corporate.WebServer {
                         CaptchaResponse captchaResponse = JsonSerializer.DeserializeFromString<CaptchaResponse>(result);
                         if (!captchaResponse.Success)
                         {
-                            if (captchaResponse.ErrorCodes.Count <= 0) throw new Exception("error but no error message");
+                            if (captchaResponse.ErrorCodes.Count <= 0) throw new Exception("Error occured. Please try again.");
 
                             var error = captchaResponse.ErrorCodes[0].ToLower();
                             switch (error)

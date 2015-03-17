@@ -72,9 +72,6 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "onepassword", Description = "User password on OpenNebula", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String OnePassword { get; set; }
 
-        [ApiMember(Name = "certsubject", Description = "User certificate subject", ParameterType = "query", DataType = "String", IsRequired = false)]
-        public String CertSubject { get; set; }
-
         [ApiMember(Name = "EmailNotification", Description = "User email notification tag", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool EmailNotification { get; set; }
 
@@ -90,7 +87,6 @@ namespace Terradue.Corporate.WebServer {
         /// <param name="entity">Entity.</param>
         public WebUserT2(UserT2 entity) : base(entity) {
             this.OnePassword = entity.OnePassword;
-            this.CertSubject = WebUserCertificate.TransformInOpenNebulaFormat(entity.CertSubject);
         }
 
         /// <summary>
