@@ -100,11 +100,12 @@ namespace Terradue.Corporate.Controller {
         }
 
         public void ValidatePassword(string pwd){
+            if (pwd.Length < 8) throw new Exception("Invalid password: You must use at least 8 characters");
             if (!Regex.Match(pwd, @"[A-Z]").Success) throw new Exception("Invalid password: You must use at least one upper case value");
             if (!Regex.Match(pwd, @"[a-z]").Success) throw new Exception("Invalid password: You must use at least one lower case value");
-            if (!Regex.Match(pwd, @"[\\d]").Success) throw new Exception("Invalid password: You must use at least one numerical value");
+            if (!Regex.Match(pwd, @"[\d]").Success) throw new Exception("Invalid password: You must use at least one numerical value");
             if (!Regex.Match(pwd, @"[!#@$%^&*()_+]").Success) throw new Exception("Invalid password: You must use at least one special character");
-            if (!Regex.Match(pwd, @"^[a-zA-Z0-9!#@$%^&*()_+]+$").Success) throw new Exception("Invalid password: You must use only one special character");
+            if (!Regex.Match(pwd, @"^[a-zA-Z0-9!#@$%^&*()_+]+$").Success) throw new Exception("Invalid password: You password contains illegal characters");
         }
 
         protected void CreateGithubProfile(){

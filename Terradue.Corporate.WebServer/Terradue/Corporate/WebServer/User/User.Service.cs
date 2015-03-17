@@ -169,10 +169,15 @@ namespace Terradue.Corporate.WebServer {
                 user.PasswordAuthenticationAllowed = true;
 
                 user.Store();
-                user.StorePassword(request.Password);
-                user.SendMail(UserMailType.Registration, true);
+                try{
+                    user.StorePassword(request.Password);
+                    user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
+                    user.SendMail(UserMailType.Registration, true);
+                }catch(Exception e){
+                    user.Delete();
+                    throw e;
+                }
 
-                user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
                 result = new WebUserT2(new UserT2(context, user));
                 context.Close ();
             }catch(Exception e) {
