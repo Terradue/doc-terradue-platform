@@ -4,6 +4,7 @@ using Terradue.OpenNebula;
 using Terradue.Github;
 using Terradue.Util;
 using Terradue.Cloud;
+using System.Text.RegularExpressions;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
@@ -94,9 +95,16 @@ namespace Terradue.Corporate.Controller {
 
         public new void StorePassword(string pwd){
             //password check
-            //...
-
+            ValidatePassword(pwd);
             base.StorePassword(pwd);
+        }
+
+        public void ValidatePassword(string pwd){
+            if (!Regex.Match(pwd, @"[A-Z]").Success) throw new Exception("Invalid password: You must use at least one upper case value");
+            if (!Regex.Match(pwd, @"[a-z]").Success) throw new Exception("Invalid password: You must use at least one lower case value");
+            if (!Regex.Match(pwd, @"[\\d]").Success) throw new Exception("Invalid password: You must use at least one numerical value");
+            if (!Regex.Match(pwd, @"[!#@$%^&*()_+]").Success) throw new Exception("Invalid password: You must use at least one special character");
+            if (!Regex.Match(pwd, @"^[a-zA-Z0-9!#@$%^&*()_+]+$").Success) throw new Exception("Invalid password: You must use only one special character");
         }
 
         protected void CreateGithubProfile(){
