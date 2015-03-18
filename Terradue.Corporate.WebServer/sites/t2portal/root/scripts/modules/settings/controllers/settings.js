@@ -70,25 +70,23 @@ define([
 				var self = this,
 					token = Helpers.getUrlParameters().token;
 				
+				this.profileData = new can.Observe({});
+				this.view({
+					url: 'modules/settings/views/profile.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.profileData,
+					fnLoad: function(){
+						self.initSubmenu('profile');
+					}
+				});
+				
 				if (token && !this.tokenOk)
 					this.manageEmailConfirm(token);
 				else {
 					console.log("App.controllers.Settings.profile");
 					this.isLoginPromise.then(function(user){
-						//user.attr('EmailUmssoChanged', user.Email != user.UmssoEmail);
-						self.view({
-							url: 'modules/settings/views/profile.html',
-							selector: Config.subContainer,
-							dependency: self.indexDependency(),
-							data: user,
-							fnLoad: function(){
-								self.initSubmenu('profile');
-							}
-						});
-						
-//						if (user.AccountStatus==1) // is PENDING
-//							self.showPendingActivation();
-						
+						self.profileData.attr('user', user);
 					}).fail(function(){
 						self.accessDenied();
 					});
@@ -131,31 +129,33 @@ define([
 			cloud: function(options) {
 				var self = this;
 				console.log("App.controllers.Settings.cloud");
+				var cloudData = new can.Observe({});
 				this.isLoginPromise.then(function(user){
 					OneConfigModel.findAll().then(function(_oneSettings){
 						oneSettings = Helpers.keyValueArrayToJson(_oneSettings);
+						self.view({
+							url: 'modules/settings/views/cloud.html',
+							selector: Config.subContainer,
+							data: cloudData,
+							dependency: self.indexDependency(),
+							fnLoad: function(){
+								self.initSubmenu('cloud');
+							}
+						});
 						OneUserModel.findOne().then(function(oneUser){
-							self.view({
-								url: 'modules/settings/views/cloud.html',
-								selector: Config.subContainer,
-								data: {
-									oneSettings: oneSettings,
-									oneUser: oneUser,
-									sunstoneOk: user.CertSubject == oneUser.Password,
-									user: user,
-									onePasswordOk: oneUser.Password,
-									oneCertOk: user.CertSubject
-								},
-								dependency: self.indexDependency(),
-								fnLoad: function(){
-									self.initSubmenu('cloud');
-								}
-							});
+							cloudData.attr({
+								oneSettings: oneSettings,
+								oneUser: oneUser,
+								sunstoneOk: user.CertSubject == oneUser.Password,
+								user: user,
+								onePasswordOk: oneUser.Password,
+								oneCertOk: user.CertSubject
+							})						
 						});
 					});
 				});
 			},
-			
+
 			github: function(options) {
 				var self = this;
 				console.log("App.controllers.Settings.github");
@@ -252,21 +252,20 @@ define([
 			
 			'.settings-profile .submit click': function(){
 				// get data
-				var usr = Helpers.retrieveDataFromForm('.settings-profile form',
+				var self= this,
+					usr = Helpers.retrieveDataFromForm('.settings-profile form',
 						['FirstName','LastName','Email','Affiliation','Country','EmailNotification']);
 				
 				// update
 				App.Login.User.current.attr(usr); 
 				// save
+				self.profileData.attr({saveSuccess: false, saveFail: false});
 				new ProfileModel(App.Login.User.current.attr())
 					.save()
 					.then(function(createdNews){
-						Messenger().post({
-							message: 'Profile successfully saved.',
-							type: 'success',
-							//showCloseButton: true,
-							hideAfter: 4,
-						});
+						self.profileData.attr('saveSuccess', true);
+					}).fail(function(xhr){
+						self.profileData.attr({saveFail: true, saveFailMessage: Helpers.getErrMsg(xhr)});
 					});
 				
 				return false;
