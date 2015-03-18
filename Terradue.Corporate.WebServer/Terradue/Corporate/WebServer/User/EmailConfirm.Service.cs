@@ -27,15 +27,16 @@ namespace Terradue.TepQW.WebServer {
             // Let's try to open context
             try {
                 context.Open();
-                context.Close();
-                return new HttpError(System.Net.HttpStatusCode.MethodNotAllowed, new InvalidOperationException("Email already confirmed"));
-
-                // The user is pending activation
-            } catch (PendingActivationException e) {
                 AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(TokenAuthenticationType));
-
                 // User is logged, now we confirm the email with the token
                 var tokenUser = ((TokenAuthenticationType)authType).AuthenticateUser(context, request.Token);
+                context.Close();
+//                return new HttpError(System.Net.HttpStatusCode.MethodNotAllowed, new InvalidOperationException("Email already confirmed"));
+
+                // The user is pending activation
+            } catch (Exception e) {
+                context.Close();
+                throw e;
             }
 
             context.Close();
@@ -54,17 +55,17 @@ namespace Terradue.TepQW.WebServer {
             try {
                 context.Open();
 
-                return new HttpError(System.Net.HttpStatusCode.BadRequest, new InvalidOperationException("Account does not require email confirmation"));
-
-            } catch (PendingActivationException e) {
                 AuthenticationType pwdauthType = IfyWebContext.GetAuthenticationType(typeof(PasswordAuthenticationType));
                 var usr = pwdauthType.GetUserProfile(context, HttpContext.Current.Request, false);
                 if (usr == null)
                     return new HttpError(System.Net.HttpStatusCode.BadRequest, new UnauthorizedAccessException("Not valid user"));
-
                 usr.SendMail(UserMailType.Registration, true);
-
+                context.Close();
                 return new HttpResult(new EmailConfirmationMessage(){ Status = "sent", Email = usr.Email });
+
+            } catch (Exception e) {
+                context.Close();
+                throw e;
             }
         }
 
