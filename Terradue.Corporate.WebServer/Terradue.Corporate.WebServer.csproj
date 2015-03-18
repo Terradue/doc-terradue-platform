@@ -77,9 +77,6 @@
     <Reference Include="Terradue.OpenSearch.Twitter">
       <HintPath>..\packages\Terradue.OpenSearch.Twitter.1.0.3\lib\net40\Terradue.OpenSearch.Twitter.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.WebService.Model">
-      <HintPath>..\packages\Terradue.WebService.Model.1.1.4\lib\net40\Terradue.WebService.Model.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.ServiceModel.Ogc.OwsContext">
       <HintPath>..\packages\Terradue.ServiceModel.Ogc.OwsContext.1.0.6\lib\net40\Terradue.ServiceModel.Ogc.OwsContext.dll</HintPath>
     </Reference>
@@ -168,6 +165,9 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="Mono.Addins">
       <HintPath>..\packages\Mono.Addins.1.2\lib\net40\Mono.Addins.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.WebService.Model">
+      <HintPath>..\packages\Terradue.WebService.Model.1.1.5\lib\net40\Terradue.WebService.Model.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

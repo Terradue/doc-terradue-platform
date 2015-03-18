@@ -12,6 +12,7 @@ using System.Net;
 using System.IO;
 using ServiceStack.Text;
 using System.Runtime.Serialization;
+using ServiceStack.Common.Web;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Tep-QuickWin Terradue webserver")]
@@ -182,7 +183,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();
-                throw e;
+                return new HttpError(System.Net.HttpStatusCode.BadRequest, e);
             }
             return result;
         }

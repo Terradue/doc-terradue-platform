@@ -55,10 +55,9 @@ namespace Terradue.TepQW.WebServer {
             try {
                 context.Open();
 
-                AuthenticationType pwdauthType = IfyWebContext.GetAuthenticationType(typeof(PasswordAuthenticationType));
-                var usr = pwdauthType.GetUserProfile(context, HttpContext.Current.Request, false);
-                if (usr == null)
-                    return new HttpError(System.Net.HttpStatusCode.BadRequest, new UnauthorizedAccessException("Not valid user"));
+                User usr = User.FromId(context, context.UserId);
+                if(usr.AccountStatus != AccountStatusType.PendingActivation) return new HttpError(System.Net.HttpStatusCode.BadRequest, new UnauthorizedAccessException("Not valid user"));
+                    
                 usr.SendMail(UserMailType.Registration, true);
                 context.Close();
                 return new HttpResult(new EmailConfirmationMessage(){ Status = "sent", Email = usr.Email });
