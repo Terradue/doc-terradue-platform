@@ -227,11 +227,11 @@ namespace Terradue.Corporate.Controller {
         /// Creates the safe.
         /// </summary>
         protected void CreateSafe(){
-            Safe safe = new Safe(context);
-            safe.OwnerId = this.Id;
-            string password = "";
-            safe.GenerateKeys(password);
-            safe.Store();
+//            Safe safe = new Safe(context);
+//            safe.OwnerId = this.Id;
+//            string password = "";
+//            safe.GenerateKeys(password);
+//            safe.Store();
         }
 
         /// <summary>
