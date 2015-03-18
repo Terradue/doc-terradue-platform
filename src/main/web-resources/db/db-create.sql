@@ -24,6 +24,7 @@ SET @prov_id = (SELECT LAST_INSERT_ID());
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-default-provider', 'int', 'OpenNebula default provider', 'Enter the value of the identifier of the Opennebula default provider', @prov_id, '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-access', 'string', 'OpenNebula access url', 'Enter the value of the Opennebula access url', 'https://cloud-dev.terradue.int', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-GEP-grpID', 'int', 'Id of GEP group on ONE controller', 'Enter the Id of GEP group on ONE controller', '141', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('reCaptcha-public', 'string', 'Google reCaptcha secret', 'Enter the name of the Google reCaptcha secret', '6Lc1ZgMTAAAAAFB21z0ElV23MU1friFPmkBXTtNc', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('reCaptcha-secret', 'string', 'Google reCaptcha secret', 'Enter the name of the Google reCaptcha secret', '6Lc1ZgMTAAAAAIeEknASbDZ2Kn0N20Br-7a_jIAk', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('PendingUserCanLogin', 'bool', 'Can users with pending status login', 'If checked, pending users can login, otherwise they cannot', 'true', '0');
 
@@ -44,7 +45,9 @@ UPDATE config SET value='Terradue Support' WHERE name='MailSender';
 UPDATE config SET value='support@terradue.com' WHERE name='MailSenderAddress';
 UPDATE config SET value='relay.terradue.int' WHERE name='SmtpHostname';
 UPDATE config SET value='Dear $(USERNAME)\n\nYour account has been created on $(SITEURL). We must verify your email authenticity. To do so, please click on the following link: $(ACTIVATIONURL)\nThank you.\n\nRegards\n\nTerradue Support Team' WHERE name='RegistrationMailBody';
-UPDATE config SET value='$(BASEURL)/#!emailconfirm?token=$(TOKEN)' WHERE name='EmailConfirmationUrl';
+UPDATE config SET value='$(BASEURL)/#!settings/profile&token=$(TOKEN)' WHERE `name`='EmailConfirmationUrl';
+UPDATE config SET value='Dear $(USERNAME),\n\nyour account has just been created on $(SITEURL).\n\nWe must now verify your email adress\' authenticity.   To do so, please click on the following link:  $(ACTIVATIONURL)  With our best regards  The Operations Support team at Terradue' WHERE `name`='RegistrationMailBody';
+UPDATE config SET value='your registration on the Terradue platform' WHERE `name`='RegistrationMailSubject';
 
 
 /*****************************************************************************/

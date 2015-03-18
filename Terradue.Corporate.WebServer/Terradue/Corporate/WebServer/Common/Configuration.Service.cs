@@ -21,6 +21,7 @@ namespace Terradue.TepQW.WebServer {
                 context.Open();
 
                 result.Add(new KeyValuePair<string, string>("Github-client-id",context.GetConfigValue("Github-client-id")));
+                result.Add(new KeyValuePair<string, string>("reCaptcha-public",context.GetConfigValue("reCaptcha-public")));
 
                 context.Close();
             } catch (Exception e) {
