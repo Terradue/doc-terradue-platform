@@ -44,9 +44,8 @@ UPDATE config SET value='enguecrowd' WHERE name='Crowd-app-pwd';
 UPDATE config SET value='Terradue Support' WHERE name='MailSender';
 UPDATE config SET value='support@terradue.com' WHERE name='MailSenderAddress';
 UPDATE config SET value='relay.terradue.int' WHERE name='SmtpHostname';
-UPDATE config SET value='Dear $(USERNAME)\n\nYour account has been created on $(SITEURL). We must verify your email authenticity. To do so, please click on the following link: $(ACTIVATIONURL)\nThank you.\n\nRegards\n\nTerradue Support Team' WHERE name='RegistrationMailBody';
+UPDATE config SET value="Dear $(USERNAME),\nyour account has just been created on $(SITEURL).\n\nWe must now verify your email adress' authenticity.\n\nTo do so, please click on the following link:\n$(ACTIVATIONURL)\n\nWith our best regards\n\nThe Operations Support team at Terradue" WHERE name='RegistrationMailBody';
 UPDATE config SET value='$(BASEURL)/portal/settings/profile?token=$(TOKEN)' WHERE `name`='EmailConfirmationUrl';
-UPDATE config SET value='Dear $(USERNAME),\n\nyour account has just been created on $(SITEURL).\n\nWe must now verify your email adress\' authenticity.   To do so, please click on the following link:  $(ACTIVATIONURL)  With our best regards  The Operations Support team at Terradue' WHERE `name`='RegistrationMailBody';
 UPDATE config SET value='your registration on the Terradue platform' WHERE `name`='RegistrationMailSubject';
 
 
