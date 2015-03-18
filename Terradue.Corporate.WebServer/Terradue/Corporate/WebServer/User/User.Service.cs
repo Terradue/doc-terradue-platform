@@ -187,6 +187,26 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
+        public object Post(UpgradeUserT2 request)
+        {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
+            WebUserT2 result;
+            try{
+                context.Open();
+                if(request.Id == 0) throw new Exception("Wrong user Id");
+                UserT2 user = UserT2.FromId(context, request.Id);
+                int level = 0;
+                user.Upgrade(level);
+
+                result = new WebUserT2(new UserT2(context, user));
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
         /// <summary>
         /// Delete the specified request.
         /// </summary>

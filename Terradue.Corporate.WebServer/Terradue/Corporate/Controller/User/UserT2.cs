@@ -86,9 +86,7 @@ namespace Terradue.Corporate.Controller {
             bool isnew = (this.Id == 0);
             base.Store();
             if (isnew && IsPaying()) {
-                //create github profile
                 CreateGithubProfile();
-                //create cloud user profile
                 CreateCloudProfile();
             }
         }
@@ -117,8 +115,17 @@ namespace Terradue.Corporate.Controller {
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
-                context.Execute(String.Format("INSERT INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Email)));
+                context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Email)));
             }
+        }
+
+        protected void CreateDomain(){
+            Domain domain = new Domain(context);
+            domain.Identifier = this.Username;
+            domain.Description = string.Format("Domain belonging to user {0}",this.Username);
+            domain.Store();
+            this.DomainId = domain.Id;
+            this.Store();
         }
 
         /// <summary>
@@ -139,6 +146,12 @@ namespace Terradue.Corporate.Controller {
             user.Identifier = username;
             user.Load();
             return user;
+        }
+
+        public void Upgrade(int level){
+            CreateGithubProfile();
+            CreateCloudProfile();
+            CreateDomain();
         }
 
         /// <summary>

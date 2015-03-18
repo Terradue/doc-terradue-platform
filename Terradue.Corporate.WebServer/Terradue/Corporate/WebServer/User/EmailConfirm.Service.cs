@@ -23,7 +23,7 @@ namespace Terradue.TepQW.WebServer {
         /// <param name="request">Request.</param>
         public object Get(ConfirmUserEmail request) {
 
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             // Let's try to open context
             try {
                 context.Open();

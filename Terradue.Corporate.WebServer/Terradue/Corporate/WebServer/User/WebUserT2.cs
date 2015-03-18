@@ -33,6 +33,9 @@ namespace Terradue.Corporate.WebServer {
     [Route("/user/registration", "POST", Summary = "Register a new user", Notes = "User is contained in the POST data.")]
     public class RegisterUserT2 : WebUserRegistrationT2, IReturn<WebUserT2> {}
 
+    [Route("/user/upgrade", "POST", Summary = "Upgrade a user", Notes = "User is contained in the POST data.")]
+    public class UpgradeUserT2 : WebUserT2, IReturn<WebUserT2> {}
+
 
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
