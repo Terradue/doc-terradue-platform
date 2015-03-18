@@ -22,6 +22,7 @@ require.config({
 		jqueryValidate: 'libs/jquery.validate/js/jquery.validate',//.additional-methods.js
 		//bootstrapFileUpload: 'libs/bootstrap-fileupload/bootstrap-fileupload.min',
 		jasnyBootstrap: 'libs/jasny-bootstrap/js/jasny-bootstrap.min',
+		droppableTextarea: 'libs/jquery.droppableTextarea/js/jquery.droppableTextarea',
 	},
 	shim: {
 		underscore: {
@@ -43,6 +44,7 @@ require.config({
 		ajaxFileUpload: ['jquery'],
 		jqueryValidate: ['jquery'], 
 		jasnyBootstrap: ['jquery', 'bootstrap'],
+		droppableTextarea: ['jquery', 'bootstrap'],
 	}
 });
 

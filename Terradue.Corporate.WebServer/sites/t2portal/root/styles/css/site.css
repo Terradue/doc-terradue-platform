@@ -1,0 +1,24 @@
+
+
+.pageHeader {
+	color: #ffffff;
+	padding: 50px 0;
+	display: table;
+	height: 200px;
+	width: 100%;
+	background-color: #0a5175;
+	/* background: url(../scripts/modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.jpg) no-repeat center center fixed; */
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.pageSubHeader {
+	padding: 20px 20px;
+	color: #ffffff;
+	height: 80px;
+	background: url(/scripts/modules/pages/img/separators/shapes.jpg) no-repeat center center fixed;
+	background-attachment: inherit;
+}
+

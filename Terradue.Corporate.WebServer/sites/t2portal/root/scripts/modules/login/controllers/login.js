@@ -14,7 +14,9 @@ define([
 			// init current user view
 			this.User = new can.Observe({});
 			this.isLoginOpen = false;
-			$("#loginDiv").html(can.view("modules/login/views/login.html", this.User));
+			
+			if (options.showLoginMenu)
+				$("#loginDiv").html(can.view("modules/login/views/login.html", this.User));
 			
 			this.view({
 				selector: "#loginFormContainer",
@@ -25,7 +27,7 @@ define([
 			this.isLoggedDeferred = LoginModel.isLogged(function(user){
 				self.User.attr({ current: user });
 				$('.dropdown-toggle').dropdown();
-			}).fail(function(){
+			}).fail(function(xhr){
 				self.User.attr({ noLogged: true });
 				$('.dropdown-toggle').dropdown();
 			});
@@ -40,7 +42,7 @@ define([
 				this.openLoginForm();
 			return false;
 		},
-		
+
 		'#loginButton click': function(){
 			this.doLogin();
 			return false;
@@ -66,6 +68,7 @@ define([
 			
 			return false;
 		},
+		
 		
 		openLoginForm: function(){
 			$("#loginFormContainer").animate({height: 188});
@@ -104,10 +107,14 @@ define([
 		
 		isLogged: function(){
 			return (this.User && !this.User.noLogged);
-		}
+		},
+		
+		isAdmin: function(){
+			return (this.User && !this.User.noLogged && this.User.current && this.User.current.attr('Level') && this.User.current.attr('Level')==4);
+		},
 		
 	});
 	
-	return new LoginControl(document, {});
+	return LoginControl;
 	
 });

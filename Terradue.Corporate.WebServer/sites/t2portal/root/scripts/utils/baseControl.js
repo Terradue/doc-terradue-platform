@@ -43,8 +43,8 @@ define([
 
 			// load and merge data if applicable
 			App.loadView(options, function(frag) {
-				//HANDLE VIEW DEPENDENCY IF SPECIFIED AND DOES NOT EXIST ALREADY
-				if (options.dependency && self.element.find(options.dependency.selector).length === 0) {
+				//handle view dependency if specified and not exists already
+				if (options.dependency && self.element.find(options.selector).length === 0) {
 					App.loadView(options.dependency, function(dependencyFrag) {
 						//GET SPECIFIED CONTENT AREA
 						var dependencyEl = options.dependency.selector
@@ -63,20 +63,26 @@ define([
 					});
 				} else callback(frag);
 			}, function(){
-				self.errorView(options, "Unable to load " + options.url + " view.");
+				self.errorView(options, null, "Unable to load " + options.url + " view.");
 				Helpers.scrollToTop();
 			});
 		},
 		
-		errorView: function(options, msg){
-			options.url = Config.page404;
-			if (!options.mainContainer)
+		errorView: function(options, shortMsg, longMsg, isMainContainer){
+			options.url = Config.pageError;
+			if (!isMainContainer)
 				options.selector = Config.mainContainer;
-			if (!options.data && msg)
-				options.data = {
-					msg: msg
-				};
+			options.data = {
+				shortMsg: shortMsg,
+				longMsg: longMsg,
+			};
 			this.view(options);
+		},
+
+		accessDenied: function(){
+			this.view({
+				url: 'modules/pages/views/accessDenied.html',
+			});
 		},
 
 		modal: function(options) {

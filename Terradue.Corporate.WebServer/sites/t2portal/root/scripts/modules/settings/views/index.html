@@ -4,10 +4,15 @@
 			<br/>
 			<div class="well submenu">
 				<ul class="nav nav-pills nav-stacked">
-					<li class='profile'><a href="/portal/settings/profile">Profile</a></li>
-					<li class='certificate'><a href="/portal/settings/certificate">Certificate</a></li>
-					<li class='cloud'><a href="/portal/settings/cloud">Cloud</a></li>
-					<li class='github'><a href="/portal/settings/github">Github</a></li>
+					<li class='profile'><a href="/portal/settings/profile">
+						{{#ifEquals user.AccountStatus 1}}
+							<span class="text-warning"><i class="fa fa-exclamation-triangle"></i></span>
+						{{/if}}
+						Profile
+					</a></li>
+					<li class='certificate'><a href="/portal/settings/certificate"> Certificate</a></li>
+					<li class='cloud'><a href="/portal/settings/cloud"> Cloud</a></li>
+					<li class='github'><a href="/portal/settings/github"> Github</a></li>
 				</ul>
 			</div>
 		</div>

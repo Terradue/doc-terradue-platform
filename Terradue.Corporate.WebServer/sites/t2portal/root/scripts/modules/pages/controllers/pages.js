@@ -13,7 +13,7 @@ define([
     	'modules/login/controllers/login',
     	'skrollr',
     	'loadmask',
-], function($, _, can, App, Config, BaseControl, Menu, Login, skrollr){
+], function($, _, can, App, Config, BaseControl, Menu, LoginControl, skrollr){
 	
 if (App.controllers.Pages==null)
 	App.controllers.Pages = new (BaseControl(
@@ -29,7 +29,9 @@ if (App.controllers.Pages==null)
 				});
 				
 				// set login public accessible
-				App.Login = Login;
+				App.Login = new LoginControl(document, {
+					showLoginMenu: true,
+				});
 				
 				// set dropdown
 				$('.dropdown-toggle').dropdown();

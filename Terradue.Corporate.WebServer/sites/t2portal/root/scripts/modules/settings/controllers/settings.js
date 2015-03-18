@@ -16,18 +16,35 @@ define([
 	'jasnyBootstrap',//'bootstrapFileUpload',
 	'jqueryValidate',
 	'ajaxFileUpload',
+	'droppableTextarea'
 ], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel){
 	var SettingsControl = BaseControl(
 		{
 			defaults: { fade: 'slow' },
 		},{
-			indexDependency: { url: 'modules/settings/views/index.html' },
+			//indexDependency: { url: 'modules/settings/views/index.html', data: {name:'ciccio'} },
+			indexDependency: function(){
+				return {
+					url: 'modules/settings/views/index.html',
+					data: this.data
+				};
+			},
 			
 			// init
 			init: function (element, options) {
+				var self = this;
 				console.log("settingsControl.init");
+				
+				this.data = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
+				this.configPromise = $.get('/'+Config.api+'/config?format=json');
+				
+				this.isLoginPromise.then(function(user){
+					self.data.attr('user', user);
+				}).fail(function(){
+					self.accessDenied();
+				});
 			},
 			
 			initSubmenu: function(item){
@@ -43,23 +60,39 @@ define([
 			
 			index: function (options) {
 				console.log("App.controllers.Settings.index");
-				this.view(this.indexDependency);
+				var self = this;
+				this.isLoginPromise.then(function(user){
+					self.view(self.indexDependency());
+				})
 			},
 			
 			profile: function(options) {
-				var self = this;
-				console.log("App.controllers.Settings.profile");
-				this.isLoginPromise.then(function(user){
-					self.view({
-						url: 'modules/settings/views/profile.html',
-						selector: Config.subContainer,
-						dependency: self.indexDependency,
-						data: user,
-						fnLoad: function(){
-							self.initSubmenu('profile');
-						}
+				var self = this,
+					token = Helpers.getUrlParameters().token;
+				
+				if (token && !this.tokenOk)
+					this.manageEmailConfirm(token);
+				else {
+					console.log("App.controllers.Settings.profile");
+					this.isLoginPromise.then(function(user){
+						//user.attr('EmailUmssoChanged', user.Email != user.UmssoEmail);
+						self.view({
+							url: 'modules/settings/views/profile.html',
+							selector: Config.subContainer,
+							dependency: self.indexDependency(),
+							data: user,
+							fnLoad: function(){
+								self.initSubmenu('profile');
+							}
+						});
+						
+//						if (user.AccountStatus==1) // is PENDING
+//							self.showPendingActivation();
+						
+					}).fail(function(){
+						self.accessDenied();
 					});
-				});
+				}
 			},
 			
 			certificate: function(options) {
@@ -74,7 +107,7 @@ define([
 					self.view({
 						url: 'modules/settings/views/certificate.html',
 						selector: Config.subContainer,
-						dependency: self.indexDependency,
+						dependency: self.indexDependency(),
 						data: self.certificateData,
 						fnLoad: function(){
 							self.initSubmenu('certificate');
@@ -108,12 +141,12 @@ define([
 								data: {
 									oneSettings: oneSettings,
 									oneUser: oneUser,
-									sunstoneOk: user.CertSubject == user.OnePassword,
+									sunstoneOk: user.CertSubject == oneUser.Password,
 									user: user,
-									onePasswordOk: user.OnePassword,
+									onePasswordOk: oneUser.Password,
 									oneCertOk: user.CertSubject
 								},
-								dependency: self.indexDependency,
+								dependency: self.indexDependency(),
 								fnLoad: function(){
 									self.initSubmenu('cloud');
 								}
@@ -132,26 +165,95 @@ define([
 						self.view({
 							url: 'modules/settings/views/github.html',
 							selector: Config.subContainer,
-							dependency: self.indexDependency,
+							dependency: self.indexDependency(),
 							data: {
 								user: userData,
 								github: githubData,
 							},
 							fnLoad: function(){
 								self.initSubmenu('github');
+								self.initSshKeyArea();
 							}
 						});
 					});
 				});
 			},
-			
 
+			initSshKeyArea:function(){
+				var githubData = this.githubData;
+					
+				function updateView(){
+					var $dta = $('#myDroppableTextarea');
+					if ($dta.length && $dta.is(':empty')){
+						$dta.droppableTextarea({
+							limitByte: 1000,
+							limitByteMessage: 'The file is too big, are you sure you\'ve dropped your public key?',
+							placeholder: 'ssh-rsa ...',
+							changeCallback: function(text){
+								if (!text || !text.startsWith('ssh-rsa ')){
+									$('.rsaValidation.alert').removeClass('alert-success').html('<i class="icon-exclamation-sign"></i> Insert a valid rsa public key.');
+									$('.settings-github .addPublicKeyFromTextarea').attr('disabled', 'disabled');
+								}
+								else{
+									$('.settings-github .addPublicKeyFromTextarea').removeAttr('disabled');
+									$('.rsaValidation.alert').addClass('alert-success').html('<i class="icon-check-sign"></i> Valid public key inserted.');
+								}
+							}
+						});
+					}
+				};
+				updateView();			
+				githubData.bind('change', function(){
+					updateView();
+				});
+
+				var params = Helpers.getUrlParameters();
+				if (params.code && params.state && params.state=='geohazardstep'){
+					$('.githubKeyPanel').mask('wait');
+					GithubModel.getGithubToken(params.code, function(){
+						$('.githubKeyPanel').unmask();
+						self.addPublicKey();
+					},function(){
+						$('.githubKeyPanel').unmask();
+						bootbox.alert("<i class='fa fa-warning'></i> Error during put your GitHub token.");
+					});
+				}
+			},
 			
-			// profile			
+			
+			
+			// profile
+			
+			showPendingActivation: function(){
+				this.element.find('.pendingActivation').show();
+			},
+
+			manageEmailConfirm: function(token){
+				var self=this;
+				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
+					bootbox.alert('<p><strong>Thank you.</strong></p><p>Your email address has been successfully validated.</p>)', function(){
+						// reinit
+						App.Login.init(document, { showLoginMenu: true, pendingActivationOk: true });
+						self.init(self.element, self.options);
+						self.tokenOk = true;
+						can.route.removeAttr('token');
+					});
+					
+//					$('nav>.topPageAlert')
+//						.html(can.view("modules/settings/views/pendingActivationSuccess.html"))
+//						.show('blind');
+					
+					
+				}).fail(function(xhr){
+					//App.Login.showPendingActivation();
+					self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
+				});
+			},
+			
 			'.settings-profile .submit click': function(){
 				// get data
 				var usr = Helpers.retrieveDataFromForm('.settings-profile form',
-						['FirstName','LastName','Email','Affiliation','Country']);//,'EmailNotification']);
+						['FirstName','LastName','Email','Affiliation','Country','EmailNotification']);
 				
 				// update
 				App.Login.User.current.attr(usr); 
@@ -169,6 +271,18 @@ define([
 				
 				return false;
 			},
+
+			// send email pending activation
+			'a.sendConfirmationEmail click': function(elem){
+				var $span = $('<span> <i class="fa fa-spin fa-spinner"></i></span>')
+					.insertAfter(elem);
+				//elem.remove();
+				$.post('/'+Config.api+'/user/emailconfirm?format=json', {}, function(){
+					$span.addClass('text-success').html('<br/><strong>Email sent!</strong>');
+				}).fail(function(xhr){
+					$span.addClass('text-danger').html('<br/><strong>Error: </strong>'+Helpers.getErrMsg(xhr));
+				});
+			},
 			
 			//github
 			'.settings-github .usernameForm .submit click': function(){
@@ -177,6 +291,7 @@ define([
 				
 				this.githubPromise.then(function(githubData){
 					githubData.attr('Name', githubName);
+
 					// update
 					new GithubModel({
 							Name: githubName,
@@ -195,7 +310,34 @@ define([
 				
 				return false;
 			},
-			
+
+			'.githubKeyPanel > .showSshKey click': function(el){
+				var $pre = $(".githubKeyPanel > .certPub");
+				if ($pre.is(':visible')){
+					$pre.hide('blind');
+					el.html('Show SSH Key <i class="icon-caret-right"></i>');
+				} else{
+					$pre.show('blind');
+					el.html('Hide SSH Key <i class="icon-caret-down"></i>');
+				}
+				return false;
+			},
+
+			'.settings-github .addPublicKeyFromTextarea click': function(){
+				var sshPublicKey = $('#myDroppableTextarea textarea').val();
+				if (!sshPublicKey)
+					bootbox.alert('Your public key is empty');
+				else if (!sshPublicKey.startsWith('ssh-rsa '))
+					bootbox.alert('Your public key is not well-formed');
+				else{
+					var secondSpaceIndex = sshPublicKey.substring(8).indexOf(' ');
+					if (secondSpaceIndex!=-1)
+						sshPublicKey = sshPublicKey.substring(0, secondSpaceIndex+8);
+					
+					this.addPublicKey(sshPublicKey);
+				}
+			},
+
 			'.settings-github .usernameForm .cancel click': function(){
 				$('.settings-github .githubName').css('display', 'inline-block');
 				$('.settings-github .modifyGithubName').hide();
@@ -207,34 +349,33 @@ define([
 			},
 			
 			'.settings-github .githubKeyPanel .addPublicKey click': 'addPublicKey',
-			
-			addPublicKey: function(){
+
+			addPublicKey: function(sshPublicKey){
 				var self = this;
-				$('.githubKeyPanel').mask('wait');
-				GithubModel.postSshKey(function(){
-					$('.githubKeyPanel').unmask();
-					self.githubData.attr('HasSSHKey', 'true');
-				}, function(xhr){
-					$('.githubKeyPanel').unmask();
-					if (xhr.responseJSON.ResponseStatus.Message == "Invalid token"){
-						bootbox.prompt({
-							title:'Insert your github password to obtain the token', 
-							inputType: 'password',
-							callback: function(githubPwd){
-								$('.githubKeyPanel').mask('wait');
-								GithubModel.getGithubToken(githubPwd, function(ris){
-									$('.githubKeyPanel').unmask();
-//									bootbox.alert("<i class='fa fa-warning'></i> The Github Password is not valid.");
-//									alert("OK! reload addPublicKey");
-									self.addPublicKey();
-								},function(){
-									$('.githubKeyPanel').unmask();
-									bootbox.alert("<i class='fa fa-warning'></i> The Github Password is not valid.");
-								});
+				
+				this.configPromise.then(function(_serviceConfig){
+					var serviceConfig = Helpers.keyValueArrayToJson(_serviceConfig, 'Key', 'Value');
+
+					$('.githubKeyPanel').mask('wait');
+					GithubModel.postSshKey(sshPublicKey, function(){
+						$('.githubKeyPanel').unmask();
+						self.githubData.attr('HasSSHKey', 'true');
+					}, function(xhr){
+						$('.githubKeyPanel').unmask();
+						if (!xhr.responseJSON)
+							xhr.responseJSON = JSON.parse(xhr.responseText)
+							if (xhr.responseJSON.ResponseStatus.Message == "Invalid token"){
+								// get github client id
+								var githubClientId = serviceConfig['Github-client-id'];
+								if (!githubClientId)
+									return;
+								
+								// redirect to github
+								window.location = 'https://github.com/login/oauth/authorize?client_id='+githubClientId
+									+'&scope=write:public_key,repo&state=geohazardstep&redirect_uri=' + document.location.href
+								
 							}
-						});
-					} else
-						bootbox.alert("Generic error.");						
+					});
 				});
 			},
 			
@@ -288,42 +429,37 @@ define([
 				$('#askPasswordModal').remove();
 
 				var passwordModal = $(''
-					+ '<div class="modal fade">'
-					+ '  <div class="modal-dialog">'
-					+ '    <div class="modal-content">'
-					+ '      <div class="modal-header">'
-					+ '        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'
-					+ '        <h4 id="askPasswordTitle" class="modal-title">' + title + '</h4>'
-					+ '      </div>'
-					+ '		<form name="passForm" id="passForm" method="post" action="/t2api/cert">'
-					+ '			<div class="modal-body">'
-					+ '				<p>You must now enter a password to protect the key of your certificate</p><br />'
-					+ '				<div class="fieldContainer">'
-					+ '					<div class="fieldDescription">Password</div>'
-					+ '					<input class="password" name="password" id="password" type="password" placeholder="Your password"/>'
-					+ '				</div>'
-					+ '				<br/>'
-					+ '				<div class="fieldContainer">'
-					+ '					<div class="fieldDescription">Confirm your password</div>'
-					+ '					<input name="password_confirm" id="password_confirm" type="password" placeholder="Confirm your password" />'
-					+ '				</div>'
-					+ '				<span class="label label-important">Important</span> This password is not recoverable. Please choose it wisely!'
-					+ "				<br>It must have:<ul>"
-					+ "				<li>length at least 8 characters</li>"
-					+ "				<li>at least one uppercase character</li>"
-					+ "				<li>at least one lowercase character</li>"
-					+ "				<li>at least one number</li>"
-					+ "				<li>at least one special character</li>"
-					+ "				</ul><span class='label label-important' id='askPasswordErrors'></span>"
-					+ '			</div>'
-					+ '			<div class="modal-footer">'
-					+ '				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>'
-					+ '				<button type="submit" class="btn btn-primary">Save changes</button>'
-					+ '			</div>'
-					+ '		</form>'
-					+ '    </div><!-- /.modal-content -->'
-					+ '  </div><!-- /.modal-dialog -->'
-					+ '</div><!-- /.modal -->').attr('id','askPasswordModal').appendTo('body');  
+				+ '<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
+				+ '<form name="passForm" id="passForm" method="post" action="/t2api/cert">'
+				+ '<div class="modal-header">'
+				+ '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>'
+				+ '<h4 id="askPasswordTitle">' + title + '</h4>'
+				+ '</div>'
+				+ '<div class="modal-body">'
+				+ '<p>You must now enter a password to protect the key of your certificate</p><br />'
+				+ '<div class="fieldContainer">'
+				+ '<div class="fieldDescription">Password</div>'
+				+ '<input class="password" name="password" id="password" type="password" placeholder="Your password"/>'
+				+ '</div>'
+				+ '<br/>'
+				+ '<div class="fieldContainer">'
+				+ '<div class="fieldDescription">Confirm your password</div>'
+				+ '<input name="password_confirm" id="password_confirm" type="password" placeholder="Confirm your password" />'
+				+ '</div>'
+				+ '<span class="label label-important">Important</span> This password is not recoverable. Please choose it wisely!'
+				+ "<br>It must have:<ul>"
+				+ "<li>length at least 8 characters</li>"
+				+ "<li>at least one uppercase character</li>"
+				+ "<li>at least one lowercase character</li>"
+				+ "<li>at least one number</li>"
+				+ "<li>at least one special character</li>"
+				+ "</ul><span class='label label-important' id='askPasswordErrors'></span>"
+				+ '</div>'
+				+ '<div class="modal-footer">'
+				+ '<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>'
+				+ '<button type="submit" value="OK" class="btn btn-primary">OK</button>'
+				+ '</div></form>'
+				+ '</div>').attr('id','askPasswordModal').appendTo('body');  
 
 				// Validator extensions
 				jQuery.validator.addMethod(
@@ -441,7 +577,8 @@ define([
 					secureuri:false,
 					fileElementId:'fileUpload',
 					success: function (data, status){
-						var certificate = jQuery.parseJSON(data.body.innerText);
+						var resultText = $(data).text(),
+							certificate = jQuery.parseJSON(resultText);
 						if ( certificate.ResponseStatus && certificate.ResponseStatus.ErrorCode)
 							self.errorUpload (data, status, null);
 						else {
@@ -461,7 +598,8 @@ define([
 			},
 			
 			errorUpload: function(data, status, e){
-				var exception = jQuery.parseJSON(data.body.innerText);
+				var resultText = $(data).text(),
+					exception = jQuery.parseJSON(resultText);
 				this.certificateData.attr({
 					resultMessageType: 'error',
 					resultMessage: "<strong>Error!</strong> Your certificate is not uploaded. " + exception.ResponseStatus.Message + "<br>"
@@ -479,8 +617,8 @@ define([
 				}, function(){
 					App.Login.User.current.attr('OnePassword', user.attr('CertSubject'));
 					self.cloud();
-				}, function(){
-					alert("error!");
+				}, function(xhr){
+					console.error(xhr);
 				});
 			},
 
@@ -493,8 +631,8 @@ define([
 					}, function(){
 						App.Login.User.current.attr('OnePassword', user.attr('CertSubject'));
 						self.cloud();
-					}, function(){
-						alert("error!");
+					}, function(xhr){
+						console.error(xhr);
 					});
 				});
 			}

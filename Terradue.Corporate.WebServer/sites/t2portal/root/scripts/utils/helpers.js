@@ -490,7 +490,7 @@ define([
 				var arr = _.toArray(data);
 				for (var i = 0; i < arr.length; i++) {
 					//DUCK-TYPING TO CHECK IF DEFERRED OBJECT
-					if (!arr[i].promise) {
+					if (!arr[i] || !arr[i].promise) {
 						isDeferred = false;
 						break;
 					}

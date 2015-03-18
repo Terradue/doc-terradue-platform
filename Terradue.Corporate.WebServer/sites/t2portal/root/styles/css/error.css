@@ -1,0 +1,44 @@
+
+.errorPage {
+	text-align: center;
+}
+
+.errorPage h1 {
+	font-family: inherit;
+}
+
+.errorPage .sorry {
+	font-size: 24px;
+	margin-bottom: 5px;
+}
+
+.errorPage .goBack {
+	font-size: 18px;
+	margin-bottom: 0px;
+}
+
+.errorPage .message {
+	overflow: hidden;
+	height: 3px;
+	width: 10px;
+	opacity: 0;
+}
+.errorPage .message:hover {
+	opacity: 1;
+	width: auto;
+	height: auto;
+}
+.errorPage hr {
+	margin: 0px;
+}
+
+.errorPage hr.bar {
+	height: 10px;
+	background-color: lightgray;
+	border: none;
+}
+
+.errorPage .deflatedEarth {
+	width: 500px;
+	padding-top: 10px;	
+}

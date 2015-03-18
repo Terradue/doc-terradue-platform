@@ -1,7 +1,7 @@
 {{#current}}
 	<ul class="nav navbar-nav">
 		<li class="dropdown">
-			<a href="tour" class="dropdown-toggle" data-toggle="dropdown">{{ FirstName }} {{ LastName }}<strong class="caret"></strong></a>
+			<a href="tour" class="dropdown-toggle" data-toggle="dropdown">{{ Username }}<strong class="caret"></strong></a>
 			<ul class="dropdown-menu">
 				<li><a href="settings/profile">Profile</a></li>
 				<li class="divider"></li>
@@ -9,37 +9,8 @@
 			</ul>
 		</li>
 	</ul>
-<!-- <div class="loginMenu">
-	<ul>
-		{{#ifEquals Level 4 }}
-		<li class="dropdown">
-			<a href="javascript://" class="dropdown-toggle" data-target="#" data-toggle="dropdown"><strong>{{ Username }}</strong> <b class="caret"></b></a>
-			<ul class="dropdown-menu">
-				<li><a href="#!cpanel/news">News Management</a></li>
-			</ul>
-		</li>
-		{{/ifEquals}}
-		{{#ifNotEquals Level 4 }}
-		<li><strong>{{ Username }}</strong></li>
-		{{/ifNotEquals}}
-		<li><a href="#!settings/profile">Profile</a></li>
-		<li><a href="#">Contact</a></li>
-		<li><a href="t2api/logout"><i class="fa fa-sign-out"></i></a></li>
-	</ul>
- </div>
- --><!-- <span class="text-info">Logged as {{ Username }}</span>&nbsp;&nbsp; -->
 {{/current}}
 {{#noLogged}}
-<!-- <form class="navbar-header navbar-form navbar-right" id="loginForm">
-	<div class="form-group">
-		<input type="text" class="form-control" role="username" name="username">
-	</div>
-	<div class="form-group">
-		<input type="text" class="form-control" role="password" name="password">
-	</div>
-	<button type="sign-in" id="loginButton" class="btn btn-default" style="margin-right: 20px;">Sign-in</button>
-</form> -->
-
 <div class="loginMenu">
 	<button type="sign-in" class="login btn btn-default" style="margin-right: 20px;">Sign-in</button>
 	<a type="sign-up" class="signup btn btn-default" style="margin-right: 20px;" href="signup">Sign-up</a>

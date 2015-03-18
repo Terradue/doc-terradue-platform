@@ -9,7 +9,8 @@ define({
 	
 	firstPage: '/static/home.html',
 
-	page404: "modules/pages/views/404.html",
+	page404: 'modules/pages/views/404.html',
+	pageError: 'modules/pages/views/error.html',
 	
 	staticPages: {
 		about: '/static/about.html',
