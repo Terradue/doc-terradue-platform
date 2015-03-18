@@ -172,18 +172,24 @@ namespace Terradue.Corporate.WebServer {
                 user.Store();
                 try{
                     user.StorePassword(request.Password);
-                    user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
                     user.SendMail(UserMailType.Registration, true);
                 }catch(Exception e){
                     user.Delete();
                     throw e;
                 }
 
+                //we login the user
+                try{
+                    user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
+                }catch(Exception e){
+                    throw new Exception("User account has been created, but there was an error during the automatic login. Please contact your administrator.");
+                }
+
                 result = new WebUserT2(new UserT2(context, user));
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();
-                return new HttpError(System.Net.HttpStatusCode.BadRequest, e);
+                throw e;
             }
             return result;
         }
