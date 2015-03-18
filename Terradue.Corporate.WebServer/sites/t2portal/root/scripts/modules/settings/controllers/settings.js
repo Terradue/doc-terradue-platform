@@ -231,7 +231,7 @@ define([
 			manageEmailConfirm: function(token){
 				var self=this;
 				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
-					bootbox.alert('<p><strong>Thank you.</strong></p><p>Your email address has been successfully validated.</p>)', function(){
+					bootbox.alert('<h3><strong>Thank you.</strong></h3><h4>Your email address has been successfully validated.</h4>', function(){
 						// reinit
 						App.Login.init(document, { showLoginMenu: true, pendingActivationOk: true });
 						self.init(self.element, self.options);
