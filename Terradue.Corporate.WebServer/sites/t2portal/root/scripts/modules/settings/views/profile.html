@@ -1,14 +1,15 @@
 <div class='settings-profile'>
 	<h3>Profile</h3>
-	{{#ifEquals AccountStatus 1}}
-		<div class="alert alert-warning pendingActivation" role="alert">
-			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			<strong>Pending Activation!</strong> We must verify that your email address is valid. Please consult your inbox and confirm your address.
-			<br/>
-			If you did not received it, <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
-			<br/>
-		</div>
-	{{/if}}
+	{{#user}}
+		{{#ifEquals AccountStatus 1}}
+			<div class="alert alert-warning pendingActivation" role="alert">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>Pending Activation!</strong> We must verify that your email address is valid. Please consult your inbox and confirm your address.
+				<br/>
+				If you did not received it, <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
+				<br/>
+			</div>
+		{{/if}}
 	<form role="form">
 		
 		<div class="form-group">
@@ -45,6 +46,13 @@
  
  -->
  		<br/>
+		{{#if ../saveSuccess}}
+			<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Updated!</strong> Your profile info are successful updated.</div>
+		{{/if}}
+		{{#if ../saveFail}}
+			<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oups! </strong>{{ saveFailMessage }}</div>
+		{{/if}}
 		<button type="submit" class="btn btn-warning submit">Submit</button>
 	</form>
+	{{/user}}
 </div>
