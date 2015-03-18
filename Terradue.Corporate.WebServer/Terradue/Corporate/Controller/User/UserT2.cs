@@ -5,6 +5,8 @@ using Terradue.Github;
 using Terradue.Util;
 using Terradue.Cloud;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using Terradue.Crowd;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
@@ -78,56 +80,6 @@ namespace Terradue.Corporate.Controller {
             this.Level = user.Level;
         }
 
-        public bool IsPaying(){
-            return context.GetQueryBooleanValue(String.Format("SELECT id_domain IS NOT NULL FROM usr WHERE id={0};", this.Id));
-        }
-
-        public override void Store(){
-            bool isnew = (this.Id == 0);
-            base.Store();
-            if (isnew && IsPaying()) {
-                CreateGithubProfile();
-                CreateCloudProfile();
-            }
-        }
-
-        public new void StorePassword(string pwd){
-            //password check
-            ValidatePassword(pwd);
-            base.StorePassword(pwd);
-        }
-
-        public void ValidatePassword(string pwd){
-            if (pwd.Length < 8) throw new Exception("Invalid password: You must use at least 8 characters");
-            if (!Regex.Match(pwd, @"[A-Z]").Success) throw new Exception("Invalid password: You must use at least one upper case value");
-            if (!Regex.Match(pwd, @"[a-z]").Success) throw new Exception("Invalid password: You must use at least one lower case value");
-            if (!Regex.Match(pwd, @"[\d]").Success) throw new Exception("Invalid password: You must use at least one numerical value");
-            if (!Regex.Match(pwd, @"[!#@$%^&*()_+]").Success) throw new Exception("Invalid password: You must use at least one special character");
-            if (!Regex.Match(pwd, @"^[a-zA-Z0-9!#@$%^&*()_+]+$").Success) throw new Exception("Invalid password: You password contains illegal characters");
-        }
-
-        protected void CreateGithubProfile(){
-            GithubProfile github = new GithubProfile(context, this.Id);
-            github.Store();
-        }
-
-        protected void CreateCloudProfile(){
-            EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
-            provs.Load();
-            foreach (CloudProvider prov in provs) {
-                context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Email)));
-            }
-        }
-
-        protected void CreateDomain(){
-            Domain domain = new Domain(context);
-            domain.Identifier = this.Username;
-            domain.Description = string.Format("Domain belonging to user {0}",this.Username);
-            domain.Store();
-            this.DomainId = domain.Id;
-            this.Store();
-        }
-
         /// <summary>
         /// Creates a new User instance representing the user with the specified ID.
         /// </summary>
@@ -141,6 +93,12 @@ namespace Terradue.Corporate.Controller {
             return user;
         }
 
+        /// <summary>
+        /// Creates a new User instance representing the user with the specified unique name.
+        /// </summary>
+        /// <returns>The username.</returns>
+        /// <param name="context">Context.</param>
+        /// <param name="username">Username.</param>
         public new static UserT2 FromUsername(IfyContext context, string username){
             UserT2 user = new UserT2(context);
             user.Identifier = username;
@@ -148,10 +106,140 @@ namespace Terradue.Corporate.Controller {
             return user;
         }
 
+        /// <summary>
+        /// To CrowdUser type.
+        /// </summary>
+        /// <returns>The crowd user.</returns>
+        public CrowdUser ToCrowdUser(){
+            CrowdUser cuser = new CrowdUser();
+            cuser.name = this.Username;
+            cuser.display_name = this.Username;
+            cuser.first_name = this.FirstName;
+            cuser.last_name = this.LastName;
+            cuser.email = this.Email;
+            cuser.active = true;
+            cuser.password = this.GetUserPassword();
+
+            return cuser;
+        }
+
+        /// <summary>
+        /// Upgrade the account of the current user
+        /// </summary>
+        /// <param name="level">Level.</param>
         public void Upgrade(int level){
+            context.StartTransaction();
             CreateGithubProfile();
             CreateCloudProfile();
             CreateDomain();
+            CreateSafe();
+            try{
+                CreateLdapAccount();
+            }catch(Exception e){
+                //TODO: get already existing exception and if other do ClearSafe()
+                throw e;
+            }
+            context.Commit();
+        }
+
+        /// <summary>
+        /// Determines whether this instance is a paying user.
+        /// </summary>
+        /// <returns><c>true</c> if this instance is paying; otherwise, <c>false</c>.</returns>
+        public bool IsPaying(){
+            return context.GetQueryBooleanValue(String.Format("SELECT id_domain IS NOT NULL FROM usr WHERE id={0};", this.Id));
+        }
+
+        /// <summary>
+        /// Writes the item to the database.
+        /// </summary>
+        public override void Store(){
+            bool isnew = (this.Id == 0);
+            base.Store();
+            if (isnew && IsPaying()) {
+                CreateGithubProfile();
+                CreateCloudProfile();
+            }
+        }
+
+        private string GetUserPassword(){
+            //decrypter ds l'autre sens
+//            return context.GetQueryBooleanValue(String.Format("SELECT id_domain IS NOT NULL FROM usr WHERE id={0};", this.Id));
+            return "";
+        }
+
+        /// <summary>
+        /// Stores the password.
+        /// </summary>
+        /// <param name="pwd">Pwd.</param>
+        public new void StorePassword(string pwd){
+            //password check
+            ValidatePassword(pwd);
+            base.StorePassword(pwd);
+        }
+
+        /// <summary>
+        /// Validates the password.
+        /// </summary>
+        /// <param name="pwd">Pwd.</param>
+        public void ValidatePassword(string pwd){
+            if (pwd.Length < 8) throw new Exception("Invalid password: You must use at least 8 characters");
+            if (!Regex.Match(pwd, @"[A-Z]").Success) throw new Exception("Invalid password: You must use at least one upper case value");
+            if (!Regex.Match(pwd, @"[a-z]").Success) throw new Exception("Invalid password: You must use at least one lower case value");
+            if (!Regex.Match(pwd, @"[\d]").Success) throw new Exception("Invalid password: You must use at least one numerical value");
+            if (!Regex.Match(pwd, @"[!#@$%^&*()_+]").Success) throw new Exception("Invalid password: You must use at least one special character");
+            if (!Regex.Match(pwd, @"^[a-zA-Z0-9!#@$%^&*()_+]+$").Success) throw new Exception("Invalid password: You password contains illegal characters");
+        }
+
+        /// <summary>
+        /// Creates the github profile.
+        /// </summary>
+        protected void CreateGithubProfile(){
+            GithubProfile github = new GithubProfile(context, this.Id);
+            github.Store();
+        }
+
+        /// <summary>
+        /// Creates the cloud profile.
+        /// </summary>
+        protected void CreateCloudProfile(){
+            EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
+            provs.Load();
+            foreach (CloudProvider prov in provs) {
+                context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Email)));
+            }
+        }
+
+        /// <summary>
+        /// Creates the domain.
+        /// </summary>
+        protected void CreateDomain(){
+            Domain domain = new Domain(context);
+            domain.Identifier = this.Username;
+            domain.Name = this.Username;
+            domain.Description = string.Format("Domain belonging to user {0}",this.Username);
+            domain.Store();
+            this.DomainId = domain.Id;
+            this.Store();
+        }
+
+        /// <summary>
+        /// Creates the safe.
+        /// </summary>
+        protected void CreateSafe(){
+            Safe safe = new Safe(context);
+            safe.OwnerId = this.Id;
+            string password = "";
+            safe.GenerateKeys(password);
+            safe.Store();
+        }
+
+        /// <summary>
+        /// Creates the LDAP account.
+        /// </summary>
+        protected void CreateLdapAccount(){
+            CrowdClient client = new CrowdClient(context.GetConfigValue("Crowd-api-url"), context.GetConfigValue("Crowd-app-name"), context.GetConfigValue("Crowd-app-pwd"));
+            client.CreateUser(this.ToCrowdUser());
         }
 
         /// <summary>
