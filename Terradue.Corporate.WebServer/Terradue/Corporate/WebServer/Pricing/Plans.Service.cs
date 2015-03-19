@@ -17,9 +17,9 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
-                result.Add(new KeyValuePair<string, int>("Developer",1));
-                result.Add(new KeyValuePair<string, int>("Integrator",2));
-                result.Add(new KeyValuePair<string, int>("Provider",3));
+                result.Add(new KeyValuePair<string, int>("Developer", (int)PlanType.DEVELOPER));
+                result.Add(new KeyValuePair<string, int>("Integrator", (int)PlanType.INTEGRATOR));
+                result.Add(new KeyValuePair<string, int>("Provider", (int)PlanType.PROVIDER));
 
                 context.Close();
             } catch (Exception e) {

@@ -34,7 +34,7 @@ namespace Terradue.Corporate.WebServer {
     public class RegisterUserT2 : WebUserRegistrationT2, IReturn<WebUserT2> {}
 
     [Route("/user/upgrade", "POST", Summary = "Upgrade a user", Notes = "User is contained in the POST data.")]
-    public class UpgradeUserT2 : WebUserT2, IReturn<WebUserT2> {}
+    public class UpgradeUserT2 : WebUserUpgradeT2, IReturn<WebUserT2> {}
 
     [Route("/user/safe", "POST", Summary = "create a safe for user", Notes = "User is contained in the POST data.")]
     public class CreateSafeUserT2 : WebUserT2, IReturn<WebUserT2> {}
@@ -65,10 +65,39 @@ namespace Terradue.Corporate.WebServer {
         public UserT2 ToEntity(IfyContext context, UserT2 input) {
             UserT2 user = (input == null ? new UserT2(context) : input);
             base.ToEntity(context, user);
-
             return user;
         }
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------------------------------
+
+    public class WebUserUpgradeT2 : WebUser{
+        
+        [ApiMember(Name = "Message", Description = "User message", ParameterType = "query", DataType = "String", IsRequired = true)]
+        public String Message { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
+        /// </summary>
+        public WebUserUpgradeT2() {}
+
+        /// <summary>
+        /// Tos the entity.
+        /// </summary>
+        /// <returns>The entity.</returns>
+        /// <param name="context">Context.</param>
+        public UserT2 ToEntity(IfyContext context, UserT2 input) {
+            UserT2 user = (input == null ? new UserT2(context) : input);
+            base.ToEntity(context, user);
+            return user;
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------------------------------
 
 
     /// <summary>

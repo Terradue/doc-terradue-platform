@@ -200,6 +200,7 @@
     <Compile Include="Terradue\Corporate\Controller\LDAP\LdapControl.cs" />
     <Compile Include="Terradue\Corporate\Controller\LDAP\LdapResponse.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Pricing\Plans.Service.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Pricing\Plan.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -208,6 +209,7 @@
     <Folder Include="Terradue\Corporate\WebServer\" />
     <Folder Include="Terradue\Corporate\Controller\LDAP\" />
     <Folder Include="Terradue\Corporate\WebServer\Pricing\" />
+    <Folder Include="Terradue\Corporate\Controller\Pricing\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -7,6 +7,8 @@ using Terradue.Cloud;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using Terradue.Crowd;
+using System.Net.Mail;
+using System.Net;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
@@ -267,6 +269,37 @@ namespace Terradue.Corporate.Controller {
         public string GetPrivateKey(string password){
             if (!HasSafe()) return null;
             return safe.GetBase64SSHPrivateKey(password);
+        }
+
+        /// <summary>
+        /// Sends the mail to support.
+        /// </summary>
+        /// <param name="subject">Subject.</param>
+        /// <param name="body">Body.</param>
+        public void SendMailToSupport(string subject, string body){
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress(Email);
+            message.To.Add(new MailAddress(context.GetConfigValue("MailSenderAddress")));
+            message.Subject = subject;
+            message.Body = body;
+
+            string smtpHostname = context.GetConfigValue("SmtpHostname");
+            string smtpUsername = context.GetConfigValue("SmtpUsername");
+            string smtpPassword = context.GetConfigValue("SmtpPassword");
+
+            SmtpClient client = new SmtpClient(smtpHostname);
+
+            // Add credentials if the SMTP server requires them.
+            if (smtpUsername == String.Empty) smtpUsername = null;
+            else if (smtpUsername != null) client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+            if (smtpPassword == String.Empty) smtpPassword = null;
+
+            try {
+                client.Send(message);
+            } catch (Exception e) {
+                if (e.Message.Contains("CDO.Message") || e.Message.Contains("535")) context.AddError("Mail could not be sent, this is a site administration issue (probably caused by an invalid SMTP hostname or wrong SMTP server credentials)");
+                else context.AddError("Mail could not be sent, this is a site administration issue: " + e.Message);
+            }
         }
     }
 }

@@ -219,15 +219,46 @@ namespace Terradue.Corporate.WebServer {
 
         public object Post(UpgradeUserT2 request)
         {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             WebUserT2 result;
             try{
                 context.Open();
                 if(request.Id == 0) throw new Exception("Wrong user Id");
-                UserT2 user = UserT2.FromId(context, request.Id);
-                int level = 0;
-                user.Upgrade(level);
 
+                UserT2 user = UserT2.FromId(context, request.Id);
+
+                if(context.UserLevel == UserLevel.Administrator){
+                    user.Upgrade(request.Level);
+                } else {
+                    if(context.UserId != request.Id) throw new Exception("Wrong user Id");
+
+                    string plan = "";
+                    switch(request.Level){
+                        case (int)PlanType.DEVELOPER:
+                            plan = "Developer";
+                            break;
+                        case (int)PlanType.INTEGRATOR:
+                            plan = "Integrator";
+                            break;
+                        case (int)PlanType.PROVIDER:
+                            plan = "Provider";
+                            break;
+                        default:
+                            plan = "Developer";
+                            break;
+                    }
+
+                    string subject = context.GetConfigValue("EmailSupportUpgradeSubject");
+                    subject = subject.Replace("$(USERNAME)", user.Username);
+                    subject = subject.Replace("$(PLAN)", plan);
+
+                    string body = context.GetConfigValue("EmailSupportUpgradeBody");
+                    body = body.Replace("$(USERNAME)", user.Username);
+                    body = body.Replace("$(PLAN)", plan);
+                    body = body.Replace("$(MESSAGE)", request.Message);
+
+                    user.SendMailToSupport(subject, body);
+                }
                 result = new WebUserT2(new UserT2(context, user));
                 context.Close ();
             }catch(Exception e) {
