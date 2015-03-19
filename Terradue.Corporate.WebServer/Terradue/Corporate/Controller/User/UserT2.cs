@@ -51,6 +51,7 @@ namespace Terradue.Corporate.Controller {
         private string onepwd { get; set; }
         private int oneId { get; set; }
         private OneClient oneClient { get; set; }
+        private Safe safe { get; set; }
 
         #endregion
 
@@ -132,9 +133,8 @@ namespace Terradue.Corporate.Controller {
             CreateGithubProfile();
             CreateCloudProfile();
             CreateDomain();
-            CreateSafe();
             try{
-                CreateLdapAccount();
+//                CreateLdapAccount();
             }catch(Exception e){
                 //TODO: get already existing exception and if other do ClearSafe()
                 throw e;
@@ -226,12 +226,12 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Creates the safe.
         /// </summary>
-        protected void CreateSafe(){
-//            Safe safe = new Safe(context);
-//            safe.OwnerId = this.Id;
-//            string password = "";
-//            safe.GenerateKeys(password);
-//            safe.Store();
+        /// <param name="password">Password.</param>
+        public void CreateSafe(string password){
+            safe = new Safe(context);
+            safe.OwnerId = this.Id;
+            safe.GenerateKeys(password);
+            safe.Store();
         }
 
         /// <summary>
@@ -243,13 +243,31 @@ namespace Terradue.Corporate.Controller {
         }
 
         /// <summary>
-        /// Removes the certificate.
+        /// Determines whether this instance has a safe created.
         /// </summary>
-        public void RemoveCertificate() {
-            string sql = String.Format("UPDATE usrcert SET cert_subject=NULL, cert_content_pem=NULL WHERE id_usr={0};",this.Id);
-            context.Execute(sql);
+        /// <returns><c>true</c> if this instance has a safe; otherwise, <c>false</c>.</returns>
+        public bool HasSafe(){
+            return (this.safe != null);
         }
 
+        /// <summary>
+        /// Gets the public key.
+        /// </summary>
+        /// <returns>The public key.</returns>
+        public string GetPublicKey(){
+            if (!HasSafe()) return null;
+            return safe.GetBase64SSHPublicKey();
+        }
+
+        /// <summary>
+        /// Gets the private key.
+        /// </summary>
+        /// <returns>The private key.</returns>
+        /// <param name="password">Password.</param>
+        public string GetPrivateKey(string password){
+            if (!HasSafe()) return null;
+            return safe.GetBase64SSHPrivateKey(password);
+        }
     }
 }
 

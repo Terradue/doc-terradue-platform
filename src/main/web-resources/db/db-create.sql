@@ -27,6 +27,7 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('reCaptcha-public', 'string', 'Google reCaptcha secret', 'Enter the name of the Google reCaptcha secret', '6Lc1ZgMTAAAAAFB21z0ElV23MU1friFPmkBXTtNc', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('reCaptcha-secret', 'string', 'Google reCaptcha secret', 'Enter the name of the Google reCaptcha secret', '6Lc1ZgMTAAAAAIeEknASbDZ2Kn0N20Br-7a_jIAk', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('PendingUserCanLogin', 'bool', 'Can users with pending status login', 'If checked, pending users can login, otherwise they cannot', 'true', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-baseurl', 'string', 'Host url of the LDAP server', 'Enter the value of the LDAP server', 'http://ldap.terradue.int:8081', '0');
 
 UPDATE config SET value='terradue.com' WHERE name='Github-client-name';
 UPDATE config SET value='64e9f7050a5dba093679' WHERE name='Github-client-id';

@@ -145,6 +145,29 @@ namespace Terradue.Corporate.WebServer {
         /// Post the specified request.
         /// </summary>
         /// <param name="request">Request.</param>
+        public object Post(CreateSafeUserT2 request)
+        {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            WebUserT2 result;
+            try{
+                context.Open();
+
+                UserT2 user = UserT2.FromId(context, request.Id);
+                user.CreateSafe(request.Password);
+
+                result = new WebUserT2(user);
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Post the specified request.
+        /// </summary>
+        /// <param name="request">Request.</param>
         public object Post(RegisterUserT2 request)
         {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
@@ -185,7 +208,7 @@ namespace Terradue.Corporate.WebServer {
                     throw new Exception("User account has been created, but there was an error during the automatic login. Please contact your administrator.");
                 }
 
-                result = new WebUserT2(new UserT2(context, user));
+                result = new WebUserT2(user);
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();

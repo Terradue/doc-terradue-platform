@@ -81,7 +81,7 @@ namespace Terradue.Corporate.WebServer {
             }
 
             try {
-                user.RemoveCertificate();
+//                user.RemoveCertificate();
                 context.Close();
             } catch (Exception e) {
                 context.Close();

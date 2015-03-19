@@ -36,6 +36,10 @@ namespace Terradue.Corporate.WebServer {
     [Route("/user/upgrade", "POST", Summary = "Upgrade a user", Notes = "User is contained in the POST data.")]
     public class UpgradeUserT2 : WebUserT2, IReturn<WebUserT2> {}
 
+    [Route("/user/safe", "POST", Summary = "create a safe for user", Notes = "User is contained in the POST data.")]
+    public class CreateSafeUserT2 : WebUserT2, IReturn<WebUserT2> {}
+
+
 
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
@@ -81,6 +85,9 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "EmailNotification", Description = "User email notification tag", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool EmailNotification { get; set; }
 
+        [ApiMember(Name = "PublicKey", Description = "User PublicKey", ParameterType = "query", DataType = "String", IsRequired = false)]
+        public String PublicKey { get; set; }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
@@ -94,6 +101,9 @@ namespace Terradue.Corporate.WebServer {
         public WebUserT2(UserT2 entity) : base(entity) {
             this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
+            if (entity.HasSafe()) {
+                this.PublicKey = entity.GetPublicKey();
+            }
         }
 
         /// <summary>
