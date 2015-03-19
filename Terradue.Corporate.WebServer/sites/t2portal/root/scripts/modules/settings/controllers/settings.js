@@ -95,7 +95,7 @@ define([
 						isNewPending: (user.AccountStatus==1 && self.params.registered=='ok'),
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
 					});
-					if (self.params.token)
+					if (self.params.token && self.profileData.user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
 					
 				}).fail(function(){

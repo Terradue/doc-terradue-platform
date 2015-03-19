@@ -22,3 +22,9 @@
 .signupPage .userLogged {
 	text-align: center;
 }
+
+.signupPage label.error[for="termsAgree"] {
+  display: block;
+  font-weight: bold;
+  margin-left: -20px;
+}

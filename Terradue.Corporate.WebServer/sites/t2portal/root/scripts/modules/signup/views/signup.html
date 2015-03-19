@@ -57,6 +57,11 @@
 					<div class="g-recaptcha" data-sitekey="{{ recaptchaPublicKey }}"></div>
 					{{#if recaptchaError }}<label class="error">Please perform the captcha test</label>{{/if}}
 				</div>
+				<div class="checkbox">
+					<label>
+						By submitting this form you agree on the <a href="#">Terms of Use</a>. <input type="checkbox" name="termsAgree"> 
+					</label>
+				</div>
 				
 				{{#if loading}}
 					<p><i class="fa fa-spin fa-spinner"></i> Register User..</p>
@@ -67,7 +72,7 @@
 						</div>
 					{{/if}}
 					<div class="form-group">
-						<button type="submit" class="btn btn-default">Submit</button>
+						<button type="submit" class="btn btn-default">Create my account</button>
 					</div>
 				{{/if}}
 			</form>

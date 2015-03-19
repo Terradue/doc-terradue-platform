@@ -58,6 +58,7 @@ var SignupControl = BaseControl(
 						equalTo: '#signupPassword',
 					},
 					'g-recaptcha-response': 'required',
+					termsAgree: 'required',
 				},
 				messages : {
 					email: {
@@ -74,6 +75,7 @@ var SignupControl = BaseControl(
 						noOtherSpecialChars: 'Password can\'t include special characters different from the list !@#$%^&*()_+',
 					},
 					passwordRepeat: 'The password is not equal with the first',
+					termsAgree: 'You must accept the terms and conditions',
 				},
 				submitHandler: function(form){
 					self.submitForm(form);
