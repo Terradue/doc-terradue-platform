@@ -1,3 +1,7 @@
+#subContainer {
+  margin-bottom: 20px;
+}
+
 .settings-profile input[type="text"] {
 	width: 400px;
 }

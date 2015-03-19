@@ -111,7 +111,7 @@ var SignupControl = BaseControl(
 			});
 			userData.captchaValue = captchaValue;
 			new SignupModel(userData).save().then(function(){
-				document.location.reload();
+				document.location = '/portal/settings/profile?registered=ok';
 			}).fail(function(xhr){
 				self.data.attr({
 					loading: false, 
