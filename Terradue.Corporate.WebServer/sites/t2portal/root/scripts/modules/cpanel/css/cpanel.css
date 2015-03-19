@@ -1,0 +1,22 @@
+
+.cpanel > .cpanel-menu {
+	text-align: center;
+}
+
+.cpanel .menuItem {
+	font-size: 20px;
+	display: block;
+	margin-bottom: 30px;
+}
+.cpanel .menuItem:hover {
+	text-decoration: none;
+}
+
+.cpanel .menuItem > .fa {
+	font-size: 100px;
+	margin-bottom: 20px;
+}
+
+.cpanel .pageTitle {
+	/* background-image: url("../img/settings.jpg"); */
+}

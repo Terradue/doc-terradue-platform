@@ -8,6 +8,8 @@ define([
 	'loadmask'
 ], function($, can, BaseControl, Conf, LoginModel){
 	
+	var ADMIN = 4;
+	
 	var LoginControl = BaseControl.extend({}, {
 		
 		init: function($element, options){
@@ -25,6 +27,7 @@ define([
 			
 			var self=this;
 			this.isLoggedDeferred = LoginModel.isLogged(function(user){
+				user.attr('isAdmin', user.Level==ADMIN);
 				self.User.attr({ current: user });
 				$('.dropdown-toggle').dropdown();
 			}).fail(function(xhr){

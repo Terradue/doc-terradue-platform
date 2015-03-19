@@ -39,6 +39,8 @@ define([
 						user: user,
 						isPending: (user.AccountStatus==1),
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+						showGithub: (user.DomainId!=0 && AccountStatus!=1),
+						showCloud: (user.DomainId!=0 && AccountStatus!=1),
 					});
 				}).fail(function(){
 					// access denied only if you haven't a token

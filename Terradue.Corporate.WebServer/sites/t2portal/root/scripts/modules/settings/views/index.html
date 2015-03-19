@@ -10,8 +10,10 @@
 						{{/if}}
 						Profile
 					</a></li>
-					{{#if user}}
+					{{#if showCloud}}
 						<li class='cloud'><a href="/portal/settings/cloud"> Cloud</a></li>
+					{{/if}}
+					{{#if showGithub}}
 						<li class='github'><a href="/portal/settings/github"> Github</a></li>
 					{{/if}}
 				</ul>
