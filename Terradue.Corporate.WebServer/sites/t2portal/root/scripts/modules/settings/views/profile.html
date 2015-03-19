@@ -1,7 +1,7 @@
 <div class='settings-profile'>
 	<h3>Profile</h3>
-	{{#user}}
-		{{#ifEquals AccountStatus 1}}
+	{{#if user}}
+		{{#if isPending}}
 			<div class="alert alert-warning pendingActivation" role="alert">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
 				<strong>Pending Activation!</strong> We must verify that your email address is valid. Please consult your inbox and confirm your address.
@@ -9,32 +9,52 @@
 				If you did not received it, <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
 				<br/>
 			</div>
+		{{else}}
+			{{#if isNewPending}}
+				<div class="alert alert-success pendingActivation" role="alert">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<strong>Well done!</strong> You successfully signed-up on the Platform.</br>
+					We have sent a confirmation email at <span class="text-info">{{ user.Email }}</span> 
+					with other useful information. We must verify that your email address is valid. Please consult your inbox and confirm your address.
+					<br/>
+					If you did not received it, <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
+					<br/>
+				</div>
+			{{else}}
+				{{#if emailConfirmOK}}
+					{{!-- This html snippet is in two location, here and at the end of this page --}}
+					<div class="alert alert-success pendingActivation" role="alert">
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+						<strong>Thank You.</strong> Your email address has been successfully validated.</br>
+					</div>
+				{{/if}}
+			{{/if}}
 		{{/if}}
 	<form role="form">
 		
 		<div class="form-group">
 			<label>First name</label>
-			<input type="text" class="form-control" placeholder="" name="FirstName" value="{{ FirstName }}">
+			<input type="text" class="form-control" placeholder="" name="FirstName" value="{{ user.FirstName }}">
 		</div>
 		
 		<div class="form-group">
 			<label>Last name</label>
-			<input type="text" class="form-control" placeholder="" name="LastName" value="{{ LastName }}">
+			<input type="text" class="form-control" placeholder="" name="LastName" value="{{ user.LastName }}">
 		</div>
 		
 		<div class="form-group">
 			<label>E-mail</label>
-			<input type="text" class="form-control" placeholder="" name="Email" value="{{ Email }}">
+			<input type="text" class="form-control" placeholder="" name="Email" value="{{ user.Email }}">
 		</div>
 		
 		<div class="form-group">
 			<label>Affiliation</label>
-			<input type="text" class="form-control" placeholder="" name="Affiliation" value="{{ Affiliation }}">
+			<input type="text" class="form-control" placeholder="" name="Affiliation" value="{{ user.Affiliation }}">
 		</div>
 		
 		<div class="form-group">
 			<label>Country</label>
-			<input type="text" class="form-control" placeholder="" name="Country" value="{{ Country }}">
+			<input type="text" class="form-control" placeholder="" name="Country" value="{{ user.Country }}">
 		</div>
 		
 <!-- 		<div class="form-group">
@@ -46,13 +66,22 @@
  
  -->
  		<br/>
-		{{#if ../saveSuccess}}
+		{{#if saveSuccess}}
 			<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Updated!</strong> Your profile info are successful updated.</div>
 		{{/if}}
-		{{#if ../saveFail}}
+		{{#if saveFail}}
 			<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oups! </strong>{{ saveFailMessage }}</div>
 		{{/if}}
 		<button type="submit" class="btn btn-warning submit">Submit</button>
 	</form>
-	{{/user}}
+	{{else}}
+		{{#if emailConfirmOK}}
+			<div class="alert alert-success pendingActivation" role="alert">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>Thank You.</strong> Your email address has been successfully validated.</br>
+				<br/>
+				<strong><i class="fa fa-exclamation-triangle"></i> You must <a href="javascript://" class="signIn">Sign-in</a> to access to the Terradue Services (TODO u)</strong>
+			</div>
+		{{/if}}
+	{{/if}}
 </div>
