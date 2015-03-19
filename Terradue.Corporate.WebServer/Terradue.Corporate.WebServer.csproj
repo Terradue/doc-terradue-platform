@@ -196,7 +196,6 @@
     <Compile Include="Terradue\Corporate\Controller\User\UserT2.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\EmailConfirm.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Common\Configuration.Service.cs" />
-    <Compile Include="Terradue\Corporate\WebServer\Test.cs" />
     <Compile Include="Terradue\Corporate\Controller\LDAP\LdapControl.cs" />
     <Compile Include="Terradue\Corporate\Controller\LDAP\LdapResponse.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Pricing\Plans.Service.cs" />
