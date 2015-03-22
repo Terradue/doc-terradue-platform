@@ -2,35 +2,44 @@
 <script src='//www.google.com/recaptcha/api.js'></script>
 
 <div class="signupPage">
-
-	<div class=pageHeader>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3 text-center">
-					<h1>Signup with the Terradue Team</h1>
-					<br>
-					<h3>
-						Some text...
-					</h3>
-				</div>
-			</div>
-		</div>
-	</div>
 	
 	<div class="pageSubHeader">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-8 col-md-offset-2 text-center">
 					<h4>
-						bla bla bla bla...
+						Get your free starter pack for Terradue Cloud Platform
 					</h4>
 				</div>
 			</div>
 		</div>
 	</div>
-	
+
+<!-- Sign-up area -->
+<div id="what-callout" class="intro">
+	<div class="container">
+	<div class="row clearfix">
+		
+	<div class="col-md-5 column">
+	<h3>Benefits from registering on the Platform</h3>
+	<p style="color:Grey;">
+	<ul>
+	<li><i class="fa fa-check fa-1x"></i>&nbsp apply for a free trial</li>
+	<li><i class="fa fa-coffee fa-1x"></i>&nbsp get privileged access to early-bird demos</li>
+	<li><i class="fa fa-institution fa-1x"></i>&nbsp join the platform as part of a partner program</li>
+	<li><i class="fa fa-cube fa-1x"></i>&nbsp subscribe to a plan and manage your Cloud services</li>
+	</ul>
+	</p>
+	</div>
+
+	<div class="col-md-1 column">
+	<p>&nbsp</p>
+	</div>
+
+	<div class="col-lg-6 column" style="float:left;">	
+
 	{{#if user}}
-		<div class="container userLogged">
+		<div class="container-fuild userLogged ">
 			</br>
 			<h3><i class="fa fa-check-square-o"></i> <strong>Well done!</strong></h3></br> 
 			<h4>
@@ -39,32 +48,33 @@
 			</h4>
 		</div>
 	{{else}}
-		<div class="container signupForm">
+		<div class="container-fluid signupForm">
 			<form>
+				<div class="form-title">
+					<h4 style="color:Grey; padding-bottom:5px">
+					Create a new account &nbsp
+					<i class="fa fa-lock fa-1x  fa-lock"></i>
+					</h4>
+				</div>
 				<div class="form-group">
 					<label for="email">Email address</label>
-					<input type="email" class="form-control" name="email" placeholder="Enter email">
+					<input type="email" class="form-control" name="email" placeholder="Email address">
 				</div>
 				<div class="form-group">
 					<label for="password">Password</label>
 					<input type="password" class="form-control" name="password" id="signupPassword" placeholder="Password">
 				</div>
 				<div class="form-group">
-					<label for="passwordRepeat">Repeat Password</label>
-					<input type="password" class="form-control" name="passwordRepeat" placeholder="Repeat Password">
+					<label for="passwordRepeat">Password confirmation</label>
+					<input type="password" class="form-control" name="passwordRepeat" placeholder="Password confirmation">
 				</div>
 				<div class="form-group recaptchaWrapper">
 					<div class="g-recaptcha" data-sitekey="{{ recaptchaPublicKey }}"></div>
 					{{#if recaptchaError }}<label class="error">Please perform the captcha test</label>{{/if}}
 				</div>
-				<div class="checkbox">
-					<label>
-						By submitting this form you agree on the <a href="#">Terms of Use</a>. <input type="checkbox" name="termsAgree"> 
-					</label>
-				</div>
 				
 				{{#if loading}}
-					<p><i class="fa fa-spin fa-spinner"></i> Register User..</p>
+					<p><i class="fa fa-spin fa-spinner"></i> Registering new account ...</p>
 				{{else}}
 					{{#if errorMessage}}
 						<div class="alert alert-danger" role="alert">
@@ -74,11 +84,87 @@
 					<div class="form-group">
 						<button type="submit" class="btn btn-default">Create my account</button>
 					</div>
+					<div>
+						<label class="small">
+						By submitting this form you agree on the <a href="#">Terms of Use</a>. 
+						</label>
+					</div>
 				{{/if}}
 			</form>
 		</div>
 	{{/if}}
 	
+	</div>
+	</div>
+		
+	</div>
+	</div>
+    <!-- /End -->
 
+	
+	<div class=pageHeader>
+		<div class="container">
+			<div class="row">
+      	    <div class="col-md-6 col-md-offset-3 text-center">
+                  <h3>
+                  	Apply for a free trial
+                  </h3>
+                  <h2>
+                  	<a href="http://www.terradue.com/partners"> Get a full week hands-on</a>
+                  </h2>
+                  <p>You will book our support team for the Developer Quickstart trial on a Hadoop Cloud Sandbox</p>
+              </div>
+			</div>
+		</div>
+	</div>
+
+	<div class="intro">
+		<div class="container">
+			<div class="row">
+      	    <div class="col-md-6 col-md-offset-3 text-center">
+                  <h3>
+                  	Access to early-bird demos
+                  </h3>
+                  <h2> 
+                  	<a href="http://www.terradue.com/partners"> Select your VIP list</a>
+                  </h2>
+                  <p>You will get privileged access to early-bird demos</p>
+              </div>
+			</div>
+		</div>
+	</div>
+	
+		<div class=pageHeader>
+		<div class="container">
+			<div class="row">
+      	    <div class="col-md-6 col-md-offset-3 text-center">
+                  <h3>
+                  	Innovate with us
+                  </h3>
+                  <h2> 
+                  	<a href="http://www.terradue.com/partners"> Join a Partner program</a>
+                  </h2>
+                  <p>You will become part of the thriving science ecosystems enabled by Terradue Cloud Platform</p>
+              </div>
+			</div>
+		</div>
+	</div>
+
+	<div class="intro">
+		<div class="container">
+			<div class="row">
+      	    <div class="col-md-6 col-md-offset-3 text-center">
+                  <h3>
+                  	Manage scalable applications
+                  </h3>
+                  <h2>
+                  	<a href="http://www.terradue.com/partners"> Subscribe to a plan</a>
+                  </h2>
+                  <p>You will develop and run your earth science applications with Terradue Cloud Platform</p>
+              </div>
+			</div>
+		</div>
+	</div>
+	
 </div>
 

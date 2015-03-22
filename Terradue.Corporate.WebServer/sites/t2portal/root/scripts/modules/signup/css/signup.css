@@ -1,18 +1,45 @@
 
-.signupPage .signupForm {
+li {
+	list-style-type: none;
+	padding-top: 10px;
+	font-size: 16px;
+}
+
+.signupPage .userLogged {
 	margin-top: 20px;
 	margin-bottom: 20px;
 }
 
+.signupPage .signupForm {
+	margin-left: 0px;
+	margin-righ: 0px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+
+
 .signupPage form {
-	max-width: 500px;
-	margin-left: auto;
-	margin-right: auto;
+	max-width: 400px;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+
+
+.signupPage form label.error {
+	font-size: 11px;
+	color: rgb(200, 0, 0);
 }
 
 .signupPage form label.error {
 	font-size: 11px;
 	color: rgb(200, 0, 0);
+}
+
+.signupPage form label.small {
+	font-size: 12px;
+	color: rgb(0, 0, 0);
 }
 
 .signupPage .recaptchaWrapper {
