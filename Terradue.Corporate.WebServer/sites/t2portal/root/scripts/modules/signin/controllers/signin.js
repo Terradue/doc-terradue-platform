@@ -30,12 +30,12 @@ var SigninControl = BaseControl(
 				url: 'modules/signin/views/signin.html',
 				data: this.data,
 				fnLoad: function(){
-					self.initForm();
+					self.initFormValidator();
 				}
 			});
 		},
 		
-		initForm: function(){
+		initFormValidator: function(){
 			var self = this;
 			this.element.find('form').validate({
 				rules : {
