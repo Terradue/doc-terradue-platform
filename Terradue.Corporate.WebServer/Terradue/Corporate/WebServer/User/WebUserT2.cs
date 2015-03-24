@@ -18,6 +18,12 @@ namespace Terradue.Corporate.WebServer {
         public int Id { get; set; }
     }
 
+    [Route("/user/passwordreset", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
+    public class UserResetPassword : IReturn<WebResponseBool> {
+        [ApiMember(Name = "username", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Username { get; set; }
+    }
+
     [Route("/user/current", "GET", Summary = "GET the current user", Notes = "User is the current user")]
     public class GetCurrentUserT2 : IReturn<WebUserT2> {}
 

@@ -283,7 +283,7 @@ namespace Terradue.Corporate.WebServer {
                     body = body.Replace("$(PLAN)", plan);
                     body = body.Replace("$(MESSAGE)", request.Message);
 
-                    user.SendMailToSupport(subject, body);
+                    context.SendMail(user.Email, context.GetConfigValue("MailSenderAddress"), subject, body); 
                 }
                 result = new WebUserT2(new UserT2(context, user));
                 context.Close ();
@@ -305,6 +305,27 @@ namespace Terradue.Corporate.WebServer {
                 User user = User.FromId(context, request.Id);
                 if (context.UserLevel == UserLevel.Administrator) user.Delete();
                 else throw new UnauthorizedAccessException(CustomErrorMessages.ADMINISTRATOR_ONLY_ACTION);
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return new WebResponseBool(true);
+        }
+
+        public object Put(UserResetPassword request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                string subject = context.GetConfigValue("EmailSupportResetPasswordSubject");
+                subject = subject.Replace("$(USERNAME)", request.Username);
+
+                string body = context.GetConfigValue("EmailSupportResetPasswordBody");
+                body = body.Replace("$(USERNAME)", request.Username);
+
+                context.SendMail(request.Username, context.GetConfigValue("MailSenderAddress"), subject, body); 
+
                 context.Close();
             } catch (Exception e) {
                 context.Close();

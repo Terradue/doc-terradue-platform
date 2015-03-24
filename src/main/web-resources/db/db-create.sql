@@ -29,8 +29,10 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('reCaptcha-secret', 'string', 'Google reCaptcha secret', 'Enter the name of the Google reCaptcha secret', '6Lc1ZgMTAAAAAIeEknASbDZ2Kn0N20Br-7a_jIAk', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('PendingUserCanLogin', 'bool', 'Can users with pending status login', 'If checked, pending users can login, otherwise they cannot', 'true', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-baseurl', 'string', 'Host url of the LDAP server', 'Enter the value of the LDAP server', 'http://ldap.terradue.int:8081', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '${USERNAME} account upgrade to ${PLAN} plan', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeBody', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', 'Dear Support,\nPlease upgrade the account of the user ${USERNAME} with the ${PLAN} plan.\nMessage from user: ${MESSAGE}.\n\nThanks', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '[$(PORTAL)] - account upgrade request', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeBody', 'string', 'Email body sent to support for user upgrade', 'Email body sent to support for user upgrade', 'Dear Support,\nPlease upgrade the account of the user $(USERNAME) with the $(PLAN) plan.\nMessage from user: $(MESSAGE).\n\nThanks', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '[$(PORTAL)] - password reset request', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordBody', 'string', 'Email body sent to support for user upgrade', 'Email subject sent to support for user upgrade', 'Dear Support,\nThe user ${USERNAME} has made a password reset request. Please handle it.\n\nThanks', '0');
 
 UPDATE config SET value='terradue.com' WHERE name='Github-client-name';
 UPDATE config SET value='64e9f7050a5dba093679' WHERE name='Github-client-id';
@@ -51,6 +53,7 @@ UPDATE config SET value='relay.terradue.int' WHERE name='SmtpHostname';
 UPDATE config SET value="Dear $(USERNAME),\nyour account has just been created on $(SITEURL).\n\nWe must now verify your email adress' authenticity.\n\nTo do so, please click on the following link:\n$(ACTIVATIONURL)\n\nWith our best regards\n\nThe Operations Support team at Terradue" WHERE name='RegistrationMailBody';
 UPDATE config SET value='$(BASEURL)/portal/settings/profile?token=$(TOKEN)' WHERE `name`='EmailConfirmationUrl';
 UPDATE config SET value='your registration on the Terradue platform' WHERE `name`='RegistrationMailSubject';
+UPDATE config SET value='Terradue Corporate platform' WHERE `name`='SiteName';
 
 
 /*****************************************************************************/
