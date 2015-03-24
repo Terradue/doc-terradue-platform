@@ -1,0 +1,36 @@
+
+
+
+#loginForm > .loginForm-openId {
+	float: left;
+	width: 250px;
+	margin-left: 30px;
+}
+
+#loginOpenidButton {
+	background: url(../img/t2logo.png);
+	text-indent: 100%;
+	display: block;
+	width: 106px;
+	height: 34px;
+	background-size: 94px;
+	background-position: 50%;
+	border: 1px solid #ccc;
+	padding: 5px;
+	background-repeat: no-repeat;
+	border-radius: 5px;
+}
+.signupForm {
+	max-width: 400px;
+	margin: 20px auto;
+}
+.signupForm .form-group {
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+.signupForm label.error { /* improve */
+  color: #a94442;
+  font-weight: normal;
+  font-size: 12px;
+}

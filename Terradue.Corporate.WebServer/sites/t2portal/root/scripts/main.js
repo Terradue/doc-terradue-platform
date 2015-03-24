@@ -53,8 +53,16 @@ require([
 	'app',
 	'router',
 	'config',
-], function(App, Router, Config) {
+	'utils/helpers',
+], function(App, Router, Config, Helpers) {
+	window.Helpers = Helpers;
+	
 	window.App = App;
-	App.init(Config); // app init
-	Router.init(); // router init
+	if (!document.location.pathname.startsWith('/portal'))
+		document.location = '/portal' + document.location.pathname;
+	else{
+		App.init(Config); // app init
+		Router.init(); // router init
+	}
+
 });
