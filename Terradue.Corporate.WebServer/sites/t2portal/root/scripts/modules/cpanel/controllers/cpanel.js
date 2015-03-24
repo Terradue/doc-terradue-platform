@@ -4,19 +4,19 @@ define([
 	'can',
 	'utils/baseControl',
 	'config',
-	'modules/cpanel/models/newsTumblr',
+//	'modules/cpanel/models/newsTumblr',
 	'utils/helpers',
 	'moment'
-], function($, can, BaseControl, Config, NewsTumblrModel, Helpers){
+], function($, can, BaseControl, Config/*, NewsTumblrModel*/, Helpers){
 	
 	var Cpanel = BaseControl({
 		defaults: { fade: 'slow' },
 	}, {
 		init: function(element, options){
 			console.log("cpanel.init");
-			this.newsTumblrDetails = new can.Observe({});
-			this.selectedNewsTumblr = null;
-			this.newsesTumblr = null;
+//			this.newsTumblrDetails = new can.Observe({});
+//			this.selectedNewsTumblr = null;
+//			this.newsesTumblr = null;
 			this.isLoginPromise = App.Login.isLoggedDeferred;
 		},
 		
