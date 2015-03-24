@@ -54,6 +54,7 @@ define([
 			can.view.types[''] = can.view.types['.' + options.template || 'mustache'];
 			
 			//this.initErrorHandler(options);
+			
 		},
 		
 		loadController: function(controllerName, successCallback, errorCallback) {

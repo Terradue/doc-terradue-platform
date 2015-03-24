@@ -37,6 +37,8 @@ namespace Terradue.Corporate.WebServer {
 
 			if (urlPath.StartsWith("/portal/") || urlPath.Equals("/portal"))
 				HttpContext.Current.RewritePath("/index.html");
+			else if (urlPath.Equals("/signin"))
+				HttpContext.Current.RewritePath("/index.html");
 		}
 	}
 }
