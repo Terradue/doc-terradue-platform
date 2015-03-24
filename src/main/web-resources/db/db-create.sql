@@ -21,6 +21,7 @@ SET @prov_id = (SELECT LAST_INSERT_ID());
 
 /*****************************************************************************/
 
+-- CONFIG
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-default-provider', 'int', 'OpenNebula default provider', 'Enter the value of the identifier of the Opennebula default provider', @prov_id, '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-access', 'string', 'OpenNebula access url', 'Enter the value of the Opennebula access url', 'https://cloud-dev.terradue.int', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('One-GEP-grpID', 'int', 'Id of GEP group on ONE controller', 'Enter the Id of GEP group on ONE controller', '141', '0');
@@ -59,10 +60,10 @@ UPDATE auth SET `activation_rule`='2' WHERE `identifier`='umsso';
 /*****************************************************************************/
 
 -- Create roles ... \
-INSERT into role (name, description) VALUES ('free', 'non paying user role');
-INSERT into role (name, description) VALUES ('developer', 'paying developer user role');
-INSERT into role (name, description) VALUES ('integrator', 'paying integrator user role');
-INSERT into role (name, description) VALUES ('producer', 'paying producer user role');
+INSERT into role (name, description) VALUES ('Free Trial', 'non paying user role');
+INSERT into role (name, description) VALUES ('Developer', 'paying developer user role');
+INSERT into role (name, description) VALUES ('Integrator', 'paying integrator user role');
+INSERT into role (name, description) VALUES ('Producer', 'paying producer user role');
 -- RESULT
 
 /*****************************************************************************/

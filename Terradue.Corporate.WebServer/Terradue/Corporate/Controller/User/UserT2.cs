@@ -54,6 +54,10 @@ namespace Terradue.Corporate.Controller {
         private int oneId { get; set; }
         private OneClient oneClient { get; set; }
         private Safe safe { get; set; }
+        private Plan Plan { get; set; }
+
+        [EntityDataField("id_domain")]
+        public new int DomainId { get; set; }
 
         #endregion
 
@@ -63,7 +67,7 @@ namespace Terradue.Corporate.Controller {
         /// <param name="context">Context.</param>
         public UserT2(IfyContext context) : base(context) {
             OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
-            oneClient = oneCloud.XmlRpc;
+            this.oneClient = oneCloud.XmlRpc;
         }
 
         /// <summary>
@@ -109,6 +113,11 @@ namespace Terradue.Corporate.Controller {
             return user;
         }
 
+        public override void Load() {
+            base.Load();
+            this.Plan = new Plan(context, this.Id);
+        }
+
         /// <summary>
         /// To CrowdUser type.
         /// </summary>
@@ -130,17 +139,22 @@ namespace Terradue.Corporate.Controller {
         /// Upgrade the account of the current user
         /// </summary>
         /// <param name="level">Level.</param>
-        public void Upgrade(int level){
+        public void Upgrade(PlanType level){
             context.StartTransaction();
-            CreateGithubProfile();
-            CreateCloudProfile();
-            CreateDomain();
+
+            if(!HasGithubProfile()) CreateGithubProfile();
+            if(!HasCloudAccount()) CreateCloudAccount(); //TODO: linked to safe ?
+            if(this.DomainId == 0) CreateDomain();
+
             try{
 //                CreateLdapAccount();
             }catch(Exception e){
                 //TODO: get already existing exception and if other do ClearSafe()
                 throw e;
             }
+
+            this.Plan.Upgrade(level);
+
             context.Commit();
         }
 
@@ -149,7 +163,36 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns><c>true</c> if this instance is paying; otherwise, <c>false</c>.</returns>
         public bool IsPaying(){
-            return context.GetQueryBooleanValue(String.Format("SELECT id_domain IS NOT NULL FROM usr WHERE id={0};", this.Id));
+            return (this.DomainId != 0);
+        }
+
+        /// <summary>
+        /// Determines whether this instance has github profile.
+        /// </summary>
+        /// <returns><c>true</c> if this instance has github profile; otherwise, <c>false</c>.</returns>
+        public bool HasGithubProfile(){
+            try{
+                GithubProfile.FromId(context, this.Id);
+                return true;
+            }catch(Exception e){
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether this instance has cloud account.
+        /// </summary>
+        /// <returns><c>true</c> if this instance has cloud account; otherwise, <c>false</c>.</returns>
+        public bool HasCloudAccount(){
+            return context.GetQueryBooleanValue(String.Format("SELECT username IS NOT NULL FROM usr_cloud WHERE id={0};", this.Id));
+        }
+
+        /// <summary>
+        /// Determines whether this instance has a safe created.
+        /// </summary>
+        /// <returns><c>true</c> if this instance has a safe; otherwise, <c>false</c>.</returns>
+        public bool HasSafe(){
+            return (this.safe != null);
         }
 
         /// <summary>
@@ -160,7 +203,7 @@ namespace Terradue.Corporate.Controller {
             base.Store();
             if (isnew && IsPaying()) {
                 CreateGithubProfile();
-                CreateCloudProfile();
+                CreateCloudAccount();
             }
         }
 
@@ -204,7 +247,7 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Creates the cloud profile.
         /// </summary>
-        protected void CreateCloudProfile(){
+        protected void CreateCloudAccount(){
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
@@ -230,10 +273,16 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="password">Password.</param>
         public void CreateSafe(string password){
-            safe = new Safe(context);
-            safe.OwnerId = this.Id;
-            safe.GenerateKeys(password);
-            safe.Store();
+            try{
+                safe = Safe.FromUserId(context, this.Id);
+            }catch(Exception e){
+                safe = new Safe(context);
+                safe.OwnerId = this.Id;
+                safe.GenerateKeys(password);
+                safe.Store();
+            }
+            throw new Exception("User already has a Safe");
+
         }
 
         /// <summary>
@@ -242,14 +291,6 @@ namespace Terradue.Corporate.Controller {
         protected void CreateLdapAccount(){
             CrowdClient client = new CrowdClient(context.GetConfigValue("Crowd-api-url"), context.GetConfigValue("Crowd-app-name"), context.GetConfigValue("Crowd-app-pwd"));
             client.CreateUser(this.ToCrowdUser());
-        }
-
-        /// <summary>
-        /// Determines whether this instance has a safe created.
-        /// </summary>
-        /// <returns><c>true</c> if this instance has a safe; otherwise, <c>false</c>.</returns>
-        public bool HasSafe(){
-            return (this.safe != null);
         }
 
         /// <summary>
@@ -269,6 +310,14 @@ namespace Terradue.Corporate.Controller {
         public string GetPrivateKey(string password){
             if (!HasSafe()) return null;
             return safe.GetBase64SSHPrivateKey(password);
+        }
+
+        /// <summary>
+        /// Gets the plan.
+        /// </summary>
+        /// <returns>The plan.</returns>
+        public string GetPlan(){
+            return Plan.PlanToString(this.Plan.PlanType);
         }
 
         /// <summary>

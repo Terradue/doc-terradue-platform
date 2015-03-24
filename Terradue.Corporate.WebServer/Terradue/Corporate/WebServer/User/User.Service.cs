@@ -165,6 +165,32 @@ namespace Terradue.Corporate.WebServer {
         }
 
         /// <summary>
+        /// Get the specified request.
+        /// </summary>
+        /// <param name="request">Request.</param>
+        public object Get(GetSafeUserT2 request)
+        {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            WebSafe result;
+            try{
+                context.Open();
+
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                if(user.HasSafe()){
+                    result = new WebSafe();
+                    result.PublicKey = user.GetPublicKey();
+                    result.PrivateKey = user.GetPrivateKey(request.password);
+                } else throw new Exception("Safe has not yet been created");
+
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Post the specified request.
         /// </summary>
         /// <param name="request">Request.</param>
@@ -228,7 +254,7 @@ namespace Terradue.Corporate.WebServer {
                 UserT2 user = UserT2.FromId(context, request.Id);
 
                 if(context.UserLevel == UserLevel.Administrator){
-                    user.Upgrade(request.Level);
+                    user.Upgrade((PlanType)request.Level);
                 } else {
                     if(context.UserId != request.Id) throw new Exception("Wrong user Id");
 
@@ -240,7 +266,7 @@ namespace Terradue.Corporate.WebServer {
                         case (int)PlanType.INTEGRATOR:
                             plan = "Integrator";
                             break;
-                        case (int)PlanType.PROVIDER:
+                        case (int)PlanType.PRODUCER:
                             plan = "Provider";
                             break;
                         default:

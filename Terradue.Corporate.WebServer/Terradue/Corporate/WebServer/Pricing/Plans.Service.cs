@@ -3,6 +3,7 @@ using ServiceStack.ServiceHost;
 using System.Collections.Generic;
 using Terradue.Portal;
 using Terradue.Corporate.WebServer.Common;
+using Terradue.Corporate.Controller;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Tep-QuickWin Terradue webserver")]
@@ -17,9 +18,9 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
-                result.Add(new KeyValuePair<string, int>("Developer", (int)PlanType.DEVELOPER));
-                result.Add(new KeyValuePair<string, int>("Integrator", (int)PlanType.INTEGRATOR));
-                result.Add(new KeyValuePair<string, int>("Provider", (int)PlanType.PROVIDER));
+                foreach (PlanType plan in Enum.GetValues(typeof(PlanType))){
+                    result.Add(new KeyValuePair<string, int>(Plan.PlanToString(plan), (int)plan));
+                }
 
                 context.Close();
             } catch (Exception e) {

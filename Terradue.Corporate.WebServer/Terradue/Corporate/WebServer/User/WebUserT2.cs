@@ -39,6 +39,31 @@ namespace Terradue.Corporate.WebServer {
     [Route("/user/safe", "POST", Summary = "create a safe for user", Notes = "User is contained in the POST data.")]
     public class CreateSafeUserT2 : WebUserT2, IReturn<WebUserT2> {}
 
+    [Route("/user/safe", "GET", Summary = "get a safe for user", Notes = "")]
+    public class GetSafeUserT2 : IReturn<WebSafe> {
+        [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string password { get; set; }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------------------------------
+
+    public class WebSafe {
+
+        [ApiMember(Name = "PublicKey", Description = "User PublicKey", ParameterType = "query", DataType = "String", IsRequired = true)]
+        public String PublicKey { get; set; }
+
+        [ApiMember(Name = "PrivateKey", Description = "User PrivateKey", ParameterType = "query", DataType = "String", IsRequired = true)]
+        public String PrivateKey { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
+        /// </summary>
+        public WebSafe() {}
+
+    }
+
 
 
     //-------------------------------------------------------------------------------------------------------------------------
@@ -117,6 +142,9 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "PublicKey", Description = "User PublicKey", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String PublicKey { get; set; }
 
+        [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
+        public String Plan { get; set; }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
@@ -133,6 +161,7 @@ namespace Terradue.Corporate.WebServer {
             if (entity.HasSafe()) {
                 this.PublicKey = entity.GetPublicKey();
             }
+            this.Plan = entity.GetPlan();
         }
 
         /// <summary>
