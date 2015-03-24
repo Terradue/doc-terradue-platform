@@ -7,6 +7,7 @@ using ServiceStack.ServiceInterface;
 using Terradue.OpenNebula;
 using Terradue.Corporate.WebServer.Common;
 using Terradue.OpenNebula.WebService;
+using Terradue.Cloud;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]
@@ -43,7 +44,8 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
+                OneClient one = oneCloud.XmlRpc;
                 USER oneuser = one.UserGetInfo(request.Id);
                 result = new WebOneUser{ Id = oneuser.ID, Name = oneuser.NAME, Password = oneuser.PASSWORD, AuthDriver = oneuser.AUTH_DRIVER};
 
@@ -62,7 +64,8 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 User user = User.FromId(context, context.UserId);
-                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
+                OneClient one = oneCloud.XmlRpc;
                 USER_POOL pool = one.UserGetPoolInfo();
                 foreach(object u in pool.Items){
                     if(u is USER_POOLUSER){
@@ -87,7 +90,8 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
+                OneClient one = oneCloud.XmlRpc;
                 result = one.UserUpdatePassword(Int32.Parse(request.Id), request.Password);
                 context.Close();
             } catch (Exception e) {
@@ -103,7 +107,8 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 User user = User.FromId(context, context.UserId);
-                OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
+                OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
+                OneClient one = oneCloud.XmlRpc;
                 int id = one.UserAllocate(user.Email, request.Password, (request.AuthDriver == null || request.AuthDriver == "" ? "x509" : request.AuthDriver));
                 USER oneuser = one.UserGetInfo(id);
                 result = new WebOneUser{ Id = oneuser.ID, Name = oneuser.NAME, Password = oneuser.PASSWORD, AuthDriver = oneuser.AUTH_DRIVER};
