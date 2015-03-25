@@ -320,6 +320,7 @@ namespace Terradue.Corporate.WebServer {
 
                 string subject = context.GetConfigValue("EmailSupportResetPasswordSubject");
                 subject = subject.Replace("$(USERNAME)", request.Username);
+                subject = subject.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
 
                 string body = context.GetConfigValue("EmailSupportResetPasswordBody");
                 body = body.Replace("$(USERNAME)", request.Username);
