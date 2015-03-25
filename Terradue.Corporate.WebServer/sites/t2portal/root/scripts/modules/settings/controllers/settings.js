@@ -161,6 +161,78 @@ define([
 				});
 			},
 
+			freeTrial: function(options) {
+				var self = this;
+				console.log("App.controllers.Settings.freeTrial");
+				self.isLoginPromise.then(function(userData){
+					self.view({
+						url: 'modules/settings/views/freeTrial.html',
+						selector: Config.subContainer,
+						dependency: self.indexDependency(),
+						data: {
+							user: userData,
+						},
+						fnLoad: function(){
+							self.initSubmenu('freeTrial');
+						}
+					});
+				});
+			},
+
+			earlyBird: function(options) {
+				var self = this;
+				console.log("App.controllers.Settings.earlyBird");
+				self.isLoginPromise.then(function(userData){
+					self.view({
+						url: 'modules/settings/views/earlyBird.html',
+						selector: Config.subContainer,
+						dependency: self.indexDependency(),
+						data: {
+							user: userData,
+						},
+						fnLoad: function(){
+							self.initSubmenu('earlyBird');
+						}
+					});
+				});
+			},
+
+			partnerProgram: function(options) {
+				var self = this;
+				console.log("App.controllers.Settings.partnerProgram");
+				self.isLoginPromise.then(function(userData){
+					self.view({
+						url: 'modules/settings/views/partnerProgram.html',
+						selector: Config.subContainer,
+						dependency: self.indexDependency(),
+						data: {
+							user: userData,
+						},
+						fnLoad: function(){
+							self.initSubmenu('partnerProgram');
+						}
+					});
+				});
+			},
+
+			plan: function(options) {
+				var self = this;
+				console.log("App.controllers.Settings.plan");
+				self.isLoginPromise.then(function(userData){
+					self.view({
+						url: 'modules/settings/views/plan.html',
+						selector: Config.subContainer,
+						dependency: self.indexDependency(),
+						data: {
+							user: userData,
+						},
+						fnLoad: function(){
+							self.initSubmenu('plan');
+						}
+					});
+				});
+			},
+
 			initSshKeyArea:function(){
 				var githubData = this.githubData;
 					
