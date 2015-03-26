@@ -1,0 +1,46 @@
+<h3>Safe</h3>
+
+<p class="text-info">
+	<i class="icon-info-sign"></i> In this page you can set your Safe credentials. blablabla <strong>TODO</strong>
+</p>
+<br/><br/>
+<div class="settings-safe">
+{{#if user.PublicKey }}
+	<div class="hasKey">
+		<div class="safePubKeyPanel">
+			<img class="key" src="/scripts/modules/settings/img/key.png"></img>
+			<a href="javascript://" class="showPubSshKey">Hide Public SSH Key <i class="icon-caret-right"></i></a>
+			<pre class="pubKey">{{ user.PublicKey }}</pre>
+			{{#if user.PrivateKey }}
+				<br/>
+				<div class="safePrivKeyPanel">
+					<img class="key" src="/scripts/modules/settings/img/key.png"></img>
+					<a href="javascript://" class="showPrivSshKey">Hide Private SSH Key <i class="icon-caret-right"></i></a>
+					<pre class="privKey">{{ user.PrivateKey }}</pre>
+					<br/>
+			{{ else }}
+				<br/>
+				<button class="btn btn-default getPrivateKeyBtn">Get Private Key</button>&nbsp;&nbsp;	
+			{{/if }}
+			<br/><br/>
+			<div class="alert alert-danger alert-no-bottom-margin">
+				<i class="fa fa-frown-o text-danger"></i>
+				<strong> Forgot your safe password ?</strong>
+				<br>
+				<span>Or just want to recreate your safe ?</span>
+			</div>
+			<button class="btn btn-default recreateSafeBtn">Recreate Safe</button>&nbsp;&nbsp;
+			{{#if user.PrivateKey }}
+				</div>
+			{{/if}}
+		</div>
+
+	</div>
+
+{{ else }}
+	<div class="noKey">
+		<button class="btn btn-warning createSafeBtn">Create Safe</button>&nbsp;&nbsp;	
+	</div>
+{{/if }}
+</div>
+

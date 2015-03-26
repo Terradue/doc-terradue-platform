@@ -50,35 +50,38 @@
 	</form>
  -->
 	{{#if github.Name}}{{#if github.Identifier}}
-	 	
+
 		{{#if github.HasSSHKey}}
-			<div class="panel githubKeyPanel alert-no-bottom-margin">
-				<div class="circle text-success"><i class="fa fa-circle"></i></div>
-				<div class="key"><i class="fa fa-key fa-2x"></i></div>
-				<div class="certPub">{{ github.CertPub }}</div>
+			<div class="githubKeyPanel">
+				<img class="key" src="/scripts/modules/settings/img/key.png"></img>
+				<a href="javascript://" class="showSshKey">Show SSH Key <i class="icon-caret-right"></i></a>
+				<pre class="certPub">{{ github.CertPub }}</pre>
 			</div>
 		{{else}}
-			<p class="text-warning"><i class="fa fa-warning"></i> 
-				public key is missing on your github account.</p>
-			
+
+			<p class="text-warning"><i class="icon-warning-sign"></i> 
+						<strong>Warning!</strong> Your ssh public key is missing.</p>
+			<p class="text-warning"><i class="icon-warning-sign"></i> Your GitHub account requires your ssh public key to authenticate your commands from the cloud.</p>
 			{{#if github.CertPub}}
-<!--				<p class="text-info">Certificate found, please add your public key to Github</p>-->
-				
-				<div class="panel githubKeyPanel">
-					<div class="circle text-warning"><i class="fa fa-circle"></i></div>
-					<div class="key"><i class="fa fa-key fa-2x"></i></div>
-					<div class="certPub">{{ github.CertPub }}</div>
-					<button class="btn btn-success btn-small addPublicKey">Add your public key</button>
+				<div class="githubKeyPanel">
+					<img class="key" src="/scripts/modules/settings/img/key.png"></img>
+					<a href="javascript://" class="showSshKey">Show SSH Key <i class="icon-caret-right"></i></a>
+					<pre class="certPub">{{ github.CertPub }}</pre>
+					<br/>
+ 					<button class="btn btn-success btn-small addPublicKey">Add your public key</button>
 				</div>
+
 			{{else}}
-				{{#unless user.Email}}
+				{{#if user.Email}}
+					
+					<p>Please add or upload the ssh public and store it in your github account.</p>
+					<div id="myDroppableTextarea"></div>
+					<div class="rsaValidation alert"><i class="icon-exclamation-sign"></i> Insert a valid rsa public key.</div>
+					<button class="btn btn-success btn-small addPublicKeyFromTextarea" disabled="disabled">Add your public key</button>
+				{{else}}
 					<p class="text-warning"><i class="icon-warning-sign"></i> 
 						<strong>Warning!</strong> Your E-mail is missing.</p>
-					<p>Please set your e-mail <a href="#!settings/profile">here.</a></p>
-				{{else}}
-					<p class="text-warning"><i class="fa fa-warning"></i> 
-						<strong>Warning!</strong> Certificate is missing.</p>
-					<p>Please add your certificate <a href="#!settings/certificate">here.</a></p>
+					<p>Please set your e-mail <a href="profile">here.</a></p>
 				{{/if}}
 			{{/if}}
 		{{/if}}

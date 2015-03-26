@@ -11,13 +11,14 @@ define([
 	'modules/settings/models/oneConfig',
 	'modules/settings/models/github',
 	'modules/settings/models/oneUser',
+	'modules/settings/models/safe',
 	'canpromise',
 	'messenger',
 	'jasnyBootstrap',//'bootstrapFileUpload',
 	'jqueryValidate',
 	'ajaxFileUpload',
 	'droppableTextarea'
-], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel){
+], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel){
 	var SettingsControl = BaseControl(
 		{
 			defaults: { fade: 'slow' },
@@ -39,6 +40,7 @@ define([
 						user: user,
 						isPending: (user.AccountStatus==1),
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
 						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
 						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
 					});
@@ -157,6 +159,24 @@ define([
 								self.initSshKeyArea();
 							}
 						});
+					});
+				});
+			},
+
+			safe: function(options) {
+				var self = this;
+				console.log("App.controllers.Settings.safe");
+				self.isLoginPromise.then(function(userData){
+					self.view({
+						url: 'modules/settings/views/safe.html',
+						selector: Config.subContainer,
+						dependency: self.indexDependency(),
+						data: {
+							user: userData,
+						},
+						fnLoad: function(){
+							self.initSubmenu('safe');
+						}
 					});
 				});
 			},
@@ -413,7 +433,6 @@ define([
 			},
 			
 			'.settings-github .githubKeyPanel .addPublicKey click': 'addPublicKey',
-
 			addPublicKey: function(sshPublicKey){
 				var self = this;
 				
@@ -469,6 +488,126 @@ define([
 					}, function(xhr){
 						console.error(xhr);
 					});
+				});
+			},
+
+			/* safe */
+			'.safePubKeyPanel > .showPubSshKey click': function(el){
+				var $pre = $(".safePubKeyPanel > .pubKey");
+				if ($pre.is(':visible')){
+					$pre.hide('blind');
+					el.html('Show Public SSH Key <i class="icon-caret-right"></i>');
+				} else{
+					$pre.show('blind');
+					el.html('Hide Public SSH Key <i class="icon-caret-down"></i>');
+				}
+				return false;
+			},
+
+			'.safePrivKeyPanel > .showPrivSshKey click': function(el){
+				var $pre = $(".safePrivKeyPanel > .privKey");
+				if ($pre.is(':visible')){
+					$pre.hide('blind');
+					el.html('Show Private SSH Key <i class="icon-caret-right"></i>');
+				} else{
+					$pre.show('blind');
+					el.html('Hide Private SSH Key <i class="icon-caret-down"></i>');
+				}
+				return false;
+			},
+
+			'.settings-safe .createSafeBtn click': function(){
+				var self = this;
+				var message = "<div class='container-fluid signupForm'>"
+							+ "<form>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "<div class='form-group'>"
+							+ "<label for='passwordRepeat'>Password confirmation</label>"
+							+ "<input type='password' class='form-control' name='passwordRepeat' placeholder='Password confirmation'>"
+							+ "</div>"
+							+ "</form>"
+							+ "</div>";
+				bootbox.dialog({
+					title: "Please enter your Safe password",
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function () {
+	                            var password = $('#safePassword').val();
+	                            SafeModel.create(password).then(function(safe){
+							    	self.data.user.attr("PublicKey",safe.PublicKey);
+							    	$('.noKey').mask();
+									$('.hasKey').unmask();
+								}).fail(function(){
+									bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
+								});
+                        	}
+                    	}
+                    }
+				});
+			},
+
+			'.settings-safe .recreateSafeBtn click': function(){
+				var self = this;
+				var message = "<div class='container-fluid signupForm'>"
+							+ "<form>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "<div class='form-group'>"
+							+ "<label for='passwordRepeat'>Password confirmation</label>"
+							+ "<input type='password' class='form-control' name='passwordRepeat' placeholder='Password confirmation'>"
+							+ "</div>"
+							+ "</form>"
+							+ "</div>";
+				bootbox.dialog({
+					title: "Please enter your Safe password",
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function () {
+	                            var password = $('#safePassword').val();
+	                            SafeModel.recreate(password).then(function(safe){
+							    	self.data.user.attr("PublicKey",safe.PublicKey);
+							    	$('.noKey').mask();
+									$('.hasKey').unmask();
+								}).fail(function(){
+									bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
+								});
+                        	}
+                    	}
+                    }
+				});
+			},
+
+			'.settings-safe .getPrivateKeyBtn click': function(){
+				var self = this;
+				bootbox.prompt({
+					title: "Please enter your Safe password",
+	  				inputType: "password",	
+	  				callback: function(result) {             
+					  if (result === null) {                                             
+					    
+					  } else {
+					    SafeModel.get(result).then(function(safe){
+					    	self.data.user.attr("PublicKey",safe.PublicKey);
+					    	self.data.user.attr("PrivateKey",safe.PrivateKey);
+					    	$('.noKey').mask();
+							$('.hasKey').unmask();
+
+						}).fail(function(xhr){
+							bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation: " + Helpers.getErrMsg(xhr));
+						});
+					  }
+					}
 				});
 			}
 

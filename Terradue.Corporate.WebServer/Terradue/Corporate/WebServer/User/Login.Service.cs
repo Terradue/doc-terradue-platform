@@ -108,7 +108,11 @@ namespace Terradue.Corporate.WebServer.Services
 			try{
                 context.Open();
 
-                user = T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.username, request.password);
+                try{
+                    user = T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.username, request.password);
+                }catch(Exception e){
+                    throw new Exception("Wrong username or password", e);
+                }
                 response = new Terradue.WebService.Model.WebUser(user);
 
 				context.Close();

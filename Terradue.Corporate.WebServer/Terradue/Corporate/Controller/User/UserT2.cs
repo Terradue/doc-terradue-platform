@@ -121,10 +121,6 @@ namespace Terradue.Corporate.Controller {
             return user;
         }
 
-        public override void Load() {
-            base.Load();
-        }
-
         /// <summary>
         /// To CrowdUser type.
         /// </summary>
@@ -214,6 +210,18 @@ namespace Terradue.Corporate.Controller {
             }
         }
 
+        /// <summary>
+        /// Load this instance.
+        /// </summary>
+        public override void Load(){
+            base.Load();
+            try{
+                safe = Safe.FromUserId(context, this.Id);
+            }catch(Exception){
+                safe = null;
+            }
+        }
+
         private string GetUserPassword(){
             //decrypter ds l'autre sens
 //            return context.GetQueryBooleanValue(String.Format("SELECT id_domain IS NOT NULL FROM usr WHERE id={0};", this.Id));
@@ -287,9 +295,20 @@ namespace Terradue.Corporate.Controller {
                 safe.OwnerId = this.Id;
                 safe.GenerateKeys(password);
                 safe.Store();
+                return;
             }
             throw new Exception("User already has a Safe");
+        }
 
+        /// <summary>
+        /// Recreates the safe.
+        /// </summary>
+        /// <param name="password">Password.</param>
+        public void RecreateSafe(string password){
+            if(safe == null) throw new Exception("User has no Safe");
+            safe.ClearKeys();
+            safe.GenerateKeys(password);
+            safe.Store();
         }
 
         /// <summary>

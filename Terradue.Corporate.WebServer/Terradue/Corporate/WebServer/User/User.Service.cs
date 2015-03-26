@@ -69,13 +69,13 @@ namespace Terradue.Corporate.WebServer {
         /// <returns>the users</returns>
         public object Get(GetUsers request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            List<WebUser> result = new List<WebUser>();
+            List<WebUserT2> result = new List<WebUserT2>();
             try {
                 context.Open();
 
-                EntityList<User> users = new EntityList<User>(context);
+                EntityList<UserT2> users = new EntityList<UserT2>(context);
                 users.Load();
-                foreach(User u in users) result.Add(new WebUser(u));
+                foreach(UserT2 u in users) result.Add(new WebUserT2(u));
 
                 context.Close();
             } catch (Exception e) {
@@ -133,55 +133,6 @@ namespace Terradue.Corporate.WebServer {
                 user.StorePassword(request.Password);
 
                 result = new WebUserT2(user);
-                context.Close ();
-            }catch(Exception e) {
-                context.Close ();
-                throw e;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Post the specified request.
-        /// </summary>
-        /// <param name="request">Request.</param>
-        public object Post(CreateSafeUserT2 request)
-        {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
-            WebUserT2 result;
-            try{
-                context.Open();
-
-                UserT2 user = UserT2.FromId(context, request.Id);
-                user.CreateSafe(request.Password);
-
-                result = new WebUserT2(user);
-                context.Close ();
-            }catch(Exception e) {
-                context.Close ();
-                throw e;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Get the specified request.
-        /// </summary>
-        /// <param name="request">Request.</param>
-        public object Get(GetSafeUserT2 request)
-        {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
-            WebSafe result;
-            try{
-                context.Open();
-
-                UserT2 user = UserT2.FromId(context, context.UserId);
-                if(user.HasSafe()){
-                    result = new WebSafe();
-                    result.PublicKey = user.GetPublicKey();
-                    result.PrivateKey = user.GetPrivateKey(request.password);
-                } else throw new Exception("Safe has not yet been created");
-
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();

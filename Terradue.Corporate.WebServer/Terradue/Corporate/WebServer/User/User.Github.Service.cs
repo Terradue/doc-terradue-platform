@@ -47,7 +47,11 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 GithubProfile user = GithubProfile.FromId(context, context.UserId);
-                user.LoadPublicKeyFromSafe();
+                try{
+                    user.LoadPublicKeyFromSafe();
+                }catch(Exception e){
+                    user.PublicSSHKey = null;
+                }
                 GithubClient client = new GithubClient(context);
                 if(!user.IsAuthorizationTokenValid()) throw new UnauthorizedAccessException("Invalid token");
                 if(user.PublicSSHKey == null) throw new UnauthorizedAccessException("No available public ssh key");
@@ -69,7 +73,11 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 GithubProfile user = GithubProfile.FromId(context, context.UserId);
-                user.LoadPublicKeyFromSafe();
+                try{
+                    user.LoadPublicKeyFromSafe();
+                }catch(Exception e){
+                    user.PublicSSHKey = null;
+                }
                 result = new WebGithubProfile(user);
                 context.Close();
             } catch (Exception e) {

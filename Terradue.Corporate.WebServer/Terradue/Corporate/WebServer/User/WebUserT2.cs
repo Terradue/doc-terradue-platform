@@ -43,9 +43,18 @@ namespace Terradue.Corporate.WebServer {
     public class UpgradeUserT2 : WebUserUpgradeT2, IReturn<WebUserT2> {}
 
     [Route("/user/safe", "POST", Summary = "create a safe for user", Notes = "User is contained in the POST data.")]
-    public class CreateSafeUserT2 : WebUserT2, IReturn<WebUserT2> {}
+    public class CreateSafeUserT2 : IReturn<WebSafe> {
+        [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string password { get; set; }
+    }
 
-    [Route("/user/safe", "GET", Summary = "get a safe for user", Notes = "")]
+    [Route("/user/safe", "PUT", Summary = "recreate a safe for user", Notes = "")]
+    public class ReCreateSafeUserT2 : IReturn<WebSafe> {
+        [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string password { get; set; }
+    }
+
+    [Route("/user/safe/private", "PUT", Summary = "get a safe for user", Notes = "")]
     public class GetSafeUserT2 : IReturn<WebSafe> {
         [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string password { get; set; }
