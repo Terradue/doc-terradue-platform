@@ -66,7 +66,8 @@ define([
 	
 	can.mustache.registerHelper('ifEquals', function(value, valueCheck, options) {
 		var v = (value==null || typeof(value)!='function' ? value : value());
-		return (v===valueCheck ? options.fn() : null);
+		var vc = (valueCheck==null || typeof(valueCheck)!='function' ? valueCheck : valueCheck());
+		return (v===vc ? options.fn() : null);
 	});
 	
 	can.mustache.registerHelper('ifNotEquals', function(value, valueCheck, options) {

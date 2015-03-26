@@ -6,19 +6,6 @@
 <div class="container users">
 	<h2>Users</h2>
 	{{#if showForm}}
-		<div class="form well" data-id="{{selectedEntity.Id}}">
-			{{#if selectedEntity}}
-				<h4>Update user: <strong>{{selectedEntity.Username}}</strong></h4>
-			{{else}}
-				<h4>Create user</h4>
-			{{/if}}
-			<input type="text" title="Username" name="Username" value="{{selectedEntity.Username}}" placeholder="Username" /> <br/>
-			<input type="text" title="Email" name="Email" value="{{selectedEntity.Email}}" placeholder="Email" /> <br/>
-			<input type="text" title="FirstName" name="FirstName" value="{{selectedEntity.FirstName}}" placeholder="First Name" /> <br/>
-			<input type="text" title="LastName" name="LastName" value="{{selectedEntity.LastName}}" placeholder="LastName" /> <br/>
-			<a href="javascript://" class="btn save">{{#if selectedEntity}}Save{{else}}Create{{/if}}</a>
-			<a href="javascript://" class="btn cancel">Cancel</a>
-		</div>
 		{{#if selectedEntity}}
 			<div class="plansList"></div>
 		{{/if}}

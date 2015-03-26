@@ -54,7 +54,15 @@ namespace Terradue.Corporate.Controller {
         private int oneId { get; set; }
         private OneClient oneClient { get; set; }
         private Safe safe { get; set; }
-        private Plan Plan { get; set; }
+        private Plan plan { get; set; }
+        private Plan Plan { 
+            get{
+                if (plan == null && this.Id != 0) {
+                    plan = new Plan(context, this.Id);
+                }
+                return plan;
+            }
+        }
 
         [EntityDataField("id_domain")]
         public new int DomainId { get; set; }
@@ -115,7 +123,6 @@ namespace Terradue.Corporate.Controller {
 
         public override void Load() {
             base.Load();
-            this.Plan = new Plan(context, this.Id);
         }
 
         /// <summary>

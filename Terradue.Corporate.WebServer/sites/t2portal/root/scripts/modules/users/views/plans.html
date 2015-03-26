@@ -1,12 +1,12 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title">Upgrade user plan: <strong>{{selectedEntity.Username}}</strong></h3>
+		<h3 class="panel-title">Upgrade user plan: <span class="label label-default">{{user.Username}}</span></h3>
 	</div>
 	<div class="panel-body">
 		{{#each plans}}
 			<div class="radio">
 				<label>
-					<input type="radio" name="planRadio" value="{{Value}}">
+					<input type="radio" name="planRadio" value="{{Value}}" {{#ifEquals Key ../user.Plan}}checked="checked"{{/ifEquals}}>
 					{{Key}}
 				</label>
 			</div>
