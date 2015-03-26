@@ -20,7 +20,7 @@
 					<br/>
 			{{ else }}
 				<br/>
-				<button class="btn btn-default getPrivateKeyBtn">Get Private Key</button>&nbsp;&nbsp;	
+				<button class="btn btn-primary getPrivateKeyBtn">Get Private Key</button>&nbsp;&nbsp;	
 			{{/if }}
 			<br/><br/>
 			<div class="alert alert-danger alert-no-bottom-margin">
@@ -29,7 +29,7 @@
 				<br>
 				<span>Or just want to recreate your safe ?</span>
 			</div>
-			<button class="btn btn-default recreateSafeBtn">Recreate Safe</button>&nbsp;&nbsp;
+			<button class="btn btn-primary recreateSafeBtn">Recreate Safe</button>&nbsp;&nbsp;
 			{{#if user.PrivateKey }}
 				</div>
 			{{/if}}
@@ -39,7 +39,7 @@
 
 {{ else }}
 	<div class="noKey">
-		<button class="btn btn-warning createSafeBtn">Create Safe</button>&nbsp;&nbsp;	
+		<button class="btn btn-primary createSafeBtn">Create Safe</button>&nbsp;&nbsp;	
 	</div>
 {{/if }}
 </div>

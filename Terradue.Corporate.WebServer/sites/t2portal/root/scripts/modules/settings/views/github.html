@@ -54,7 +54,7 @@
 		{{#if github.HasSSHKey}}
 			<div class="githubKeyPanel">
 				<img class="key" src="/scripts/modules/settings/img/key.png"></img>
-				<a href="javascript://" class="showSshKey">Show SSH Key <i class="icon-caret-right"></i></a>
+				<a href="javascript://" class="showSshKey">Hide SSH Key <i class="icon-caret-right"></i></a>
 				<pre class="certPub">{{ github.CertPub }}</pre>
 			</div>
 		{{else}}
@@ -68,7 +68,7 @@
 					<a href="javascript://" class="showSshKey">Show SSH Key <i class="icon-caret-right"></i></a>
 					<pre class="certPub">{{ github.CertPub }}</pre>
 					<br/>
- 					<button class="btn btn-success btn-small addPublicKey">Add your public key</button>
+ 					<button class="btn btn-primary btn-small addPublicKey">Add your public key</button>
 				</div>
 
 			{{else}}
@@ -87,7 +87,7 @@
 		{{/if}}
 	{{/if}}{{/if}}
 	
-	
+	<br/>
 	<!-- 
 if (Name){
 	// form to change github username

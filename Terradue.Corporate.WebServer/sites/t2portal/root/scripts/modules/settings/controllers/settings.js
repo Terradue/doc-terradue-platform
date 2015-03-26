@@ -12,13 +12,14 @@ define([
 	'modules/settings/models/github',
 	'modules/settings/models/oneUser',
 	'modules/settings/models/safe',
+	'modules/users/models/plans',
 	'canpromise',
 	'messenger',
 	'jasnyBootstrap',//'bootstrapFileUpload',
 	'jqueryValidate',
 	'ajaxFileUpload',
 	'droppableTextarea'
-], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel){
+], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel){
 	var SettingsControl = BaseControl(
 		{
 			defaults: { fade: 'slow' },
@@ -31,10 +32,21 @@ define([
 				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
+				this.planStatus = new can.Observe({});
+				this.planStatus.attr({
+					planUpgradedSuccessName: false,
+					planUpgradedFailMessage: false,
+					planUpgradedLoading: false
+				});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
+				this.planPromise = PlansModel.findAll();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
-				
+
+				this.planPromise.then(function(plans){
+					self.data.attr("plans", plans);
+				});
+
 				this.isLoginPromise.then(function(user){
 					self.data.attr({
 						user: user,
@@ -239,16 +251,20 @@ define([
 				var self = this;
 				console.log("App.controllers.Settings.plan");
 				self.isLoginPromise.then(function(userData){
-					self.view({
-						url: 'modules/settings/views/plan.html',
-						selector: Config.subContainer,
-						dependency: self.indexDependency(),
-						data: {
-							user: userData,
-						},
-						fnLoad: function(){
-							self.initSubmenu('plan');
-						}
+					self.planPromise.then(function(plansData){
+						self.view({
+							url: 'modules/settings/views/plan.html',
+							selector: Config.subContainer,
+							dependency: self.indexDependency(),
+							data: {
+								user: userData,
+								plans: plansData,
+								planStatus: self.planStatus
+							},
+							fnLoad: function(){
+								self.initSubmenu('plan');
+							}
+						});
 					});
 				});
 			},
@@ -440,10 +456,10 @@ define([
 					var serviceConfig = Helpers.keyValueArrayToJson(_serviceConfig, 'Key', 'Value');
 
 					$('.githubKeyPanel').mask('wait');
-					GithubModel.postSshKey(sshPublicKey, function(){
+					GithubModel.postSshKey(sshPublicKey).then(function(){
 						$('.githubKeyPanel').unmask();
 						self.githubData.attr('HasSSHKey', 'true');
-					}, function(xhr){
+					}).fail(function(xhr){
 						$('.githubKeyPanel').unmask();
 						if (!xhr.responseJSON)
 							xhr.responseJSON = JSON.parse(xhr.responseText)
@@ -608,6 +624,37 @@ define([
 						});
 					  }
 					}
+				});
+			},
+
+			/*plan*/
+			'.plan-profile .upgradePlanBtn click': function(){
+				var self = this,
+				selectedPlanId = this.element.find('input[name="planRadio"]:checked').val();
+				self.isLoginPromise.then(function(userData){
+					self.planPromise.then(function(plansData){
+						var planSearch = $.grep(plansData, function(plan){
+							return (plan.Value==selectedPlanId);
+						}),
+						plan = (planSearch.length ? planSearch[0] : null);
+				
+						if (plan && userData){
+							// save plan
+							self.planStatus.attr({
+								planUpgradedLoading: true, planUpgradedSuccessName:null, planUpgradedFailMessage:null
+							});
+							
+							PlansModel.upgrade({
+								Id: userData.Id,
+			 					Level: selectedPlanId
+			 				}).then(function(){
+								self.planStatus.attr('planUpgradedSuccessName', plan.Key);
+			 				}).fail(function(xhr){
+			 					errXhr=xhr; // for debug
+			 					self.planStatus.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+			 				});
+						}
+					});
 				});
 			}
 
