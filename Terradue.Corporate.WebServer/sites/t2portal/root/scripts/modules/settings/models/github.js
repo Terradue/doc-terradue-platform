@@ -1,14 +1,18 @@
 
-define(['can', 'config'], function(can, Config){
+define(['jquery', 'can', 'config'], function($, can, Config){
 	
 	return can.Model({
 		update: 'PUT /'+Config.api+'/github/user',
 		findOne: 'GET /'+Config.api+'/github/user/current',
 		
 		postSshKey: function(successCallback, failCallback){
-			var aj = $.post('/'+Config.api+'/github/sshkey', successCallback, 'json');
-			aj.fail(failCallback);
-			return aj;				
+			$.ajax('/'+Config.api+'/github/sshkey', {
+				type : "POST",
+				dataType : "json",
+				data : {},
+				success: successCallback,
+				error: failCallback,
+			});	
 		},
 		
 		getGithubToken: function(password, successCallback, failCallback){

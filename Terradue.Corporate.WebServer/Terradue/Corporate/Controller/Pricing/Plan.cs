@@ -1,6 +1,65 @@
-﻿using System;
+﻿/*
+\startuml{plans.png}
+!define DIAG_NAME Plans/Roles Analysis Sequence Diagram
+
+participant "Admin" as A
+participant "User" as U
+participant "Group" as G
+participant "Domain" as D
+participant "Role" as R
+
+autonumber
+
+== Group creation ==
+A -> G: create
+activate G
+G -> D: create
+deactivate G
+
+== Roles creation ==
+A -> G: select roles \n(from a list of "no domain" roles?)
+G -> R: add roles 
+activate R
+R -> D: Creation of roles for this domain
+R -> G: Group have access to a list of roles
+deactivate R
+
+== Add user to a group ==
+A -> U: add to group
+U -> G: added to group
+G -> R: associate user to roles \n(usr_group table)
+R -> U: usr has access to roles
+
+== User access roles ==
+alt "User is in Group"
+    U -> G: belongs to
+    activate G
+    G -> D: get roles
+    deactivate G
+    D -> R: get roles
+    activate R
+    R -> U: give access to roles
+    deactivate R
+end
+
+== Get a private plan ==
+== Get a group plan ==
+
+
+
+
+footer
+DIAG_NAME
+(c) Terradue Srl
+endfooter
+\enduml
+
+@}
+*/
+using System;
 using Terradue.Portal;
 using Terradue.Util;
+
 
 namespace Terradue.Corporate.Controller {
 

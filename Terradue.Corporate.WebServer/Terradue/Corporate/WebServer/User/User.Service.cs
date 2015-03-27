@@ -226,8 +226,7 @@ namespace Terradue.Corporate.WebServer {
                     }
 
                     string subject = context.GetConfigValue("EmailSupportUpgradeSubject");
-                    subject = subject.Replace("$(USERNAME)", user.Username);
-                    subject = subject.Replace("$(PLAN)", plan);
+                    subject = subject.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
 
                     string body = context.GetConfigValue("EmailSupportUpgradeBody");
                     body = body.Replace("$(USERNAME)", user.Username);
@@ -270,11 +269,11 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 string subject = context.GetConfigValue("EmailSupportResetPasswordSubject");
-                subject = subject.Replace("$(USERNAME)", request.Username);
                 subject = subject.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
 
                 string body = context.GetConfigValue("EmailSupportResetPasswordBody");
                 body = body.Replace("$(USERNAME)", request.Username);
+                body = body.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
 
                 context.SendMail(request.Username, context.GetConfigValue("MailSenderAddress"), subject, body); 
 
