@@ -160,6 +160,13 @@ namespace Terradue.Corporate.WebServer {
                     User.FromUsername(context, request.Email);
                     exists = true;
                 }catch(Exception){}
+
+                try{
+                    var ldapauth = new Terradue.Ldap.LdapAuthClient(context.GetConfigValue("ldapauth-baseurl"), context.GetConfigValue("ldap-port"));
+                    ldapauth.GetUser(request.Email);
+                    exists = true;
+                }catch(Exception){}
+
                 if(exists) throw new Exception("User already exists");
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));

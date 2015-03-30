@@ -6,7 +6,6 @@ using Terradue.Util;
 using Terradue.Cloud;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
-using Terradue.Crowd;
 using System.Net.Mail;
 using System.Net;
 
@@ -125,18 +124,18 @@ namespace Terradue.Corporate.Controller {
         /// To CrowdUser type.
         /// </summary>
         /// <returns>The crowd user.</returns>
-        public CrowdUser ToCrowdUser(){
-            CrowdUser cuser = new CrowdUser();
-            cuser.name = this.Username;
-            cuser.display_name = this.Username;
-            cuser.first_name = this.FirstName;
-            cuser.last_name = this.LastName;
-            cuser.email = this.Email;
-            cuser.active = true;
-            cuser.password = this.GetUserPassword();
-
-            return cuser;
-        }
+//        public CrowdUser ToCrowdUser(){
+//            CrowdUser cuser = new CrowdUser();
+//            cuser.name = this.Username;
+//            cuser.display_name = this.Username;
+//            cuser.first_name = this.FirstName;
+//            cuser.last_name = this.LastName;
+//            cuser.email = this.Email;
+//            cuser.active = true;
+//            cuser.password = this.GetUserPassword();
+//
+//            return cuser;
+//        }
 
         /// <summary>
         /// Upgrade the account of the current user
@@ -315,8 +314,8 @@ namespace Terradue.Corporate.Controller {
         /// Creates the LDAP account.
         /// </summary>
         protected void CreateLdapAccount(){
-            CrowdClient client = new CrowdClient(context.GetConfigValue("Crowd-api-url"), context.GetConfigValue("Crowd-app-name"), context.GetConfigValue("Crowd-app-pwd"));
-            client.CreateUser(this.ToCrowdUser());
+//            CrowdClient client = new CrowdClient(context.GetConfigValue("Crowd-api-url"), context.GetConfigValue("Crowd-app-name"), context.GetConfigValue("Crowd-app-pwd"));
+//            client.CreateUser(this.ToCrowdUser());
         }
 
         /// <summary>

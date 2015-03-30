@@ -28,11 +28,10 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('reCaptcha-public', 'string', 'Google reCaptcha secret', 'Enter the name of the Google reCaptcha secret', '6Lc1ZgMTAAAAAFB21z0ElV23MU1friFPmkBXTtNc', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('reCaptcha-secret', 'string', 'Google reCaptcha secret', 'Enter the name of the Google reCaptcha secret', '6Lc1ZgMTAAAAAIeEknASbDZ2Kn0N20Br-7a_jIAk', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('PendingUserCanLogin', 'bool', 'Can users with pending status login', 'If checked, pending users can login, otherwise they cannot', 'true', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-baseurl', 'string', 'Host url of the LDAP server', 'Enter the value of the LDAP server', 'http://ldap.terradue.int:8081', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '[$(PORTAL)] - account upgrade request', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeBody', 'string', 'Email body sent to support for user upgrade', 'Email body sent to support for user upgrade', 'Dear Support,\nPlease upgrade the account of the user $(USERNAME) with the $(PLAN) plan.\nMessage from user: $(MESSAGE).\n\nThanks', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeBody', 'string', 'Email body sent to support for user upgrade', 'Email body sent to support for user upgrade', 'To the Account Management team\n\nThe user $(USERNAME) requested a sales contact for an account upgrade with the $(PLAN) plan.\n\nHereafter, the request form completed by the user $(USERNAME):\n$(MESSAGE).', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '[$(PORTAL)] - password reset request', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordBody', 'string', 'Email body sent to support for user upgrade', 'Email subject sent to support for user upgrade', 'Dear Support,\nThe user $(USERNAME) has made a password reset request. Please handle it.\n\nThanks', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordBody', 'string', 'Email body sent to support for user upgrade', 'Email subject sent to support for user upgrade', 'Dear Support,\nThe user $(USERNAME) has made a password reset request for the $(PORTAL). Can you please handle it.', '0');
 
 UPDATE config SET value='terradue.com' WHERE name='Github-client-name';
 UPDATE config SET value='64e9f7050a5dba093679' WHERE name='Github-client-id';
@@ -58,7 +57,8 @@ UPDATE config SET value='Terradue Corporate platform' WHERE `name`='SiteName';
 
 /*****************************************************************************/
 
-UPDATE auth SET `activation_rule`='2' WHERE `identifier`='umsso';
+UPDATE auth SET `activation_rule`='1' WHERE `identifier`='password';
+UPDATE auth SET `activation_rule`='4' WHERE `identifier`='ldap';
 
 /*****************************************************************************/
 

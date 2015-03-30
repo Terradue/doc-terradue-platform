@@ -8,7 +8,6 @@ using ServiceStack.ServiceInterface;
 using Terradue.OpenNebula;
 using Terradue.Corporate.Controller;
 using Terradue.Security.Certification;
-using Terradue.Crowd;
 using System.Web;
 using Terradue.Crowd.WebService;
 
