@@ -196,7 +196,6 @@
     <Compile Include="Terradue\Corporate\Controller\LDAP\LdapResponse.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Pricing\Plans.Service.cs" />
     <Compile Include="Terradue\Corporate\Controller\Pricing\Plan.cs" />
-    <Compile Include="Terradue\Corporate\WebServer\Test.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Safe.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
