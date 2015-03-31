@@ -52,6 +52,9 @@ namespace Terradue.Corporate.Controller {
         private string onepwd { get; set; }
         private int oneId { get; set; }
         private OneClient oneClient { get; set; }
+
+        #endregion
+
         private Safe safe { get; set; }
         private Plan plan { get; set; }
         private Plan Plan { 
@@ -66,7 +69,9 @@ namespace Terradue.Corporate.Controller {
         [EntityDataField("id_domain")]
         public new int DomainId { get; set; }
 
-        #endregion
+        //--------------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.Controller.UserT2"/> class.
@@ -76,6 +81,8 @@ namespace Terradue.Corporate.Controller {
             OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
             this.oneClient = oneCloud.XmlRpc;
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.Controller.UserT2"/> class.
@@ -94,6 +101,8 @@ namespace Terradue.Corporate.Controller {
             this.Level = user.Level;
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Creates a new User instance representing the user with the specified ID.
         /// </summary>
@@ -106,6 +115,8 @@ namespace Terradue.Corporate.Controller {
             user.Load();
             return user;
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Creates a new User instance representing the user with the specified unique name.
@@ -120,45 +131,7 @@ namespace Terradue.Corporate.Controller {
             return user;
         }
 
-        /// <summary>
-        /// To CrowdUser type.
-        /// </summary>
-        /// <returns>The crowd user.</returns>
-//        public CrowdUser ToCrowdUser(){
-//            CrowdUser cuser = new CrowdUser();
-//            cuser.name = this.Username;
-//            cuser.display_name = this.Username;
-//            cuser.first_name = this.FirstName;
-//            cuser.last_name = this.LastName;
-//            cuser.email = this.Email;
-//            cuser.active = true;
-//            cuser.password = this.GetUserPassword();
-//
-//            return cuser;
-//        }
-
-        /// <summary>
-        /// Upgrade the account of the current user
-        /// </summary>
-        /// <param name="level">Level.</param>
-        public void Upgrade(PlanType level){
-            context.StartTransaction();
-
-            if(!HasGithubProfile()) CreateGithubProfile();
-            if(!HasCloudAccount()) CreateCloudAccount(); //TODO: linked to safe ?
-            if(this.DomainId == 0) CreateDomain();
-
-            try{
-//                CreateLdapAccount();
-            }catch(Exception e){
-                //TODO: get already existing exception and if other do ClearSafe()
-                throw e;
-            }
-
-            this.Plan.Upgrade(level);
-
-            context.Commit();
-        }
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Determines whether this instance is a paying user.
@@ -167,6 +140,8 @@ namespace Terradue.Corporate.Controller {
         public bool IsPaying(){
             return (this.DomainId != 0);
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Determines whether this instance has github profile.
@@ -181,6 +156,8 @@ namespace Terradue.Corporate.Controller {
             }
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Determines whether this instance has cloud account.
         /// </summary>
@@ -189,6 +166,8 @@ namespace Terradue.Corporate.Controller {
             return context.GetQueryBooleanValue(String.Format("SELECT username IS NOT NULL FROM usr_cloud WHERE id={0};", this.Id));
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Determines whether this instance has a safe created.
         /// </summary>
@@ -196,6 +175,8 @@ namespace Terradue.Corporate.Controller {
         public bool HasSafe(){
             return (this.safe != null);
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Writes the item to the database.
@@ -209,6 +190,8 @@ namespace Terradue.Corporate.Controller {
             }
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Load this instance.
         /// </summary>
@@ -221,11 +204,38 @@ namespace Terradue.Corporate.Controller {
             }
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Upgrade the account of the current user
+        /// </summary>
+        /// <param name="level">Level.</param>
+        public void Upgrade(PlanType level){
+            context.StartTransaction();
+
+            if(!HasGithubProfile()) CreateGithubProfile();
+            if(!HasCloudAccount()) CreateCloudAccount(); //TODO: linked to safe ?
+            if(this.DomainId == 0) CreateDomain();
+
+            try{
+                //                CreateLdapAccount();
+            }catch(Exception e){
+                //TODO: get already existing exception and if other do ClearSafe()
+                throw e;
+            }
+
+            this.Plan.Upgrade(level);
+
+            context.Commit();
+        }
+
         private string GetUserPassword(){
             //decrypter ds l'autre sens
 //            return context.GetQueryBooleanValue(String.Format("SELECT id_domain IS NOT NULL FROM usr WHERE id={0};", this.Id));
             return "";
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Stores the password.
@@ -236,6 +246,8 @@ namespace Terradue.Corporate.Controller {
             ValidatePassword(pwd);
             base.StorePassword(pwd);
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Validates the password.
@@ -250,6 +262,8 @@ namespace Terradue.Corporate.Controller {
             if (!Regex.Match(pwd, @"^[a-zA-Z0-9!#@$%^&*()_+]+$").Success) throw new Exception("Invalid password: You password contains illegal characters");
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Creates the github profile.
         /// </summary>
@@ -257,6 +271,8 @@ namespace Terradue.Corporate.Controller {
             GithubProfile github = new GithubProfile(context, this.Id);
             github.Store();
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Creates the cloud profile.
@@ -268,6 +284,8 @@ namespace Terradue.Corporate.Controller {
                 context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Email)));
             }
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Creates the domain.
@@ -281,6 +299,8 @@ namespace Terradue.Corporate.Controller {
             this.DomainId = domain.Id;
             this.Store();
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Creates the safe.
@@ -299,6 +319,8 @@ namespace Terradue.Corporate.Controller {
             throw new Exception("User already has a Safe");
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Recreates the safe.
         /// </summary>
@@ -310,13 +332,21 @@ namespace Terradue.Corporate.Controller {
             safe.Store();
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Creates the LDAP account.
         /// </summary>
         protected void CreateLdapAccount(){
-//            CrowdClient client = new CrowdClient(context.GetConfigValue("Crowd-api-url"), context.GetConfigValue("Crowd-app-name"), context.GetConfigValue("Crowd-app-pwd"));
-//            client.CreateUser(this.ToCrowdUser());
+            string dn = string.Format("uid={0}, ou=people, dc=terradue, dc=com", this.Username);
+            var json2ldap = new Terradue.Ldap.LdapMgrClient(context.GetConfigValue("ldap-baseurl"));
+            json2ldap.Connect();
+            string dnn = json2ldap.NormalizeDN(dn);
+            json2ldap.AddEntry(dn);
+            json2ldap.Close();
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Gets the public key.
@@ -327,6 +357,8 @@ namespace Terradue.Corporate.Controller {
             return safe.GetBase64SSHPublicKey();
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Gets the private key.
         /// </summary>
@@ -336,6 +368,8 @@ namespace Terradue.Corporate.Controller {
             if (!HasSafe()) return null;
             return safe.GetBase64SSHPrivateKey(password);
         }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Gets the plan.
