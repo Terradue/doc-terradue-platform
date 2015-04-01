@@ -32,8 +32,6 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeBody', 'string', 'Email body sent to support for user upgrade', 'Email body sent to support for user upgrade', 'To the Account Management team\n\nThe user $(USERNAME) requested a sales contact for an account upgrade with the $(PLAN) plan.\n\nHereafter, the request form completed by the user $(USERNAME):\n$(MESSAGE).', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '[$(PORTAL)] - password reset request', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordBody', 'string', 'Email body sent to support for user upgrade', 'Email subject sent to support for user upgrade', 'Dear Support,\nThe user $(USERNAME) has made a password reset request for the $(PORTAL). Can you please handle it.', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-admin-dn', 'string', 'DN of the admin of the LDAP server', 'Enter the value of the DN of the LDAP server', 'uid=t2portal,ou=people,dc=terradue,dc=com', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-admin-pwd', 'string', 'DN of the admin of the LDAP server', 'Enter the value of the DN of the LDAP server', 't0lh01l@T2', '0');
 
 UPDATE config SET value='terradue.com' WHERE name='Github-client-name';
 UPDATE config SET value='64e9f7050a5dba093679' WHERE name='Github-client-id';
@@ -52,9 +50,13 @@ UPDATE config SET value='Terradue Support' WHERE name='MailSender';
 UPDATE config SET value='support@terradue.com' WHERE name='MailSenderAddress';
 UPDATE config SET value='relay.terradue.int' WHERE name='SmtpHostname';
 UPDATE config SET value="Dear $(USERNAME),\nyour account has just been created on $(SITEURL).\n\nWe must now verify your email adress' authenticity.\n\nTo do so, please click on the following link:\n$(ACTIVATIONURL)\n\nWith our best regards\n\nThe Operations Support team at Terradue" WHERE name='RegistrationMailBody';
-UPDATE config SET value='$(BASEURL)/portal/settings/profile?token=$(TOKEN)' WHERE `name`='EmailConfirmationUrl';
-UPDATE config SET value='your registration on the Terradue platform' WHERE `name`='RegistrationMailSubject';
-UPDATE config SET value='Terradue Corporate platform' WHERE `name`='SiteName';
+UPDATE config SET value='$(BASEURL)/portal/settings/profile?token=$(TOKEN)' WHERE name='EmailConfirmationUrl';
+UPDATE config SET value='your registration on the Terradue platform' WHERE name='RegistrationMailSubject';
+UPDATE config SET value='Terradue Corporate platform' WHERE name='SiteName';
+UPDATE config SET value='uid=t2portal,ou=people,dc=terradue,dc=com' WHERE name='ldap-admin-dn';
+UPDATE config SET value='t0lh01l@T2' WHERE name='ldap-admin-pwd';
+UPDATE config SET value='http://ldap.terradue.int:8080/json2ldap/' WHERE name='ldap-baseurl';
+UPDATE config SET value='http://ldap.terradue.int:8080/ldapauth/' WHERE name='ldapauth-baseurl';
 
 
 /*****************************************************************************/
