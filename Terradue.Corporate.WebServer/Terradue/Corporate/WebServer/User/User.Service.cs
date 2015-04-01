@@ -179,6 +179,7 @@ namespace Terradue.Corporate.WebServer {
                 user.Store();
                 try{
                     user.StorePassword(request.Password);
+                    user.CreateLdapAccount(request.Password);
                     user.SendMail(UserMailType.Registration, true);
                 }catch(Exception e){
                     user.Delete();
