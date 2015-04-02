@@ -184,19 +184,6 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Writes the item to the database.
-        /// </summary>
-        public override void Store() {
-            bool isnew = (this.Id == 0);
-            base.Store();
-            if (!isnew) {
-                UpdateLdapAccount();
-            }
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
         /// Load this instance.
         /// </summary>
         public override void Load() {

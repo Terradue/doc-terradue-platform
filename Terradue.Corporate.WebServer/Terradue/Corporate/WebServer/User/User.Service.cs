@@ -13,6 +13,7 @@ using System.IO;
 using ServiceStack.Text;
 using System.Runtime.Serialization;
 using ServiceStack.Common.Web;
+using Terradue.Authentication.Ldap;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Tep-QuickWin Terradue webserver")]
@@ -98,6 +99,10 @@ namespace Terradue.Corporate.WebServer {
 				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
                 user = request.ToEntity(context, user);
                 user.Store();
+
+                //update the Ldap account with the modifications
+                user.UpdateLdapAccount();
+
                 result = new WebUserT2(user);
                 context.Close();
             } catch (Exception e) {
@@ -188,7 +193,8 @@ namespace Terradue.Corporate.WebServer {
 
                 //we login the user
                 try{
-                    user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
+                    user = (UserT2)new LdapAuthenticationType(context).Authenticate(request.Email, request.Password);
+//                    user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
                 }catch(Exception e){
                     throw new Exception("User account has been created, but there was an error during the automatic login. Please contact your administrator.");
                 }
