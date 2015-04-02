@@ -120,9 +120,6 @@
     <Reference Include="Terradue.OpenSearch.RdfEO">
       <HintPath>..\packages\Terradue.OpenSearch.RdfEO.1.2\lib\net40\Terradue.OpenSearch.RdfEO.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Authentication.OpenId">
-      <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.4\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.Authentication.Ldap">
       <HintPath>..\packages\Terradue.Authentication.Ldap.1.0.2\lib\net40\Terradue.Authentication.Ldap.dll</HintPath>
     </Reference>
