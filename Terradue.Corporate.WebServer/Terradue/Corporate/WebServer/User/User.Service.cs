@@ -168,28 +168,36 @@ namespace Terradue.Corporate.WebServer {
 
                 try{
                     var ldapauth = new Terradue.Ldap.LdapAuthClient(context.GetConfigValue("ldapauth-baseurl"), context.GetConfigValue("ldap-port"));
-                    ldapauth.GetUser(request.Email);
-                    exists = true;
+                    var usr = ldapauth.GetUser(request.Email);
+                    if(usr != null) exists = true;
                 }catch(Exception){}
 
                 if(exists) throw new Exception("User already exists");
 
+                AuthenticationType AuthType = IfyWebContext.GetAuthenticationType(typeof(LdapAuthenticationType));
+
                 UserT2 user = request.ToEntity(context, new UserT2(context));
                 user.Username = user.Email;
                 user.NeedsEmailConfirmation = false;
-                user.AccountStatus = AccountStatusType.PendingActivation;
+                user.AccountStatus = AuthType.AccountActivationRule;
                 user.Level = UserLevel.User;
                 user.PasswordAuthenticationAllowed = true;
-
                 user.Store();
+
                 try{
-                    user.StorePassword(request.Password);
                     user.CreateLdapAccount(request.Password);
-                    user.SendMail(UserMailType.Registration, true);
+                    user.LinkToAuthenticationProvider(AuthType, user.Username);
                 }catch(Exception e){
-                    user.Delete();
+                    // user.Delete(); ?
+                    // delete ldap account ?
                     throw e;
                 }
+
+                //we dont want to send an error if mail was not sent
+                //user can still have it resent from the portal
+                try{
+                    user.SendMail(UserMailType.Registration, true);
+                }catch(Exception){}
 
                 //we login the user
                 try{
