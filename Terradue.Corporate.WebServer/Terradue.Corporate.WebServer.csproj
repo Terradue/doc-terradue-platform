@@ -193,7 +193,6 @@
     <Compile Include="Terradue\Corporate\WebServer\Pricing\Plans.Service.cs" />
     <Compile Include="Terradue\Corporate\Controller\Pricing\Plan.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Safe.Service.cs" />
-    <Compile Include="Terradue\Corporate\WebServer\Test.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
