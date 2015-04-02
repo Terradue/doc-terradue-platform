@@ -120,9 +120,6 @@
     <Reference Include="Terradue.OpenSearch.RdfEO">
       <HintPath>..\packages\Terradue.OpenSearch.RdfEO.1.2\lib\net40\Terradue.OpenSearch.RdfEO.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Authentication.Ldap">
-      <HintPath>..\packages\Terradue.Authentication.Ldap.1.0.2\lib\net40\Terradue.Authentication.Ldap.dll</HintPath>
-    </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.6.9.6\lib\net40\MySql.Data.dll</HintPath>
     </Reference>
@@ -158,7 +155,10 @@
       <HintPath>..\packages\Terradue.Portal.2.6.25\lib\net40\Terradue.Portal.Agent.exe</HintPath>
     </Reference>
     <Reference Include="Terradue.Ldap">
-      <HintPath>..\packages\Terradue.Ldap.1.0.1\lib\net40\Terradue.Ldap.dll</HintPath>
+      <HintPath>..\packages\Terradue.Ldap.1.0.2\lib\net40\Terradue.Ldap.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Authentication.Ldap">
+      <HintPath>..\packages\Terradue.Authentication.Ldap.1.0.3\lib\net40\Terradue.Authentication.Ldap.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -202,5 +202,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="modules\ldap\db\db-create.sql" />
   </ItemGroup>
 </Project>
