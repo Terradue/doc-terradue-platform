@@ -179,7 +179,7 @@ namespace Terradue.Corporate.WebServer {
                 UserT2 user = request.ToEntity(context, new UserT2(context));
                 user.Username = user.Email;
                 user.NeedsEmailConfirmation = false;
-                user.AccountStatus = AuthType.AccountActivationRule;
+                user.AccountStatus = AccountStatusType.PendingActivation;
                 user.Level = UserLevel.User;
                 user.PasswordAuthenticationAllowed = true;
                 user.Store();
