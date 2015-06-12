@@ -61,7 +61,7 @@
     <Compile Include="Goodies.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Terradue.Corporate.WebServer\Terradue.Corporate.WebServer.csproj">
+    <ProjectReference Include="..\..\..\..\Terradue.Corporate.WebServer\Terradue.Corporate.WebServer.csproj">
       <Project>{76CBD7B6-4156-424C-9662-CDEDE1548781}</Project>
       <Name>Terradue.Corporate.WebServer</Name>
     </ProjectReference>
