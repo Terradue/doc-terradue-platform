@@ -402,6 +402,23 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Close();
         }
 
+        /// <summary>
+        /// Deletes the LDAP account.
+        /// </summary>
+        public void DeleteLdapAccount(){
+            //open the connection
+            Json2Ldap.Connect();
+
+            string dn = CreateLdapDN();
+
+            //login as ldap admin to have creation rights
+            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+            Json2Ldap.DeleteEntry(dn);
+
+            Json2Ldap.Close();
+            
+        }
+
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
