@@ -3674,6 +3674,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     float: left;
   }
 }
+
 .navbar-collapse {
   max-height: 340px;
   padding-right: 15px;
@@ -3831,6 +3832,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-nav .open .dropdown-menu > li > a,
   .navbar-nav .open .dropdown-menu .dropdown-header {
     padding: 5px 15px 5px 25px;
+    text-align: right;
   }
   .navbar-nav .open .dropdown-menu > li > a {
     line-height: 20px;
@@ -3986,6 +3988,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 .navbar-default .navbar-nav > li > a {
   color: #777;
+  text-align: right;
+  margin-right: 15px;
 }
 .navbar-default .navbar-nav > li > a:hover {
   color: #333;
