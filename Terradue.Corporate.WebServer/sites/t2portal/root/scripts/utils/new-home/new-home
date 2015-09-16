@@ -159,7 +159,6 @@ body {
 	margin-left: 20px;
 	margin-right: 20px;
 }
-
 /**/
 
 
@@ -176,7 +175,17 @@ body {
   background-size: cover;
 }
 
-
+.slider-about-us {
+  display: table;
+  height: 100vh;  /*100% of the viewport height */
+  width: 100%;
+  position: relative;
+  background: url(../../modules/pages/img/corporate/terradue_cover.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 
 /**/
 

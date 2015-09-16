@@ -1,0 +1,71 @@
+/*** About page - Styles ***/
+
+/* In-page separators */
+
+.separator {
+  padding: 20px 20px;
+  color: #000000;
+  height: 80px;
+  background: url(../img/separators/shapes.jpg) no-repeat center center fixed;
+  background-attachment: inherit;
+}
+
+.slider-about-us {
+  display: table;
+  height: 100vh;  /*100% of the viewport height */
+  width: 100%;
+  position: relative;
+  background: url(../img/corporate/terradue_cover.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+
+/* Full page width image, for vertical scroll */
+/* Data driven economy | call-out area */
+/* IMAGE */
+#datadriven {
+  color: #ffffff;
+  padding: 50px 0;
+  display: table;
+  height: 300px;
+  width: 100%;
+  background: url(../img/about/a1-SEA-LandsEnd-2015.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+/**/
+
+
+/**/
+.top-scroll {
+  margin-top: 50px;
+}
+.top-scroll a {
+  text-decoration: none;
+  color: inherit;
+}
+i.scroll {
+  color: #333333;
+}
+i.scroll:hover {
+  color: #0a5175;
+}
+/**/
+
+
+/* Responsive */
+@media (max-width: 839px) {	
+  .datadriven {
+	background: url(../img/about/a1-SEA-LandsEnd-2015.jpg) no-repeat center center scroll; 
+  }
+}
+/**/
+
+
+
+

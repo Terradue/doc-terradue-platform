@@ -12,9 +12,11 @@
 	background-color: #FFA500; /* #EF5E29 #7FBBDA blue as 'Cloud Services' general overview | #EF5E29 orange warm */
     border-radius: 10px;
     color: white;
-    transition-property: all;  /* all, font-size, opacity, left, top, height */
+    -webkit-transition-property: top;
+    -webkit-transition-duration: 2s;
+    transition-property: top;  /* all, font-size, opacity, left, top, height */
     transition-duration: 2s;
-    transition-timing-function: ease-out;
+    transition-timing-function: ease-in; /* */
     /* transition-delay: 1s; */
 }
 

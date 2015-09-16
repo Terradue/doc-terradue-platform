@@ -121,16 +121,5 @@ define({
 			profile: '',
 			linkedin: 'http://www.linkedin.com/pub/francesco-cerasuolo',
 			twitter: 'https://twitter.com/CiccioCeras'},
-		{id:12, 
-			surname: 'Costanzo', 
-			name: 'D\'Andelis', 
-			image: '/scripts/modules/pages/img/people/costanzo.dangelis.jpg', 
-			focus1: {title: 'Applications Support', url: 'http://www.linkedin.com/skills/skill/Applications_Support'},
-			focus2: {title: 'Software Engineering', url: 'http://en.wikipedia.org/wiki/Software_engineering'},
-			focus3: {title: 'Web Services API', url: 'https://en.wikipedia.org/wiki/Chief_executive_officer'},
-			focus4: {title: 'Computer Science', url: 'http://en.wikipedia.org/wiki/Computer_science'},
-			profile: '',
-			linkedin: 'http://www.linkedin.com/in/costanzod',
-			twitter: 'https://twitter.com/fumoindiretto'},
 	]
 });

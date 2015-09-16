@@ -13,9 +13,9 @@
 }
 
 .approach {
-  padding: 20px 20px;
+  padding: 3%;
   color: #ffffff;
-  height: 80px;
+  /* height: 80px; */
   background: url(../img/separators/shapes.jpg) no-repeat center center fixed;
   background-attachment: inherit;
 }
@@ -110,6 +110,6 @@ h5.small {
 
 @media screen and (max-width: 480px) {
 	h4.small {
-		font-size: 100%;	
+		font-size: 16px;	
 	}
 }
