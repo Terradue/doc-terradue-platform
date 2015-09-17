@@ -22,7 +22,7 @@ namespace Terradue.Corporate.WebServer {
 
         public object Get(SearchTwitterNews request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
-            IOpenSearchResult result = null;
+            IOpenSearchResultCollection result = null;
             try{
                 context.Open();
 
@@ -44,7 +44,7 @@ namespace Terradue.Corporate.WebServer {
                 throw e;
             }
 
-            return new HttpResult(result.Result.SerializeToString(), result.Result.ContentType);
+            return new HttpResult(result.SerializeToString(), result.ContentType);
         }
 
         public object Get(GetTwitterNewsFeeds request) {

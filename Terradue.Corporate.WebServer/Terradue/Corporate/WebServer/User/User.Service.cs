@@ -188,8 +188,8 @@ namespace Terradue.Corporate.WebServer {
                     user.CreateLdapAccount(request.Password);
                     user.LinkToAuthenticationProvider(AuthType, user.Username);
                 }catch(Exception e){
-                    // user.Delete(); ?
-                    // delete ldap account ?
+//                    user.Delete();
+//                    user.DeleteLdapAccount();
                     throw e;
                 }
 

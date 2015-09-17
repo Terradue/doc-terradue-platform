@@ -203,6 +203,14 @@ namespace Terradue.Corporate.Controller
             }
         }
 
+        public void ApplyResultFilters(OpenSearchRequest request, ref IOpenSearchResultCollection osr, string finalContentType) {
+        }
+
+        public bool CanCache {
+            get {
+                return false;
+            }
+        }
         #endregion
         /// <summary>
         /// Gets the open search engine.
@@ -302,9 +310,6 @@ namespace Terradue.Corporate.Controller
 
         }
 
-        public ParametersResult DescribeParameters() {
-            return OpenSearchFactory.GetDefaultParametersResult();
-        }
     }
 
 }

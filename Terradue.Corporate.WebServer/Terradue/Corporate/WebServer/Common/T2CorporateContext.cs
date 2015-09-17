@@ -57,9 +57,9 @@ namespace Terradue.Corporate.WebServer.Common {
             BaseUrl = rootWebConfig.AppSettings.Settings["BaseUrl"].Value;
         }
 
-        public override void CheckCanStartSession(User user) {
-            if (user.AccountStatus == AccountStatusType.PendingActivation && GetConfigBooleanValue("PendingUserCanLogin")) return;
-            base.CheckCanStartSession(user);
+        public override bool CheckCanStartSession(User user, bool throwOnError) {
+            if (user.AccountStatus == AccountStatusType.PendingActivation && GetConfigBooleanValue("PendingUserCanLogin")) return true;
+            return base.CheckCanStartSession(user, throwOnError);
         }
 
     }

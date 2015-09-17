@@ -140,8 +140,8 @@ namespace Terradue.Corporate.Controller {
                     return 1;
                 NameValueCollection nvc = new NameValueCollection();
                 nvc.Add("count", "0");
-                IOpenSearchResult osr = ose.Query(Entity, nvc, typeof(AtomFeed));
-                AtomFeed feed = (AtomFeed)osr.Result;
+                IOpenSearchResultCollection osr = ose.Query(Entity, nvc, typeof(AtomFeed));
+                AtomFeed feed = (AtomFeed)osr;
                 try {
                     string s = feed.ElementExtensions.ReadElementExtensions<string>("totalResults", "http://a9.com/-/spec/opensearch/1.1/").Single();
                     return long.Parse(s);
@@ -156,13 +156,16 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="osr">IOpenSearchResult cotnaing the result of the a search</param>
         /// <param name="request">Request.</param>
-        public void ApplyResultFilters(OpenSearchRequest request, ref IOpenSearchResultCollection osr) {
-            Entity.ApplyResultFilters(request, ref osr);
+        /// <param name="finalContentType">final Content Type.</param>
+        public void ApplyResultFilters(OpenSearchRequest request, ref IOpenSearchResultCollection osr, string finalContentType) {
+            Entity.ApplyResultFilters(request, ref osr, finalContentType);
         }
 
 
-        public ParametersResult DescribeParameters() {
-            return OpenSearchFactory.GetDefaultParametersResult();
+        public bool CanCache {
+            get {
+                return Entity.CanCache;
+            }
         }
         #endregion
     }
