@@ -154,6 +154,7 @@ body {
 .navbar-header {
 	margin-left: 20px;
 	margin-right: 20px;
+	float: left;
 }
 .navbar-right {
 	float: right;
@@ -317,3 +318,24 @@ i.scroll:hover {
 }
 
 
+/* NEW RULES*/
+
+#menu .navbar-default .navbar-nav > li > a {
+    margin-right: 0px;
+	text-align: left;
+}
+
+#menu button.navbar-toggle {
+    margin-left: 10px;
+}
+
+@media (max-width: 767px){
+	.navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
+	    margin-right: 0px;
+	    margin-left: 0px;
+	}
+	.navbar-collapse {
+	    margin-top: 55px;
+	    max-height: none;
+	}
+}

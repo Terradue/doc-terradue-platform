@@ -155,4 +155,16 @@ $('.tooltip-social').tooltip({
     .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
     .on('keydown.bs.dropdown.data-api', toggle + ', [role=menu], [role=listbox]', Dropdown.prototype.keydown)
 
+    
+   // trick to collapse the menu when user clicks on a menu item
+    $(document).ready(function(){
+    	$('#menu .nav.navbar-nav li > a:not(.dropdown-toggle)').click(function(){
+    		// I should check if we have the navbar-collapse element expanded (with .in class)
+    		// only in that case the click on the link item close the collapse menu
+    		var $navbar = $('#menu .navbar-collapse');
+    		if ($navbar.hasClass('in'))
+    			$navbar.collapse('hide');
+    	});
+    });
+    
 }(jQuery);
