@@ -11,6 +11,8 @@
   background-attachment: inherit;
 }
 
+/**/
+/* Top of the page background image */
 .slider-about-us {
   display: table;
   height: 100vh;  /*100% of the viewport height */
@@ -23,15 +25,74 @@
   background-size: cover;
 }
 
+.fa-circle-thin {color: #AAAAAA}
+.fa-plus-circle {color: #FFA540}
 
+
+.about-vert-text {
+  vertical-align: middle;
+  text-align: center;
+}
+
+
+
+
+/**/
+/* Basic text area used for transitions */
+/* not used yet 
+.ourMission-item {
+  margin-bottom: 5px;
+}
+i.ourMission-icon {
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 56px;
+  width: 140px;
+  height: 140px;
+  line-height: 136px;
+  vertical-align: middle; 
+  text-align: center;
+} */
+
+.about-our-mission {
+  background-color:#000000; 
+  padding-top:40px;
+  padding-bottom:50px;
+} 
+
+@media (max-width: 767px) {
+	.about-our-mission {
+	  padding-left:35px;
+	  padding-right:35px;"	
+	}
+}
+
+@media (min-width: 768px) {
+	.about-our-mission {
+	  padding-left:150px;
+	  padding-right:150px;"	
+	}
+}
+
+/**/
+
+
+
+/**/
 /* Full page width image, for vertical scroll */
 /* Data driven economy | call-out area */
 /* IMAGE */
-#datadriven {
+#aboutPage .datadriven {
   color: #ffffff;
-  padding: 50px 0;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  padding-left: 10px;
+  padding-right: 40px;
+  text-align: right;
   display: table;
-  height: 300px;
+    height: 100vh;  /*100% of the viewport height */
+  /* height: 500px; */
   width: 100%;
   background: url(../img/about/a1-SEA-LandsEnd-2015.jpg) no-repeat center center fixed; 
   -webkit-background-size: cover;
@@ -39,10 +100,10 @@
   -o-background-size: cover;
   background-size: cover;
 }
-/**/
 
 
-/**/
+
+/* Comment to myself: Where is it used finally ? */
 .top-scroll {
   margin-top: 50px;
 }
@@ -56,18 +117,25 @@ i.scroll {
 i.scroll:hover {
   color: #0a5175;
 }
+
+
 /**/
 
 
-/* Responsive */
-@media (max-width: 839px) {	
-  .datadriven {
-	background: url(../img/about/a1-SEA-LandsEnd-2015.jpg) no-repeat center center scroll; 
-  }
+
+
+
+/* Font test for handwritten style inside stickers */
+#aboutPage .p.stickers {
+  font-family: 'Reenie Beanie';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Reenie Beanie'), local('ReenieBeanie'), url(http://fonts.gstatic.com/s/reeniebeanie/v7/ljpKc6CdXusL1cnGUSamXwYWpCd0FFfjqwFBDnEN0bM.woff2) format('woff2');
 }
-/**/
 
 
+
+/* use of hash for id Selectors */
 #aboutPage .stickies {
 	min-height:300px;
 	background-color:white;
@@ -75,7 +143,7 @@ i.scroll:hover {
     padding-bottom: 20px;
 	
 	/* test */
-    background-image: url(http://thewombsauna.com/wp-content/uploads/2013/08/white-wood-wall-texture-wallpaper.jpg);
+    background-color : white;
     background-size: 50%;
 }
 
@@ -84,10 +152,10 @@ i.scroll:hover {
     /* color: #0A5175; */
     text-align: center;
     vertical-align: middle;
-    width: 250px;
-    height: 150px;
+    width: 230px;
+    height: 120px;
 	padding: 10px;
-	margin: 20px auto;
+	margin: 10px auto;
 	border-radius: 2px;
 
     -moz-box-shadow: 5px 5px 7px rgba(33,33,33,1);
@@ -101,6 +169,7 @@ i.scroll:hover {
     	linear-gradient(rgba(255, 255, 204, 0.6), rgba(255, 255, 204, 0.6)),
     	url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/textured_paper.png);
 }
+
 #aboutPage .stick:hover{
 	transform: scale(1.3) !important;
 	-o-transform: scale(1.3) !important;
@@ -110,7 +179,6 @@ i.scroll:hover {
 
 #aboutPage .stick.stick1{
     padding-top: 22px;
-	
 	transform: rotate(-2deg);
 	-o-transform: rotate(-3deg);
 	-webkit-transform: rotate(-3deg);
@@ -121,47 +189,43 @@ i.scroll:hover {
     	linear-gradient(rgba(204, 236, 255, 0.6), rgba(204, 236, 255, 0.6)),
     	url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/textured_paper.png);
 	/* background-color: #CCECFF; */
-	padding-top: 41px;
-	
-	transform: rotate(-2deg);
-	-o-transform: rotate(-2deg);
-	-webkit-transform: rotate(-2deg);
-	-moz-transform: rotate(-2deg);
+	padding-top: 25px;
+	transform: rotate(1deg);
+	-o-transform: rotate(1deg);
+	-webkit-transform: rotate(1deg);
+	-moz-transform: rotate(1deg);
 }
 #aboutPage .stick.stick3{
 	/* background-color: #CFFFCC; */
     background: 
     	linear-gradient(rgba(207, 255, 204, 0.6), rgba(207, 255, 204, 0.6)),
     	url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/textured_paper.png);
-    padding-top: 40px;
-	
-	transform: rotate(-2deg);
-	-o-transform: rotate(-2deg);
-	-webkit-transform: rotate(-2deg);
-	-moz-transform: rotate(-2deg);
+    padding-top: 31px;
+	transform: rotate(-3deg);
+	-o-transform: rotate(-3deg);
+	-webkit-transform: rotate(-3deg);
+	-moz-transform: rotate(-3deg);
 }
-#aboutPage .stick.stick4{
+#aboutPage .stick.stick4 {
 	/* background-color: #FFE6CC; */
     background: 
     	linear-gradient(rgba(255, 230, 204, 0.6), rgba(255, 230, 204, 0.6)),
     	url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/textured_paper.png);
-    padding-top: 37px;
-
+    padding-top: 29px;
 	transform: rotate(-8deg);
 	-o-transform: rotate(-8deg);
 	-webkit-transform: rotate(-8deg);
 	-moz-transform: rotate(-8deg);
 }
-#aboutPage .stick.stick5{
-    padding-top: 37px;
-	
+#aboutPage .stick.stick5 {
+    padding-top: 24px;
 	transform: rotate(6deg);
 	-o-transform: rotate(6deg);
 	-webkit-transform: rotate(6deg);
 	-moz-transform: rotate(6deg);
 }
 
-@media (max-width: 767px){
-	#aboutPage .stickies { background-size: cover; }
-	#aboutPage .stick { margin-bottom: 35px; }
+@media (max-width: 767px) {
+	#aboutPage .stickies.stick { background-size: cover; }
+	#aboutPage .stick { margin-bottom: 5px; }
 }

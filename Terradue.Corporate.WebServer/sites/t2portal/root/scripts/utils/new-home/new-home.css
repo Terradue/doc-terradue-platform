@@ -119,7 +119,7 @@ body {
 
 /* Vertical texts in call-outs */
 .vert-text {
-  display: table-cell;
+  display: table-cell; 
   vertical-align: middle;
   text-align: center;
   color: #fff;
