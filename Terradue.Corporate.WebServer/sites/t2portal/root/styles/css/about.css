@@ -25,8 +25,8 @@
   background-size: cover;
 }
 
-.fa-circle-thin {color: #AAAAAA}
-.fa-plus-circle {color: #FFA540}
+#aboutPage .fa-circle-thin {color: #AAAAAA}
+#aboutPage .fa-plus-circle {color: #FFA540}
 
 
 .about-vert-text {
