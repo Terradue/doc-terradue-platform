@@ -28,13 +28,17 @@
 #aboutPage .fa-circle-thin {color: #AAAAAA}
 #aboutPage .fa-plus-circle {color: #FFA540}
 
+#aboutPage p.landmarks::first-letter {
+    /* color: #ff0000; */
+    font-weight: bold;
+    font-size:130%;
+}
+
 
 .about-vert-text {
   vertical-align: middle;
   text-align: center;
 }
-
-
 
 
 /**/
