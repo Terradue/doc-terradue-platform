@@ -36,6 +36,7 @@ define([
 				bootbox.alert('You have clicked on '+elem.find('a').html());
 				return false;
 			}
+			
 		}
 	);
 	
