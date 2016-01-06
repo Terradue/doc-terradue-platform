@@ -1,0 +1,20 @@
+
+/*** Resources page - Styles ***/
+
+/* In-page overlapping icon */
+
+.resources-icon {
+  background: #fff;
+  -webkit-border-radius: 60px;
+  -moz-border-radius: 60px;
+  border-radius: 60px;
+  display: block;
+  font-size: 60px;
+  height: 120px;
+  line-height: 120px;
+  position: relative;
+  width: 120px;
+  text-align: center;
+  left: 50%;
+  margin: -60px 0 20px -60px;
+}
