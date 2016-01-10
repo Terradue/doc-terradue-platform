@@ -144,7 +144,7 @@ i.scroll:hover {
 	min-height:300px;
 	background-color:white;
 	padding-top: 20px;
-    padding-bottom: 20px;
+    padding-bottom: 50px;
 	
 	/* test */
     background-color : white;
@@ -232,4 +232,10 @@ i.scroll:hover {
 @media (max-width: 767px) {
 	#aboutPage .stickies.stick { background-size: cover; }
 	#aboutPage .stick { margin-bottom: 5px; }
+}
+
+
+#aboutPage .thumbnail {
+  margin-top: 20px;
+  margin-bottom: 30px;
 }

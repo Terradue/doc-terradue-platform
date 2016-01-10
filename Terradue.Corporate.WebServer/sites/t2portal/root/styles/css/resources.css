@@ -3,7 +3,7 @@
 
 /* In-page overlapping icon */
 
-.resources-icon {
+#resourcesPage .resources-icon {
   background: #fff;
   -webkit-border-radius: 60px;
   -moz-border-radius: 60px;
@@ -17,4 +17,82 @@
   text-align: center;
   left: 50%;
   margin: -60px 0 0 -60px;
+}
+
+#resourcesPage .approach {
+  padding: 10px 10px;
+  color: #ffffff;
+  height: 60px;
+  background: url(../img/separators/shapes.jpg) no-repeat center center fixed;
+  background-attachment: inherit;
+}
+
+
+
+
+@media screen and (min-width: 1281px) {
+	h4.small {
+		font-size: 20px;	
+	}
+}
+
+@media screen and (max-width: 1280px) {
+	h4.small {
+		font-size: 18px;	
+	}
+}
+
+/* This resolution part has strange behavior in width usage, check other CSS rules */
+@media screen and (max-width: 1200px) {
+	h4.small {
+		font-size: 18px;	
+	}
+}
+
+@media screen and (max-width: 980px) {
+	h4.small {
+		font-size: 18px;	
+	}
+}
+
+@media screen and (max-width: 768px) {
+	h4.small {
+		font-size: 18px;	
+	}
+}
+
+@media screen and (max-width: 480px) {
+	h4.small {
+		font-size: 100%;	
+	}
+}
+
+
+.earth-blue-background {
+  background-color: #0A5175; 
+  color: white; 
+  display: table;
+  height: 100vh;  /*100% of the viewport height */
+  width: 100%;
+  position: relative;
+  
+  -webkit-background-size: auto;
+  -moz-background-size: auto;
+  -o-background-size: auto;
+  background-size: auto;
+}
+
+
+.earth-yellow-background {
+  background-color: #FFE658; 
+  color: black; 
+  display: table;
+  height: 40vh;  /*40% of the viewport height */
+  width: 100%;
+  position: relative;
+  
+  -webkit-background-size: auto;
+  -moz-background-size: auto;
+  -o-background-size: auto;
+  background-size: auto;
 }
