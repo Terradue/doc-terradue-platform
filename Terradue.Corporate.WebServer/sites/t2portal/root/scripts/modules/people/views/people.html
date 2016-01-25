@@ -104,9 +104,28 @@
  <!-- /team up -->
 
 <div id="end" class="approach">
-<div class="container">
-         <div class="row">
-         </div>
+     <div class="container">
+ 		<div class="row">
+     	    <div class="col-md-8 col-md-offset-2 text-center">
+     	    	<h4 class="small" color="white">
+                 	We are hiring. Contact us !
+                </h4>
+     	    {{#each jobs}}
+
+                 	<ul class="positions">
+                 	<li>
+                 		<a href={{job1.url}} target="_blank">{{job1.title}}</a>
+                 	</li>
+                 	<li>
+                 		<a href={{job2.url}} target="_blank">{{job2.title}}</a>
+                 	</li>
+                 	</ul>
+
+            {{/each}}    
+             </div>
+        </div>
+    </div>
+ </div>
 </div>
 </div>
 
