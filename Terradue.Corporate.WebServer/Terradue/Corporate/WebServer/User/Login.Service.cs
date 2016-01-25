@@ -1,19 +1,19 @@
 using System;
-using System.Data;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Web;
+using System.Web.SessionState;
 using ServiceStack.ServiceHost;
 using ServiceStack.ServiceInterface.ServiceModel;
-using Terradue.Portal;
-using System.Web.SessionState;
-using System.Diagnostics;
-using Terradue.Corporate.WebServer.Common;
-using System.Web;
-using Terradue.WebService.Model;
 using Terradue.Authentication.Ldap;
 using Terradue.Authentication.OAuth;
+using Terradue.Corporate.WebServer.Common;
+using Terradue.Portal;
+using Terradue.WebService.Model;
 
-namespace Terradue.Corporate.WebServer.Services {
+namespace Terradue.Corporate.WebServer {
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ namespace Terradue.Corporate.WebServer.Services {
             T2CorporateWebContext wsContext = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 wsContext.Open();
-                wsContext.LogoutUser();
+                wsContext.EndSession();
                 wsContext.Close();
             } catch (Exception e) {
                 wsContext.Close();
@@ -78,22 +78,19 @@ namespace Terradue.Corporate.WebServer.Services {
 
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             Terradue.Portal.User user = null;
-            string result = "";
             try {
                 context.Open();
 
                 OAuth2AuthenticationType oauth2 = new OAuth2AuthenticationType(context);
                 oauth2.GetAccessToken();
-                User usr = oauth2.GetUserProfile(context);
-
-                result = usr.Username;
+                user = oauth2.GetUserProfile(context);
 
                 context.Close();
             } catch (Exception e) {
                 context.Close();
                 throw e;
             }
-            return result;
+            return user;
         }   
 
         public object Get(Auth request) {
