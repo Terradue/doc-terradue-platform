@@ -36,4 +36,18 @@ namespace Terradue.Corporate.WebServer
 	public class Logout : IReturn<String>
 	{
 	}
+
+    [Route("/auth", "GET")]
+    public class Auth {}
+
+    [Route("/cb", "GET")]
+    public class CallBack {
+        [ApiMember(Name = "code", Description = "oauth code", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Code { get; set; }
+
+        [ApiMember(Name = "state", Description = "oauth state", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string State { get; set; }
+
+    }
+
 }

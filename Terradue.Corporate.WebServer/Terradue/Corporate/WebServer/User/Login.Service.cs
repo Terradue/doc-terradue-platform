@@ -11,6 +11,7 @@ using Terradue.Corporate.WebServer.Common;
 using System.Web;
 using Terradue.WebService.Model;
 using Terradue.Authentication.Ldap;
+using Terradue.Authentication.OAuth;
 
 namespace Terradue.Corporate.WebServer.Services {
     //-------------------------------------------------------------------------------------------------------------------------
@@ -71,5 +72,44 @@ namespace Terradue.Corporate.WebServer.Services {
             }
             return true;
         }
+
+
+        public object Get(CallBack request) {
+
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            Terradue.Portal.User user = null;
+            string result = "";
+            try {
+                context.Open();
+
+                OAuth2AuthenticationType oauth2 = new OAuth2AuthenticationType(context);
+                oauth2.GetAccessToken();
+                User usr = oauth2.GetUserProfile(context);
+
+                result = usr.Username;
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }   
+
+        public object Get(Auth request) {
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                OAuth2AuthenticationType oauth2 = new OAuth2AuthenticationType(context);
+                oauth2.RequestAuthorization();
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return null;
+        }
+
     }
 }
