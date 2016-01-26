@@ -1,4 +1,4 @@
--- VERSION 0.1
+-- VERSION 0.2
 
 USE $MAIN$;
 
@@ -53,11 +53,17 @@ UPDATE config SET value="Dear $(USERNAME),\nyour account has just been created o
 UPDATE config SET value='$(BASEURL)/portal/settings/profile?token=$(TOKEN)' WHERE name='EmailConfirmationUrl';
 UPDATE config SET value='your registration on the Terradue platform' WHERE name='RegistrationMailSubject';
 UPDATE config SET value='Terradue Corporate platform' WHERE name='SiteName';
-UPDATE config SET value='uid=t2portal,ou=people,dc=terradue,dc=com' WHERE name='ldap-admin-dn';
-UPDATE config SET value='t0lh01l@T2' WHERE name='ldap-admin-pwd';
-UPDATE config SET value='http://ldap.terradue.int:8080/json2ldap/' WHERE name='ldap-baseurl';
-UPDATE config SET value='http://ldap.terradue.int:8080/ldapauth/' WHERE name='ldapauth-baseurl';
+-- RESULT
 
+-- Adding SSO config... \
+UPDATE config SET value='' WHERE name='sso-clientId';
+UPDATE config SET value='' WHERE name='sso-clientSecret';
+UPDATE config SET value='https://sso.terradue.com/c2id-login-page-js' WHERE name='sso-authorizationEndpoint';
+UPDATE config SET value='https://sso.terradue.com/c2id/token' WHERE name='sso-tokenEndpoint';
+UPDATE config SET value='https://sso.terradue.com/c2id/userinfo' WHERE name='sso-userInfoEndpoint';
+UPDATE config SET value='openid,email,profile' WHERE name='sso-scopes';
+UPDATE config SET value='' WHERE name='sso-callback';
+-- RESULT
 
 /*****************************************************************************/
 
