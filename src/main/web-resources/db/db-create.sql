@@ -63,6 +63,15 @@ UPDATE config SET value='https://sso.terradue.com/c2id/token' WHERE name='sso-to
 UPDATE config SET value='https://sso.terradue.com/c2id/userinfo' WHERE name='sso-userInfoEndpoint';
 UPDATE config SET value='openid,email,profile' WHERE name='sso-scopes';
 UPDATE config SET value='' WHERE name='sso-callback';
+
+
+ldap-oauth
+ldap-apikey
+sso-authzEndpoint
+sso-apiAccessToken
+t2portal-loginEndpoint
+t2portal-consentEndpoint
+
 -- RESULT
 
 /*****************************************************************************/
