@@ -13,6 +13,7 @@ using Terradue.Corporate.WebServer.Common;
 using Terradue.Portal;
 using Terradue.WebService.Model;
 using Terradue.Corporate.Controller;
+using Terradue.Ldap;
 
 namespace Terradue.Corporate.WebServer {
     //-------------------------------------------------------------------------------------------------------------------------
@@ -73,42 +74,23 @@ namespace Terradue.Corporate.WebServer {
             }
             return true;
         }
-
-
-        public object Get(CallBack request) {
-
-            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
-            Terradue.Portal.User user = null;
-            try {
-                context.Open();
-
-                OAuth2AuthenticationType oauth2 = new OAuth2AuthenticationType(context);
-                oauth2.GetAccessToken();
-                user = oauth2.GetUserProfile(context);
-
-                context.Close();
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-            return user;
-        }   
-
-        public object Get(Auth request) {
-            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
-            try {
-                context.Open();
-
-                OAuth2AuthenticationType oauth2 = new OAuth2AuthenticationType(context);
-                oauth2.RequestAuthorization();
-
-                context.Close();
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-            return null;
-        }
+                 
+//
+//        public object Get(Auth request) {
+//            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+//            try {
+//                context.Open();
+//
+//                OAuth2AuthenticationType oauth2 = new OAuth2AuthenticationType(context);
+//                oauth2.RequestAuthorization();
+//
+//                context.Close();
+//            } catch (Exception e) {
+//                context.Close();
+//                throw e;
+//            }
+//            return null;
+//        }
 
     }
 }

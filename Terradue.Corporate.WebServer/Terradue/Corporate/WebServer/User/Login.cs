@@ -40,8 +40,8 @@ namespace Terradue.Corporate.WebServer
     [Route("/auth", "GET")]
     public class Auth {}
 
-    [Route("/cb", "GET")]
-    public class CallBack {
+    [Route("/cb", "PUT")]
+    public class CallBack2 {
         [ApiMember(Name = "code", Description = "oauth code", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Code { get; set; }
 

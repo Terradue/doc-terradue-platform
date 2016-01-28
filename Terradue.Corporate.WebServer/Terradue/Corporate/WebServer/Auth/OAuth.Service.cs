@@ -7,6 +7,7 @@ using Terradue.Ldap;
 using ServiceStack.Common.Web;
 using System.Web;
 using System.Collections.Generic;
+using Terradue.Authentication.OAuth;
 
 namespace Terradue.Corporate.WebServer {
 
@@ -52,6 +53,16 @@ namespace Terradue.Corporate.WebServer {
         public String response_type { get; set; }
     }
 
+    [Route("/cb", "GET")]
+    public class CallBack {
+        [ApiMember(Name = "code", Description = "oauth code", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Code { get; set; }
+
+        [ApiMember(Name = "state", Description = "oauth state", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string State { get; set; }
+
+    }
+
     [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
@@ -62,35 +73,77 @@ namespace Terradue.Corporate.WebServer {
 
         public object Post(T2LoginRequest request) {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
-            var result = new HttpResult();
             try {
                 context.Open();
 
-                Connect2IdClient client = new Connect2IdClient();
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
+                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
+
+                var query = request.query;
+                //TODO: temporary
+                if(query == null) query = "?client_id=fcbwxxrenpgoy&redirect_uri=http%3A%2F%2F127.0.0.1%3A8081%2Ft2api%2Fcb&state=oKp0uEQVjrzPW5Q7f1c05w&scope=openid&response_type=code";
 
                 OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
-                    query = request.query,
-                    sub_sid = client.SESSION_SID
+                    query = query,
+                    sub_sid = client.SESSIONSID
                 };
 
                 var response1 = client.AuthzSession(oauthrequest1);
-                var user = client.Authenticate(request.username, request.password);
 
-                OauthAuthzPutSessionRequest oauthrequest2 = new OauthAuthzPutSessionRequest {
-                    sub = user.Username,
-                    acr = "1",
-                    amr = new List<string>{ "ldap" },
-                    data = new OauthUserInfoResponse {
-                        name = user.Name,
-                        email = user.Email
-                    }
-                };
+                var sid = response1.sid;
+                var type = response1.type;
 
-                var response2 = client.AuthzSession(response1.sid, oauthrequest2);
+                if(type == "auth"){
+                    var user = client.Authenticate(request.username, request.password);
 
-                if(response2.type == "consent"){
+                    OauthAuthzPutSessionRequest oauthrequest2 = new OauthAuthzPutSessionRequest {
+                        sub = user.Username,
+                        acr = "1",
+                        amr = new List<string>{ "ldap" },
+                        data = new OauthUserInfoResponse {
+                            name = user.Name,
+                            email = user.Email
+                        }
+                    };
+
+                    var response2 = client.AuthzSession(response1.sid, oauthrequest2);
+
+                    type = response2.type;
+                    sid = response2.sid;
+                }
+
+                if(type == "consent"){
                     //redirect to T2 consent page
-                    result.Headers[HttpHeaders.Location] = context.GetConfigValue("t2portal-consentEndpoint") + "?query=" + HttpUtility.UrlEncode(request.query);
+//                    result.Headers[HttpHeaders.Location] = context.GetConfigValue("t2portal-consentEndpoint") + "?query=" + HttpUtility.UrlEncode(query);
+
+                    //TODO: temporary
+                    OauthConsentRequest consent = new OauthConsentRequest {
+                        scope = new List<string>{"openid"},
+                        claims = new List<string>(),
+                        preset_claims = new OauthPresetClaims{
+                            
+                        },
+                        audience = new List<string>(),
+                        long_lived = true,
+                        refresh_token = new OauthRefreshToken{
+                            issue = true,
+                            lifetime = 600
+                        },
+                        access_token = new OauthAccessToken{
+                            encoding = "SELF_CONTAINED",
+                            lifetime = 600
+                        }
+                    };
+
+                    var redirect = client.ConsentSession(sid, consent);
+                    //we will never arrive there as the consent does the redirect
+//                    result.Headers[HttpHeaders.Location] = redirect;
+                    HttpContext.Current.Response.Redirect(redirect, true);
                 }
 
                 context.Close();
@@ -98,7 +151,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close();
                 throw e;
             }
-            return result;
+            return null;
         }
 
         public object Post(T2ConsentRequest request){
@@ -107,11 +160,17 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
-                Connect2IdClient client = new Connect2IdClient();
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
+                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
 
                 OauthAuthzPostSessionRequest oauthrequest = new OauthAuthzPostSessionRequest {
                     query = request.query,
-                    sub_sid = client.SESSION_SID
+                    sub_sid = client.SESSIONSID
                 };
 
                 var response1 = client.AuthzSession(oauthrequest);
@@ -140,11 +199,17 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
-                Connect2IdClient client = new Connect2IdClient();
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
+                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
 
                 OauthAuthzPostSessionRequest oauthrequest = new OauthAuthzPostSessionRequest {
                     query = HttpContext.Current.Request.Url.Query,
-                    sub_sid = client.SESSION_SID
+                    sub_sid = client.SESSIONSID
                 };
 
                 var oauthsession = client.AuthzSession(oauthrequest);
@@ -183,8 +248,37 @@ namespace Terradue.Corporate.WebServer {
             }
 
             return result;
-
         }
+
+        public object Get(CallBack request) {
+
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            Terradue.Portal.User user = null;
+            try {
+                context.Open();
+
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
+                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
+                client.RedirectUri = context.GetConfigValue("sso-callback");
+                client.AccessToken(request.Code);
+
+                OAuth2AuthenticationType auth = new OAuth2AuthenticationType(context);
+                auth.SetConnect2IdCLient(client);
+
+                user = auth.GetUserProfile(context);
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return user;
+        }   
     }
 }
 

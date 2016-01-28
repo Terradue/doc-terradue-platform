@@ -5,7 +5,7 @@ define(['can', 'config'], function(can, Config){
 		// defaults
 		//findAll: 'GET /'+Config.api+'/user/current',
 		findOne: 'GET /'+Config.api+'/user/current',
-		create: 'GET /'+Config.api+'/auth',
+		create: 'POST /'+Config.api+'/oauth/login',
 		destroy: 'DELETE /'+Config.api+'/auth',
 		
 		// custom actions: login and logout
