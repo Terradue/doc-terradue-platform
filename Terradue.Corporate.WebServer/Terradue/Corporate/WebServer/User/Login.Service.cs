@@ -32,65 +32,32 @@ namespace Terradue.Corporate.WebServer {
         /// Username/password login
         /// </summary>
         /// <param name="request">Request.</param>
-        public object Post(Login request) {
-            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
-            Terradue.WebService.Model.WebUser response = null;
-            Terradue.Portal.User user = null;
-            try {
-                context.Open();
-
-                try {
-                    user = new LdapAuthenticationType(context).Authenticate(request.username, request.password);
-                } catch (Exception e1) {
-//                    try{
-//                        user = T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.username, request.password);
-//                    }catch(Exception e){
-                    throw new Exception("Wrong username or password", e1);
-//                    }
-                }
-                response = new Terradue.WebService.Model.WebUser(user);
-
-                context.Close();
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-            return response;
-        }
-
-        /// <summary>
-        /// Get the specified request.
-        /// </summary>
-        /// <param name="request">Request.</param>
-        public object Delete(Logout request) {
-            T2CorporateWebContext wsContext = new T2CorporateWebContext(PagePrivileges.EverybodyView);
-            try {
-                wsContext.Open();
-                wsContext.EndSession();
-                wsContext.Close();
-            } catch (Exception e) {
-                wsContext.Close();
-                throw e;
-            }
-            return true;
-        }
-                 
-//
-//        public object Get(Auth request) {
+//        public object Post(Login request) {
 //            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+//            Terradue.WebService.Model.WebUser response = null;
+//            Terradue.Portal.User user = null;
 //            try {
 //                context.Open();
 //
-//                OAuth2AuthenticationType oauth2 = new OAuth2AuthenticationType(context);
-//                oauth2.RequestAuthorization();
+//                try {
+//                    user = new LdapAuthenticationType(context).Authenticate(request.username, request.password);
+//                } catch (Exception e1) {
+////                    try{
+////                        user = T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.username, request.password);
+////                    }catch(Exception e){
+//                    throw new Exception("Wrong username or password", e1);
+////                    }
+//                }
+//                response = new Terradue.WebService.Model.WebUser(user);
 //
 //                context.Close();
 //            } catch (Exception e) {
 //                context.Close();
 //                throw e;
 //            }
-//            return null;
+//            return response;
 //        }
+
 
     }
 }

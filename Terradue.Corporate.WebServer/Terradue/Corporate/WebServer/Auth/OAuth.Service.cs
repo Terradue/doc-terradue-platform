@@ -12,7 +12,7 @@ using Terradue.Authentication.OAuth;
 namespace Terradue.Corporate.WebServer {
 
     [Route("/oauth/login", "POST", Summary = "login", Notes = "Login to the platform with username/password")]
-    public class T2LoginRequest : IReturn<Terradue.WebService.Model.WebUser>
+    public class OauthLoginRequest : IReturn<Terradue.WebService.Model.WebUser>
     {
         [ApiMember(Name="username", Description = "username", ParameterType = "path", DataType = "String", IsRequired = true)]
         public String username { get; set; }
@@ -25,7 +25,7 @@ namespace Terradue.Corporate.WebServer {
     }
 
     [Route("/oauth/consent", "POST", Summary = "login", Notes = "Login to the platform with username/password")]
-    public class T2ConsentRequest : IReturn<Terradue.WebService.Model.WebUser>
+    public class OauthConsentRequest : IReturn<Terradue.WebService.Model.WebUser>
     {
         [ApiMember(Name="scope", Description = "scope", ParameterType = "path", DataType = "String", IsRequired = true)]
         public List<String> scope { get; set; }//TODO: handle scope/claims (new/previsous/...)
@@ -34,8 +34,11 @@ namespace Terradue.Corporate.WebServer {
         public String query { get; set; }
     }
 
+    [Route("/oauth/consent/current", "GET")]
+    public class OauthCurrentConsentRequest {}
+
     [Route("/oauth", "GET", Summary = "login", Notes = "")]
-    public class T2OAuthLoginRequest : IReturn<Terradue.WebService.Model.WebUser>
+    public class OAuthAuthorizationRequest : IReturn<Terradue.WebService.Model.WebUser>
     {
         [ApiMember(Name="client_id", Description = "Client id", ParameterType = "path", DataType = "String", IsRequired = true)]
         public String client_id { get; set; }
@@ -57,13 +60,16 @@ namespace Terradue.Corporate.WebServer {
     public class OauthConfigRequest {}
 
     [Route("/cb", "GET")]
-    public class CallBack {
+    public class OauthCallBackRequest {
         [ApiMember(Name = "code", Description = "oauth code", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Code { get; set; }
 
         [ApiMember(Name = "state", Description = "oauth state", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string State { get; set; }
+    }
 
+    [Route("/auth", "DELETE", Summary = "logout", Notes = "Logout from the platform")]
+    public class OauthLogoutRequest : IReturn<String> {
     }
 
     [Api("Terradue Corporate webserver")]
@@ -74,7 +80,7 @@ namespace Terradue.Corporate.WebServer {
     /// </summary>
     public class OAuthService : ServiceStack.ServiceInterface.Service {
 
-        public object Post(T2LoginRequest request) {
+        public object Post(OauthLoginRequest request) {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
@@ -96,12 +102,9 @@ namespace Terradue.Corporate.WebServer {
                     sub_sid = client.SESSIONSID
                 };
 
-                var response1 = client.AuthzSession(oauthrequest1);
+                var response = client.AuthzSession(oauthrequest1);
 
-                var sid = response1.sid;
-                var type = response1.type;
-
-                if(type == "auth"){
+                if(response.type == "auth"){
                     var user = client.Authenticate(request.username, request.password);
 
                     OauthAuthzPutSessionRequest oauthrequest2 = new OauthAuthzPutSessionRequest {
@@ -114,18 +117,15 @@ namespace Terradue.Corporate.WebServer {
                         }
                     };
 
-                    var response2 = client.AuthzSession(response1.sid, oauthrequest2);
-
-                    type = response2.type;
-                    sid = response2.sid;
+                    response = client.AuthzSession(response.sid, oauthrequest2);
                 }
 
-                if(type == "consent"){
+                if(response.type == "consent"){
                     //redirect to T2 consent page
 //                    result.Headers[HttpHeaders.Location] = context.GetConfigValue("t2portal-consentEndpoint") + "?query=" + HttpUtility.UrlEncode(query);
 
                     //TODO: temporary
-                    OauthConsentRequest consent = new OauthConsentRequest {
+                    var consent = new Terradue.Ldap.OauthConsentRequest {
                         scope = new List<string>{"openid"},
                         claims = new List<string>(),
                         preset_claims = new OauthPresetClaims{
@@ -143,7 +143,7 @@ namespace Terradue.Corporate.WebServer {
                         }
                     };
 
-                    var redirect = client.ConsentSession(sid, consent);
+                    var redirect = client.ConsentSession(response.sid, consent);
                     //we will never arrive there as the consent does the redirect
 //                    result.Headers[HttpHeaders.Location] = redirect;
                     HttpContext.Current.Response.Redirect(redirect, true);
@@ -157,7 +157,7 @@ namespace Terradue.Corporate.WebServer {
             return null;
         }
 
-        public object Post(T2ConsentRequest request){
+        public object Post(OauthConsentRequest request){
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
@@ -175,11 +175,11 @@ namespace Terradue.Corporate.WebServer {
                     sub_sid = client.SESSIONSID
                 };
 
-                var response1 = client.AuthzSession(oauthrequest);
-                var consent = new OauthConsentRequest{
+                var response = client.AuthzSession(oauthrequest);
+                var consent = new Terradue.Ldap.OauthConsentRequest{
                     scope = request.scope
                 };
-                var redirect = client.ConsentSession(response1.sid, consent);
+                var redirect = client.ConsentSession(response.sid, consent);
 
                 if(redirect != null){
                     //redirect to redirect_uri
@@ -194,7 +194,36 @@ namespace Terradue.Corporate.WebServer {
             return null;
         }
 
-        public object Get(T2OAuthLoginRequest request){
+        public object Get(OauthCurrentConsentRequest request){
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            OauthAuthzSessionResponse response;
+            try {
+                context.Open();
+
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
+                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
+
+                OauthAuthzPostSessionRequest oauthrequest = new OauthAuthzPostSessionRequest {
+                    query = BuildOauthQuery(context),
+                    sub_sid = client.SESSIONSID
+                };
+
+                response = client.AuthzSession(oauthrequest);
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return response;
+        }
+
+        public object Get(OAuthAuthorizationRequest request){
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
 
             try {
@@ -218,14 +247,14 @@ namespace Terradue.Corporate.WebServer {
                 //session is not active
                 if (oauthsession.type == "auth"){
                     //redirect to T2 login page
-                    var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query_string=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.Query);
+                    var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.Query);
                     HttpContext.Current.Response.Redirect(redirect, true);
                 }
 
                 else if (oauthsession.type == "consent"){
                     //redirect to T2 consent page
-//                    result.Headers[HttpHeaders.Location] = context.GetConfigValue("t2portal-consentEndpoint") + "?query_string=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.Query);
-                    var consent = new OauthConsentRequest{
+//                    result.Headers[HttpHeaders.Location] = context.GetConfigValue("t2portal-consentEndpoint") + "?query=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.Query);
+                    var consent = new Terradue.Ldap.OauthConsentRequest{
                         scope = new List<string>{ "openid" }
                     };
                     var redirect = client.ConsentSession(oauthsession.sid, consent);
@@ -248,7 +277,7 @@ namespace Terradue.Corporate.WebServer {
             return null;
         }
 
-        public object Get(CallBack request) {
+        public object Get(OauthCallBackRequest request) {
 
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             Terradue.Portal.User user = null;
@@ -295,7 +324,30 @@ namespace Terradue.Corporate.WebServer {
                 throw e;
             }
             return response;
-        }   
+        }
+
+        public object Delete(OauthLogoutRequest request) {
+            T2CorporateWebContext wsContext = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            try {
+                wsContext.Open();
+                wsContext.EndSession();
+                wsContext.Close();
+            } catch (Exception e) {
+                wsContext.Close();
+                throw e;
+            }
+            return true;
+        }
+
+        private string BuildOauthQuery(IfyContext context){
+            var query = "";
+            query += "?client_id=" + context.GetConfigValue("sso-clientId");
+            query += "&redirect_uri=" + HttpUtility.UrlEncode(context.GetConfigValue("sso-callback"));
+            query += "&state=" + Guid.NewGuid();
+            query += "&scope=openid";
+            query += "&response_type=code";
+            return query;
+        }
     }
 }
 
