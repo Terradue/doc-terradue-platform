@@ -10,7 +10,7 @@ using ServiceStack.ServiceInterface;
 using ServiceStack.ServiceInterface.Auth;
 using ServiceStack.Text;
 using ServiceStack.WebHost.Endpoints;
-using Terradue.Corporate.WebServer.Services;
+using Terradue.Corporate.WebServer;
 using Terradue.ServiceModel.Syndication;
 
 namespace Terradue.Corporate.WebServer {
@@ -22,7 +22,7 @@ namespace Terradue.Corporate.WebServer {
         : AppHostBase {
         /// <summary>AppHost contructor</summary>
         public AppHost()
-            : base("Tep Quick win Web Services", typeof(LoginService).Assembly) {
+            : base("Terradue Corporate Web Services", typeof(LoginService).Assembly) {
         }
 
         /// <summary>Override Configure method</summary>

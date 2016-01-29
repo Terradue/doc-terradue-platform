@@ -29,6 +29,7 @@ using Terradue.Util;
 using Terradue.OpenSearch.Request;
 using Terradue.ServiceModel.Syndication;
 using Terradue.Metadata.EarthObservation;
+using Terradue.OpenSearch.RdfEO.Extensions;
 
 
 namespace Terradue.Corporate.Controller

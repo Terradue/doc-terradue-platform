@@ -245,11 +245,13 @@ i.service-icon {
 /* Portfolio area */
 .thumbnail {
   padding: 20px;
+  padding-bottom: 10px; 
   color: #333333;
 }
 .caption {
   padding: 9px;
-  color: #333333;
+  color: #FFFFFF;
+
 }
 .portfolio {
   padding: 50px 0;

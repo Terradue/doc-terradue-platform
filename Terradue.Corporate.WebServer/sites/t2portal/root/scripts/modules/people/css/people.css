@@ -57,6 +57,25 @@
 	opacity: 0.6;
 }
 
+
+.positions {
+	height: 150px;
+}
+.positions li {
+	list-style: none;
+	font-size: 11px;  /* Focus lists */
+	font-weight: 300;
+	line-height: 12px;
+	padding-top: 8px; 
+}
+.positions li a {
+	color: #149fcd;
+}
+.positions li a:hover {
+	opacity: 0.6;
+}
+
+
 .social {
 
 }
