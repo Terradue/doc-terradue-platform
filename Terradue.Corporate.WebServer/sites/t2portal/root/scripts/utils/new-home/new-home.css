@@ -169,7 +169,7 @@ body {
   height: 100vh;  /*100% of the viewport height */
   width: 100%;
   position: relative;
-  background: url(../../modules/pages/img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.jpg) no-repeat center center fixed; 
+  background: url(../../modules/pages/img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.optimized.jpg) no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -221,7 +221,7 @@ i.service-icon {
   display: table;
   height: 300px;
   width: 100%;
-  background: url(../../modules/pages/img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.jpg) no-repeat center center fixed; 
+  background: url(../../modules/pages/img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.optimized.jpg) no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -235,7 +235,7 @@ i.service-icon {
   display: table;
   height: 300px;
   width: 100%;
-  background: url(../../modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.jpg) no-repeat center center fixed; 
+  background: url(../../modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.optimized.jpg) no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -295,13 +295,13 @@ i.scroll:hover {
 /* Responsive */
 @media (max-width: 768px) {	
   .header {
-	background: url(../../modules/pages/img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.jpg) no-repeat center center scroll; 
+	background: url(../../modules/pages/img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.optimized.jpg) no-repeat center center scroll; 
   }
   .whyus {
-	background: url(../../modules/pages/img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.jpg) no-repeat center center scroll; 
+	background: url(../../modules/pages/img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.optimized.jpg) no-repeat center center scroll; 
   }
   .summary {
-	background: url(../../modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.jpg) no-repeat center center scroll; 
+	background: url(../../modules/pages/img/eo-images/i3-SPOT5-Phytoplankton-Bloom.optimized.jpg) no-repeat center center scroll; 
   }
 }
 /**/
