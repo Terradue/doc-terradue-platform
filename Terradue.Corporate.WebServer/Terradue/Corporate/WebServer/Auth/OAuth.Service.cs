@@ -144,8 +144,6 @@ namespace Terradue.Corporate.WebServer {
                     };
 
                     var redirect = client.ConsentSession(response.sid, consent);
-                    //we will never arrive there as the consent does the redirect
-//                    result.Headers[HttpHeaders.Location] = redirect;
                     HttpContext.Current.Response.Redirect(redirect, true);
                 }
 
@@ -194,42 +192,13 @@ namespace Terradue.Corporate.WebServer {
             return null;
         }
 
-        public object Get(OauthCurrentConsentRequest request){
-            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
-            OauthAuthzSessionResponse response;
-            try {
-                context.Open();
-
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
-                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
-                client.SSOApiClient = context.GetConfigValue("sso-clientId");
-                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
-                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
-                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
-
-                OauthAuthzPostSessionRequest oauthrequest = new OauthAuthzPostSessionRequest {
-                    query = BuildOauthQuery(context),
-                    sub_sid = client.SESSIONSID
-                };
-
-                response = client.AuthzSession(oauthrequest);
-
-                context.Close();
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-            return response;
-        }
-
         public object Get(OAuthAuthorizationRequest request){
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
 
             try {
                 context.Open();
 
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
@@ -237,8 +206,17 @@ namespace Terradue.Corporate.WebServer {
                 client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
                 client.LdapApiKey = context.GetConfigValue("ldap-apikey");
 
-                OauthAuthzPostSessionRequest oauthrequest = new OauthAuthzPostSessionRequest {
-                    query = HttpContext.Current.Request.Url.Query,
+                var client_id = request.client_id ?? context.GetConfigValue("sso-clientId");
+                var response_type = request.response_type ?? "code";
+                var scope = request.scope ?? "openid";
+                var state = request.state ?? Guid.NewGuid().ToString();
+                var redirect_uri = request.redirect_uri ?? context.GetConfigValue("sso-callback");
+
+                var query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
+                                          response_type, scope, client_id, state, redirect_uri);
+
+                var oauthrequest = new OauthAuthzPostSessionRequest {
+                    query = query,
                     sub_sid = client.SESSIONSID
                 };
 
@@ -247,7 +225,7 @@ namespace Terradue.Corporate.WebServer {
                 //session is not active
                 if (oauthsession.type == "auth"){
                     //redirect to T2 login page
-                    var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.Query);
+                    var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query);
                     HttpContext.Current.Response.Redirect(redirect, true);
                 }
 
