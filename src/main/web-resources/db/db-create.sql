@@ -32,11 +32,10 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeBody', 'string', 'Email body sent to support for user upgrade', 'Email body sent to support for user upgrade', 'To the Account Management team\n\nThe user $(USERNAME) requested a sales contact for an account upgrade with the $(PLAN) plan.\n\nHereafter, the request form completed by the user $(USERNAME):\n$(MESSAGE).', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '[$(PORTAL)] - password reset request', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordBody', 'string', 'Email body sent to support for user upgrade', 'Email subject sent to support for user upgrade', 'Dear Support,\nThe user $(USERNAME) has made a password reset request for the $(PORTAL). Can you please handle it.', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-authEndpoint', 'string', 'LDAP authentication endpoint', 'Enter the value of the LDAP authentication endpoint', 'https://sso.terradue.com/ldapauth/', '0');
 -- RESULT
 
 -- Adding LDAP config... \
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-apikey', 'string', 'LDAP API Key', 'Enter the value of the LDAP API key', 'f70defbeb88141f88138bea52b6e1b9c', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-authEndpoint', 'string', 'LDAP authentication endpoint', 'Enter the value of the LDAP authentication endpoint', 'https://sso.terradue.com/ldapauth/', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-apikey', 'string', 'LDAP API Key', 'Enter the value of the LDAP API key', 'f70defbeb88141f88138bea52b6e1b9c', '0');
 -- RESULT
 
