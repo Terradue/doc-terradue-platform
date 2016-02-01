@@ -11,6 +11,25 @@ using Terradue.Authentication.OAuth;
 
 namespace Terradue.Corporate.WebServer {
 
+
+    /*
+"www.terradue.com" -> www.terradue.com : Click on sign-in
+"www.terradue.com" -> Webserver : GET /t2api/oauth
+alt user not logged
+Webserver -> "www.terradue.com/login" : redirect (+ query in params)
+"www.terradue.com/login" -> Webserver : POST /t2api/oauth/login
+Webserver -> LDAP : Authenticate
+LDAP -> Webserver : OK
+Webserver -> Callback : return code
+else user must consent
+Webserver -> "www.terradue.com/login/consent" : query + consents
+"www.terradue.com/login/consent" -> Webserver : GET /t2api/oauth/consent
+Webserver -> Callback : return code
+else user logged
+Webserver -> Callback : return code
+end
+    */
+
     [Route("/oauth/login", "POST", Summary = "login", Notes = "Login to the platform with username/password")]
     public class OauthLoginRequest : IReturn<Terradue.WebService.Model.WebUser>
     {
