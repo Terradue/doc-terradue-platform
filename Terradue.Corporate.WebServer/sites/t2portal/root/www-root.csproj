@@ -24,7 +24,8 @@
       <CustomCommands>
         <Command type="Custom" name="run webtest" command="rm -f ${ProjectDir}/files/* &amp;&amp; ../webtest/build-webtest.sh" workingdir="" externalConsole="True" />
         <Command type="Custom" name="nuget install" command="./nuget-install.sh" workingdir="${SolutionDir}" externalConsole="True" />
-        <Command type="Custom" name="create db" command="mono Terradue.Corporate.WebServer/sites/t2portal/root/bin/Terradue.Portal.AdminTool.exe create -r Terradue.Corporate.WebServer/sites/t2portal/root -u root -S t2portal" workingdir="${SolutionDir}" externalConsole="True" pauseExternalConsole="True" />
+        <Command type="Custom" name="create db" command="mono bin/Terradue.Portal.AdminTool.exe create -r . -u root -S t2portal" workingdir="${ProjectDir}" externalConsole="True" pauseExternalConsole="True" />
+        <Command type="Custom" name="update db" command="mono bin/Terradue.Portal.AdminTool.exe auto -r . -u root -S t2portal" workingdir="${ProjectDir}" externalConsole="True" pauseExternalConsole="True" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
