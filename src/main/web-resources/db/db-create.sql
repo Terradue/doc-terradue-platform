@@ -32,6 +32,29 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportUpgradeBody', 'string', 'Email body sent to support for user upgrade', 'Email body sent to support for user upgrade', 'To the Account Management team\n\nThe user $(USERNAME) requested a sales contact for an account upgrade with the $(PLAN) plan.\n\nHereafter, the request form completed by the user $(USERNAME):\n$(MESSAGE).', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '[$(PORTAL)] - password reset request', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordBody', 'string', 'Email body sent to support for user upgrade', 'Email subject sent to support for user upgrade', 'Dear Support,\nThe user $(USERNAME) has made a password reset request for the $(PORTAL). Can you please handle it.', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-authEndpoint', 'string', 'LDAP authentication endpoint', 'Enter the value of the LDAP authentication endpoint', 'https://sso.terradue.com/ldapauth/', '0');
+-- RESULT
+
+-- Adding LDAP config... \
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-apikey', 'string', 'LDAP API Key', 'Enter the value of the LDAP API key', 'f70defbeb88141f88138bea52b6e1b9c', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('ldap-apikey', 'string', 'LDAP API Key', 'Enter the value of the LDAP API key', 'f70defbeb88141f88138bea52b6e1b9c', '0');
+-- RESULT
+
+-- Adding SSO config... \
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-clientId', 'string', 'Terradue SSO Client Id', 'Enter the value of the client identifier of the Terradue SSO', "", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-clientSecret', 'string', 'Terradue SSO Client Secret', 'Enter the value of the client secret password of the Terradue SSO', "", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-authorizationEndpoint', 'string', 'Terradue SSO Authorization Endpoint url', 'Enter the value of the url of the Authorization Endpoint of the Terradue SSO', "https://www.terradue.com/t2api/oauth", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-tokenEndpoint', 'string', 'Terradue SSO Token Endpoint url', 'Enter the value of the url of the Token Endpoint of the Terradue SSO', "https://sso.terradue.com/c2id/token", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-userInfoEndpoint', 'string', 'Terradue SSO User Info Endpoint url', 'Enter the value of the url of the User Info Endpoint of the Terradue SSO', "https://sso.terradue.com/c2id/userinfo", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-scopes', 'string', 'Terradue SSO default scopes', 'Enter the value of the default scopes of the Terradue SSO', "openid", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-callback', 'string', 'Terradue SSO callback url', 'Enter the value of the callback url of the Terradue SSO', "https://www.terradue.com/t2api/oauth/cb", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-authEndpoint', 'string', 'Terradue SSO Authentication Endpoint url', 'Enter the value of the url of the Authentication Endpoint of the Terradue SSO', "https://sso.terradue.com/c2id/authz-sessions/rest/v1", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-loginEndpoint', 'string', 'Terradue SSO Login Endpoint url', 'Enter the value of the url of the Login Endpoint of the Terradue SSO', "https://www.terradue.com/login/consent", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-consentEndpoint', 'string', 'Terradue SSO Consent Endpoint url', 'Enter the value of the url of the Consent Endpoint of the Terradue SSO', "https://www.terradue.com/login", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-apiAccessToken', 'string', 'Terradue SSO API Access Token', 'Enter the value of the API Access token of the Terradue SSO', "ztucZS1ZyFKgh0tUEruUtiSTXhnexmd6", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-configUrl', 'string', 'Terradue SSO Configuration url', 'Enter the value of the url of the Configuration of the Terradue SSO', "https://sso.terradue.com/c2id//.well-known/openid-configuration", '0');
+-- RESULT
+
 
 UPDATE config SET value='terradue.com' WHERE name='Github-client-name';
 UPDATE config SET value='64e9f7050a5dba093679' WHERE name='Github-client-id';
@@ -53,25 +76,6 @@ UPDATE config SET value="Dear $(USERNAME),\nyour account has just been created o
 UPDATE config SET value='$(BASEURL)/portal/settings/profile?token=$(TOKEN)' WHERE name='EmailConfirmationUrl';
 UPDATE config SET value='your registration on the Terradue platform' WHERE name='RegistrationMailSubject';
 UPDATE config SET value='Terradue Corporate platform' WHERE name='SiteName';
--- RESULT
-
--- Adding SSO config... \
-UPDATE config SET value='' WHERE name='sso-clientId';
-UPDATE config SET value='' WHERE name='sso-clientSecret';
-UPDATE config SET value='https://sso.terradue.com/c2id-login-page-js' WHERE name='sso-authorizationEndpoint';
-UPDATE config SET value='https://sso.terradue.com/c2id/token' WHERE name='sso-tokenEndpoint';
-UPDATE config SET value='https://sso.terradue.com/c2id/userinfo' WHERE name='sso-userInfoEndpoint';
-UPDATE config SET value='openid,email,profile' WHERE name='sso-scopes';
-UPDATE config SET value='' WHERE name='sso-callback';
-
-
-ldap-oauth
-ldap-apikey
-sso-authzEndpoint
-sso-apiAccessToken
-t2portal-loginEndpoint
-t2portal-consentEndpoint
-
 -- RESULT
 
 /*****************************************************************************/
