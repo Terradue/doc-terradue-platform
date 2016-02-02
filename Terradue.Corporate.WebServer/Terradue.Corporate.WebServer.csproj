@@ -209,7 +209,8 @@
     <Compile Include="Terradue\Corporate\WebServer\Pricing\Plans.Service.cs" />
     <Compile Include="Terradue\Corporate\Controller\Pricing\Plan.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Safe.Service.cs" />
-    <Compile Include="Terradue\Corporate\WebServer\Auth\OAuth.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Gateway.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -219,7 +220,7 @@
     <Folder Include="Terradue\Corporate\Controller\LDAP\" />
     <Folder Include="Terradue\Corporate\WebServer\Pricing\" />
     <Folder Include="Terradue\Corporate\Controller\Pricing\" />
-    <Folder Include="Terradue\Corporate\WebServer\Auth\" />
+    <Folder Include="Terradue\Corporate\WebServer\OAuth\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
