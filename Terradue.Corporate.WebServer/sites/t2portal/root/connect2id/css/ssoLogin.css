@@ -1,0 +1,108 @@
+
+body {
+	padding-top: 50px;
+}
+
+nav.navbar-default.navbar-white {
+    background-color: white;
+}
+nav .navbar-brand>img {
+    height: 50px;
+    margin-top: -15px;
+}
+
+.page {
+	min-height: 430px;
+    margin-bottom: 20px;
+    padding-bottom: 30px;
+    box-shadow: 1px 1px 11px;
+    position: relative;
+	background-color: rgba(0,0,0,0.1);
+    /* background: linear-gradient(to bottom, rgba(240, 240, 240, 1) 0%,rgba(229, 229, 229, 0.9) 58%,rgba(204, 204, 204, 0) 99%); */
+}
+.page .pageBg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position-y: 50%;
+    z-index: -2;
+    display: none;
+}
+.page .pageBg:after {
+	content: "";
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+}
+
+.page .pageBg.pageBgCurrent { z-index: -1 }
+.page .pageBg1{ background-image: url('../img/i3-LANDSAT-Mississippi-RiverDelta.optimized.jpg'); }
+.page .pageBg2{ background-image: url('../img/i3-ENVISAT-NorthwestPassage-IceFree.optimized.jpg'); }
+.page .pageBg3{ background-image: url('../img/i3-SPOT5-Phytoplankton-Bloom.optimized.jpg'); }
+.page .pageBg4{ background-image: url('../img/clouds.jpg'); background-position-y: 100%; }
+
+.title {
+	margin: 40px 0px 20px 0px;
+	text-align: center;
+	font-weight: bold;
+	color: white;
+}
+.subTitle {
+	font-size: 24px;
+	margin-bottom: 32px !important;
+	text-align: center;
+}
+.lead {
+	margin: auto;
+	text-align: center;
+}
+.lead>a {
+	font-size: 16px;
+	margin: 0px 23px;
+}
+
+.t2Logo {
+	background-image: url(../img/t2Logo.png);
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	height: 80px;
+}
+
+/* both login-form and consent-form */
+.ssoForm {
+    background-color: rgba(255,255,255,1);
+    padding: 10px 20px;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    margin: auto;
+}
+
+#login-form {
+    text-align: left;
+    font-weight: bold;
+    width: 300px;
+}
+
+.footer { position: relative; }
+
+#login-form input { background: #f9f9f9; }
+
+
+/*  */
+
+.loginStuff, .consentStuff { display: none; }
+
+#subject-name { display: none; }
+#subject-email { display: none; }
+#logout-button { display: none; }
+#logout-button { margin-left: 15px; margin-right: 15px; }
+
+#console { display: none; position: absolute; top: 0px; width: 100%; }
+#console textarea { height: 150px; font-size: 12px;}
+
+#loginError { display: block; min-height: 20px; font-size: 85%; }
+#errorMessage { display: none; padding-top: 20px; }
+
+#consent-form .table-caption { background: #eee; text-align: center; }

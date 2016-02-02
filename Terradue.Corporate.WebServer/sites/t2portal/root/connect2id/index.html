@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Terradue SSO Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<!-- le libs -->
+<script type="text/javascript" src="imports/jquery-1.9.1/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="imports/jquery.cookie/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="imports/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="imports/bootbox/bootbox.min.js"></script>
+
+<script type="text/javascript" src="js/ssoConfig.js"></script>
+<script type="text/javascript" src="js/ssoLogin.js"></script>
+
+
+<!-- le css -->
+<link rel="stylesheet" href="imports/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="imports/font-awesome/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="css/ssoLogin.css">
+
+</head>
+<body>
+
+	<!-- le menu -->
+	<nav class="navbar navbar-default navbar-white navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://www.terradue.com"> <img alt="Brand" src="img/terradue_print.png"></a>
+			</div>
+
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<!-- standard menu -->
+				<ul class="nav navbar-nav">
+					<li><a href="http://www.terradue.com/about">About us</a></li>
+				</ul>
+				
+				<!-- login data and logout button -->
+				<input id="logout-button" type="button" value="Logout" class="btn btn-default navbar-btn navbar-right" />
+				<div class="nav navbar-nav navbar-right">
+					<p id="subject-name" class="navbar-text">fcerasuolo</p>
+					<p id="subject-email" class="navbar-text">francesco.cerasuolo@terradue.com</p>
+				</div>		
+			</div>
+			
+		</div>
+	</nav>
+	
+	
+	<div class="page">
+		<div class="container">
+
+			<h3 class="loginStuff title">Sign-in to Terradue Cloud Platform</h3>
+			<h3 class="consentStuff title">Authorize OpenID Connect client</h3>
+			
+			<!-- le login form -->
+			<form id="login-form" class="ssoForm loginStuff">
+				<br>
+				<label for="username">Username or Email</label>
+				<input type="text" name="username" id="login-username" class="form-control" tabindex="1">
+				<br>
+				<label for="password"> Password <small><b><a href="passwordreset" tabindex="4">(forgot your password)</a></b></small></label> 
+				<input type="password" name="password" id="login-password" class="form-control" tabindex="2">
+				<br>
+				<p class="text-danger" id="loginError"></p>
+	            
+				<button type="submit" class="btn btn-default" id="login-button" disabled="disabled" tabindex="3">Sign in</button>
+				<!-- <button class="btn btn-default" id="cancel-login-button">Cancel</button> -->
+				
+				<br>
+				<br>
+				<p><small><b>New here ? <a href="signup" tabindex="5">Create a free account</a></b></small></p>
+			</form>
+			
+			<!-- consent form -->
+			<div id="consent-form" class="ssoForm consentStuff">
+				
+				<div class="container-fluid">
+					<div class="col-md-6">
+						<table id="client-metadata" class="table table-bordered">
+						    <tr>
+						        <th class="table-caption" colspan="2">Registered client information</th>
+						    </tr>
+						    <tr>
+						        <th>Name</th>
+						        <td id="client-name">not specified</td>
+						    </tr>
+						    <tr>
+						        <th>ID</th>
+						        <td id="client-id">not specified</td>
+						    </tr>
+						    <tr>
+						        <th>URI</th>
+						        <td id="client-uri">not specified</td>
+						    </tr>
+						    <tr>
+						        <th>Logo URI</th>
+						        <td id="client-logo-uri">not specified</td>
+						    </tr>
+						    <tr>
+						        <th>Policy URI</th>
+						        <td id="client-policy-uri">not specified</td>
+						    </tr>
+						    <tr>
+						        <th>Terms of service URI</th>
+						        <td id="client-tos-uri">not specified</td>
+						    </tr>
+						</table>
+					</div>
+  					<div class="col-md-6">
+						<table id="authz-details" class="table table-bordered">
+						    <tr>
+						        <th class="table-caption" colspan="4">Requested authorization</th>
+						    </tr>
+						    <tr>
+						        <th rowspan="2">Scope</th>
+						        <th>Newly requested</th>
+						        <td colspan="2" id="new-scope-values">none</td>
+						    </tr>
+						    <tr>
+						        <th>Previously consented</th>
+						        <td colspan="2" id="consented-scope-values">none</td>
+						    </tr>
+						    <tr>
+						        <th rowspan="4">Claims</th>
+						        <th rowspan="2">Newly requested</th>
+						        <th>Essential</th>
+						        <td id="new-essential-claims">none</td>
+						    </tr>
+						    <tr>
+						        <th>Voluntary</th>
+						        <td id="new-voluntary-claims">none</td>
+						    </tr>
+						    <tr>
+						        <th rowspan="2">Previously consented</th>
+						        <th>Essential</th>
+						        <td id="consented-essential-claims">none</td>
+						    </tr>
+						    <tr>
+						        <th>Voluntary</th>
+						        <td id="consented-voluntary-claims">none</td>
+						    </tr>
+						</table>
+  					</div>
+  				</div>
+  				
+				<input id="consent-button" type="button" value="Authorize client" class="btn btn-default" />
+				<input id="deny-button" type="button" value="Cancel" class="btn btn-default" />
+			</div>
+			
+			<div id="errorMessage" class="errorMessage">
+				<div class="alert alert-danger alert-dismissible fade in" role="alert">
+					<h4 class="modal-title">Login / Consent Error</h4>
+					<p><span class="error-code"></span></p>
+					<p><span class="error-description"></span></p>
+				</div>
+			</div>
+
+		</div>
+		
+		<!-- le backgrounds -->
+		<div>
+			<div class="pageBg pageBg1 pageBgCurrent"></div>
+			<div class="pageBg pageBg2"></div>
+			<div class="pageBg pageBg3"></div>
+			<div class="pageBg pageBg4"></div>
+		</div>
+	</div>
+	
+	<div class="footer">
+		<div class="container">
+			<p class="lead">
+				<a href="http://www.terradue.com" target="_blank" title="Go to Terradue Home Page">Home page</a> 
+				<a href="http://support.terradue.com" target="_blank" title="Go to Terradue Support">Support site</a>
+			</p>
+			<div class="t2Logo"></div>
+		</div>
+		
+		<!-- console -->
+		<div id="console" class="container">
+			<h5>Development console</h5>
+			<textarea readonly="true" class="form-control"></textarea>
+		</div>
+		
+	</div>
+	
+	
+	<!-- error message (modal) -->
+	<div class="modal fade" id="errorMessageModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Login / Consent Error</h4>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-danger alert-dismissible fade in" role="alert">
+						<p><span id="error-code"></span></p>
+						<p><span id="error-description"></span></p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>
