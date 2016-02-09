@@ -90,7 +90,7 @@ UA -> UA : display user name
 
     */
 
-    [Route("/cb", "GET")]
+    [Route("/oauth/cb", "GET")]
     public class OauthCallBackRequest {
         [ApiMember(Name = "code", Description = "oauth code", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Code { get; set; }

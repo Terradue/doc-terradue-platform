@@ -87,7 +87,7 @@ namespace Terradue.Corporate.WebServer {
                     sub_sid = client.SESSIONSID
                 };
 
-                var oauthsession = client.AuthzSession(oauthrequest);
+                var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
 
                 //session is not active
                 if (oauthsession.type == "auth"){
