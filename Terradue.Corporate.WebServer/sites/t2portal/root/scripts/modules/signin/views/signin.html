@@ -1,52 +1,90 @@
 <link href="/scripts/modules/signin/css/signin.css" rel="stylesheet">
-<div class="signupPage">
 	
-	<div class="pageSubHeader">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-8 col-md-offset-2 text-center">
-					<h4>
-						TODO - Sign-in to Terradue Cloud Platform
-					</h4>
-				</div>
+<div class="pageSubHeader">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2 text-center">
+				<h4>Sign-in to Terradue Cloud Platform</h4>
+				<h3>Authorize OpenID Connect client</h3>
 			</div>
 		</div>
 	</div>
-	
-	<div class="container signupForm">
-		<form action="#" method="post" class="form-horizontal" id="loginForm">
-			<div class="loginForm-userPwd">
-				<h4 style="color:Grey; padding-bottom:5px">Sign-in</h4>
-				<div class="form-group">
-					<label for="username">Username or Email</label>
-					<input type="text" class="form-control" name="username" id="username">
-				</div>
-				<div class="form-group">
-					<label for="password">Password</label>
-					<span>&nbsp;&nbsp;<small><b><a href="passwordreset">(forgot your password)</a></b></small></span>
-					<input type="password" class="form-control" name="password" id="password">
-				</div>
-				<button type="submit" class="btn btn-default">Sign in</button>
-				<br/><br/>
-				<p><small><b>New here ? <a href="signup">Create a free account</a></b></small></p>
-				
-				{{#if loading}}
-					&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Sign-in...
-				{{else}}
-					{{#if errorMessage}}
-						&nbsp;&nbsp;<span class="text-danger"><strong>Error:</strong> {{errorMessage}}</span>
-					{{/if}}
-				{{/if}}
-				
-			</div>
-			<!-- <div class="loginForm-openId">
-				<h2><small>Sign In with Openid</small></h2>
-				<p>
-					<a href="javascript://" id="loginOpenidButton">Openid</a>
-				</p>
-			</div> -->
-
-
-		</form>
-	
 </div>
+
+<div class="container signupForm {{#unless showSigninForm }}hidden{{/unless}}">
+	<form id="login-form" class="ssoForm loginStuff">
+		<br>
+		<label for="username">Username or Email</label>
+		<input type="text" name="username" id="username" class="form-control" tabindex="1">
+		<br>
+		<label for="password"> Password <small><b><a href="passwordreset" tabindex="4">(forgot your password)</a></b></small></label> 
+		<input type="password" name="password" id="password" class="form-control" tabindex="2">
+		<br>
+		<p class="text-danger">{{ signinErrorText }}</p>
+           
+		<button type="submit" class="btn btn-default signinBtn" id="signinButton" {{#unless isSubmitEnabled }} disabled="disabled" {{/unset}} tabindex="3">Sign in</button>
+		<!-- <button class="btn btn-default" id="cancel-login-button">Cancel</button> -->
+		
+		<br>
+		<br>
+		<p><small><b>New here ? <a href="signup" tabindex="5">Create a free account</a></b></small></p>
+		{{#if signinLoading}}
+			<p><i class="fa fa-spin fa-spinner"></i> wait...</p>
+		{{/if}}
+	</form>
+</div>
+
+<div class="container consentForm {{#unless showConsentForm }}hidden{{/unless}}">
+{{#consentData }}
+	<form method="POST" action="/t2api/oauth">
+		<h4>The application would to access to this scopes:</h4>
+		<table class="table">
+			<tbody>
+				{{ #each scope.new }}
+					<tr data-scope="{{.}}">
+						<td><i class="fa fa-square"></i></td>
+						<td>{{.}}</td>
+						<td>
+							<input type="checkbox" name="{{.}}" checked="checked" />
+							<a href="#"><i class="fa fa-info-circle"></i></a>
+						</td>
+					</tr>
+					<tr>
+						<td><i class="fa fa-square"></i></td>
+						<td>bla bla bla bla bldkhjdlk</td>
+						<td>
+							<a href="#"><i class="fa fa-info-circle"></i></a>
+						</td>
+					</tr>
+					<tr>
+						<td><i class="fa fa-square"></i></td>
+						<td>bla bla bla bla bldkhjdlk</td>
+						<td>
+							<a href="#"><i class="fa fa-info-circle"></i></a>
+						</td>
+					</tr>
+				{{/each}}
+			</tbody>
+		</table>
+		<p class="message">
+			<small> by clicking on Allow you consent to bla bla bla... </small>
+		</p>
+		<p class="buttons">
+			<button class="btn btn-default">Deny</button>
+			<button type="submit" class="btn btn-primary consentButton">Allow</button>
+		</p>
+	</form>
+{{/consentData}}
+</div>
+
+
+{{#if showErrorMessage}}
+<div id="errorMessage" class="errorMessage">
+	<div class="alert alert-danger alert-dismissible fade in" role="alert">
+		<h4 class="modal-title">Login / Consent Error</h4>
+		<p><span class="error-code">{{ errorCode }}</span></p>
+		<p><span class="error-description">{{ errorDescription }}</span></p>
+	</div>
+</div>
+{{/if}}
+

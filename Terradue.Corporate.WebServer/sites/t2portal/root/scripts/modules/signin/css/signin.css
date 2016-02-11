@@ -34,3 +34,23 @@
   font-weight: normal;
   font-size: 12px;
 }
+
+
+.consentForm {
+    width: 450px;
+    margin: 20px auto;
+}
+
+.consentForm > form > table.table {
+    margin-top: 30px;
+}
+
+.consentForm > form > table.table tr>td {
+    height: 56px;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+}
+
+.consentForm > form > .buttons {
+    text-align: right;
+}

@@ -1,9 +1,19 @@
 
-
 define(['can', 'config'], function(can, Config){
 	
 	return can.Model({
-		create: 'POST /'+Config.api+'/user/registration',
+		
+		signin: function(username, password){
+			return $.post('/'+Config.api+'/oauth', {
+				username: username,
+				password: password,
+				ajax: true
+			});
+		}
+	
+	//create: 'POST /'+Config.api+'/user/registration',
+
+		
 	}, {});
 	
 });
