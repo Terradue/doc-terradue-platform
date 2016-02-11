@@ -32,8 +32,8 @@ define([
 		},
 		
 		'.login click': function(){
-			if (location.pathname!='/portal/signin')
-				document.location = '/portal/signin?back='+encodeURIComponent(location.pathname);
+//			if (location.pathname!='/portal/signin')
+//				document.location = '/portal/signin?back='+encodeURIComponent(location.pathname);
 		},
 		
 //		'#loginButton click': function(){

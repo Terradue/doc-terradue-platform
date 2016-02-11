@@ -214,7 +214,7 @@ var SigninControl = BaseControl(
 	'.consentButton click': function(){
 		var consentPostData = {
 			query: Helpers.getUrlParameters().query,
-			scope: [openid] // todo take from form
+			scope: ['openid'] // todo take from form
 		};
 		xhr = $.ajax({
 		   type: 'POST',
