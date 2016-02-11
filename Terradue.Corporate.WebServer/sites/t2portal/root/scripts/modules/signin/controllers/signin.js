@@ -212,8 +212,23 @@ var SigninControl = BaseControl(
 	},
 	
 	'.consentButton click': function(){
-//		alert();
-//		return false;
+		var consentPostData = {
+			authz.query = Helpers.getUrlParameters().query,
+			scope: [openid] // todo take from form
+		};
+		xhr = $.ajax({
+		   type: 'POST',
+		   url: '/t2api/oauth?ajax=true',
+		   contentType : "application/json;charset=UTF-8",
+		   data: consentPostData,
+		   dataType: 'json',
+		}).then(function(){
+			alert('post done');
+		}).fail(function(){
+			alert('post fail');
+		});
+		
+		return false;
 	},
 	
 	'.denyBtn click': function(){
