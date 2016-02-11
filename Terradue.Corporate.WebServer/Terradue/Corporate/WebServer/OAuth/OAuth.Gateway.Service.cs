@@ -179,6 +179,9 @@ namespace Terradue.Corporate.WebServer {
 
                     if(request.username != null && request.password != null && request.scope == null) return new HttpResult(response, System.Net.HttpStatusCode.OK);
 
+                    var scope = request.scope;
+
+
                     //TODO: temporary
                     var consent = new Terradue.Ldap.OauthConsentRequest {
                         scope = request.scope,
@@ -199,7 +202,13 @@ namespace Terradue.Corporate.WebServer {
                     };
 
                     var redirect = client.ConsentSession(response.sid, consent);
-                    HttpContext.Current.Response.Redirect(redirect, true);
+
+                    HttpResult res = new HttpResult();
+                    res.Headers[HttpHeaders.Location] = redirect;
+                    res.StatusCode = System.Net.HttpStatusCode.NoContent;
+                    return res;
+
+//                    HttpContext.Current.Response.Redirect(redirect, true);
                 }
 
                 context.Close();
