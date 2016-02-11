@@ -213,7 +213,7 @@ var SigninControl = BaseControl(
 	
 	'.consentButton click': function(){
 		var consentPostData = {
-			authz.query = Helpers.getUrlParameters().query,
+			query: Helpers.getUrlParameters().query,
 			scope: [openid] // todo take from form
 		};
 		xhr = $.ajax({
