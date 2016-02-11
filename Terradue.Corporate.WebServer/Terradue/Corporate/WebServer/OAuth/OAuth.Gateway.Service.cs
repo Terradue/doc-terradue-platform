@@ -177,6 +177,8 @@ namespace Terradue.Corporate.WebServer {
 
                 if(response.type == "consent"){
 
+                    if(request.username != null && request.password != null && request.scope == null) return new HttpResult(response, System.Net.HttpStatusCode.OK);
+
                     //TODO: temporary
                     var consent = new Terradue.Ldap.OauthConsentRequest {
                         scope = request.scope,
