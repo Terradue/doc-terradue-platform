@@ -135,7 +135,7 @@ namespace Terradue.Corporate.WebServer {
                 client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
                 client.LdapApiKey = context.GetConfigValue("ldap-apikey");
 
-                var query = request.query;
+                var query = HttpUtility.UrlDecode(request.query);
                 //TODO: temporary
                 if(query == null) query = "?client_id=fcbwxxrenpgoy&redirect_uri=http%3A%2F%2F127.0.0.1%3A8081%2Ft2api%2Fcb&state=oKp0uEQVjrzPW5Q7f1c05w&scope=openid&response_type=code";
 
