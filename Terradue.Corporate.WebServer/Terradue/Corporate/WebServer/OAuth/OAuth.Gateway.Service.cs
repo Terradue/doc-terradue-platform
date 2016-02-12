@@ -45,6 +45,9 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name="scope", Description = "Scope", ParameterType = "path", DataType = "List<String>", IsRequired = true)]
         public List<String> scope { get; set; }
+
+        [ApiMember(Name="ajax", Description = "ajax", ParameterType = "path", DataType = "bool", IsRequired = true)]
+        public bool ajax { get; set; }
     }
 
     [Api("Terradue Corporate webserver")]
@@ -93,13 +96,41 @@ namespace Terradue.Corporate.WebServer {
                 if (oauthsession.type == "auth"){
                     //redirect to T2 login page
                     var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query) + "&type=auth";
-                    HttpContext.Current.Response.Redirect(redirect, true);
+                    if(request.ajax){
+                        HttpResult redirectResponse = new HttpResult();
+                        redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                        redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                        return redirectResponse;
+                    } else {
+                        HttpContext.Current.Response.Redirect(redirect, true);
+                    }
                 }
 
                 else if (oauthsession.type == "consent"){
-                    //redirect to T2 consent page
-                    var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query) + "&type=consent";
-                    HttpContext.Current.Response.Redirect(redirect, true);
+                    //no new scope to consent
+                    if(oauthsession.scope.new_claims.Count == 0){
+                        var consent = GenerateConsent(null);
+                        var redirect = client.ConsentSession(oauthsession.sid, consent);
+                        if(request.ajax){
+                            HttpResult redirectResponse = new HttpResult();
+                            redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                            redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                            return redirectResponse;
+                        } else {
+                            HttpContext.Current.Response.Redirect(redirect, true);
+                        }
+                    } else {
+                        //redirect to T2 consent page
+                        var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query) + "&type=consent";
+                        if(request.ajax){
+                            HttpResult redirectResponse = new HttpResult();
+                            redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                            redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                            return redirectResponse;
+                        } else {
+                            HttpContext.Current.Response.Redirect(redirect, true);
+                        }
+                    }
                 }
 
                 //session is still active
@@ -144,13 +175,15 @@ namespace Terradue.Corporate.WebServer {
                     sub_sid = client.SESSIONSID
                 };
 
-                var response = client.AuthzSession(oauthrequest1);
+                var oauthsession = client.AuthzSession(oauthrequest1);
 
+                //request was done just to get the oauthsession (and the list of scopes to consent)
                 if(request.username == null && request.password == null && request.scope == null){
-                    return new HttpResult(response, System.Net.HttpStatusCode.OK);
+                    return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
                 }
 
-                if(response.type == "auth"){
+                //user needs to authenticate
+                if(oauthsession.type == "auth"){
                     LdapUser user = null;
                     try{
                         user = client.Authenticate(request.username, request.password);
@@ -168,47 +201,54 @@ namespace Terradue.Corporate.WebServer {
                         }
                     };
 
-                    response = client.AuthzSession(response.sid, oauthrequest2);
+                    oauthsession = client.AuthzSession(oauthsession.sid, oauthrequest2);
 
-                    if(response.type == "consent"){
-                        return new HttpResult(response, System.Net.HttpStatusCode.OK);
+                    //user is now authenticated and need to consent
+                    if(oauthsession.type == "consent"){
+                        if(oauthsession.scope.new_claims.Count == 0){
+                            var consent = GenerateConsent(null);
+                            var redirect = client.ConsentSession(oauthsession.sid, consent);
+
+                            if(request.ajax){
+                                HttpResult redirectResponse = new HttpResult();
+                                redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                                redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                                return redirectResponse;
+                            } else {
+                                HttpContext.Current.Response.Redirect(redirect, true);
+                            }
+                        } else {
+                            return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
+                        }
                     }
                 }
 
-                if(response.type == "consent"){
+                //user needs to consent
+                if(oauthsession.type == "consent"){
 
-                    if(request.username != null && request.password != null && request.scope == null) return new HttpResult(response, System.Net.HttpStatusCode.OK);
+                    var consent = new OauthConsentRequest();
 
-                    var scope = request.scope;
+                    if(request.scope != null){
+                        consent = GenerateConsent(request.scope);
+                    } else if(oauthsession.scope.new_claims.Count == 0){
+                        consent = GenerateConsent(null);
+                    } else if (request.username != null && request.password != null){
+                        //return to the login page so it can display the consent
+                        return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
+                    } else {
+                        throw new Exception("Not expected behaviour");
+                    }
 
+                    var redirect = client.ConsentSession(oauthsession.sid, consent);
 
-                    //TODO: temporary
-                    var consent = new Terradue.Ldap.OauthConsentRequest {
-                        scope = request.scope,
-                        claims = new List<string>(),
-                        preset_claims = new OauthPresetClaims{
-
-                        },
-                        audience = new List<string>(),
-                        long_lived = true,
-                        refresh_token = new OauthRefreshToken{
-                            issue = true,
-                            lifetime = 600
-                        },
-                        access_token = new OauthAccessToken{
-                            encoding = "SELF_CONTAINED",
-                            lifetime = 600
-                        }
-                    };
-
-                    var redirect = client.ConsentSession(response.sid, consent);
-
-                    HttpResult res = new HttpResult();
-                    res.Headers[HttpHeaders.Location] = redirect;
-                    res.StatusCode = System.Net.HttpStatusCode.NoContent;
-                    return res;
-
-//                    HttpContext.Current.Response.Redirect(redirect, true);
+                    if(request.ajax){
+                        HttpResult redirectResponse = new HttpResult();
+                        redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                        redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                        return redirectResponse;
+                    } else {
+                        HttpContext.Current.Response.Redirect(redirect, true);
+                    }
                 }
 
                 context.Close();
@@ -217,6 +257,29 @@ namespace Terradue.Corporate.WebServer {
                 throw e;
             }
             return null;
+        }
+
+        private OauthConsentRequest GenerateConsent(List<string> scope){
+            if (scope == null) scope = new List<string>();
+
+            var consent = new OauthConsentRequest {
+                scope = scope,
+                claims = new List<string>(),
+                preset_claims = new OauthPresetClaims{
+
+                },
+                audience = new List<string>(),
+                long_lived = true,
+                refresh_token = new OauthRefreshToken{
+                    issue = true,
+                    lifetime = 600
+                },
+                access_token = new OauthAccessToken{
+                    encoding = "SELF_CONTAINED",
+                    lifetime = 600
+                }
+            };
+            return consent;
         }
 
     }
