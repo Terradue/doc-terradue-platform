@@ -91,7 +91,7 @@ var SigninControl = BaseControl(
 		if (! queryString) {
 			var msg = "Invalid OpenID Connect authentication request: Missing query string";
 			this.log(msg);
-			this.displayErrorMessage({"error_description":msg});
+			this.displayErrorMessage('Seems that something is wrong with your request', msg);
 			return;
 		}
 	},
@@ -100,7 +100,7 @@ var SigninControl = BaseControl(
 		var self = this;
 		var updateSubmitStatus = function(){
 			self.data.attr({
-				signinErrorText: '',
+				signinErrorMessage: '',
 				isSubmitEnabled: (self.$username.val()!='' && self.$password.val()!='')
 			});
 			//$submit.prop('disabled', ($username.val()=='' || $password.val()==''));
@@ -116,7 +116,7 @@ var SigninControl = BaseControl(
 	    this.$password.val('');
 	    
 	    this.data.attr({
-	    	signinErrorText: null,
+	    	signinErrorMessage: null,
 	    	showErrorMessage: false,
 	    	errorCode: null,
 	    	errorDescription: null,
@@ -134,16 +134,14 @@ var SigninControl = BaseControl(
 	},
 	
 	
-	displayErrorMessage: function(form, isModal){
-    	this.data({
-    		errorCode: form.error,
-    		errorDescription: form.error_description ? form.error_description : 'Invalid OpenID Connect request'
-    	});
+	displayErrorMessage: function(shortMsg, longMsg){
+		
+		this.errorView({}, shortMsg, longMsg, true);
 
-	    if (isModal)
-	    	this.element.find('#errorMessageModal').modal();
-	    else
-	    	this.data('showErrorMessage', true);
+//	    if (isModal)
+//	    	this.element.find('#errorMessageModal').modal();
+//	    else
+//	    	this.data('showErrorMessage', true);
 	    	//this.element.find('#errorMessage').show();
 	},
 	
@@ -173,7 +171,7 @@ var SigninControl = BaseControl(
 		this.log("Entered password: *****");// + password);
 		
 		if (username.length === 0 || password.length === 0) {
-			this.data.attr('signinErrorText', 'You must enter a username and a password');
+			this.data.attr('signinErrorMessage', 'You must enter a username and a password');
 			this.$username.focus();
 			return false;
 		}
@@ -197,7 +195,7 @@ var SigninControl = BaseControl(
 			
 		}).fail(function(xhr){
 			window.res = xhr;
-			alert('fail!');
+			data.attr('signinErrorMessage', 'Signin failed. Wrong username or password.'); // TODO improve messages
 		}).always(function(){
 			data.attr('signinLoading', false);
 		});
@@ -235,8 +233,8 @@ var SigninControl = BaseControl(
 		
 		SigninModel.consent(consentInfo).then(function(data, textStatus, jqXHR){
 			self.redirectToCallback(jqXHR);
-		}).fail(function(){
-			alert('consent post fail!');
+		}).fail(function(jqXHR){
+			this.displayErrorMessage('Consent submit failed.', Helpers.getErrMsg(jqXHR));
 		}).always(function(){
 			data.attr('consentLoading', false);
 		});
@@ -254,11 +252,10 @@ var SigninControl = BaseControl(
 			var location = jqXHR.getResponseHeader('Location');
 			if (location){
 				this.log("Received redirection URI: " + location);
-				alert('consent post successful! redirect to...\n' + location);
 				window.location.replace(location); // redirect
 			} else{
 				this.log("Missing Location response header");
-				alert("Missing Location response header");
+				this.displayErrorMessage('Something went wrong.', 'Missing Location response header.');
 			}
 			return true;
 		} else

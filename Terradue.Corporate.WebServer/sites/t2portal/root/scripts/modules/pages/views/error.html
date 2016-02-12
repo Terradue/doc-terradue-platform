@@ -7,6 +7,10 @@
 		{{else}}
 			Sorry, the page you are looking for doesn't exist.
 		{{/if}}
+		
+		{{#if longMsg}}
+			<br/><small>{{longMsg}}</small>
+		{{/if}}
 	</p>
 	<p class="lead goBack">
 		Go back to <a href="/portal/">Terradue</a> or <a href="">contact us</a>.
