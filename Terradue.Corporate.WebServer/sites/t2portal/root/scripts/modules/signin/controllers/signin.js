@@ -38,7 +38,8 @@ var SigninControl = BaseControl(
 			url: 'modules/signin/views/signin.html',
 			data: this.data,
 			fnLoad: function(){
-				self.$form = element.find('form');
+				self.$signinForm = element.find('form.signinForm');
+				self.$consentForm = element.find('form.consentForm');
 				self.$username = element.find('#username');
 				self.$password = element.find('#password');
 				self.$submit = element.find('#signinButton');
@@ -51,7 +52,7 @@ var SigninControl = BaseControl(
 	
 	initFormValidator: function(){
 		var self = this;
-		this.$form.validate({
+		this.$signinForm.validate({
 			rules : {
 				username: 'required',
 				password: 'required',
@@ -120,6 +121,7 @@ var SigninControl = BaseControl(
 	    	errorCode: null,
 	    	errorDescription: null,
 	    	signinLoading: false,
+	    	consentLoading: false,
 	    	isSubmitEnabled: false
 	    });
 	},
@@ -203,7 +205,8 @@ var SigninControl = BaseControl(
 		this.data.attr({
 			showSigninForm: false,
 			showConsentForm: true,
-			consentData: json
+			consentData: json,
+			disableConsentButtons: false
 		});
 	},
 	
@@ -211,21 +214,34 @@ var SigninControl = BaseControl(
 		//logoutSubject
 	},
 	
-	'.consentButton click': function(){
-		var consentPostData = {
+	'.consentForm submit': function(){
+		var self = this;
+		var newScopes = $('.newScopes input[type="checkbox"]:checked').map(function(){return $(this).attr('name')});
+		var consentInfo = {
 			query: Helpers.getUrlParameters().query,
+			//scope: newScopes,
 			scope: ['openid'] // todo take from form
 		};
-		xhr = $.ajax({
-		   type: 'POST',
-		   url: '/t2api/oauth?ajax=true',
-		   contentType : "application/json;charset=UTF-8",
-		   data: consentPostData,
-		   dataType: 'json',
-		}).then(function(){
-			alert('post done');
+		
+		data.attr({
+			consentLoading: true,
+			disableConsentButtons: true
+		});
+		
+		SigninModel.consent(consentInfo, function(location){
+			if (location){
+				self.log("Received redirection URI: " + location);
+				alert('consent post successful! redirect to...\n' + location);
+				window.location.replace(location); // redirect
+			} else{
+				alert("Missing Location response header");
+				log("Missing Location response header");
+			}
+
 		}).fail(function(){
-			alert('post fail');
+			alert('consent post fail!');
+		}).always(function(){
+			data.attr('consentLoading', false);
 		});
 		
 		return false;
