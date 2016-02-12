@@ -173,6 +173,12 @@
     <Reference Include="Terradue.GeoJson">
       <HintPath>..\packages\Terradue.GeoJson.1.5.7\lib\net40\Terradue.GeoJson.dll</HintPath>
     </Reference>
+    <Reference Include="Terradue.Authentication.OpenId">
+      <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.8\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.Ldap">
+      <HintPath>..\packages\Terradue.Ldap.1.0.4\lib\net40\Terradue.Ldap.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -220,16 +226,5 @@
     <None Include="packages.config" />
     <None Include="modules\ldap\db\db-create.sql" />
     <None Include="modules\openid\db\db-create.sql" />
-    <None Include="modules\openid\db\db-0.2#.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\components\sugar\DotNetJson2Ldap\Terradue.Ldap\Terradue.Ldap.csproj">
-      <Project>{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}</Project>
-      <Name>Terradue.Ldap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\components\sugar\Terradue.Authentication.Openid\Terradue.Authentication.OpenId\Terradue.Authentication.OpenId.csproj">
-      <Project>{368A87F9-0ED5-4423-B32D-F3411189A8F8}</Project>
-      <Name>Terradue.Authentication.OpenId</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
