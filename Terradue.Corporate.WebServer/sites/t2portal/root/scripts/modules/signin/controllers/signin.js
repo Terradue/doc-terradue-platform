@@ -185,7 +185,12 @@ var SigninControl = BaseControl(
 			isSubmitEnabled: false
 		});
 		
-		SigninModel.signin(username, password).then(function(json, textStatus, jqXHR){
+		var signinInfo = {
+			username: username,
+			password: password,
+			query: Helpers.getUrlParameters().query,
+		}
+		SigninModel.signin(signinInfo).then(function(json, textStatus, jqXHR){
 			var isRedirected = self.redirectToCallback(jqXHR);
 			if (isRedirected)
 				return;
