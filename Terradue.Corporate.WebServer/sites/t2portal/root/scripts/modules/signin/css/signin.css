@@ -20,37 +20,39 @@
 	background-repeat: no-repeat;
 	border-radius: 5px;
 }
-.signupForm {
+
+.pageSubHeader.signinSubHeader{
+	height: 130px;
+}
+
+.signupContainer {
 	max-width: 400px;
 	margin: 20px auto;
 }
-.signupForm .form-group {
+.signupContainer .form-group {
   margin-right: 0px;
   margin-left: 0px;
 }
 
-.signupForm label.error { /* improve */
+.signupContainer label.error { /* improve */
   color: #a94442;
   font-weight: normal;
   font-size: 12px;
 }
 
 
-.consentForm {
+.consentContainer {
     width: 450px;
     margin: 20px auto;
 }
 
-.consentForm > form > table.table {
+.consentContainer > form > table.table {
     margin-top: 30px;
 }
 
-.consentForm > form > table.table tr>td {
+.consentContainer > form > table.table tr>td {
     height: 56px;
     vertical-align: middle;
     border-bottom: 1px solid #ddd;
 }
 
-.consentForm > form > .buttons {
-    text-align: right;
-}
