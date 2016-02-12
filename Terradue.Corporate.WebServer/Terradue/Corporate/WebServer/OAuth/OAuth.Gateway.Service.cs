@@ -167,8 +167,10 @@ namespace Terradue.Corporate.WebServer {
                 client.LdapApiKey = context.GetConfigValue("ldap-apikey");
 
                 var query = HttpUtility.UrlDecode(request.query);
-                //TODO: temporary
-                if(query == null) query = "?client_id=fcbwxxrenpgoy&redirect_uri=http%3A%2F%2F127.0.0.1%3A8081%2Ft2api%2Fcb&state=oKp0uEQVjrzPW5Q7f1c05w&scope=openid&response_type=code";
+
+                if(string.IsNullOrEmpty(query))
+                    query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
+                                      "code", "openid", context.GetConfigValue("sso-clientId"), Guid.NewGuid(), context.GetConfigValue("sso-callback"));
 
                 OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                     query = query,
