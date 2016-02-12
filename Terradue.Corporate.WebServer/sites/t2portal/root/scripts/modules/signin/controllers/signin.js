@@ -187,9 +187,14 @@ var SigninControl = BaseControl(
 			isSubmitEnabled: false
 		});
 		
-		SigninModel.signin(username, password).then(function(json){
-			if (json.type=='consent')
+		SigninModel.signin(username, password).then(function(json, textStatus, jqXHR){
+			var isRedirected = self.redirectToCallback(jqXHR);
+			if (isRedirected)
+				return;
+			
+			if (json && json.type=='consent')
 				self.showConsentForm(json);
+			
 		}).fail(function(xhr){
 			window.res = xhr;
 			alert('fail!');
@@ -228,16 +233,8 @@ var SigninControl = BaseControl(
 			disableConsentButtons: true
 		});
 		
-		SigninModel.consent(consentInfo, function(location){
-			if (location){
-				self.log("Received redirection URI: " + location);
-				alert('consent post successful! redirect to...\n' + location);
-				window.location.replace(location); // redirect
-			} else{
-				alert("Missing Location response header");
-				log("Missing Location response header");
-			}
-
+		SigninModel.consent(consentInfo).then(function(data, textStatus, jqXHR){
+			self.redirectToCallback(jqXHR);
 		}).fail(function(){
 			alert('consent post fail!');
 		}).always(function(){
@@ -249,6 +246,23 @@ var SigninControl = BaseControl(
 	
 	'.denyBtn click': function(){
 		//denyAuthorization
+	},
+	
+	
+	redirectToCallback: function(jqXHR){
+		if (jqXHR.status==204){
+			var location = jqXHR.getResponseHeader('Location');
+			if (location){
+				this.log("Received redirection URI: " + location);
+				alert('consent post successful! redirect to...\n' + location);
+				window.location.replace(location); // redirect
+			} else{
+				this.log("Missing Location response header");
+				alert("Missing Location response header");
+			}
+			return true;
+		} else
+			return false;
 	},
 	
 	

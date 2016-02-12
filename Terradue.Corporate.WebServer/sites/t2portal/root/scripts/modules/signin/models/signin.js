@@ -11,19 +11,13 @@ define(['can', 'config'], function(can, Config){
 			});
 		},
 		
-		consent: function(consentInfo, successHandler){
+		consent: function(consentInfo){
 			return $.ajax({
 				type: 'POST',
 				url: '/'+Config.api+'/oauth?ajax=true',
 				contentType : 'application/json;charset=UTF-8',
 				data: consentInfo,
-				dataType: 'json',
-				statusCode: {
-					204: function(data, textStatus, jqXHR){
-						var location = jqXHR.getResponseHeader('Location');
-						successHandler(location, jqXHR);
-					}
-				}
+				dataType: 'json'
 			});
 		}
 	
