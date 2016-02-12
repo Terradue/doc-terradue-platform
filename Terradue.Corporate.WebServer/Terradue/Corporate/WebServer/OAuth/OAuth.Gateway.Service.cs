@@ -260,7 +260,7 @@ namespace Terradue.Corporate.WebServer {
         }
 
         private OauthConsentRequest GenerateConsent(List<string> scope){
-            if (scope == null) scope = new List<string>();
+            if (scope == null || scope.Count == 0) scope = new List<string>{"openid"};
 
             var consent = new OauthConsentRequest {
                 scope = scope,
