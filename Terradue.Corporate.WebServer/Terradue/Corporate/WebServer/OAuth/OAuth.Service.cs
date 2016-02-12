@@ -117,6 +117,8 @@ UA -> UA : display user name
 
         public object Get(OauthCallBackRequest request) {
 
+            var redirect = "";
+
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             Terradue.Portal.User user = null;
             try {
@@ -137,12 +139,15 @@ UA -> UA : display user name
 
                 user = auth.GetUserProfile(context);
 
+                redirect = context.BaseUrl + "/portal/settings/profile";
+
                 context.Close();
             } catch (Exception e) {
                 context.Close();
                 throw e;
             }
-            return user;
+            HttpContext.Current.Response.Redirect(redirect, true);
+            return null;
         }   
 
         public object Delete(OauthLogoutRequest request) {
