@@ -1,0 +1,184 @@
+	
+	        <!-- === BEGIN CONTENT === -->
+            <div class="container">
+                <div class="row portfolio-group" style="margin-top:40px">
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">
+                                        Greenland's Winter margin processing for the European Space Agency CCI Ice Sheet Essential Climate Variables
+                                        </div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image1" src="../styles/img/users/logo-stcorp.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">
+                                        Integration 'as-a-Service' of the DIAPASON processor for the Geohazards Exploitation Platform
+                                        </div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image2" src="../styles/img/users/logo-altamira.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">Nam liber tempor</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image4" src="../styles/img/users/logo-deimos-eng.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">Quam nunc putamus</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image8" src="../styles/img/users/logo-criticalsoftware.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->                    
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">Cryosat</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image5" src="../styles/img/users/logo-esa.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                    <div class="info-wrapper">TIGGE</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image6" src="../styles/img/users/logo-ecmwf.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">Sentinel-1 Browse processor integration and exploitation for the Geohazards Exploitation Platform</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image10" src="../styles/img/users/logo-dlr-eoc.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">Placerat facer possim</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image9" src="../styles/img/users/logo-noa.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">ESGF</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image7" src="../styles/img/users/logo-unesco-ioc.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->                     
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">
+										GEOSS AIP-8
+										</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image3" src="../styles/img/users/logo-st-cmre.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->                                       
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                        	<figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">Ocean status assessment</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image11" src="../styles/img/users/logo-ingv-oceano.png">
+                                </div>
+                            </figure>                                
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                    <!-- Portfolio Item -->
+                    <div class="portfolio-item col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+                        <a href="#">
+                            <figure class="animate">
+                                <div class="grid-image">
+                                    <div class="featured-info">
+                                        <div class="info-wrapper">Sed ut perspiciatis</div>
+                                    </div>
+                                    <img class="imgaligncenter" alt="image12" src="../styles/img/users/logo-ipl-uv.png">
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <!-- End Portfolio Item -->
+                </div>
+            </div>
+        
+        <!-- === END CONTENT === -->
+	</div>
+	
