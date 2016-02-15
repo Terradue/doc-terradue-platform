@@ -1,0 +1,403 @@
+#pricing #third-option {
+  margin-top: 55px;
+  margin-bottom: 150px;
+  -webkit-font-smoothing: antialiased; }
+  #pricing #third-option .header {
+    text-align: center; }
+    #pricing #third-option .header h3 {
+      font-size: 22px;
+      color: #444;
+      line-height: 25px;
+      font-weight: 500;
+      margin-bottom: 7px; }
+    #pricing #third-option .header p {
+      font-size: 16px;
+      font-weight: 400;
+      color: #888; }
+  @media (min-width: 992px) {
+    #pricing #third-option .container {
+      width: 1060px; } }
+  #pricing #third-option .charts {
+    margin-top: 50px; }
+    #pricing #third-option .charts .basic-plan {
+      background-color: #fff;
+      border: 1px solid #E6E6E6;
+      border-radius: 5px;
+      box-shadow: 0px 0px 2px 0px rgba(181, 181, 181, 0.3);
+      padding: 20px 30px 10px 30px;
+      text-align: center;
+      width: 220px;
+      position: absolute;
+      right: 0px;
+      top: 20px; }
+      @media (max-width: 991px) {
+        #pricing #third-option .charts .basic-plan {
+          float: none !important;
+          left: 0px !important;
+          top: 0px !important;
+          margin: 0 auto;
+          width: 55%;
+          margin-bottom: 25px !important;
+          position: relative;
+          margin-top: 30px; }
+          #pricing #third-option .charts .basic-plan.last {
+            margin-bottom: 0px !important; } }
+      @media (max-width: 600px) {
+        #pricing #third-option .charts .basic-plan {
+          width: 90% !important; } }
+      #pricing #third-option .charts .basic-plan .plan-name {
+        text-align: center;
+        font-size: 17px;
+        font-weight: 400;
+        color: #444;
+        width: 90%;
+        margin: 0 auto;
+        margin-top: 5px; }
+      #pricing #third-option .charts .basic-plan .quantity {
+        text-align: center;
+        border-bottom: 1px solid #d5d5d5;
+        margin-top: 5px; }
+        #pricing #third-option .charts .basic-plan .quantity .dollar {
+          font-size: 19px;
+          position: relative;
+          top: -18px; }
+        #pricing #third-option .charts .basic-plan .quantity .price {
+          font-size: 42px; }
+        #pricing #third-option .charts .basic-plan .quantity .period {
+          font-size: 17px;
+          position: relative;
+          top: -8px;
+          margin-left: 4px; }
+      #pricing #third-option .charts .basic-plan .description {
+        margin-top: 15px;
+        font-size: 13px;
+        color: #444;
+        line-height: 20px; }
+        #pricing #third-option .charts .basic-plan .description a {
+          display: block;
+          margin-top: 15px;
+          font-size: 14px; }
+    #pricing #third-option .charts .chart {
+      background-color: #fff;
+      border: 1px solid #E6E6E6;
+      border-radius: 5px;
+      box-shadow: 0px 0px 2px 0px rgba(181, 181, 181, 0.3);
+      padding: 20px 40px;
+      position: relative;
+      text-align: center;
+      width: 280px;
+      float: left;
+      min-height: 315px;
+      position: relative;
+      top: 20px; }
+      @media (min-width: 992px) {
+        #pricing #third-option .charts .chart.featured {
+          left: -25px; }
+        #pricing #third-option .charts .chart.last {
+          left: -45px; } }
+      @media (max-width: 991px) {
+        #pricing #third-option .charts .chart {
+          float: none !important;
+          left: 0px !important;
+          top: 0px !important;
+          margin: 0 auto;
+          width: 55%;
+          margin-bottom: 25px !important; }
+          #pricing #third-option .charts .chart.last {
+            margin-bottom: 0px !important; } }
+      @media (max-width: 600px) {
+        #pricing #third-option .charts .chart {
+          width: 90% !important; } }
+      #pricing #third-option .charts .chart.featured {
+        z-index: 999; }
+        @media (min-width: 992px) {
+          #pricing #third-option .charts .chart.featured {
+            margin: 0 auto;
+            top: 0px;
+            min-height: 445px; }
+            #pricing #third-option .charts .chart.featured .btn-signup {
+              margin-top: 32px; } }
+        #pricing #third-option .charts .chart.featured .popular {
+          position: absolute;
+          top: 0px;
+          left: 0px; }
+        #pricing #third-option .charts .chart.featured .quantity {
+          margin-top: 15px;
+          padding-bottom: 5px; }
+      #pricing #third-option .charts .chart .plan-name {
+        text-align: center;
+        font-size: 20px;
+        font-weight: 400;
+        color: #444;
+        width: 90%;
+        margin: 0 auto;
+        margin-top: 5px; }
+      #pricing #third-option .charts .chart .quantity {
+        text-align: center;
+        border-bottom: 1px solid #d5d5d5;
+        margin-top: 10px; }
+        #pricing #third-option .charts .chart .quantity .dollar {
+          font-size: 19px;
+          position: relative;
+          top: -18px; }
+        #pricing #third-option .charts .chart .quantity .price {
+          font-size: 49px; }
+        #pricing #third-option .charts .chart .quantity .period {
+          font-size: 17px;
+          position: relative;
+          top: -8px;
+          margin-left: 4px; }
+      #pricing #third-option .charts .chart .specs {
+        margin-top: 20px; }
+        #pricing #third-option .charts .chart .specs .spec {
+          font-size: 15px;
+          color: #474747;
+          text-align: center;
+          font-weight: 300;
+          margin-bottom: 13px; }
+          #pricing #third-option .charts .chart .specs .spec .variable {
+            color: #1FBEE7;
+            font-weight: 400; }
+      #pricing #third-option .charts .chart .btn-signup {
+        margin-top: 20px;
+        height: 38px; }
+        
+        
+#charts #tabs-option {
+  margin-top: 35px;
+  -webkit-font-smoothing: antialiased; }
+  #charts #tabs-option .header {
+    text-align: center; }
+    #charts #tabs-option .header h3 {
+      font-size: 22px;
+      color: #444;
+      line-height: 25px;
+      font-weight: 500;
+      margin-bottom: 7px; }
+    #charts #tabs-option .header p {
+      font-size: 16px;
+      font-weight: 400;
+      color: #888; }
+  #charts #tabs-option .tabs {
+    background: #F8F8F8;
+    text-align: center;
+    border-radius: 3px;
+    margin-top: 40px; }
+    #charts #tabs-option .tabs .tab {
+      background-color: #F8F8F8;
+      font-weight: 500;
+      font-size: 15px;
+      color: #555;
+      display: inline-block;
+      padding: 18px 25px;
+      margin-top: 10px;
+      cursor: pointer;
+      -webkit-transition: background-color 0.2s linear;
+      -moz-transition: background-color 0.2s linear;
+      -ms-transition: background-color 0.2s linear;
+      -o-transition: background-color 0.2s linear;
+      transition: background-color 0.2s linear; }
+      #charts #tabs-option .tabs .tab.anually {
+        padding: 18px 18px 18px 23px; }
+      #charts #tabs-option .tabs .tab.active {
+        background-color: #fff;
+        border: 1px solid #E8E8E8;
+        border-radius: 5px 5px 0px 0px;
+        border-bottom: 0px; }
+      #charts #tabs-option .tabs .tab span {
+        position: relative;
+        top: -2px; }
+      #charts #tabs-option .tabs .tab small {
+        color: #32ACDA;
+        margin-left: 3px; }
+  #charts #tabs-option .plans {
+    margin-top: 30px;
+    border: 1px solid #E3E3E3;
+    border-radius: 5px; }
+    #charts #tabs-option .plans .plan {
+      border-right: 0px;
+      min-height: 220px; }
+      #charts #tabs-option .plans .plan.middle {
+        border-right: 1px solid #E3E3E3;
+        border-left: 1px solid #E3E3E3; }
+      #charts #tabs-option .plans .plan .header {
+        text-align: left;
+        padding: 18px 25px;
+        border-bottom: 1px solid #E3E3E3;
+        margin: 0px -15px;
+        font-weight: 500;
+        font-size: 15px; }
+        #charts #tabs-option .plans .plan .header .icon {
+          color: #B7C5D8;
+          font-size: 18px;
+          position: relative;
+          top: 2px;
+          left: -4px; }
+        #charts #tabs-option .plans .plan .header .price {
+          float: right;
+          color: #3CA2E5; }
+      #charts #tabs-option .plans .plan .specs {
+        margin-top: 25px;
+        padding: 0px 10px 17px 10px; }
+        #charts #tabs-option .plans .plan .specs .spec {
+          font-size: 15px;
+          color: #666;
+          margin-bottom: 13px; }
+          #charts #tabs-option .plans .plan .specs .spec .variable {
+            color: #1FBEE7;
+            font-weight: 400; }
+  #charts #tabs-option .signup {
+    margin-top: 40px;
+    text-align: center; }
+    #charts #tabs-option .signup .button {
+      background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4ABCF3), color-stop(100%, #1a80d9));
+      background: -webkit-linear-gradient(#4ABCF3, #1a80d9);
+      background: -moz-linear-gradient(#4ABCF3, #1a80d9);
+      background: -o-linear-gradient(#4ABCF3, #1a80d9);
+      background: linear-gradient(#4ABCF3, #1a80d9);
+      padding: 15px 38px;
+      font-size: 15px; }
+    #charts #tabs-option .signup .message {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #888; }
+#charts #chart-option {
+  margin-top: 35px;
+  -webkit-font-smoothing: antialiased; }
+  #charts #chart-option .divider {
+    height: 1px;
+    width: 100%;
+    background-color: #ddd;
+    position: relative;
+    margin: 80px 0 40px; }
+    #charts #chart-option .divider:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-image: -webkit-gradient(linear, left top, right top, color-stop(0, rgba(255, 255, 255, 0.75)), color-stop(0.5, rgba(250, 250, 250, 0)), color-stop(1, rgba(255, 255, 255, 0.75)));
+      background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0.75) 0%, rgba(250, 250, 250, 0) 50%, rgba(255, 255, 255, 0.75) 100%);
+      background-image: -moz-linear-gradient(left, rgba(255, 255, 255, 0.75) 0%, rgba(250, 250, 250, 0) 50%, rgba(255, 255, 255, 0.75) 100%);
+      background-image: -o-linear-gradient(left, rgba(255, 255, 255, 0.75) 0%, rgba(250, 250, 250, 0) 50%, rgba(255, 255, 255, 0.75) 100%);
+      background-image: -ms-linear-gradient(left, rgba(255, 255, 255, 0.75) 0%, rgba(250, 250, 250, 0) 50%, rgba(255, 255, 255, 0.75) 100%);
+      background-image: linear-gradient(left, rgba(255, 255, 255, 0.75) 0%, rgba(250, 250, 250, 0) 50%, rgba(255, 255, 255, 0.75) 100%); }
+  #charts #chart-option .header {
+    text-align: center; }
+    #charts #chart-option .header h3 {
+      font-size: 22px;
+      color: #444;
+      line-height: 25px;
+      font-weight: 500;
+      margin-bottom: 7px; }
+    #charts #chart-option .header p {
+      font-size: 16px;
+      font-weight: 400;
+      color: #888; }
+  #charts #chart-option .chart {
+    margin-top: 40px;
+    border: 1px solid #dfdfdf;
+    border-radius: 5px;
+    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.1); }
+    #charts #chart-option .chart .header {
+      text-align: center;
+      background: #fbfbfb;
+      margin: 0px -15px;
+      padding: 20px 35px;
+      font-weight: 500;
+      font-size: 17px;
+      color: #444;
+      border-bottom: 1px solid #dfdfdf;
+      height: 73px; }
+      @media (max-width: 991px) {
+        #charts #chart-option .chart .header {
+          font-size: 15px; } }
+      @media (max-width: 767px) {
+        #charts #chart-option .chart .header {
+          font-size: 13px; } }
+      #charts #chart-option .chart .header .price {
+        color: #1a80d9;
+        position: relative;
+        top: 3px;
+        font-size: 14px; }
+        @media (max-width: 767px) {
+          #charts #chart-option .chart .header .price {
+            font-size: 13px; } }
+    #charts #chart-option .chart .features-col .header {
+      text-align: left;
+      border-radius: 5px 0px 0px 0px;
+      margin-bottom: 30px;
+      padding: 23px 30px;
+      font-size: 18px; }
+      @media (max-width: 991px) {
+        #charts #chart-option .chart .features-col .header {
+          font-size: 16px; } }
+    #charts #chart-option .chart .features-col .spec {
+      margin-bottom: 32px;
+      padding-left: 40px;
+      position: relative; }
+      #charts #chart-option .chart .features-col .spec .icon {
+        position: absolute;
+        font-size: 27px;
+        color: #849FC4;
+        left: 0px;
+        top: -4px; }
+    #charts #chart-option .chart .plan-col {
+      border-left: 1px solid #dfdfdf; }
+      #charts #chart-option .chart .plan-col.last .header {
+        border-radius: 0px 5px 0px 0px; }
+      #charts #chart-option .chart .plan-col .header {
+        padding: 13px 0px; }
+      #charts #chart-option .chart .plan-col .spec {
+        margin-bottom: 34px;
+        margin-top: 25px; }
+        #charts #chart-option .chart .plan-col .spec .check {
+          margin: 0 auto;
+          display: block;
+          max-width: 20px; }
+      #charts #chart-option .chart .plan-col .button {
+        margin-top: 20px;
+        margin-bottom: 15px;
+        font-size: 13px;
+        padding: 11px 24px;
+        background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4ABCF3), color-stop(100%, #1a80d9));
+        background: -webkit-linear-gradient(#4ABCF3, #1a80d9);
+        background: -moz-linear-gradient(#4ABCF3, #1a80d9);
+        background: -o-linear-gradient(#4ABCF3, #1a80d9);
+        background: linear-gradient(#4ABCF3, #1a80d9); }
+        @media (max-width: 991px) {
+          #charts #chart-option .chart .plan-col .button {
+            padding: 6px 10px;
+            text-align: center; } }
+  #charts #chart-option .message p {
+    text-align: center;
+    font-size: 13px;
+    color: #656565;
+    margin-top: 30px; }
+  #charts #chart-option .faq {
+    margin-top: 50px; }
+    #charts #chart-option .faq .header h3 {
+      font-size: 20px;
+      color: #454545;
+      text-align: left; }
+    #charts #chart-option .faq .questions {
+      margin-top: 25px; }
+      #charts #chart-option .faq .questions .question {
+        margin-bottom: 40px; }
+        @media (min-width: 992px) {
+          #charts #chart-option .faq .questions .question {
+            width: 90%; } }
+        #charts #chart-option .faq .questions .question strong {
+          font-weight: 500;
+          font-size: 16px;
+          color: #454545; }
+        #charts #chart-option .faq .questions .question p {
+          color: #555;
+          margin-top: 10px;
+          font-size: 13px;
+          line-height: 22px; }
+
+
+        
