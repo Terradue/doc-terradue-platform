@@ -15,7 +15,7 @@ using System.Linq;
 using ServiceStack.Common.Web;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class NewsService : ServiceStack.ServiceInterface.Service {
@@ -35,16 +35,22 @@ namespace Terradue.Corporate.WebServer {
 
                 List<Terradue.OpenSearch.IOpenSearchable> osentities = new List<Terradue.OpenSearch.IOpenSearchable>();
 
-                EntityList<Article> articles = new EntityList<Article>(context);
-                articles.Load();
-                osentities.Add(articles);
+                try{
+                    EntityList<Article> articles = new EntityList<Article>(context);
+                    articles.Load();
+                    osentities.Add(articles);
+                }catch(Exception){}
 
-                List<TwitterFeed> twitters = TwitterNews.LoadTwitterFeeds(context);
-                foreach(TwitterFeed twitter in twitters) osentities.Add(twitter);
+                try{
+                    List<TwitterFeed> twitters = TwitterNews.LoadTwitterFeeds(context);
+                    foreach(TwitterFeed twitter in twitters) osentities.Add(twitter);
+                }catch(Exception){}
 
-                EntityList<RssNews> rsss = new EntityList<RssNews>(context);
-                rsss.Load();
-                foreach(RssNews rss in rsss) osentities.Add(rss);
+                try{
+                    EntityList<RssNews> rsss = new EntityList<RssNews>(context);
+                    rsss.Load();
+                    foreach(RssNews rss in rsss) osentities.Add(rss);
+                }catch(Exception){}
 
                 MultiGenericOpenSearchable multiOSE = new MultiGenericOpenSearchable(osentities, ose);
 
@@ -56,7 +62,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close ();
                 throw e;
             }
-
+                
             return new HttpResult(result.SerializeToString(), result.ContentType);
         }
 

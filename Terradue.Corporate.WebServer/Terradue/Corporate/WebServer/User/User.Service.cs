@@ -14,9 +14,10 @@ using ServiceStack.Text;
 using System.Runtime.Serialization;
 using ServiceStack.Common.Web;
 using Terradue.Authentication.Ldap;
+using Terradue.Authentication.OAuth;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class UserService : ServiceStack.ServiceInterface.Service {
@@ -174,7 +175,7 @@ namespace Terradue.Corporate.WebServer {
 
                 if(exists) throw new Exception("User already exists");
 
-                AuthenticationType AuthType = IfyWebContext.GetAuthenticationType(typeof(LdapAuthenticationType));
+                AuthenticationType AuthType = IfyWebContext.GetAuthenticationType(typeof(OAuth2AuthenticationType));
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));
                 user.Username = user.Email;
@@ -198,22 +199,13 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     user.SendMail(UserMailType.Registration, true);
                 }catch(Exception){}
-
-                //we login the user
-                try{
-                    user = (UserT2)new LdapAuthenticationType(context).Authenticate(request.Email, request.Password);
-//                    user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
-                }catch(Exception e){
-                    throw new Exception("User account has been created, but there was an error during the automatic login. Please contact your administrator.");
-                }
-
-                result = new WebUserT2(user);
+                    
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();
                 throw e;
             }
-            return result;
+            return null;
         }
 
         public object Post(UpgradeUserT2 request)

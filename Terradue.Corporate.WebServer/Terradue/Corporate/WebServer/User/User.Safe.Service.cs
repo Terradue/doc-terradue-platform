@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using ServiceStack.Common.Web;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class UserSafeService : ServiceStack.ServiceInterface.Service {

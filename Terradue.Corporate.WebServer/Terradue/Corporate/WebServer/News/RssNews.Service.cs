@@ -15,7 +15,7 @@ using Terradue.WebService.Model;
 using Terradue.Corporate.WebServer.Common;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class RssNewsService : ServiceStack.ServiceInterface.Service {
