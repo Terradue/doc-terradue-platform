@@ -193,8 +193,6 @@ var SigninControl = BaseControl(
 	},
 	
 	'.consentForm submit': function(element){
-		if (!element.prop('disabled'))
-			return false;
 		
 		var self = this;
 		var newScopes = $('.newScopes input[type="checkbox"]:checked').map(function(){return $(this).attr('name')});

@@ -15,6 +15,13 @@ define(['can', 'config'], function(can, Config){
 				data: consentInfo,
 				dataType: 'json'
 			});
+		},
+		
+		denyConsent: function(){
+			return $.ajax({
+				type: 'DELETE',
+				url: '/'+Config.api+'/oauth?ajax=true'
+			});
 		}
 	
 	//create: 'POST /'+Config.api+'/user/registration',
