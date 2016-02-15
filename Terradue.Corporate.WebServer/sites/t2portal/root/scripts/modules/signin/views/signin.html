@@ -47,7 +47,7 @@
 		{{/if}}
 		<hr/>
 		<form class="consentForm" method="POST" action="/t2api/oauth">
-			{{ #if scope.consented.length }}
+<!--			{{ #if scope.consented.length }}
 				<h4>Scopes already consented:</h4>
 				<table class="table consentedScopes">
 					<tbody>
@@ -57,22 +57,21 @@
 								<td>{{.}}</td>
 								<td>
 									<input type="checkbox" name="{{.}}" checked="checked" />
-									<!-- <a href="#"><i class="fa fa-info-circle"></i></a> -->
 								</td>
 							</tr>
 						{{/each}}
 					</tbody>
 				</table>
 				<br>
-			{{/if}}
+			{{/if}}-->
 		
 			{{ #if scope.new.length }}
-				<h4>The application would to access to these scopes:</h4>
+				<h4>This app would like to access:</h4>
 				<table class="table newScopes">
 					<tbody>
 						{{ #each scope.new }}
 							<tr data-scope="{{.}}">
-								<td><i class="fa fa-square"></i></td>
+								<td><img src="/scripts/modules/login/img/logo-ldap.png" width="25px" height="25px"/></td>
 								<td>{{.}}</td>
 								<td>
 									<input type="checkbox" name="{{.}}" checked="checked" />
@@ -83,7 +82,7 @@
 					</tbody>
 				</table>
 				<p class="message">
-					<small> by clicking on Allow you consent to bla bla bla... </small>
+					<small> Terradue will use this information in accordance with their term of services and privacy policies </small>
 				</p>
 			{{else}}
 				<h5 class="text-info"><i class="fa fa-info"></i> No new scopes to consent.</h5>
