@@ -5,11 +5,10 @@ define([
 	'utils/baseControl',
 	'utils/helpers',
 	'modules/login/models/login',
-	'modules/signin/models/ssoConfig',
 	'modules/signin/models/signin',
 	'bootbox',
 	'jqueryValidate'
-], function($, can, Config, BaseControl, Helpers, LoginModel, SSOConfig, SigninModel, bootbox){
+], function($, can, Config, BaseControl, Helpers, LoginModel, SigninModel, bootbox){
 	
 var SigninControl = BaseControl(
 { defaults: { fade: 'slow' }, },
@@ -30,19 +29,14 @@ var SigninControl = BaseControl(
 		
 		this.firstTime = true;
 		
-		this.authzSession = SSOConfig.authzSession;
-		this.subjectSession = SSOConfig.subjectSession;
-		this.subject = SSOConfig.subject;
-		
 		this.view({
 			url: 'modules/signin/views/signin.html',
 			data: this.data,
 			fnLoad: function(){
 				self.$signinForm = element.find('form.signinForm');
 				self.$consentForm = element.find('form.consentForm');
-				self.$username = element.find('#username');
-				self.$password = element.find('#password');
-				self.$submit = element.find('#signinButton');
+				self.$username = element.find('form.signinForm input[name="username"]');
+				self.$password = element.find('form.signinForm input[name="password"]');
 
 				self.initFormValidator();
 				self.initSSO();
@@ -81,7 +75,6 @@ var SigninControl = BaseControl(
 		}
 
 		this.clearUI();
-		this.resetGlobalVars();
 
 		// Get the query string with the encoded OpenID Connect authentication
 		// request
@@ -117,20 +110,14 @@ var SigninControl = BaseControl(
 	    
 	    this.data.attr({
 	    	signinErrorMessage: null,
-	    	showErrorMessage: false,
 	    	errorCode: null,
 	    	errorDescription: null,
 	    	signinLoading: false,
 	    	consentLoading: false,
+	    	disabledConsentDeny: false,
+	    	disabledConsentAllow: false,
 	    	isSubmitEnabled: false
 	    });
-	},
-	
-	//Resets the global vars
-	resetGlobalVars: function() {
-		this.authzSession.id = null;
-		this.subjectSession.id = null;
-		this.subject = {};
 	},
 	
 	
@@ -143,18 +130,6 @@ var SigninControl = BaseControl(
 //	    else
 //	    	this.data('showErrorMessage', true);
 	    	//this.element.find('#errorMessage').show();
-	},
-	
-	sizeWindow: function(){
-	    var targetWidth = 800;
-	    var targetHeight = 600;
-
-	    var currentWidth = $(window).width();
-	    var currentHeight = $(window).height();
-
-	    window.resizeBy(targetWidth - currentWidth, targetHeight - currentHeight);
-
-	    $("body").css("overflow-y", "scroll");
 	},
 	
 	
@@ -214,15 +189,13 @@ var SigninControl = BaseControl(
 			showSigninForm: false,
 			showConsentForm: true,
 			consentData: json,
-			disableConsentButtons: false
 		});
 	},
 	
-	'.signoutBtn click': function(){
-		//logoutSubject
-	},
-	
-	'.consentForm submit': function(){
+	'.consentForm submit': function(element){
+		if (!element.prop('disabled'))
+			return false;
+		
 		var self = this;
 		var newScopes = $('.newScopes input[type="checkbox"]:checked').map(function(){return $(this).attr('name')});
 		var consentInfo = {
@@ -233,13 +206,14 @@ var SigninControl = BaseControl(
 		
 		data.attr({
 			consentLoading: true,
-			disableConsentButtons: true
+			disabledConsentAllow: true,
+			disabledConsentDeny: true
 		});
 		
 		SigninModel.consent(consentInfo).then(function(data, textStatus, jqXHR){
 			self.redirectToCallback(jqXHR);
 		}).fail(function(jqXHR){
-			this.displayErrorMessage('Consent submit failed.', Helpers.getErrMsg(jqXHR));
+			self.displayErrorMessage('Consent submit failed.', Helpers.getErrMsg(jqXHR));
 		}).always(function(){
 			data.attr('consentLoading', false);
 		});
@@ -247,8 +221,25 @@ var SigninControl = BaseControl(
 		return false;
 	},
 	
+	'.newScopes input[type="checkbox"] click': function(){
+		var isDisabled = ($('.newScopes input[type="checkbox"]:not(:checked)').length > 0);
+		this.data.attr('disabledConsentAllow', isDisabled);
+	},
+	
 	'.denyBtn click': function(){
-		//denyAuthorization
+		var self = this;
+		this.data.attr({
+			consentLoading: true,
+			disabledConsentAllow: true,
+			disabledConsentDeny: true
+		});
+		SigninModel.denyConsent().then(function(data, textStatus, jqXHR){
+			self.redirectToCallback(jqXHR);
+		}).fail(function(jqXHR){
+			self.displayErrorMessage('Consent submit failed.', Helpers.getErrMsg(jqXHR));
+		}).always(function(){
+			self.data.attr('consentLoading', false);
+		});
 	},
 	
 	

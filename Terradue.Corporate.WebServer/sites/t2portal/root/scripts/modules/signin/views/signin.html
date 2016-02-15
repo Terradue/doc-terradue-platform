@@ -1,128 +1,104 @@
 <link href="/scripts/modules/signin/css/signin.css" rel="stylesheet">
-	
-<div class="pageSubHeader signinSubHeader">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-8 col-md-offset-2 text-center">
-				<h4>Sign-in to Terradue Cloud Platform</h4>
-				<h3>Authorize OpenID Connect client 
-				{{#if frank}}aaaa
-					{{#each frank.list}}
-						{{name}}-{{surname}},
-					{{/each}}
-				{{/if}}
-				</h3>
+<div id="signinPage">
+	<div class="pageSubHeader">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2 text-center">
+					<h4>Sign-in to Terradue Cloud Platform</h4>
+					<h3>Authorize OpenID Connect client 
+					{{#if frank}}aaaa
+						{{#each frank.list}}
+							{{name}}-{{surname}},
+						{{/each}}
+					{{/if}}
+					</h3>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-
-<div class="container signupContainer {{#unless showSigninForm }}hidden{{/unless}}">
-	<form class="signinForm">
-		<br>
-		<label for="username">Username or Email</label>
-		<input type="text" name="username" id="username" class="form-control" tabindex="1">
-		<br>
-		<label for="password"> Password <small><b><a href="passwordreset" tabindex="4">(forgot your password)</a></b></small></label> 
-		<input type="password" name="password" id="password" class="form-control" tabindex="2">
-		<br>
-		<p class="text-danger">{{ signinErrorText }}</p>
-           
-		<button type="submit" class="btn btn-default signinBtn" id="signinButton" {{#unless isSubmitEnabled }} disabled="disabled" {{/unset}} tabindex="3">Sign in</button>
-		{{#if signinLoading}}
-			&nbsp;&nbsp;&nbsp; <i class="fa fa-spin fa-spinner"></i> wait...
-		{{/if}}
-		<!-- <button class="btn btn-default" id="cancel-login-button">Cancel</button> -->
-		
-		<br>
-		<br>
-		<p><small><b>New here ? <a href="signup" tabindex="5">Create a free account</a></b></small></p>
-	</form>
-</div>
-
-<div class="container consentContainer {{#unless showConsentForm }}hidden{{/unless}}">
-{{#consentData }}
-	{{#if sub_session.data.name}} 
-		<h3>Hi, {{ sub_session.data.name }}</h3>
-	{{/if}}
-	<hr/>
-	<form class="consentForm" method="POST" action="/t2api/oauth">
-		{{ #if scope.consented.length }}
-			<h4>Scopes already consented:</h4>
-			<table class="table consentedScopes">
-				<tbody>
-					{{ #each scope.consented }}
-						<tr data-scope="{{.}}">
-							<td><i class="fa fa-square"></i></td>
-							<td>{{.}}</td>
-							<td>
-								<input type="checkbox" name="{{.}}" checked="checked" />
-								<a href="#"><i class="fa fa-info-circle"></i></a>
-							</td>
-						</tr>
-					{{/each}}
-				</tbody>
-			</table>
-			<br>
-		{{/if}}
 	
-		{{ #if scope.new.length }}
-			<h4>The application would to access to these scopes:</h4>
-			<table class="table newScopes">
-				<tbody>
-					{{ #each scope.new }}
-						<tr data-scope="{{.}}">
-							<td><i class="fa fa-square"></i></td>
-							<td>{{.}}</td>
-							<td>
-								<input type="checkbox" name="{{.}}" checked="checked" />
-								<a href="#"><i class="fa fa-info-circle"></i></a>
-							</td>
-						</tr>
-						<tr>
-							<td><i class="fa fa-square"></i></td>
-							<td>bla bla bla bla bldkhjdlk</td>
-							<td>
-								<a href="#"><i class="fa fa-info-circle"></i></a>
-							</td>
-						</tr>
-						<tr>
-							<td><i class="fa fa-square"></i></td>
-							<td>bla bla bla bla bldkhjdlk</td>
-							<td>
-								<a href="#"><i class="fa fa-info-circle"></i></a>
-							</td>
-						</tr>
-					{{/each}}
-				</tbody>
-			</table>
-			<p class="message">
-				<small> by clicking on Allow you consent to bla bla bla... </small>
-			</p>
-		{{else}}
-			<h5 class="text-info"><i class="fa fa-info"></i> No new scopes to consent.</h5>
-			<br><br>
-		{{/if}}
-		
-		<p class="buttons">
-			<button class="btn btn-default {{#if disableConsentButtons}}disabled{{/if}}">Deny</button>
-			<button type="submit" class="btn btn-primary {{#if disableConsentButtons}}disabled{{/if}}">Allow</button>
-			{{#if consentLoading}}
+	<div class="container signinContainer {{#unless showSigninForm }}hidden{{/unless}}">
+		<form class="signinForm">
+			<br>
+			<label for="username">Username or Email</label>
+			<input type="text" name="username" class="form-control" tabindex="1">
+			<br>
+			<label for="password"> Password <small><b><a href="passwordreset" tabindex="4">(forgot your password)</a></b></small></label> 
+			<input type="password" name="password" class="form-control" tabindex="2">
+			<br>
+			<p class="text-danger">{{ signinErrorMessage }}</p>
+	           
+			<button type="submit" class="btn btn-default" {{#unless isSubmitEnabled }} disabled="disabled" {{/unset}} tabindex="3">Sign in</button>
+			{{#if signinLoading}}
 				&nbsp;&nbsp;&nbsp; <i class="fa fa-spin fa-spinner"></i> wait...
 			{{/if}}
-		</p>
-	</form>
-{{/consentData}}
-</div>
-
-
-{{#if showErrorMessage}}
-<div id="errorMessage" class="errorMessage">
-	<div class="alert alert-danger alert-dismissible fade in" role="alert">
-		<h4 class="modal-title">Login / Consent Error</h4>
-		<p><span class="error-code">{{ errorCode }}</span></p>
-		<p><span class="error-description">{{ errorDescription }}</span></p>
+			<!-- <button class="btn btn-default" id="cancel-login-button">Cancel</button> -->
+			
+			<br>
+			<br>
+			<p><small><b>New here ? <a href="signup" tabindex="5">Create a free account</a></b></small></p>
+		</form>
+	</div>
+	
+	<div class="container consentContainer {{#unless showConsentForm }}hidden{{/unless}}">
+	{{#consentData }}
+		{{#if sub_session.data.name}} 
+			<h3>Hi, {{ sub_session.data.name }}</h3>
+		{{/if}}
+		<hr/>
+		<form class="consentForm" method="POST" action="/t2api/oauth">
+			{{ #if scope.consented.length }}
+				<h4>Scopes already consented:</h4>
+				<table class="table consentedScopes">
+					<tbody>
+						{{ #each scope.consented }}
+							<tr data-scope="{{.}}">
+								<td><i class="fa fa-square"></i></td>
+								<td>{{.}}</td>
+								<td>
+									<input type="checkbox" name="{{.}}" checked="checked" />
+									<!-- <a href="#"><i class="fa fa-info-circle"></i></a> -->
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+				<br>
+			{{/if}}
+		
+			{{ #if scope.new.length }}
+				<h4>The application would to access to these scopes:</h4>
+				<table class="table newScopes">
+					<tbody>
+						{{ #each scope.new }}
+							<tr data-scope="{{.}}">
+								<td><i class="fa fa-square"></i></td>
+								<td>{{.}}</td>
+								<td>
+									<input type="checkbox" name="{{.}}" checked="checked" />
+									<!-- <a href="#"><i class="fa fa-info-circle"></i></a> -->
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+				<p class="message">
+					<small> by clicking on Allow you consent to bla bla bla... </small>
+				</p>
+			{{else}}
+				<h5 class="text-info"><i class="fa fa-info"></i> No new scopes to consent.</h5>
+				<br><br>
+			{{/if}}
+			
+			<p class="buttons">
+				<button class="btn btn-default denyBtn {{#if disabledConsentDeny}}disabled{{/if}}">Deny</button>
+				<button type="submit" class="btn btn-primary {{#if disabledConsentAllow}}disabled{{/if}}">Allow</button>
+				{{#if consentLoading}}
+					&nbsp;&nbsp;&nbsp; <i class="fa fa-spin fa-spinner"></i> wait...
+				{{/if}}
+			</p>
+		</form>
+	{{/consentData}}
 	</div>
 </div>
-{{/if}}
 
