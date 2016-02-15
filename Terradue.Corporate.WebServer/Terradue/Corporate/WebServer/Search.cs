@@ -9,7 +9,7 @@ using Terradue.OpenSearch.Result;
 using System.Collections.Generic;
 
 namespace Terradue.TepQW.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure   | EndpointAttributes.External | EndpointAttributes.Json)]
     public class SearchService : ServiceStack.ServiceInterface.Service

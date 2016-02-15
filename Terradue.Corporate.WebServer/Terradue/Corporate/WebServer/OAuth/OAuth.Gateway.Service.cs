@@ -10,7 +10,7 @@ using ServiceStack.Common.Web;
 namespace Terradue.Corporate.WebServer {
 
     [Route("/oauth", "GET", Summary = "login", Notes = "")]
-    public class OAuthAuthorizationRequest : IReturn<Terradue.WebService.Model.WebUser>
+    public class OAuthAuthorizationRequest
     {
         [ApiMember(Name="client_id", Description = "Client id", ParameterType = "path", DataType = "String", IsRequired = true)]
         public String client_id { get; set; }
@@ -32,7 +32,7 @@ namespace Terradue.Corporate.WebServer {
     }
 
     [Route("/oauth", "POST", Summary = "login", Notes = "Login to the platform with username/password")]
-    public class OauthLoginRequest : IReturn<Terradue.WebService.Model.WebUser>
+    public class OauthLoginRequest
     {
         [ApiMember(Name="username", Description = "username", ParameterType = "path", DataType = "String", IsRequired = true)]
         public String username { get; set; }
@@ -45,6 +45,16 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name="scope", Description = "Scope", ParameterType = "path", DataType = "List<String>", IsRequired = true)]
         public List<String> scope { get; set; }
+
+        [ApiMember(Name="ajax", Description = "ajax", ParameterType = "path", DataType = "bool", IsRequired = true)]
+        public bool ajax { get; set; }
+    }
+
+    [Route("/oauth", "DELETE", Summary = "login", Notes = "")]
+    public class OAuthDeleteAuthorizationRequest
+    {
+        [ApiMember(Name="query", Description = "Query string", ParameterType = "path", DataType = "String", IsRequired = true)]
+        public String query { get; set; }
 
         [ApiMember(Name="ajax", Description = "ajax", ParameterType = "path", DataType = "bool", IsRequired = true)]
         public bool ajax { get; set; }
@@ -78,7 +88,7 @@ namespace Terradue.Corporate.WebServer {
 
                 var client_id = request.client_id ?? context.GetConfigValue("sso-clientId");
                 var response_type = request.response_type ?? "code";
-                var scope = request.scope ?? "openid";
+                var scope = request.scope ?? "openid email";
                 var state = request.state ?? Guid.NewGuid().ToString();
                 var redirect_uri = request.redirect_uri ?? context.GetConfigValue("sso-callback");
 
@@ -107,8 +117,10 @@ namespace Terradue.Corporate.WebServer {
                 }
 
                 else if (oauthsession.type == "consent"){
+
                     //no new scope to consent
-                    if(oauthsession.scope.new_claims.Count == 0){
+                    if(oauthsession.scope.new_claims.Count == 0 
+                       || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid"))){
                         var consent = GenerateConsent(null);
                         var redirect = client.ConsentSession(oauthsession.sid, consent);
                         if(request.ajax){
@@ -170,7 +182,7 @@ namespace Terradue.Corporate.WebServer {
 
                 if(string.IsNullOrEmpty(query))
                     query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
-                                      "code", "openid", context.GetConfigValue("sso-clientId"), Guid.NewGuid(), context.GetConfigValue("sso-callback"));
+                                      "code", "openid email", context.GetConfigValue("sso-clientId"), Guid.NewGuid(), context.GetConfigValue("sso-callback"));
 
                 OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                     query = query,
@@ -207,7 +219,8 @@ namespace Terradue.Corporate.WebServer {
 
                     //user is now authenticated and need to consent
                     if(oauthsession.type == "consent"){
-                        if(oauthsession.scope.new_claims.Count == 0){
+                        if(oauthsession.scope.new_claims.Count == 0 
+                           || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid"))){
                             var consent = GenerateConsent(null);
                             var redirect = client.ConsentSession(oauthsession.sid, consent);
 
@@ -232,7 +245,8 @@ namespace Terradue.Corporate.WebServer {
 
                     if(request.scope != null){
                         consent = GenerateConsent(request.scope);
-                    } else if(oauthsession.scope.new_claims.Count == 0){
+                    } else if(oauthsession.scope.new_claims.Count == 0 
+                              || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid"))){
                         consent = GenerateConsent(null);
                     } else if (request.username != null && request.password != null){
                         //return to the login page so it can display the consent
@@ -251,6 +265,52 @@ namespace Terradue.Corporate.WebServer {
                     } else {
                         HttpContext.Current.Response.Redirect(redirect, true);
                     }
+                }
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return null;
+        }
+
+
+        public object Delete(OAuthDeleteAuthorizationRequest request) {
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
+                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
+
+                var query = HttpUtility.UrlDecode(request.query);
+
+                if(string.IsNullOrEmpty(query))
+                    query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
+                                          "code", "openid email", context.GetConfigValue("sso-clientId"), Guid.NewGuid(), context.GetConfigValue("sso-callback"));
+
+                OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
+                    query = query,
+                    sub_sid = client.SESSIONSID
+                };
+
+                var oauthsession = client.AuthzSession(oauthrequest1);
+
+                var redirect = client.DeleteAuthz(oauthsession.sid);
+
+                if(request.ajax){
+                    HttpResult redirectResponse = new HttpResult();
+                    redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                    redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                    return redirectResponse;
+                } else {
+                    HttpContext.Current.Response.Redirect(redirect, true);
                 }
 
                 context.Close();

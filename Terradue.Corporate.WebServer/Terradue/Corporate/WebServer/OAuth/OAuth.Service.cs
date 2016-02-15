@@ -100,6 +100,9 @@ UA -> UA : display user name
 
         [ApiMember(Name="ajax", Description = "ajax", ParameterType = "path", DataType = "bool", IsRequired = true)]
         public bool ajax { get; set; }
+
+        [ApiMember(Name="error", Description = "error", ParameterType = "path", DataType = "string", IsRequired = true)]
+        public string error { get; set; }
     }
 
     [Route("/logout", "GET", Summary = "logout", Notes = "Logout from the platform")]
@@ -123,6 +126,11 @@ UA -> UA : display user name
             Terradue.Portal.User user = null;
             try {
                 context.Open();
+
+                if(!string.IsNullOrEmpty(request.error)){
+                    context.EndSession();
+                    HttpContext.Current.Response.Redirect(context.BaseUrl, true);
+                }
 
                 Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
