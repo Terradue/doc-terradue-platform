@@ -48,8 +48,8 @@
 		<hr/>
 		<form class="consentForm" method="POST" action="/t2api/oauth">
 <!--			{{ #if scope.consented.length }}
-				<h4>Scopes already consented:</h4>
-				<table class="table consentedScopes">
+				<h4 class="hidden">Scopes already consented:</h4>
+				<table class="table consentedScopes hidden">
 					<tbody>
 						{{ #each scope.consented }}
 							<tr data-scope="{{.}}">
@@ -64,7 +64,24 @@
 				</table>
 				<br>
 			{{/if}}-->
-		
+
+			{{ #if scope.consented.length }}
+				<table class="table consentedScopes hidden">
+					<tbody>
+						{{ #each scope.consented }}
+							<tr data-scope="{{.}}">
+								<td><i class="fa fa-square"></i></td>
+								<td>{{.}}</td>
+								<td>
+									<input type="checkbox" name="{{.}}" checked="checked" />
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+				<br>
+			{{/if}}
+
 			{{ #if scope.new.length }}
 				<h4>This app would like to access:</h4>
 				<table class="table newScopes">

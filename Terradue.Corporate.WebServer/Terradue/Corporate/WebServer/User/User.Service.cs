@@ -205,7 +205,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close ();
                 throw e;
             }
-            return null;
+            return new WebResponseBool(true);
         }
 
         public object Post(UpgradeUserT2 request)
@@ -266,8 +266,11 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-                User user = User.FromId(context, request.Id);
-                if (context.UserLevel == UserLevel.Administrator) user.Delete();
+                UserT2 user = UserT2.FromId(context, request.Id);
+                if (context.UserLevel == UserLevel.Administrator){
+                    user.DeleteLdapAccount();
+                    user.Delete();
+                }
                 else throw new UnauthorizedAccessException(CustomErrorMessages.ADMINISTRATOR_ONLY_ACTION);
                 context.Close();
             } catch (Exception e) {
