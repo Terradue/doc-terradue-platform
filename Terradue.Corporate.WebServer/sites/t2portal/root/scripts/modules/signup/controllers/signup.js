@@ -113,7 +113,14 @@ var SignupControl = BaseControl(
 			});
 			userData.captchaValue = captchaValue;
 			new SignupModel(userData).save().then(function(){
-				document.location = '/portal/settings/profile?registered=ok';
+				
+				this.view({
+					url: 'modules/signup/views/signupSuccess.html',
+					fnLoad: function(){
+						Helpers.scrollToTop();
+					}
+				});
+				
 			}).fail(function(xhr){
 				self.data.attr({
 					loading: false, 
@@ -166,6 +173,15 @@ var SignupControl = BaseControl(
 				},
 				"Please remove special characters"
 			);			
+		},
+		
+		'.myBtn click': function(){
+			this.view({
+				url: 'modules/signup/views/signupSuccess.html',
+				fnLoad: function(){
+					Helpers.scrollToTop();
+				}
+			});
 		}
 		
 	}

@@ -18,7 +18,7 @@
 	{{ else }}
 		{{#if oneCertOk }}
 			<div class="alert alert-warning alert-no-bottom-margin">
-				<i class="fa fa-warning text-warning"></i><strong> Oups! You're almost there.</strong>
+				<i class="fa fa-warning text-warning"></i><strong> Oops! You're almost there.</strong>
 				<br/><span>Cloud Controller access does not match certificate - it is highly recommended to update it.</span>
 			</div>
 			<small style="margin-left:15px"><i>{{user.OnePassword}}</i></small>
@@ -27,13 +27,13 @@
 			<br/><br/>	
 		{{ else }}
 			<div class="alert alert-error">
-				<i class="fa fa-warning"></i><strong> Oups! Where is your certificate?</strong><br/>Update your <a href="/portal/settings/certificate">certificate</a> to conclude the registration process.
+				<i class="fa fa-warning"></i><strong> Oops! Where is your certificate?</strong><br/>Update your <a href="/portal/settings/certificate">certificate</a> to conclude the registration process.
 			</div>
 		{{/if }}
 	{{/if }}
 {{ else }}
 	<div class="alert alert-error">
-		<i class="fa fa-warning text-error"></i><strong> Oups! It seems you don't have an account on the Cloud Controller yet!</strong><br/>
+		<i class="fa fa-warning text-error"></i><strong> Oops! It seems you don't have an account on the Cloud Controller yet!</strong><br/>
 		{{#if oneCertOk }}
 			<br/><span style="margin-left:15px">Create your account on the Cloud Controller!</span>
 			<br/><small style="margin-left:15px"><br/><button class="btn btn-small btn-warning createOneUser">Create</button></small>

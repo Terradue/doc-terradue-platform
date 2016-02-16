@@ -21,20 +21,31 @@ var PasswordResetControl = BaseControl(
 			
 			this.data = new can.Observe({
 			});
-
-			this.view({
-				url: 'modules/passwordreset/views/passwordreset.html',
-				data: this.data,
-				fnLoad: function(){
-					self.initFormValidator();
-				}
-			});
+			
+			var token = Helpers.getUrlParams().token;
+			
+			if (token)
+				this.view({
+					url: 'modules/passwordreset/views/passwordreset2.html',
+					data: this.data,
+					fnLoad: function(){
+						self.initFormValidator2();
+					}
+				});
+			else
+				this.view({
+					url: 'modules/passwordreset/views/passwordreset.html',
+					data: this.data,
+					fnLoad: function(){
+						self.initFormValidator();
+					}
+				});
 			
 		},
 		
 		initFormValidator: function(){
 			var self = this;
-			this.element.find('form').validate({
+			this.element.find('form.passwordResetForm').validate({
 				rules : {
 					username: 'required',
 				},
