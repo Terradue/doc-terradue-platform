@@ -71,7 +71,7 @@ namespace Terradue.Corporate.WebServer {
         /// <returns>the users</returns>
         public object Get(GetUsers request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            List<WebUserT2> result = new List<WebUserT2>();
+            var result = new List<WebUserT2>();
             try {
                 context.Open();
 
@@ -288,7 +288,7 @@ namespace Terradue.Corporate.WebServer {
                 UserT2 user;
                 try{
                     user = UserT2.FromUsername(context, request.Username);
-                }catch(Exception e){
+                }catch(Exception){
                     return new WebResponseBool(true);
                 }
 
