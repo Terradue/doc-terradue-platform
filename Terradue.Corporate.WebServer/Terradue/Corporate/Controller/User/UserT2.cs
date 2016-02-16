@@ -139,6 +139,16 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
+        /// Gets the token.
+        /// </summary>
+        /// <returns>The token.</returns>
+        public string GetToken(){
+            return base.GetActivationToken();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
         /// Determines whether this instance is a paying user.
         /// </summary>
         /// <returns><c>true</c> if this instance is paying; otherwise, <c>false</c>.</returns>
@@ -401,6 +411,27 @@ namespace Terradue.Corporate.Controller {
 
             Json2Ldap.Close();
         }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Creates the LDAP account.
+        /// </summary>
+        public void ChangeLdapPassword(string password) {
+
+            //open the connection
+            Json2Ldap.Connect();
+
+            string dn = CreateLdapDN();
+            var b64pwd = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+
+            //login as ldap admin to have creation rights
+            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+            Json2Ldap.ModifyEntry(dn, "password", new System.Collections.Generic.List<string>{ b64pwd }, "REPLACE", true);
+            Json2Ldap.Close();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Deletes the LDAP account.

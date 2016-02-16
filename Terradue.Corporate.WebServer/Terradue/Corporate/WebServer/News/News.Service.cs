@@ -193,9 +193,45 @@ namespace Terradue.Corporate.WebServer {
             return true;
         }
 
+        public object Get(GetAllNewsTags request) {
+            List<WebKeyValue> result = new List<WebKeyValue>();
+
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                EntityList<Article> news = new EntityList<Article>(context);
+                news.Load();
+
+                var pairs = new Dictionary<string,int>();
+                foreach(var n in news){
+                    foreach(var tag in n.Tags.Split(",".ToCharArray())){
+                        if(pairs.ContainsKey(tag)){
+                            pairs[tag]++;
+                        } else {
+                            pairs.Add(tag, 1);
+                        }
+                    }
+                }
+
+                foreach (KeyValuePair<string, int> kv in pairs.OrderByDescending(key => key.Value)){
+                    result.Add(new WebKeyValue(kv.Key, kv.Value + ""));
+                }
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }
+
     }
 
     [Route("/news/feeds", "GET", Summary = "GET a list of news feeds", Notes = "")]
     public class GetAllNewsFeeds : IReturn<List<WebNews>>{}
+
+    [Route("/news/tags", "GET", Summary = "GET a list of news tags", Notes = "")]
+    public class GetAllNewsTags : IReturn<List<WebKeyValue>>{}
 }
 
