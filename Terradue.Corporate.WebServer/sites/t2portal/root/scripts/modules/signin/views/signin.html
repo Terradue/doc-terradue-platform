@@ -44,8 +44,9 @@
 	{{#consentData }}
 		{{#if sub_session.data.name}} 
 			<h3>Hi, {{ sub_session.data.name }}</h3>
+			<hr/>
 		{{/if}}
-		<hr/>
+
 		<form class="consentForm" method="POST" action="/t2api/oauth">
 <!--			{{ #if scope.consented.length }}
 				<h4 class="hidden">Scopes already consented:</h4>

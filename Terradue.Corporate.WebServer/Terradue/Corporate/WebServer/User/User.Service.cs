@@ -285,15 +285,44 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
+                UserT2 user = UserT2.FromUsername(context, request.Username);
+
+                //send email to user with new token
+                var token = user.GetToken();
+
                 string subject = context.GetConfigValue("EmailSupportResetPasswordSubject");
                 subject = subject.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
 
                 string body = context.GetConfigValue("EmailSupportResetPasswordBody");
                 body = body.Replace("$(USERNAME)", request.Username);
                 body = body.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
+                body = body.Replace("$(LINK)", context.BaseUrl + "/portal/passwordreset?token=" + token);
 
-                context.SendMail(request.Username, context.GetConfigValue("MailSenderAddress"), subject, body); 
+                context.SendMail(context.GetConfigValue("MailSenderAddress"), user.Email, subject, body);
 
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return new WebResponseBool(true);
+        }
+
+        public object Put(UserUpdatePassword request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                if(string.IsNullOrEmpty(request.Password)) throw new Exception("Password is empty");
+
+                UserT2 user = UserT2.FromUsername(context, request.Username);
+                user.ValidateActivationToken(request.Token);
+
+                try{
+                    user.ChangeLdapPassword(request.Password);
+                }catch(Exception e){
+                    throw new Exception("Unable to change password", e);    
+                }
                 context.Close();
             } catch (Exception e) {
                 context.Close();
