@@ -143,7 +143,12 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns>The token.</returns>
         public string GetToken(){
-            return base.GetActivationToken();
+			var token = base.GetActivationToken();
+			if (token == null) {
+				CreateActivationToken ();
+				token = base.GetActivationToken ();
+			}
+			return token;
         }
 
         //--------------------------------------------------------------------------------------------------------------
