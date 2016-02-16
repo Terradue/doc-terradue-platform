@@ -27,8 +27,8 @@ define([
 			
 			// init
 			init: function (element, options) {
-				var self = this;
 				console.log("settingsControl.init");
+				var self = this;
 				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
@@ -57,6 +57,7 @@ define([
 						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
 					});
 				}).fail(function(){
+					self.data.attr('hideMenu', true);
 					// access denied only if you haven't a token
 					if (!self.params.token)
 						self.accessDenied();
@@ -313,10 +314,6 @@ define([
 			
 			// profile
 			
-			showPendingActivation: function(){
-				this.element.find('.pendingActivation').show();
-			},
-
 			manageEmailConfirm: function(token){
 				var self=this;
 				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){

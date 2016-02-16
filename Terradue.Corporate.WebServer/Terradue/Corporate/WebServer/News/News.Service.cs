@@ -15,7 +15,7 @@ using System.Linq;
 using ServiceStack.Common.Web;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class NewsService : ServiceStack.ServiceInterface.Service {
@@ -35,16 +35,22 @@ namespace Terradue.Corporate.WebServer {
 
                 List<Terradue.OpenSearch.IOpenSearchable> osentities = new List<Terradue.OpenSearch.IOpenSearchable>();
 
-                EntityList<Article> articles = new EntityList<Article>(context);
-                articles.Load();
-                osentities.Add(articles);
+                try{
+                    EntityList<Article> articles = new EntityList<Article>(context);
+                    articles.Load();
+                    osentities.Add(articles);
+                }catch(Exception){}
 
-                List<TwitterFeed> twitters = TwitterNews.LoadTwitterFeeds(context);
-                foreach(TwitterFeed twitter in twitters) osentities.Add(twitter);
+                try{
+                    List<TwitterFeed> twitters = TwitterNews.LoadTwitterFeeds(context);
+                    foreach(TwitterFeed twitter in twitters) osentities.Add(twitter);
+                }catch(Exception){}
 
-                EntityList<RssNews> rsss = new EntityList<RssNews>(context);
-                rsss.Load();
-                foreach(RssNews rss in rsss) osentities.Add(rss);
+                try{
+                    EntityList<RssNews> rsss = new EntityList<RssNews>(context);
+                    rsss.Load();
+                    foreach(RssNews rss in rsss) osentities.Add(rss);
+                }catch(Exception){}
 
                 MultiGenericOpenSearchable multiOSE = new MultiGenericOpenSearchable(osentities, ose);
 
@@ -56,7 +62,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close ();
                 throw e;
             }
-
+                
             return new HttpResult(result.SerializeToString(), result.ContentType);
         }
 
@@ -187,9 +193,45 @@ namespace Terradue.Corporate.WebServer {
             return true;
         }
 
+        public object Get(GetAllNewsTags request) {
+            List<WebKeyValue> result = new List<WebKeyValue>();
+
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                EntityList<Article> news = new EntityList<Article>(context);
+                news.Load();
+
+                var pairs = new Dictionary<string,int>();
+                foreach(var n in news){
+                    foreach(var tag in n.Tags.Split(",".ToCharArray())){
+                        if(pairs.ContainsKey(tag)){
+                            pairs[tag]++;
+                        } else {
+                            pairs.Add(tag, 1);
+                        }
+                    }
+                }
+
+                foreach (KeyValuePair<string, int> kv in pairs.OrderByDescending(key => key.Value)){
+                    result.Add(new WebKeyValue(kv.Key, kv.Value + ""));
+                }
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }
+
     }
 
     [Route("/news/feeds", "GET", Summary = "GET a list of news feeds", Notes = "")]
     public class GetAllNewsFeeds : IReturn<List<WebNews>>{}
+
+    [Route("/news/tags", "GET", Summary = "GET a list of news tags", Notes = "")]
+    public class GetAllNewsTags : IReturn<List<WebKeyValue>>{}
 }
 

@@ -14,9 +14,10 @@ using ServiceStack.Text;
 using System.Runtime.Serialization;
 using ServiceStack.Common.Web;
 using Terradue.Authentication.Ldap;
+using Terradue.Authentication.OAuth;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class UserService : ServiceStack.ServiceInterface.Service {
@@ -70,7 +71,7 @@ namespace Terradue.Corporate.WebServer {
         /// <returns>the users</returns>
         public object Get(GetUsers request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            List<WebUserT2> result = new List<WebUserT2>();
+            var result = new List<WebUserT2>();
             try {
                 context.Open();
 
@@ -174,7 +175,7 @@ namespace Terradue.Corporate.WebServer {
 
                 if(exists) throw new Exception("User already exists");
 
-                AuthenticationType AuthType = IfyWebContext.GetAuthenticationType(typeof(LdapAuthenticationType));
+                AuthenticationType AuthType = IfyWebContext.GetAuthenticationType(typeof(OAuth2AuthenticationType));
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));
                 user.Username = user.Email;
@@ -198,22 +199,13 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     user.SendMail(UserMailType.Registration, true);
                 }catch(Exception){}
-
-                //we login the user
-                try{
-                    user = (UserT2)new LdapAuthenticationType(context).Authenticate(request.Email, request.Password);
-//                    user = (UserT2)T2CorporateWebContext.passwordAuthenticationType.AuthenticateUser(context, request.Email, request.Password);
-                }catch(Exception e){
-                    throw new Exception("User account has been created, but there was an error during the automatic login. Please contact your administrator.");
-                }
-
-                result = new WebUserT2(user);
+                    
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();
                 throw e;
             }
-            return result;
+            return new WebResponseBool(true);
         }
 
         public object Post(UpgradeUserT2 request)
@@ -274,8 +266,11 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-                User user = User.FromId(context, request.Id);
-                if (context.UserLevel == UserLevel.Administrator) user.Delete();
+                UserT2 user = UserT2.FromId(context, request.Id);
+                if (context.UserLevel == UserLevel.Administrator){
+                    user.DeleteLdapAccount();
+                    user.Delete();
+                }
                 else throw new UnauthorizedAccessException(CustomErrorMessages.ADMINISTRATOR_ONLY_ACTION);
                 context.Close();
             } catch (Exception e) {
@@ -290,15 +285,49 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
+                UserT2 user;
+                try{
+                    user = UserT2.FromUsername(context, request.Username);
+                }catch(Exception){
+                    return new WebResponseBool(true);
+                }
+
+                //send email to user with new token
+                var token = user.GetToken();
+
                 string subject = context.GetConfigValue("EmailSupportResetPasswordSubject");
                 subject = subject.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
 
                 string body = context.GetConfigValue("EmailSupportResetPasswordBody");
                 body = body.Replace("$(USERNAME)", request.Username);
                 body = body.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
+                body = body.Replace("$(LINK)", context.BaseUrl + "/portal/passwordreset?token=" + token);
 
-                context.SendMail(request.Username, context.GetConfigValue("MailSenderAddress"), subject, body); 
+                context.SendMail(context.GetConfigValue("MailSenderAddress"), user.Email, subject, body);
 
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return new WebResponseBool(true);
+        }
+
+        public object Put(UserUpdatePassword request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                if(string.IsNullOrEmpty(request.Password)) throw new Exception("Password is empty");
+
+                UserT2 user = UserT2.FromUsername(context, request.Username);
+                user.ValidateActivationToken(request.Token);
+
+                try{
+                    user.ChangeLdapPassword(request.Password);
+                }catch(Exception e){
+                    throw new Exception("Unable to change password", e);    
+                }
                 context.Close();
             } catch (Exception e) {
                 context.Close();

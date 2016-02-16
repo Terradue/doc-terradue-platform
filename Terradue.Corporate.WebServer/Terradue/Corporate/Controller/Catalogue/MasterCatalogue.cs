@@ -29,7 +29,6 @@ using Terradue.Util;
 using Terradue.OpenSearch.Request;
 using Terradue.ServiceModel.Syndication;
 using Terradue.Metadata.EarthObservation;
-using Terradue.OpenSearch.RdfEO.Extensions;
 
 
 namespace Terradue.Corporate.Controller
@@ -222,8 +221,8 @@ namespace Terradue.Corporate.Controller
             get {
                 if (ose == null) {
                     ose = new OpenSearchEngine();
-                    RdfOpenSearchEngineExtension rosee = new RdfOpenSearchEngineExtension();
-                    ose.RegisterExtension(rosee);
+//                    RdfOpenSearchEngineExtension rosee = new RdfOpenSearchEngineExtension();
+//                    ose.RegisterExtension(rosee);
                     AtomOpenSearchEngineExtension aosee = new AtomOpenSearchEngineExtension();
                     ose.RegisterExtension(aosee);
                     FeatureCollectionOpenSearchEngineExtension ngosee = new FeatureCollectionOpenSearchEngineExtension();

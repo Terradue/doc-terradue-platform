@@ -594,6 +594,49 @@ define([
 			});
 		},
 		
+		// NOTE: you must load validation lib first
+		addPasswordValidationMethods: function(){
+			// Validator extensions
+			$.validator.addMethod(
+				"atLeastOneUpper",
+				function(value, element) {
+					return this.optional(element) || new RegExp("[A-Z]").test(value);
+				},
+				"* atLeastOneUpper"
+			);
+
+			$.validator.addMethod(
+				"atLeastOneLower",
+				function(value, element) {
+					return this.optional(element) || new RegExp("[a-z]").test(value);
+				},
+				"* atLeastOneUpper"
+			);
+
+			$.validator.addMethod(
+				"atLeastOneNumber",
+				function(value, element) {
+					return this.optional(element) || new RegExp("[\\d]").test(value);
+				},
+				"* atLeastOneNumber"
+			);
+
+			$.validator.addMethod(
+				"atLeastOneSpecialChar",
+				function(value, element) {
+					return this.optional(element) || new RegExp("[!#@$%^&*()_+]").test(value);
+				},
+				"atLeastOneSpecialChar"
+			);
+
+			$.validator.addMethod(
+				"noOtherSpecialChars",
+				function(value, element) {
+					return this.optional(element) || new RegExp('^[a-zA-Z0-9!#@$%^&*()_+]+$').test(value);
+				},
+				"Please remove special characters"
+			);			
+		},
 		
 /*
  * 

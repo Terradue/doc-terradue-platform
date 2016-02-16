@@ -11,7 +11,7 @@ using Terradue.Security.Certification;
 using Terradue.Certification.WebService;
 
 namespace Terradue.Corporate.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class UserCertificateService : ServiceStack.ServiceInterface.Service {

@@ -5,11 +5,10 @@ define([
 	'utils/baseControl',
 	'utils/helpers',
 	'modules/login/models/login',
-	'modules/signin/models/ssoConfig',
 	'modules/signin/models/signin',
 	'bootbox',
 	'jqueryValidate'
-], function($, can, Config, BaseControl, Helpers, LoginModel, SSOConfig, SigninModel, bootbox){
+], function($, can, Config, BaseControl, Helpers, LoginModel, SigninModel, bootbox){
 	
 var SigninControl = BaseControl(
 { defaults: { fade: 'slow' }, },
@@ -22,29 +21,14 @@ var SigninControl = BaseControl(
 		var self = this;
 		var element = this.element;
 
-		this.data = new can.Observe({
-			showSigninForm: true, // TODO maybe not at startup
-		});
+		this.data = new can.Observe({});
 		
 		window.data = this.data; // check
-		
-		this.firstTime = true;
-		
-		this.authzSession = SSOConfig.authzSession;
-		this.subjectSession = SSOConfig.subjectSession;
-		this.subject = SSOConfig.subject;
 		
 		this.view({
 			url: 'modules/signin/views/signin.html',
 			data: this.data,
 			fnLoad: function(){
-				self.$signinForm = element.find('form.signinForm');
-				self.$consentForm = element.find('form.consentForm');
-				self.$username = element.find('#username');
-				self.$password = element.find('#password');
-				self.$submit = element.find('#signinButton');
-
-				self.initFormValidator();
 				self.initSSO();
 			}
 		});
@@ -63,7 +47,7 @@ var SigninControl = BaseControl(
 			},
 			submitHandler: function(form){
 				try {
-					self.submitSigninForm(form);
+					self.submitSigninForm(true);
 				} catch (e){
 					console.log(e);
 					window.e=e;
@@ -75,28 +59,59 @@ var SigninControl = BaseControl(
 	},
 	
 	initSSO: function(){
-		if (this.firstTime){
-			this.loginFormInteractions();
-			this.firstTime=false;
-		}
 
-		this.clearUI();
-		this.resetGlobalVars();
-
+	    this.data.attr({
+	    	signinErrorMessage: null,
+	    	errorCode: null,
+	    	errorDescription: null,
+	    	signinLoading: false,
+	    	consentLoading: false,
+	    	disabledConsentDeny: false,
+	    	disabledConsentAllow: false,
+	    	isSubmitEnabled: false
+	    });
+		
 		// Get the query string with the encoded OpenID Connect authentication
 		// request
-		var queryString = location.search;
-		this.log("Query string: " + (queryString ? queryString : "none"));
+		var urlParams = Helpers.getUrlParameters();
+		var query = urlParams.query;
+		var type = urlParams.type;
+
+		this.log('query: ' + (query ? query : 'none'));
+		this.log('type: ' + (type ? type : 'none'));
 		
-		if (! queryString) {
-			var msg = "Invalid OpenID Connect authentication request: Missing query string";
+		if (!query){
+			var msg = "Invalid OpenID Connect authentication request: Missing query";
 			this.log(msg);
 			this.displayErrorMessage('Seems that something is wrong with your request', msg);
 			return;
 		}
+		if (!type){
+			var msg = "Invalid OpenID Connect authentication request: Missing type";
+			this.log(msg);
+			this.displayErrorMessage('Seems that something is wrong with your request', msg);
+			return;
+		}
+		
+		if (type=='auth')
+			this.showSigninForm();
+		else if (type=='consent')
+			this.showConsentForm();
+		
 	},
 	
-	loginFormInteractions: function(){
+	showSigninForm: function(){
+		this.data.attr('showSigninForm', true);
+		this.$signinForm = this.element.find('form.signinForm');
+		this.$consentForm = this.element.find('form.consentForm');
+		this.$username = this.element.find('form.signinForm input[name="username"]');
+		this.$password = this.element.find('form.signinForm input[name="password"]');
+		
+		this.signinFormInteractions();
+		this.initFormValidator();
+	},
+	
+	signinFormInteractions: function(){
 		var self = this;
 		var updateSubmitStatus = function(){
 			self.data.attr({
@@ -106,31 +121,8 @@ var SigninControl = BaseControl(
 			//$submit.prop('disabled', ($username.val()=='' || $password.val()==''));
 		};
 		
-		this.$username.keyup(updateSubmitStatus);
-		this.$password.keyup(updateSubmitStatus);
-	},
-	
-	clearUI: function() {
-		
-	    this.$username.val('');
-	    this.$password.val('');
-	    
-	    this.data.attr({
-	    	signinErrorMessage: null,
-	    	showErrorMessage: false,
-	    	errorCode: null,
-	    	errorDescription: null,
-	    	signinLoading: false,
-	    	consentLoading: false,
-	    	isSubmitEnabled: false
-	    });
-	},
-	
-	//Resets the global vars
-	resetGlobalVars: function() {
-		this.authzSession.id = null;
-		this.subjectSession.id = null;
-		this.subject = {};
+		this.$username.keyup(updateSubmitStatus).on('change', updateSubmitStatus);
+		this.$password.keyup(updateSubmitStatus).on('change', updateSubmitStatus);
 	},
 	
 	
@@ -145,51 +137,44 @@ var SigninControl = BaseControl(
 	    	//this.element.find('#errorMessage').show();
 	},
 	
-	sizeWindow: function(){
-	    var targetWidth = 800;
-	    var targetHeight = 600;
-
-	    var currentWidth = $(window).width();
-	    var currentHeight = $(window).height();
-
-	    window.resizeBy(targetWidth - currentWidth, targetHeight - currentHeight);
-
-	    $("body").css("overflow-y", "scroll");
-	},
-	
 	
 	//Authenticates the subject by checking the entered username and password with
 	//the LdapAuth JSON-RPC 2.0 service
-	submitSigninForm: function(){
+	submitSigninForm: function(isAuthentication){
 		var self = this;
 		var data = this.data;
+		var signinInfo = {
+			query: Helpers.getUrlParameters().query
+		};
 
-		var username = this.$username.val();
-		var password = this.$password.val();
-		
-		this.log("Entered username: " + username);
-		this.log("Entered password: *****");// + password);
-		
-		if (username.length === 0 || password.length === 0) {
-			this.data.attr('signinErrorMessage', 'You must enter a username and a password');
-			this.$username.focus();
-			return false;
+		if (isAuthentication){
+			// add username and pwd to signinInfo
+			
+			var username = this.$username.val();
+			var password = this.$password.val();
+			
+			this.log("Entered username: " + username);
+			this.log("Entered password: *****");// + password);
+			
+			if (username.length === 0 || password.length === 0) {
+				this.data.attr('signinErrorMessage', 'You must enter a username and a password');
+				this.$username.focus();
+				return false;
+			}
+			
+			// Clear login form
+			this.$username.val("");
+			this.$password.val("");
+			
+			signinInfo.username = username;
+			signinInfo.password = password;
 		}
-		
-		// Clear login form
-		this.$username.val("");
-		this.$password.val("");
 		
 		data.attr({
 			signinLoading: true,
 			isSubmitEnabled: false
 		});
-		
-		var signinInfo = {
-			username: username,
-			password: password,
-			query: Helpers.getUrlParameters().query,
-		}
+
 		SigninModel.signin(signinInfo).then(function(json, textStatus, jqXHR){
 			var isRedirected = self.redirectToCallback(jqXHR);
 			if (isRedirected)
@@ -210,36 +195,43 @@ var SigninControl = BaseControl(
 	
 	
 	showConsentForm: function(json){
+		
+		if (!json){
+			// if no consent data json, first submit the form without 
+			// authentication data (user/pwd)
+			this.submitSigninForm(false);
+			return;
+		}
+		
 		this.data.attr({
 			showSigninForm: false,
 			showConsentForm: true,
 			consentData: json,
-			disableConsentButtons: false
 		});
 	},
 	
-	'.signoutBtn click': function(){
-		//logoutSubject
-	},
-	
-	'.consentForm submit': function(){
+	'.consentForm submit': function(element){
+		
 		var self = this;
-		var newScopes = $('.newScopes input[type="checkbox"]:checked').map(function(){return $(this).attr('name')});
+		var newScopes = $('.newScopes input[type="checkbox"]:checked').map(function(){return $(this).attr('name')}).get();
+		var consentedScopes = $('.consentedScopes input[type="checkbox"]:checked').map(function(){return $(this).attr('name')}).get();
+		$.merge(newScopes, consentedScopes);
+
 		var consentInfo = {
 			query: Helpers.getUrlParameters().query,
-			//scope: newScopes,
-			scope: ['openid'] // todo take from form
+			scope: newScopes
 		};
 		
 		data.attr({
 			consentLoading: true,
-			disableConsentButtons: true
+			disabledConsentAllow: true,
+			disabledConsentDeny: true
 		});
 		
 		SigninModel.consent(consentInfo).then(function(data, textStatus, jqXHR){
 			self.redirectToCallback(jqXHR);
 		}).fail(function(jqXHR){
-			this.displayErrorMessage('Consent submit failed.', Helpers.getErrMsg(jqXHR));
+			self.displayErrorMessage('Consent submit failed.', Helpers.getErrMsg(jqXHR));
 		}).always(function(){
 			data.attr('consentLoading', false);
 		});
@@ -247,8 +239,25 @@ var SigninControl = BaseControl(
 		return false;
 	},
 	
+	'.newScopes input[type="checkbox"] click': function(){
+		var isDisabled = ($('.newScopes input[type="checkbox"]:not(:checked)').length > 0);
+		this.data.attr('disabledConsentAllow', isDisabled);
+	},
+	
 	'.denyBtn click': function(){
-		//denyAuthorization
+		var self = this;
+		this.data.attr({
+			consentLoading: true,
+			disabledConsentAllow: true,
+			disabledConsentDeny: true
+		});
+		SigninModel.denyConsent().then(function(data, textStatus, jqXHR){
+			self.redirectToCallback(jqXHR);
+		}).fail(function(jqXHR){
+			self.displayErrorMessage('Consent submit failed.', Helpers.getErrMsg(jqXHR));
+		}).always(function(){
+			self.data.attr('consentLoading', false);
+		});
 	},
 	
 	

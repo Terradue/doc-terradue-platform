@@ -14,7 +14,7 @@ var SignupControl = BaseControl(
 	{
 		// init
 		init: function (element, options) {
-			this.setupValidation();
+			Helpers.addPasswordValidationMethods();
 		},
 		
 		// first level page : /newpeoplesimple
@@ -113,7 +113,14 @@ var SignupControl = BaseControl(
 			});
 			userData.captchaValue = captchaValue;
 			new SignupModel(userData).save().then(function(){
-				document.location = '/portal/settings/profile?registered=ok';
+				
+				self.view({
+					url: 'modules/signup/views/signupSuccess.html',
+					fnLoad: function(){
+						Helpers.scrollToTop();
+					}
+				});
+				
 			}).fail(function(xhr){
 				self.data.attr({
 					loading: false, 
@@ -124,49 +131,6 @@ var SignupControl = BaseControl(
 			});
 			return false;
 		},
-		
-		setupValidation: function(){
-			// Validator extensions
-			$.validator.addMethod(
-				"atLeastOneUpper",
-				function(value, element) {
-					return this.optional(element) || new RegExp("[A-Z]").test(value);
-				},
-				"* atLeastOneUpper"
-			);
-
-			$.validator.addMethod(
-				"atLeastOneLower",
-				function(value, element) {
-					return this.optional(element) || new RegExp("[a-z]").test(value);
-				},
-				"* atLeastOneUpper"
-			);
-
-			$.validator.addMethod(
-				"atLeastOneNumber",
-				function(value, element) {
-					return this.optional(element) || new RegExp("[\\d]").test(value);
-				},
-				"* atLeastOneNumber"
-			);
-
-			$.validator.addMethod(
-				"atLeastOneSpecialChar",
-				function(value, element) {
-					return this.optional(element) || new RegExp("[!#@$%^&*()_+]").test(value);
-				},
-				"atLeastOneSpecialChar"
-			);
-
-			$.validator.addMethod(
-				"noOtherSpecialChars",
-				function(value, element) {
-					return this.optional(element) || new RegExp('^[a-zA-Z0-9!#@$%^&*()_+]+$').test(value);
-				},
-				"Please remove special characters"
-			);			
-		}
 		
 	}
 );

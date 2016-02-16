@@ -6,7 +6,7 @@ using Terradue.Corporate.WebServer.Common;
 using System.Collections.Generic;
 
 namespace Terradue.Corporates.WebServer {
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class DataSeriesService : ServiceStack.ServiceInterface.Service {

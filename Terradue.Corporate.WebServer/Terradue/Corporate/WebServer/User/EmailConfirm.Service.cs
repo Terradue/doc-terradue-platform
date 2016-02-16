@@ -11,7 +11,7 @@ namespace Terradue.TepQW.WebServer {
     /// <summary>
     /// Email confirmation service
     /// </summary>
-    [Api("Tep-QuickWin Terradue webserver")]
+    [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class EmailConfirm : ServiceStack.ServiceInterface.Service {

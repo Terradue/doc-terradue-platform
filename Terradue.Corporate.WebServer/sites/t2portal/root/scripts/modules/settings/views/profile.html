@@ -70,7 +70,7 @@
 			<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Updated!</strong> Your profile info are successful updated.</div>
 		{{/if}}
 		{{#if saveFail}}
-			<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oups! </strong>{{ saveFailMessage }}</div>
+			<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ saveFailMessage }}</div>
 		{{/if}}
 		<button type="submit" class="btn btn-warning submit">Submit</button>
 	</form>
@@ -80,7 +80,7 @@
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
 				<strong>Thank You.</strong> Your email address has been successfully validated.</br>
 				<br/>
-				<strong><i class="fa fa-exclamation-triangle"></i> You must <a href="javascript://" class="signIn">Sign-in</a> to access to the Terradue Services (TODO u)</strong>
+				<strong><i class="fa fa-exclamation-triangle"></i> You must <a href="/t2api/oauth" class="signIn">Sign-in</a> to access to the Terradue Services.</strong>
 			</div>
 		{{/if}}
 	{{/if}}

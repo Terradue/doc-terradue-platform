@@ -1,6 +1,5 @@
 
 
-
 #loginForm > .loginForm-openId {
 	float: left;
 	width: 250px;
@@ -21,36 +20,37 @@
 	border-radius: 5px;
 }
 
-.pageSubHeader.signinSubHeader{
+
+#signinPage > .pageSubHeader{
 	height: 130px;
 }
 
-.signupContainer {
+#signinPage > .signinContainer {
 	max-width: 400px;
 	margin: 20px auto;
 }
-.signupContainer .form-group {
+#signinPage > .signinContainer .form-group {
   margin-right: 0px;
   margin-left: 0px;
 }
 
-.signupContainer label.error { /* improve */
+#signinPage > .signinContainer label.error { /* improve */
   color: #a94442;
   font-weight: normal;
   font-size: 12px;
 }
 
 
-.consentContainer {
+#signinPage > .consentContainer {
     width: 450px;
     margin: 20px auto;
 }
 
-.consentContainer > form > table.table {
+#signinPage > .consentContainer > .consentForm > table.table {
     margin-top: 30px;
 }
 
-.consentContainer > form > table.table tr>td {
+#signinPage > .consentContainer > .consentForm > table.table tr>td {
     height: 56px;
     vertical-align: middle;
     border-bottom: 1px solid #ddd;
