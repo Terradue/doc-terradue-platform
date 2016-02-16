@@ -285,7 +285,12 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
-                UserT2 user = UserT2.FromUsername(context, request.Username);
+                UserT2 user;
+                try{
+                    user = UserT2.FromUsername(context, request.Username);
+                }catch(Exception e){
+                    return new WebResponseBool(true);
+                }
 
                 //send email to user with new token
                 var token = user.GetToken();
