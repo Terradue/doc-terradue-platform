@@ -428,11 +428,9 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
 
             string dn = CreateLdapDN();
-            var b64pwd = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
 
-            //login as ldap admin to have creation rights
             Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-            Json2Ldap.ModifyEntry(dn, "password", new System.Collections.Generic.List<string>{ b64pwd }, "REPLACE", true);
+            Json2Ldap.ModifyPassword(dn, password);
             Json2Ldap.Close();
         }
 
