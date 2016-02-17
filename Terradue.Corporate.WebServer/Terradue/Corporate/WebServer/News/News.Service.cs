@@ -226,6 +226,27 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
+        public object Get(DescriptionNews request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            IOpenSearchResultCollection result = null;
+            try {
+                context.Open();
+
+                EntityList<Article> articles = new EntityList<Article>(context);
+                var osd = articles.GetOpenSearchDescription();
+
+                context.Close();
+
+                return new HttpResult(osd,"application/opensearchdescription+xml");
+
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+
+            return new HttpResult(result.SerializeToString(), result.ContentType);
+        }
+
     }
 
     [Route("/news/feeds", "GET", Summary = "GET a list of news feeds", Notes = "")]

@@ -127,9 +127,6 @@
     <Reference Include="Mono.Addins">
       <HintPath>..\packages\Mono.Addins.1.2\lib\net40\Mono.Addins.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.WebService.Model">
-      <HintPath>..\packages\Terradue.WebService.Model.1.1.8\lib\net40\Terradue.WebService.Model.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.Authentication.Ldap">
       <HintPath>..\packages\Terradue.Authentication.Ldap.1.0.3\lib\net40\Terradue.Authentication.Ldap.dll</HintPath>
     </Reference>
@@ -175,6 +172,9 @@
     </Reference>
     <Reference Include="Terradue.Portal.Agent">
       <HintPath>..\packages\Terradue.Portal.2.6.44\lib\net40\Terradue.Portal.Agent.exe</HintPath>
+    </Reference>
+    <Reference Include="Terradue.WebService.Model">
+      <HintPath>..\packages\Terradue.WebService.Model.1.1.9\lib\net40\Terradue.WebService.Model.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
