@@ -30,50 +30,59 @@
 				{{/if}}
 			{{/if}}
 		{{/if}}
-	<form role="form">
 		
-		<div class="form-group">
-			<label>First name</label>
-			<input type="text" class="form-control" placeholder="" name="FirstName" value="{{ user.FirstName }}">
-		</div>
-		
-		<div class="form-group">
-			<label>Last name</label>
-			<input type="text" class="form-control" placeholder="" name="LastName" value="{{ user.LastName }}">
-		</div>
-		
-		<div class="form-group">
-			<label>E-mail</label>
-			<input type="text" class="form-control" placeholder="" name="Email" value="{{ user.Email }}">
-		</div>
-		
-		<div class="form-group">
-			<label>Affiliation</label>
-			<input type="text" class="form-control" placeholder="" name="Affiliation" value="{{ user.Affiliation }}">
-		</div>
-		
-		<div class="form-group">
-			<label>Country</label>
-			<input type="text" class="form-control" placeholder="" name="Country" value="{{ user.Country }}">
-		</div>
-		
-<!-- 		<div class="form-group">
-	 		<label class="checkbox">
-				<input type="checkbox" name="EmailNotification"
-					{{#EmailNotification}}checked="checked"{{/EmailNotification}}> Email Notification
-			</label>
-		</div>
- 
- -->
- 		<br/>
-		{{#if saveSuccess}}
-			<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Updated!</strong> Your profile info are successful updated.</div>
+		{{#if formNotFilled}}
+			<div class="alert alert-warning" role="alert">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>Heads up!</strong>
+				 You should fill the form with all your data.
+				<br/>
+			</div>
 		{{/if}}
-		{{#if saveFail}}
-			<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ saveFailMessage }}</div>
-		{{/if}}
-		<button type="submit" class="btn btn-warning submit">Submit</button>
-	</form>
+		<form role="form">
+			
+			<div class="form-group">
+				<label>First name</label>
+				<input type="text" class="form-control" placeholder="" name="FirstName" value="{{ user.FirstName }}">
+			</div>
+			
+			<div class="form-group">
+				<label>Last name</label>
+				<input type="text" class="form-control" placeholder="" name="LastName" value="{{ user.LastName }}">
+			</div>
+			
+			<div class="form-group">
+				<label>E-mail</label>
+				<input type="text" class="form-control" placeholder="" name="Email" value="{{ user.Email }}">
+			</div>
+			
+			<div class="form-group">
+				<label>Affiliation</label>
+				<input type="text" class="form-control" placeholder="" name="Affiliation" value="{{ user.Affiliation }}">
+			</div>
+			
+			<div class="form-group">
+				<label>Country</label>
+				<input type="text" class="form-control" placeholder="" name="Country" value="{{ user.Country }}">
+			</div>
+			
+	<!-- 		<div class="form-group">
+		 		<label class="checkbox">
+					<input type="checkbox" name="EmailNotification"
+						{{#EmailNotification}}checked="checked"{{/EmailNotification}}> Email Notification
+				</label>
+			</div>
+	 
+	 -->
+	 		<br/>
+			{{#if saveSuccess}}
+				<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Updated!</strong> Your profile info are successful updated.</div>
+			{{/if}}
+			{{#if saveFail}}
+				<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ saveFailMessage }}</div>
+			{{/if}}
+			<button type="submit" class="btn btn-warning submit">Submit</button>
+		</form>
 	{{else}}
 		{{#if emailConfirmOK}}
 			<div class="alert alert-success pendingActivation" role="alert">
