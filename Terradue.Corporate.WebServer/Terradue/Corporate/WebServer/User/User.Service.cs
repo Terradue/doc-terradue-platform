@@ -264,15 +264,14 @@ namespace Terradue.Corporate.WebServer {
         /// </summary>
         /// <param name="request">Request.</param>
         public object Delete(DeleteUser request) {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
             try {
                 context.Open();
+
                 UserT2 user = UserT2.FromId(context, request.Id);
-                if (context.UserLevel == UserLevel.Administrator){
-                    user.DeleteLdapAccount();
-                    user.Delete();
-                }
-                else throw new UnauthorizedAccessException(CustomErrorMessages.ADMINISTRATOR_ONLY_ACTION);
+                user.DeleteLdapAccount();
+                user.Delete();
+
                 context.Close();
             } catch (Exception e) {
                 context.Close();
