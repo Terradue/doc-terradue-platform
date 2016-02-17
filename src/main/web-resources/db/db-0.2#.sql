@@ -22,4 +22,8 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-configUrl', 'string', 'Terradue SSO Configuration url', 'Enter the value of the url of the Configuration of the Terradue SSO', "https://sso.terradue.com/c2id//.well-known/openid-configuration", '0');
 -- RESULT
 
+-- Update config..\
+UPDATE config SET value='Dear $(USERNAME), You have made a password reset request for the $(PORTAL).\\nPlease go to this link to set your new password:\n$(LINK)' WHERE name='EmailSupportResetPasswordBody';
+-- RESULT
+
 /*****************************************************************************/
