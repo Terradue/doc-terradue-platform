@@ -111,6 +111,7 @@ define([
 						isPending: (user.AccountStatus==1 && self.params.registered!='ok'),
 						isNewPending: (user.AccountStatus==1 && self.params.registered=='ok'),
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+						formNotFilled: !(user.FirstName && user.LastName && user.Email)
 					});
 					if (self.params.token && self.profileData.user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
@@ -356,8 +357,11 @@ define([
 				self.profileData.attr({saveSuccess: false, saveFail: false});
 				new ProfileModel(App.Login.User.current.attr())
 					.save()
-					.then(function(createdNews){
-						self.profileData.attr('saveSuccess', true);
+					.then(function(createdUser){
+						self.profileData.attr({
+							saveSuccess: true,
+							formNotFilled: !(createdUser.FirstName && createdUser.LastName && createdUser.Email)
+						});
 					}).fail(function(xhr){
 						self.profileData.attr({saveFail: true, saveFailMessage: Helpers.getErrMsg(xhr)});
 					});
