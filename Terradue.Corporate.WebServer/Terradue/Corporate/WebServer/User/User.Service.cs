@@ -15,6 +15,7 @@ using System.Runtime.Serialization;
 using ServiceStack.Common.Web;
 using Terradue.Authentication.Ldap;
 using Terradue.Authentication.OAuth;
+using Terradue.Ldap;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]
@@ -200,7 +201,15 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     user.SendMail(UserMailType.Registration, true);
                 }catch(Exception){}
-                    
+
+                using (var service = base.ResolveService<OAuthGatewayService>()) { 
+                    service.Post(new OauthLoginRequest{
+                        username = request.Email,
+                        password = request.Password,
+                        ajax = true
+                    }); 
+                }; 
+
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();

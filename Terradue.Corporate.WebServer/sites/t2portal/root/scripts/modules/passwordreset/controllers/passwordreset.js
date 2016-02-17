@@ -77,7 +77,7 @@ var PasswordResetControl = BaseControl(
 			}).fail(function(xhr){
 				self.data.attr({
 					loading: false, 
-					errorMessage: Helpers.getErrMsg(xhr, 'Unable to sign-in. Please contact the Administrator.'),
+					errorMessage: Helpers.getErrMsg(xhr, 'Unable to reset the password. Please contact the Administrator.'),
 				});
 			});
 
@@ -154,7 +154,7 @@ var PasswordResetControl = BaseControl(
 			}).fail(function(xhr){
 				self.data.attr({
 					loading: false, 
-					errorMessage: Helpers.getErrMsg(xhr, 'Unable to sign-in. Please contact the Administrator.'),
+					errorMessage: Helpers.getErrMsg(xhr, 'Unable to reset the password. Please contact the Administrator.'),
 				});
 			});
 
