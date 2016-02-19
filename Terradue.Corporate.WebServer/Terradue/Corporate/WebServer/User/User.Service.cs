@@ -203,11 +203,13 @@ namespace Terradue.Corporate.WebServer {
                 }catch(Exception){}
 
                 using (var service = base.ResolveService<OAuthGatewayService>()) { 
-                    service.Post(new OauthLoginRequest{
+                    var response = service.Post(new OauthLoginRequest{
                         username = request.Email,
                         password = request.Password,
-                        ajax = true
-                    }); 
+                        ajax = true,
+                        autoconsent = true
+                    });
+                    return response;
                 }; 
 
                 context.Close ();

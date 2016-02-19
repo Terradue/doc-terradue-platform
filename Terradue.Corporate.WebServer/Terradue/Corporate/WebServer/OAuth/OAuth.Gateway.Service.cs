@@ -48,6 +48,9 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name="ajax", Description = "ajax", ParameterType = "path", DataType = "bool", IsRequired = true)]
         public bool ajax { get; set; }
+
+        [ApiMember(Name="autoconsent", Description = "Automatically consent", ParameterType = "path", DataType = "bool", IsRequired = true)]
+        public bool autoconsent { get; set; }
     }
 
     [Route("/oauth", "DELETE", Summary = "login", Notes = "")]
@@ -220,21 +223,20 @@ namespace Terradue.Corporate.WebServer {
 
                     //user is now authenticated and need to consent
                     if(oauthsession.type == "consent"){
-                        if(oauthsession.scope.new_claims.Count == 0 
-                           || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid"))){
-                            var consent = GenerateConsent(null);
-                            var redirect = client.ConsentSession(oauthsession.sid, consent);
+                        OauthConsentRequest consent = null;
+                        if(oauthsession.scope.new_claims.Count == 0) consent = GenerateConsent(null);
+                        else if(request.autoconsent) consent = GenerateConsent(oauthsession.scope.new_claims);
+                        else return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
+                            
+                        var redirect = client.ConsentSession(oauthsession.sid, consent);
 
-                            if(request.ajax){
-                                HttpResult redirectResponse = new HttpResult();
-                                redirectResponse.Headers[HttpHeaders.Location] = redirect;
-                                redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
-                                return redirectResponse;
-                            } else {
-                                HttpContext.Current.Response.Redirect(redirect, true);
-                            }
+                        if(request.ajax){
+                            HttpResult redirectResponse = new HttpResult();
+                            redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                            redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                            return redirectResponse;
                         } else {
-                            return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
+                            HttpContext.Current.Response.Redirect(redirect, true);
                         }
                     }
                 }
@@ -244,12 +246,13 @@ namespace Terradue.Corporate.WebServer {
 
                     var consent = new OauthConsentRequest();
 
-                    if(request.scope != null){
+                    if(request.scope != null)
                         consent = GenerateConsent(request.scope);
-                    } else if(oauthsession.scope.new_claims.Count == 0 
-                              || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid"))){
+                    else if(oauthsession.scope.new_claims.Count == 0)
                         consent = GenerateConsent(null);
-                    } else if (request.username != null && request.password != null){
+                    else if(request.autoconsent || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid")))
+                        consent = GenerateConsent(oauthsession.scope.new_claims);
+                    else if (request.username != null && request.password != null){
                         //return to the login page so it can display the consent
                         return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
                     } else {
@@ -324,6 +327,12 @@ namespace Terradue.Corporate.WebServer {
 
         private OauthConsentRequest GenerateConsent(List<string> scope){
             if (scope == null || scope.Count == 0) scope = new List<string>{"openid"};
+
+            bool openid = false;
+            foreach (var s in scope)
+                if (scope.Equals("openid"))
+                    openid = true;
+            if(!openid) scope.Add("openid");
 
             var consent = new OauthConsentRequest {
                 scope = scope,

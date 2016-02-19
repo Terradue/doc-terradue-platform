@@ -112,7 +112,7 @@ var SignupControl = BaseControl(
 				loading: true, errorMessage: null, success: false, recaptchaError:null,
 			});
 			userData.captchaValue = captchaValue;
-			new SignupModel(userData).save().then(function(data, textStatus, jqXHR){
+			SignupModel.registerUser(userData).then(function(data, textStatus, jqXHR){
 
 				self.redirectToCallback(jqXHR);
 				

@@ -30,7 +30,6 @@ namespace Terradue.TepQW.WebServer {
                 AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(TokenAuthenticationType));
                 // User is logged, now we confirm the email with the token
                 var tokenUser = ((TokenAuthenticationType)authType).AuthenticateUser(context, request.Token);
-                context.EndSession();
                 context.Close();
 //                return new HttpError(System.Net.HttpStatusCode.MethodNotAllowed, new InvalidOperationException("Email already confirmed"));
 
