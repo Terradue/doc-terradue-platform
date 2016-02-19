@@ -201,6 +201,7 @@ namespace Terradue.Corporate.WebServer {
                     LdapUser user = null;
                     try{
                         user = client.Authenticate(request.username, request.password);
+                        //TODO: add user email ?
                     }catch(Exception e){
                         return new HttpError(System.Net.HttpStatusCode.Forbidden, e);
                     }
