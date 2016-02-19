@@ -1,8 +1,23 @@
-<h3>Safe</h3>
+<div class='settings-key container col-md-9'>
+	<div>
+		<div class='settings settings-title'>SSH keys</div>
+		<div class='settings settings-description'>Your <b>ssh keys</b> are the way for you to access your Terradue Cloud Platform development environment.</div>
+		<div class='settings settings-container'>
+			{{#if user.PublicKey }}
+			<div>
+				<span class='key'>{{ user.PubKey }}</span>
+				&nbsp;&nbsp;
+				<button click='submit' class='btn btn-warning submit'>Change</button>
+			</div>
+			{{else}}
+				<button click='submit' class='btn btn-warning submit'>Generate your ssh keys</button>
+			{{/if}}
 
-<p class="text-info">
-	<i class="icon-info-sign"></i> In this page you can set your Safe credentials. blablabla <strong>TODO</strong>
-</p>
+		</div>
+	</div>
+</div>
+<!--
+
 <br/><br/>
 <div class="settings-safe">
 {{#if user.PublicKey }}
@@ -41,6 +56,6 @@
 	<div class="noKey">
 		<button class="btn btn-primary createSafeBtn">Create Safe</button>&nbsp;&nbsp;	
 	</div>
-{{/if }}
+{{/if }}-->
 </div>
 

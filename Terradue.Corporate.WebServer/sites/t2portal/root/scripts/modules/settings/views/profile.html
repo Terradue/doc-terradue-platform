@@ -1,43 +1,14 @@
-<div class='settings-profile'>
-	<h3>Profile</h3>
-	{{#if user}}
-		{{#if isPending}}
-			<div class="alert alert-warning pendingActivation" role="alert">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Pending Activation!</strong> We must verify that your email address is valid. Please consult your inbox and confirm your address.
-				<br/>
-				If you did not received it, <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
-				<br/>
+<div id='settings' class='settings-profile container col-md-9'>
+	<div class='settings settings-title'>Public profile</div>
+	<div class='settings settings-description'>Some basic information about you.</div>
+	<div class='settings settings-container'>
+
+	{{#if user}}		
+		{{#if profileNotComplete}}
+			<div class="alert alert-warning">
+				<i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete, please fill it up.
 			</div>
-		{{else}}
-			{{#if isNewPending}}
-				<div class="alert alert-success pendingActivation" role="alert">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>Well done!</strong> You successfully signed-up on the Platform.</br>
-					We have sent a confirmation email at <span class="text-info">{{ user.Email }}</span> 
-					with other useful information. We must verify that your email address is valid. Please consult your inbox and confirm your address.
-					<br/>
-					If you did not received it, <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
-					<br/>
-				</div>
-			{{else}}
-				{{#if emailConfirmOK}}
-					{{!-- This html snippet is in two location, here and at the end of this page --}}
-					<div class="alert alert-success pendingActivation" role="alert">
-						<button type="button" class="close" data-dismiss="alert">&times;</button>
-						<strong>Thank You.</strong> Your email address has been successfully validated.</br>
-					</div>
-				{{/if}}
-			{{/if}}
-		{{/if}}
-		
-		{{#if formNotFilled}}
-			<div class="alert alert-warning" role="alert">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Heads up!</strong>
-				 You should fill the form with all your data.
-				<br/>
-			</div>
+			<br/>
 		{{/if}}
 		<form role="form">
 			
@@ -52,11 +23,6 @@
 			</div>
 			
 			<div class="form-group">
-				<label>E-mail</label>
-				<input type="text" class="form-control" placeholder="" name="Email" value="{{ user.Email }}">
-			</div>
-			
-			<div class="form-group">
 				<label>Affiliation</label>
 				<input type="text" class="form-control" placeholder="" name="Affiliation" value="{{ user.Affiliation }}">
 			</div>
@@ -65,15 +31,7 @@
 				<label>Country</label>
 				<input type="text" class="form-control" placeholder="" name="Country" value="{{ user.Country }}">
 			</div>
-			
-	<!-- 		<div class="form-group">
-		 		<label class="checkbox">
-					<input type="checkbox" name="EmailNotification"
-						{{#EmailNotification}}checked="checked"{{/EmailNotification}}> Email Notification
-				</label>
-			</div>
-	 
-	 -->
+
 	 		<br/>
 			{{#if saveSuccess}}
 				<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Updated!</strong> Your profile info are successful updated.</div>
@@ -83,14 +41,5 @@
 			{{/if}}
 			<button type="submit" class="btn btn-warning submit">Submit</button>
 		</form>
-	{{else}}
-		{{#if emailConfirmOK}}
-			<div class="alert alert-success pendingActivation" role="alert">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Thank You.</strong> Your email address has been successfully validated.</br>
-				<br/>
-				<strong><i class="fa fa-exclamation-triangle"></i> You must <a href="/t2api/oauth" class="signIn">Sign-in</a> to access to the Terradue Services.</strong>
-			</div>
-		{{/if}}
 	{{/if}}
 </div>

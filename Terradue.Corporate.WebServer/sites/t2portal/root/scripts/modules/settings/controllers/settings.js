@@ -55,6 +55,8 @@ define([
 						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
 						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
 						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
+
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -111,7 +113,7 @@ define([
 						isPending: (user.AccountStatus==1 && self.params.registered!='ok'),
 						isNewPending: (user.AccountStatus==1 && self.params.registered=='ok'),
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-						formNotFilled: !(user.FirstName && user.LastName && user.Email)
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
 					});
 					if (self.params.token && self.profileData.user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
@@ -124,33 +126,36 @@ define([
 				});
 			},
 			
-			cloud: function(options) {
+			email: function(options) {
 				var self = this;
-				console.log("App.controllers.Settings.cloud");
-				var cloudData = new can.Observe({});
+				this.profileData = new can.Observe({});
+				this.view({
+					url: 'modules/settings/views/email.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.profileData,
+					fnLoad: function(){
+						self.initSubmenu('email');
+					}
+				});
+				
+				console.log("App.controllers.Settings.email");
 				this.isLoginPromise.then(function(user){
-					OneConfigModel.findAll().then(function(_oneSettings){
-						oneSettings = Helpers.keyValueArrayToJson(_oneSettings);
-						self.view({
-							url: 'modules/settings/views/cloud.html',
-							selector: Config.subContainer,
-							data: cloudData,
-							dependency: self.indexDependency(),
-							fnLoad: function(){
-								self.initSubmenu('cloud');
-							}
-						});
-						OneUserModel.findOne().then(function(oneUser){
-							cloudData.attr({
-								oneSettings: oneSettings,
-								oneUser: oneUser,
-								sunstoneOk: user.CertSubject == oneUser.Password,
-								user: user,
-								onePasswordOk: oneUser.Password,
-								oneCertOk: user.CertSubject
-							})						
-						});
+					self.profileData.attr({
+						user: user,
+						isPending: (user.AccountStatus==1 && self.params.registered!='ok'),
+						isNewPending: (user.AccountStatus==1 && self.params.registered=='ok'),
+						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
 					});
+					if (self.params.token && self.profileData.user.AccountStatus==1)
+						self.manageEmailConfirm(self.params.token);
+					
+				}).fail(function(){
+					if (self.params.token)
+						self.manageEmailConfirm(self.params.token);
+					else
+						self.accessDenied();
 				});
 			},
 
@@ -166,7 +171,7 @@ define([
 							dependency: self.indexDependency(),
 							data: {
 								user: userData,
-								github: githubData,
+								github: githubData
 							},
 							fnLoad: function(){
 								self.initSubmenu('github');
@@ -177,19 +182,19 @@ define([
 				});
 			},
 
-			safe: function(options) {
+			key: function(options) {
 				var self = this;
-				console.log("App.controllers.Settings.safe");
+				console.log("App.controllers.Settings.key");
 				self.isLoginPromise.then(function(userData){
 					self.view({
-						url: 'modules/settings/views/safe.html',
+						url: 'modules/settings/views/key.html',
 						selector: Config.subContainer,
 						dependency: self.indexDependency(),
 						data: {
 							user: userData,
 						},
 						fnLoad: function(){
-							self.initSubmenu('safe');
+							self.initSubmenu('key');
 						}
 					});
 				});
@@ -360,8 +365,12 @@ define([
 					.then(function(createdUser){
 						self.profileData.attr({
 							saveSuccess: true,
-							formNotFilled: !(createdUser.FirstName && createdUser.LastName && createdUser.Email)
+							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country)
 						});
+						self.data.attr({
+							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country)
+						});
+
 					}).fail(function(xhr){
 						self.profileData.attr({saveFail: true, saveFailMessage: Helpers.getErrMsg(xhr)});
 					});

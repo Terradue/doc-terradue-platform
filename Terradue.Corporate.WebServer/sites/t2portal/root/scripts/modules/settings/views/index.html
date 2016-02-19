@@ -1,32 +1,49 @@
+<div id="settingsPage" class="container">
+	<br/>
+	<div class="submenu col-md-3">
+		<div class="settings settings-title">Personal settings</div>
+		<div class="settings settings-container row fluid">
+			<ul class="nav nav-pills nav-stacked">
+				<li class="profile menu-item"><a href="/portal/settings/profile"> 
+					{{#if profileNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
+					Profile</a></li>
+				<li class="email menu-item"><a href="/portal/settings/email"> 
+					{{#if isPending}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
+					Email</a>
+				</li>
+				<li class="key menu-item"><a href="/portal/settings/key"> SSH keys</a></li>
+				<li class="github menu-item"><a href="/portal/settings/github">
+					{{#unless github.HasSSHKey}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/unless}}
+					Github</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-md-9" id="subContainer"></div>
+	<br/>
+</div>
+
+<!--
+
 <div class="container">
 	<div class="row-fluid">
 		<div class="col-md-3 {{#if hideMenu}}hidden{{/if}}">
 			<br/>
 			<div class="well submenu">
+				<h3 class="menu-heading">Personal settings</h3>
 				<ul class="nav nav-pills nav-stacked">
-					<li class='profile'><a href="/portal/settings/profile">
+					<li class="profile menu-item"><a href="/portal/settings/profile"> Profile</a></li>
+					<li class="email menu-item"><a href="/portal/settings/email"> 
 						{{#if isPending}}
 							<span class="text-warning"><i class="fa fa-exclamation-triangle"></i></span>
 						{{/if}}
-						Profile
-					</a></li>
-					{{#if showSafe}}
-						<li class='github'><a href="/portal/settings/safe"> Safe</a></li>
-					{{/if}}
-					{{#if showCloud}}
-						<li class='cloud'><a href="/portal/settings/cloud"> Cloud</a></li>
-					{{/if}}
-					{{#if showGithub}}
-						<li class='github'><a href="/portal/settings/github"> Github</a></li>
-					{{/if}}
-					<li class='cloud'><a href="/portal/settings/freeTrial"> Free Trial</a></li>
-					<li class='cloud'><a href="/portal/settings/earlyBird"> Early-Bird demos</a></li>
-					<li class='cloud'><a href="/portal/settings/partnerProgram"> Partner Programs</a></li>
-					<li class='cloud'><a href="/portal/settings/plan"> Plans</a></li>
+						Email</a>
+					</li>
+					<li class="key menu-item"><a href="/portal/settings/key"> SSH keys</a></li>
+					<li class="github menu-item"><a href="/portal/settings/github"> Github</a></li>
 				</ul>
 			</div>
 		</div>
 		<div class="col-md-9" id="subContainer"></div>
 		<br/>
 	</div>
-</div>
+</div>-->

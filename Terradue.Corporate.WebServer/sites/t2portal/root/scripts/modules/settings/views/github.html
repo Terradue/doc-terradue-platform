@@ -1,113 +1,77 @@
-<div class='settings-github'>
-	<h3>Github</h3>
-	<p class="text-info">
-		<i class='icon-info-sign'></i> Github will allow to save and share your code
-	</p>
-<br/><br/>
-
-	{{#if github.Name}}{{#if github.Identifier}}{{#if github.HasSSHKey}}
-	<div class="alert alert-success alert-no-bottom-margin"><i class="fa fa-check-square"></i> 
-					<strong>All Github info are correctly set.</strong></div>
-	{{/if}}{{/if}}{{/if}}
-	{{#if github.Name}}
-		<div class="panel alert-no-bottom-margin">
-			{{#github.Avatar}}<img class="githubAvatar" src="{{ github.Avatar }}">{{/github.Avatar}}
-			<p style="margin:0px">
-				
-				<a href="https://github.com/{{ github.Name }}" target="_blank"><i class="fa fa-github fa-2x"></i></a>
-				<strong class="githubName">
-					{{ github.Name }}
-					<a href="javascript://" class="showModifyGithubName"><i class="fa fa-pencil"></i></a>
-				</strong>
-				<span class="usernameForm modifyGithubName hide">
-					<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
-					<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
-					<button class="btn btn-link btn-mini cancel"><i class="fa fa-times"></i></button>
-				</span>
-			</p>
-			{{#if github.Identifier}}
-				<p><small><i class="fa fa-check-square text-success"></i> Valid account</small></p>
-			{{else}}
-				<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Unvalid account</strong><br/>Please check your github account username.</small></p>
-			{{/if}}
-		</div>
-	{{else}}
-		<div class="panel">
-			<p style="margin:0px">
-				<i class="fa fa-github fa-2x"></i> 
-				<span class="usernameForm modifyGithubName">
-					<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
-					<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
-				</span>
-			</p>
-			<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Account not set!</strong><br/>Please set your github account username.</small></p>
-		</div>
-	{{/if}}
-<!-- 	<form class="usernameForm">
-		<label>Set {{#if github.Name}}another{{else}}your{{/if}} Github username</label>
-		<input type="text" placeholder="" name="GithubName">
-		<button type="submit" class="btn btn-success submit">Set</button>
-	</form>
- -->
-	{{#if github.Name}}{{#if github.Identifier}}
-
-		{{#if github.HasSSHKey}}
-			<div class="githubKeyPanel">
-				<img class="key" src="/scripts/modules/settings/img/key.png"></img>
-				<a href="javascript://" class="showSshKey">Hide SSH Key <i class="icon-caret-right"></i></a>
-				<pre class="certPub">{{ github.CertPub }}</pre>
-			</div>
-		{{else}}
-
-			<p class="text-warning"><i class="icon-warning-sign"></i> 
-						<strong>Warning!</strong> Your ssh public key is missing.</p>
-			<p class="text-warning"><i class="icon-warning-sign"></i> Your GitHub account requires your ssh public key to authenticate your commands from the cloud.</p>
-			{{#if github.CertPub}}
-				<div class="githubKeyPanel">
-					<img class="key" src="/scripts/modules/settings/img/key.png"></img>
-					<a href="javascript://" class="showSshKey">Show SSH Key <i class="icon-caret-right"></i></a>
-					<pre class="certPub">{{ github.CertPub }}</pre>
-					<br/>
- 					<button class="btn btn-primary btn-small addPublicKey">Add your public key</button>
+<div id='settings' class='settings-github container col-md-9'>
+	<div>
+		<div class='settings settings-title'>Github</div>
+		<div class='settings settings-description'>Link your github account and use it as version control tool for your developments.</div>
+		<div class='settings settings-container'>
+			{{#unless github.HasSSHKey}}
+				<div class="alert alert-warning">
+					<i class="fa fa-warning"></i> Your GitHub account requires your ssh public key to authenticate your commands from the cloud.
 				</div>
-
+				<br/>
+			{{/unless}}
+			{{#if github.Name}}
+				<div class="panel alert-no-bottom-margin">
+					{{#github.Avatar}}<img class="githubAvatar" src="{{ github.Avatar }}">{{/github.Avatar}}
+					<p style="margin:0px">
+						<a href="https://github.com/{{ github.Name }}" target="_blank"><i class="fa fa-github fa-2x"></i></a>
+						<strong class="githubName">
+							{{ github.Name }}
+							<a href="javascript://" class="showModifyGithubName"><i class="fa fa-pencil"></i></a>
+						</strong>
+						<span class="usernameForm modifyGithubName hide">
+							<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
+							<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
+							<button class="btn btn-link btn-mini cancel"><i class="fa fa-times"></i></button>
+						</span>
+					</p>
+					{{#if github.Identifier}}
+						<p><small><i class="fa fa-check-square text-success"></i> Valid account</small></p>
+					{{else}}
+						<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Unvalid account</strong><br/>Please check your github account username.</small></p>
+					{{/if}}
+				</div>
 			{{else}}
-				{{#if user.Email}}
-					
-					<p>Please add or upload the ssh public and store it in your github account.</p>
-					<div id="myDroppableTextarea"></div>
-					<div class="rsaValidation alert"><i class="icon-exclamation-sign"></i> Insert a valid rsa public key.</div>
-					<button class="btn btn-success btn-small addPublicKeyFromTextarea" disabled="disabled">Add your public key</button>
-				{{else}}
-					<p class="text-warning"><i class="icon-warning-sign"></i> 
-						<strong>Warning!</strong> Your E-mail is missing.</p>
-					<p>Please set your e-mail <a href="profile">here.</a></p>
-				{{/if}}
+				<div class="panel">
+					<p style="margin:0px">
+						<i class="fa fa-github fa-2x"></i> 
+						<span class="usernameForm modifyGithubName">
+							<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
+							<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
+						</span>
+					</p>
+					<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Account not set!</strong><br/>Please set your github account username.</small></p>
+				</div>
 			{{/if}}
-		{{/if}}
-	{{/if}}{{/if}}
-	
-	<br/>
-	<!-- 
-if (Name){
-	// form to change github username
-
-	if (HasSSHKey){
-		// info: all ok with github
-		// show info...
-	} else {
-		// warning: github public key is missing
-		if (certpub){
-			//button add public key to github
-				-> POST
-		} else {
-			// warning github public key is missing
-			// please add your certificate <>here</>
-		}
-	}
-} else {
-	warning
-	// form to set github username
-}	
-	 -->
+			{{#if github.Name}}{{#if github.Identifier}}
+				{{#if github.HasSSHKey}}
+					<div class="githubKeyPanel">
+						<img class="key" src="/scripts/modules/settings/img/key.png"></img>
+						<a href="javascript://" class="showSshKey">Hide SSH Key <i class="icon-caret-right"></i></a>
+						<pre class="certPub">{{ github.CertPub }}</pre>
+					</div>
+				{{else}}
+					{{#if github.CertPub}}
+						<div class="githubKeyPanel">
+							<img class="key" src="/scripts/modules/settings/img/key.png"></img>
+							<a href="javascript://" class="showSshKey">Show SSH Key <i class="icon-caret-right"></i></a>
+							<pre class="certPub">{{ github.CertPub }}</pre>
+							<br/>
+		 					<button class="btn btn-primary btn-small addPublicKey">Add your public key</button>
+						</div>
+					{{else}}
+						{{#if user.Email}}
+							<p>Please add or upload the ssh public and store it in your github account.</p>
+							<div id="myDroppableTextarea"></div>
+							<div class="rsaValidation alert"><i class="icon-exclamation-sign"></i> Insert a valid rsa public key.</div>
+							<button class="btn btn-warning btn-small addPublicKeyFromTextarea" disabled="disabled">Add your public key</button>
+						{{else}}
+							<p class="text-warning"><i class="icon-warning-sign"></i> 
+								<strong>Warning!</strong> Your E-mail is missing.</p>
+							<p>Please set your e-mail <a href="profile">here.</a></p>
+						{{/if}}
+					{{/if}}
+				{{/if}}
+			{{/if}}{{/if}}
+		</div>
+	</div>
 </div>

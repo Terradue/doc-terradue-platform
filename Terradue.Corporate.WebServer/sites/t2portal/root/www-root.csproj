@@ -473,7 +473,6 @@
     <Content Include="scripts\modules\settings\models\profile.js" />
     <Content Include="scripts\modules\settings\models\safe.js" />
     <Content Include="scripts\modules\settings\views\certificate.html" />
-    <Content Include="scripts\modules\settings\views\cloud.html" />
     <Content Include="scripts\modules\settings\views\earlyBird.html" />
     <Content Include="scripts\modules\settings\views\freeTrial.html" />
     <Content Include="scripts\modules\settings\views\github.html" />
@@ -483,7 +482,6 @@
     <Content Include="scripts\modules\settings\views\pendingActivationSuccess.html" />
     <Content Include="scripts\modules\settings\views\plan.html" />
     <Content Include="scripts\modules\settings\views\profile.html" />
-    <Content Include="scripts\modules\settings\views\safe.html" />
     <Content Include="scripts\modules\signin\controllers\signin.js" />
     <Content Include="scripts\modules\signin\css\signin.css" />
     <Content Include="scripts\modules\signin\models\signin.js" />
@@ -555,6 +553,8 @@
     <Content Include="styles\img\resources\earth-background.png" />
     <Content Include="styles\img\resources\earth-background-2.png" />
     <Content Include="styles\img\separators\shapes.jpg" />
+    <Content Include="scripts\modules\settings\views\key.html" />
+    <Content Include="scripts\modules\settings\views\email.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\" />
