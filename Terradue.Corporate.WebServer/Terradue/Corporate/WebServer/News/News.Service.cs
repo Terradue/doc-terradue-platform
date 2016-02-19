@@ -55,7 +55,8 @@ namespace Terradue.Corporate.WebServer {
                 MultiGenericOpenSearchable multiOSE = new MultiGenericOpenSearchable(osentities, ose);
 
                 result = ose.Query(multiOSE, httpRequest.QueryString, type);
-
+                if(result.TotalResults == 0)
+                    result.TotalResults = result.Count;
 
                 context.Close ();
             }catch(Exception e) {
