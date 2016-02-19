@@ -112,14 +112,9 @@ var SignupControl = BaseControl(
 				loading: true, errorMessage: null, success: false, recaptchaError:null,
 			});
 			userData.captchaValue = captchaValue;
-			new SignupModel(userData).save().then(function(){
-				
-				self.view({
-					url: 'modules/signup/views/signupSuccess.html',
-					fnLoad: function(){
-						Helpers.scrollToTop();
-					}
-				});
+			new SignupModel(userData).save().then(function(data, textStatus, jqXHR){
+
+				self.redirectToCallback(jqXHR);
 				
 			}).fail(function(xhr){
 				self.data.attr({
@@ -131,6 +126,27 @@ var SignupControl = BaseControl(
 			});
 			return false;
 		},
+		
+		redirectToCallback: function(jqXHR){
+			if (jqXHR.status==204){
+				var location = jqXHR.getResponseHeader('Location');
+				if (location)
+					window.location.replace(location); // redirect
+				else
+					this.displayErrorMessage('Something went wrong.', 'Missing Location response header.');
+				
+				return true;
+			} else
+				this.displayErrorMessage('Something went wrong.', 'Unable to redirect.');
+		},
+		
+		displayErrorMessage: function(shortMsg, longMsg){
+			
+			this.errorView({}, shortMsg, longMsg, true);
+
+		},
+
+
 		
 	}
 );
