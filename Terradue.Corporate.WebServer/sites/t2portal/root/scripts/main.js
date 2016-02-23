@@ -23,6 +23,8 @@ require.config({
 		//bootstrapFileUpload: 'libs/bootstrap-fileupload/bootstrap-fileupload.min',
 		jasnyBootstrap: 'libs/jasny-bootstrap/js/jasny-bootstrap.min',
 		droppableTextarea: 'libs/jquery.droppableTextarea/js/jquery.droppableTextarea',
+		zeroClipboard: 'libs/zeroClipboard/ZeroClipboard',
+		jqueryCopyableInput: 'libs/jquery.copyableInput/js/jquery.copyableInput'
 	},
 	shim: {
 		underscore: {
@@ -45,6 +47,10 @@ require.config({
 		jqueryValidate: ['jquery'], 
 		jasnyBootstrap: ['jquery', 'bootstrap'],
 		droppableTextarea: ['jquery', 'bootstrap'],
+		zeroClipboard: {
+			exports: 'ZeroClipboard'
+		},
+		jqueryCopyableInput: ['zeroClipboard', 'jquery']
 	}
 });
 

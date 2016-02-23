@@ -19,7 +19,8 @@
 				<div class="safePanel pubKey">
 					<div class="key-title">Public ssh key</div>
 					<pre class="pubKey">{{ user.PublicKey }}</pre>
-					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard"><i class="fa fa-clipboard"></i></button>
+					<div class="copyableInput" data-public-key="{{ user.PublicKey }}"></div>
+					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard" data-public-key="{{ user.PublicKey }}"><i class="fa fa-clipboard"></i></button>
 					&nbsp;&nbsp;<button class="btn btn-small btn-primary downloadPrivateKeyBtn" title="Download"><i class="fa fa-download"></i></button>
 				</div>
 				<hr/>
