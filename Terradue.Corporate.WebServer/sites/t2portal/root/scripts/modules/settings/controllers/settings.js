@@ -42,14 +42,16 @@ define([
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
 				this.isLoginPromise.then(function(user){
-					self.data.attr({
-						user: user,
-						isPending: (user.AccountStatus==1),
-						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
-						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
-						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
+					self.githubPromise.then(function(githubData){
+						self.data.attr({
+							user: user,
+							github: githubData,
+							isPending: (user.AccountStatus==1),
+							emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+							showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
+							showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
+							showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
+							profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
 
 						});
 					});
@@ -160,8 +162,10 @@ define([
 				self.isLoginPromise.then(function(userData){
 
 					if (self.params.code && self.params.state && self.params.state=='geohazardstep'){
-						GithubModel.getGithubToken(this.params.code, function(){
-						},function(){
+						GithubModel.getGithubToken(this.params.code)
+						.then(function(){
+						})
+						.fail(function(){
 							bootbox.alert("<i class='fa fa-warning'></i> Error during put your GitHub token.");
 						});
 					}
@@ -205,6 +209,11 @@ define([
 					self.keyData.attr('PublicKeyBase64', btoa(userData.PublicKey))
 					self.element.find('.copyPublicKeyBtn').copyableInput(userData.PublicKey, {
 						isButton: true,
+					});
+					self.element.find('.downloadKey').tooltip({
+						trigger: 'hover',
+						title: 'Download',
+						placement:'bottom'
 					});
 				});
 			},
@@ -490,6 +499,11 @@ define([
 									});
 									self.element.find('.copyPrivateKeyBtn').copyableInput(safe.PrivateKey, {
 										isButton: true,
+									});
+									self.element.find('.downloadKey').tooltip({
+										trigger: 'hover',
+										title: 'Download',
+										placement:'bottom'
 									});
 
 							    	$('.noKey').mask();
