@@ -33,30 +33,19 @@ namespace Terradue.Corporate.WebServer {
 
                 Type type = OpenSearchFactory.ResolveTypeFromRequest(httpRequest, ose);
 
-                List<Terradue.OpenSearch.IOpenSearchable> osentities = new List<Terradue.OpenSearch.IOpenSearchable>();
+                EntityList<Article> articles = new EntityList<Article>(context);
+                articles.Load();
+                var identifier = articles.Identifier;
 
-                try{
-                    EntityList<Article> articles = new EntityList<Article>(context);
-                    articles.Load();
-                    osentities.Add(articles);
-                }catch(Exception){}
+                List<Article> tmp = articles.GetItemsAsList();
+                tmp.Sort();
+                tmp.Reverse();
 
-                try{
-                    List<TwitterFeed> twitters = TwitterNews.LoadTwitterFeeds(context);
-                    foreach(TwitterFeed twitter in twitters) osentities.Add(twitter);
-                }catch(Exception){}
+                articles = new EntityList<Article>(context);
+                articles.Identifier = identifier;
+                foreach (Article a in tmp) articles.Include(a);
 
-                try{
-                    EntityList<RssNews> rsss = new EntityList<RssNews>(context);
-                    rsss.Load();
-                    foreach(RssNews rss in rsss) osentities.Add(rss);
-                }catch(Exception){}
-
-                MultiGenericOpenSearchable multiOSE = new MultiGenericOpenSearchable(osentities, ose);
-
-                result = ose.Query(multiOSE, httpRequest.QueryString, type);
-                if(result.TotalResults == 0)
-                    result.TotalResults = result.Count;
+                result = ose.Query(articles, httpRequest.QueryString, type);
 
                 context.Close ();
             }catch(Exception e) {
