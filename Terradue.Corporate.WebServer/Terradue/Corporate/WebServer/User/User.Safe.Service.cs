@@ -35,30 +35,7 @@ namespace Terradue.Corporate.WebServer {
                 user.CreateSafe(request.password);
                 result = new WebSafe();
                 result.PublicKey = user.GetPublicKey();
-
-                context.Close ();
-            }catch(Exception e) {
-                context.Close ();
-                throw e;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Put the specified request.
-        /// </summary>
-        /// <param name="request">Request.</param>
-        public object Put(ReCreateSafeUserT2 request)
-        {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            WebSafe result;
-            try{
-                context.Open();
-
-                UserT2 user = UserT2.FromId(context, context.UserId);
-                user.RecreateSafe(request.password);
-                result = new WebSafe();
-                result.PublicKey = user.GetPublicKey();
+                result.PrivateKey = user.GetPrivateKey(request.password);
 
                 context.Close ();
             }catch(Exception e) {

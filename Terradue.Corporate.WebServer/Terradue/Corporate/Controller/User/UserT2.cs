@@ -313,14 +313,15 @@ namespace Terradue.Corporate.Controller {
         public void CreateSafe(string password) {
             try {
                 safe = Safe.FromUserId(context, this.Id);
+                safe.ClearKeys();
             } catch (Exception e) {
-                safe = new Safe(context);
-                safe.OwnerId = this.Id;
-                safe.GenerateKeys(password);
-                safe.Store();
-                return;
+                //user has no safe yet
             }
-            throw new Exception("User already has a Safe");
+            safe = new Safe(context);
+            safe.OwnerId = this.Id;
+            safe.GenerateKeys(password);
+            safe.Store();
+            return;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -329,13 +330,13 @@ namespace Terradue.Corporate.Controller {
         /// Recreates the safe.
         /// </summary>
         /// <param name="password">Password.</param>
-        public void RecreateSafe(string password) {
-            if (safe == null)
-                throw new Exception("User has no Safe");
-            safe.ClearKeys();
-            safe.GenerateKeys(password);
-            safe.Store();
-        }
+//        public void RecreateSafe(string password) {
+//            if (safe == null)
+//                throw new Exception("User has no Safe");
+//            safe.ClearKeys();
+//            safe.GenerateKeys(password);
+//            safe.Store();
+//        }
 
         //--------------------------------------------------------------------------------------------------------------
 

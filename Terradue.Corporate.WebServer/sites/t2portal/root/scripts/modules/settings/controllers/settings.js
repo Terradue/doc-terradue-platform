@@ -452,31 +452,7 @@ define([
 			},
 
 			/* safe */
-			'.safePubKeyPanel > .showPubSshKey click': function(el){
-				var $pre = $(".safePubKeyPanel > .pubKey");
-				if ($pre.is(':visible')){
-					$pre.hide('blind');
-					el.html('Show Public SSH Key <i class="icon-caret-right"></i>');
-				} else{
-					$pre.show('blind');
-					el.html('Hide Public SSH Key <i class="icon-caret-down"></i>');
-				}
-				return false;
-			},
-
-			'.safePrivKeyPanel > .showPrivSshKey click': function(el){
-				var $pre = $(".safePrivKeyPanel > .privKey");
-				if ($pre.is(':visible')){
-					$pre.hide('blind');
-					el.html('Show Private SSH Key <i class="icon-caret-right"></i>');
-				} else{
-					$pre.show('blind');
-					el.html('Hide Private SSH Key <i class="icon-caret-down"></i>');
-				}
-				return false;
-			},
-
-			'.settings-safe .createSafeBtn click': function(){
+			'.settings-key .generateSafe click': function(){
 				var self = this;
 				var message = "<div class='container-fluid signupForm'>"
 							+ "<form>"
@@ -491,7 +467,7 @@ define([
 							+ "</form>"
 							+ "</div>";
 				bootbox.dialog({
-					title: "Please enter your Safe password",
+					title: "Please enter your new ssh key password",
 					message: message,
 					buttons: {
 	                    success: {
@@ -501,6 +477,7 @@ define([
 	                            var password = $('#safePassword').val();
 	                            SafeModel.create(password).then(function(safe){
 							    	self.data.user.attr("PublicKey",safe.PublicKey);
+							    	self.data.user.attr("PrivateKey",safe.PrivateKey);
 							    	$('.noKey').mask();
 									$('.hasKey').unmask();
 								}).fail(function(){
@@ -512,42 +489,42 @@ define([
 				});
 			},
 
-			'.settings-safe .recreateSafeBtn click': function(){
-				var self = this;
-				var message = "<div class='container-fluid signupForm'>"
-							+ "<form>"
-							+ "<div class='form-group'>" 
-							+ "<label for='password'>Password</label>"
-							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
-							+ "</div>"
-							+ "<div class='form-group'>"
-							+ "<label for='passwordRepeat'>Password confirmation</label>"
-							+ "<input type='password' class='form-control' name='passwordRepeat' placeholder='Password confirmation'>"
-							+ "</div>"
-							+ "</form>"
-							+ "</div>";
-				bootbox.dialog({
-					title: "Please enter your Safe password",
-					message: message,
-					buttons: {
-	                    success: {
-	                        label: "OK",
-	                        className: "btn-default",
-	                        callback: function () {
-	                            var password = $('#safePassword').val();
-	                            SafeModel.recreate(password).then(function(safe){
-							    	self.data.user.attr("PublicKey",safe.PublicKey);
-							    	$('.noKey').mask();
-									$('.hasKey').unmask();
-								}).fail(function(){
-									bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
-								});
-                        	}
-                    	}
-                    }
-				});
-			},
-
+//			'.settings-safe .recreateSafeBtn click': function(){
+//				var self = this;
+//				var message = "<div class='container-fluid signupForm'>"
+//							+ "<form>"
+//							+ "<div class='form-group'>" 
+//							+ "<label for='password'>Password</label>"
+//							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+//							+ "</div>"
+//							+ "<div class='form-group'>"
+//							+ "<label for='passwordRepeat'>Password confirmation</label>"
+//							+ "<input type='password' class='form-control' name='passwordRepeat' placeholder='Password confirmation'>"
+//							+ "</div>"
+//							+ "</form>"
+//							+ "</div>";
+//				bootbox.dialog({
+//					title: "Please enter your Safe password",
+//					message: message,
+//					buttons: {
+//	                    success: {
+//	                        label: "OK",
+//	                        className: "btn-default",
+//	                        callback: function () {
+//	                            var password = $('#safePassword').val();
+//	                            SafeModel.recreate(password).then(function(safe){
+//							    	self.data.user.attr("PublicKey",safe.PublicKey);
+//							    	$('.noKey').mask();
+//									$('.hasKey').unmask();
+//								}).fail(function(){
+//									bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
+//								});
+//                        	}
+//                    	}
+//                    }
+//				});
+//			},
+//
 			'.settings-safe .getPrivateKeyBtn click': function(){
 				var self = this;
 				bootbox.prompt({
