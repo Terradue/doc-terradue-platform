@@ -41,20 +41,22 @@ define([
 				this.githubPromise = GithubModel.findOne();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
-
 				this.isLoginPromise.then(function(user){
 					var downloadData = new can.Observe({});
 					downloadData.attr('PublicKeyBase64', btoa(user.PublicKey));
-					self.data.attr({
-						user: user,
-						download: downloadData,
-						isPending: (user.AccountStatus==1),
-						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
-						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
-						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
+					self.githubPromise.then(function(githubData){
+						self.data.attr({
+							user: user,
+							github: githubData,
+							download: downloadData,
+							isPending: (user.AccountStatus==1),
+							emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+							showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
+							showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
+							showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
+							profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
 
+						});
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -161,6 +163,14 @@ define([
 				var self = this;
 				console.log("App.controllers.Settings.github");
 				self.isLoginPromise.then(function(userData){
+
+					if (self.params.code && self.params.state && self.params.state=='geohazardstep'){
+						GithubModel.getGithubToken(this.params.code, function(){
+						},function(){
+							bootbox.alert("<i class='fa fa-warning'></i> Error during put your GitHub token.");
+						});
+					}
+
 					self.githubPromise.then(function(githubData){
 						self.githubData = githubData;
 						self.view({
@@ -173,7 +183,6 @@ define([
 							},
 							fnLoad: function(){
 								self.initSubmenu('github');
-								self.initSshKeyArea();
 							}
 						});
 					});
@@ -360,18 +369,6 @@ define([
 				return false;
 			},
 
-			'.githubKeyPanel > .showSshKey click': function(el){
-				var $pre = $(".githubKeyPanel > .certPub");
-				if ($pre.is(':visible')){
-					$pre.hide('blind');
-					el.html('Show SSH Key <i class="icon-caret-right"></i>');
-				} else{
-					$pre.show('blind');
-					el.html('Hide SSH Key <i class="icon-caret-down"></i>');
-				}
-				return false;
-			},
-
 			'.settings-github .addPublicKeyToGithub click': function(){
 				var sshPublicKey = $('#myDroppableTextarea textarea').val();
 				if (!sshPublicKey)
@@ -394,22 +391,22 @@ define([
 			
 			'.settings-github .showModifyGithubName click': function(){
 				$('.settings-github .githubName').hide();
-				$('.settings-github .modifyGithubName').show();
+				$('.settings-github .modifyGithubName').removeClass('hide');
 			},
 			
-			'.settings-github .githubKeyPanel .addPublicKey click': 'addPublicKey',
-			addPublicKey: function(sshPublicKey){
+			'.settings-github .addPublicKey click': 'addPublicKey',
+			addPublicKey: function(){
 				var self = this;
 				
 				this.configPromise.then(function(_serviceConfig){
 					var serviceConfig = Helpers.keyValueArrayToJson(_serviceConfig, 'Key', 'Value');
 
 					$('.githubKeyPanel').mask('wait');
-					GithubModel.postSshKey(sshPublicKey).then(function(){
-						$('.githubKeyPanel').unmask();
+					GithubModel.postSshKey()
+					.then(function(){
 						self.githubData.attr('HasSSHKey', 'true');
-					}).fail(function(xhr){
-						$('.githubKeyPanel').unmask();
+					})
+					.fail(function(xhr){
 						if (!xhr.responseJSON)
 							xhr.responseJSON = JSON.parse(xhr.responseText)
 							if (xhr.responseJSON.ResponseStatus.Message == "Invalid token"){

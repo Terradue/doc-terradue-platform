@@ -24,11 +24,9 @@
 							<button class="btn btn-link btn-mini cancel"><i class="fa fa-times"></i></button>
 						</span>
 					</p>
-					{{#if github.Identifier}}
-						<p><small><i class="fa fa-check-square text-success"></i> Valid account</small></p>
-					{{else}}
+					{{#unless github.Identifier}}
 						<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Unvalid account</strong><br/>Please check your github account username.</small></p>
-					{{/if}}
+					{{/unless}}
 				</div>
 			{{else}}
 				<div class="panel">
@@ -44,31 +42,21 @@
 			{{/if}}
 			{{#if github.Name}}{{#if github.Identifier}}
 				{{#if github.HasSSHKey}}
-					<div class="githubKeyPanel">
-						<img class="key" src="/scripts/modules/settings/img/key.png"></img>
-						<a href="javascript://" class="showSshKey">Hide SSH Key <i class="icon-caret-right"></i></a>
-						<pre class="certPub">{{ github.CertPub }}</pre>
-					</div>
+					<span class="text text-success"><i class="fa fa-check-square"></i> SSH key imported on github !</span>
 				{{else}}
 					{{#if github.CertPub}}
-						<div class="githubKeyPanel">
-							<img class="key" src="/scripts/modules/settings/img/key.png"></img>
-							<a href="javascript://" class="showSshKey">Show SSH Key <i class="icon-caret-right"></i></a>
+						<div>
+							<div class="key-title">Public ssh key</div>
 							<pre class="certPub">{{ github.CertPub }}</pre>
 							<br/>
-		 					<button class="btn btn-primary btn-small addPublicKey">Add your public key</button>
+		 					<button class="btn btn-warning btn-small addPublicKey">Import key on Github</button>
 						</div>
 					{{else}}
-						{{#if user.PublicKey}}
-							<p>You can directly import your public ssh key on github.</p>
-							<button class="btn btn-warning btn-small addPublicKeyToGithub" disabled="disabled">Import public key</button>
-						{{else}}
-							<p class="alert alert-warning"><i class="icon-warning-sign"></i> 
-								You have no ssh key created for your Terradue Cloud Platform account.
-								<br/>
-								Create it fisrt <a href="key">here</a> to import it on your Github account.
-							</p>
-						{{/if}}
+						<p class="alert alert-warning"><i class="icon-warning-sign"></i> 
+							You have no ssh key created for your Terradue Cloud Platform account.
+							<br/>
+							Create it fisrt <a href="key">here</a> to import it on your Github account.
+						</p>
 					{{/if}}
 				{{/if}}
 			{{/if}}{{/if}}
