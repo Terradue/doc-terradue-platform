@@ -309,8 +309,7 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Creates the safe.
         /// </summary>
-        /// <param name="password">Password.</param>
-        public void CreateSafe(string password) {
+        public void CreateSafe() {
             try {
                 safe = Safe.FromUserId(context, this.Id);
                 safe.ClearKeys();
@@ -319,7 +318,7 @@ namespace Terradue.Corporate.Controller {
             }
             safe = new Safe(context);
             safe.OwnerId = this.Id;
-            safe.GenerateKeys(password);
+            safe.GenerateKeys();
             safe.Store();
             return;
         }
@@ -357,10 +356,10 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns>The private key.</returns>
         /// <param name="password">Password.</param>
-        public string GetPrivateKey(string password) {
+        public string GetPrivateKey() {
             if (!HasSafe())
                 return null;
-            return safe.GetBase64SSHPrivateKey(password);
+            return safe.GetBase64SSHPrivateKey();
         }
 
         #endregion

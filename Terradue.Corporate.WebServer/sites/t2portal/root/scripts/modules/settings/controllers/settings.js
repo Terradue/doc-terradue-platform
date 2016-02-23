@@ -162,7 +162,7 @@ define([
 				self.isLoginPromise.then(function(userData){
 
 					if (self.params.code && self.params.state && self.params.state=='geohazardstep'){
-						GithubModel.getGithubToken(this.params.code)
+						GithubModel.getGithubToken(self.params.code)
 						.then(function(){
 						})
 						.fail(function(){
@@ -460,20 +460,19 @@ define([
 			/* safe */
 			'.settings-key .generateSafe click': function(){
 				var self = this;
+				var title = "This action requires your password.";
+				if(self.data.user.PublicKey)
+					title += "<br/><small><i>Please note that this will overwrite your current SSH key pair.</i></small>";
 				var message = "<div class='container-fluid'>"
 							+ "<form class='createSafeForm'>"
 							+ "<div class='form-group'>" 
 							+ "<label for='password'>Password</label>"
 							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
 							+ "</div>"
-							+ "<div class='form-group'>"
-							+ "<label for='passwordRepeat'>Password confirmation</label>"
-							+ "<input type='password' class='form-control' id='safePasswordRepeat' name='passwordRepeat' placeholder='Password confirmation'>"
-							+ "</div>"
 							+ "</form>"
 							+ "</div>";
 				bootbox.dialog({
-					title: "Please enter your new ssh key password",
+					title: title,
 					message: message,
 					buttons: {
 	                    success: {
@@ -481,9 +480,8 @@ define([
 	                        className: "btn-default",
 	                        callback: function (a,b,c) {
 	                            var password = $('#safePassword').val();
-	                            var passwordRepeat = $('#safePasswordRepeat').val();
-	                            if (password!=passwordRepeat || password==''){
-	                            	bootbox.alert("<i class='fa fa-warning'></i> Password and Password Confirmation must be the same.");
+	                            if (password==''){
+	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
 	                            	//self.element.find('.createSafeForm .text-error').show();
 	                            	return false;
 	                            };

@@ -79,7 +79,7 @@ namespace Terradue.Corporate.WebServer {
                     user.PublicSSHKey = null;
                 }
                 result = new WebGithubProfile(user);
-                result.HasSSHKey = true;
+//                result.HasSSHKey = true;
                 context.Close();
             } catch (Exception e) {
                 context.Close();

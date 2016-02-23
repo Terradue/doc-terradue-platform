@@ -13,11 +13,11 @@ define(['jquery', 'can', 'config'], function($, can, Config){
 			});	
 		},
 		
-		getGithubToken: function(password){
+		getGithubToken: function(code){
 			return $.ajax('/'+Config.api+'/github/token', {
 				type : "PUT",
 				dataType : "json",
-				data : {Password:password, Scope:"write:public_key", Description:"Terradue Sandboxes Application"}
+				data : {Code:code, Scope:"write:public_key", Description:"Terradue Sandboxes Application"}
 			});
 		},
 	}, {});

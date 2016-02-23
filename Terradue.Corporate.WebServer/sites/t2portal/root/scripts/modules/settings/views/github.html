@@ -12,7 +12,7 @@
 			{{#if github.Name}}
 				<div class="panel alert-no-bottom-margin">
 					{{#github.Avatar}}<img class="githubAvatar" src="{{ github.Avatar }}">{{/github.Avatar}}
-					<p style="margin:0px">
+					<p>
 						<a href="https://github.com/{{ github.Name }}" target="_blank"><i class="fa fa-github fa-2x"></i></a>
 						<strong class="githubName">
 							{{ github.Name }}
@@ -30,19 +30,17 @@
 				</div>
 			{{else}}
 				<div class="panel">
-					<p style="margin:0px">
 						<i class="fa fa-github fa-2x"></i> 
 						<span class="usernameForm modifyGithubName">
 							<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
 							<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
 						</span>
-					</p>
 					<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Account not set!</strong><br/>Please set your github account username.</small></p>
 				</div>
 			{{/if}}
 			{{#if github.Name}}{{#if github.Identifier}}
 				{{#if github.HasSSHKey}}
-					<span class="text text-success"><i class="fa fa-check-square"></i> SSH key imported on github !</span>
+					<span class="text text-success"><i class="fa fa-check-square"></i> Your SSH key is associated to your Github account !</span>
 				{{else}}
 					{{#if github.CertPub}}
 						<div>

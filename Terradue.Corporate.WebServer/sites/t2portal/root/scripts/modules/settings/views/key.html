@@ -6,10 +6,10 @@
 			{{#if PrivateKey}}
 				<div class="safePanel privKey">
 					<div class="key-title">Private ssh key</div>
+					<pre class="privKey">{{ PrivateKey }}</pre>
 					<div class="alert alert-danger">
 						<b><i class="fa fa-warning"></i> We don't store your private key. You must save it on your computer.</b>
 					</div>
-					<pre class="privKey">{{ PrivateKey }}</pre>
 					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard" data-public-key="{{ PrivateKey }}"><i class="fa fa-clipboard"></i></button>
 				&nbsp;&nbsp;<a class="btn btn-small btn-primary downloadKey" download="id_rsa" href="data:application/octet-stream;charset=utf-8;base64,{{ PrivateKeyBase64 }}"><i class="fa fa-download"></i></a>
 				</div>

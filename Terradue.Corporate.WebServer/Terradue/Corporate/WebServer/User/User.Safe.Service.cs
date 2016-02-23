@@ -13,6 +13,7 @@ using System.IO;
 using ServiceStack.Text;
 using System.Runtime.Serialization;
 using ServiceStack.Common.Web;
+using Terradue.Ldap;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]
@@ -31,37 +32,27 @@ namespace Terradue.Corporate.WebServer {
             try{
                 context.Open();
 
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
+                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
+
                 UserT2 user = UserT2.FromId(context, context.UserId);
-                user.CreateSafe(request.password);
+
+                //authenticate user
+                try{
+                    client.Authenticate(user.Identifier, request.password);
+                }catch(Exception e){
+                    throw new Exception("Invalid password");
+                }
+
+                user.CreateSafe();
                 result = new WebSafe();
                 result.PublicKey = user.GetPublicKey();
-                result.PrivateKey = user.GetPrivateKey(request.password);
-
-                context.Close ();
-            }catch(Exception e) {
-                context.Close ();
-                throw e;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Get the specified request.
-        /// </summary>
-        /// <param name="request">Request.</param>
-        public object Put(GetSafeUserT2 request)
-        {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            WebSafe result;
-            try{
-                context.Open();
-
-                UserT2 user = UserT2.FromId(context, context.UserId);
-                if(user.HasSafe()){
-                    result = new WebSafe();
-                    result.PublicKey = user.GetPublicKey();
-                    result.PrivateKey = user.GetPrivateKey(request.password);
-                } else throw new Exception("Safe has not yet been created");
+                result.PrivateKey = user.GetPrivateKey();
 
                 context.Close ();
             }catch(Exception e) {
