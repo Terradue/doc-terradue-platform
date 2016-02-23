@@ -37,24 +37,17 @@ define([
 				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
-				this.planStatus = new can.Observe({});
-				this.planStatus.attr({
-					planUpgradedSuccessName: false,
-					planUpgradedFailMessage: false,
-					planUpgradedLoading: false
-				});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
-				this.planPromise = PlansModel.findAll();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
-				this.planPromise.then(function(plans){
-					self.data.attr("plans", plans);
-				});
 
 				this.isLoginPromise.then(function(user){
+					var downloadData = new can.Observe({});
+					downloadData.attr('PublicKeyBase64', btoa(user.PublicKey));
 					self.data.attr({
 						user: user,
+						download: downloadData,
 						isPending: (user.AccountStatus==1),
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
 						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
@@ -191,12 +184,15 @@ define([
 				var self = this;
 				console.log("App.controllers.Settings.key");
 				self.isLoginPromise.then(function(userData){
+					var downloadData = new can.Observe({});
+					downloadData.attr('PublicKeyBase64', btoa(userData.PublicKey));
 					self.view({
 						url: 'modules/settings/views/key.html',
 						selector: Config.subContainer,
 						dependency: self.indexDependency(),
 						data: {
 							user: userData,
+							download: downloadData
 						},
 						fnLoad: function(){
 							self.initSubmenu('key');
@@ -494,6 +490,8 @@ define([
 	                            SafeModel.create(password).then(function(safe){
 							    	self.data.user.attr("PublicKey",safe.PublicKey);
 							    	self.data.user.attr("PrivateKey",safe.PrivateKey);
+							    	self.data.download.attr("PublicKeyBase64",btoa(safe.PublicKey));
+							    	self.data.download.attr("PrivateKeyBase64",btoa(safe.PrivateKey));
 							    	$('.noKey').mask();
 									$('.hasKey').unmask();
 								}).fail(function(){
