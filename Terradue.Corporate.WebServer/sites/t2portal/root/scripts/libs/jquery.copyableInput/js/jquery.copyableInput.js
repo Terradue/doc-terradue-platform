@@ -5,22 +5,34 @@
 //
 
 (function($) {
-$.copyableInput = function(textToCopy, options){
-	// init content
-	var $div = $('<div class="input-append copyableInput">');
+
+$.fn.copyableInput = function(textToCopy, options){
+	if (this.attr('data-copyableInput-enabled'))
+		return;
 	
-	if (!options.hideInput)
-		var $input = $('<input class="span2 copyableInput-input" type="text" readonly="readonly">')
-			.appendTo($div)
-			.val(textToCopy)
-			.css('min-width', options.minWidth ? options.minWidth : 110)
-			.click(function(){
-				$(this).select();
-			});
+	if (options.isButton)
+		// use the button as content
+		var $button = $(this);
+	else {
+		// init content
+		var $div = $('<div class="input-append copyableInput">');
+		
+		if (!options.hideInput)
+			var $input = $('<input class="span2 copyableInput-input" type="text" readonly="readonly">')
+				.appendTo($div)
+				.val(textToCopy)
+				.css('min-width', options.minWidth ? options.minWidth : 110)
+				.click(function(){
+					$(this).select();
+				});
+		
+		var $button = $('<button class="btn '+(options.btnClass ? options.btnClass : 'btn-small') +' copyableInput-button copyableInput-round"><i class="icon-copy"></i></button>')
+			.appendTo($div);
+		
+		this.append($div);
+	}
 	
-	var $button = $('<button class="btn '+(options.btnClass ? options.btnClass : 'btn-small') +' copyableInput-button copyableInput-round"><i class="icon-copy"></i></button>')
-		.appendTo($div)
-		.attr('data-clipboard-text', textToCopy);
+	$button.attr('data-clipboard-text', textToCopy);
 	
 	var zeroClient = new ZeroClipboard($button).on("aftercopy", function(event) {
 		$button.attr('data-original-title', 'copied!').tooltip('show');
@@ -39,14 +51,7 @@ $.copyableInput = function(textToCopy, options){
 		$button.tooltip('hide');
 	});
 	
-	return $div;
-};
-
-$.fn.copyableInput = function(textToCopy, options){
-	if (!this.attr('data-copyableInput-enabled')){
-		this.append($.copyableInput(textToCopy, options));
-		this.attr('data-copyableInput-enabled', 'true');
-	}
+	this.attr('data-copyableInput-enabled', 'true');
 	return this;
 };
 

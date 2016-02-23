@@ -200,12 +200,9 @@ define([
 						},
 						fnLoad: function(){
 							self.initSubmenu('key');
-							self.element.find('.copyableInput').each(function(){
-								$(this).copyableInput($(this).data('public-key'), {
-									minWidth: '80',
-									hideInput: true,
-									btnClass: 'btn-small btn-primary',
-								});
+							
+							self.element.find('.copyPrivateKeyBtn').copyableInput(userData.PublicKey, {
+								isButton: true,
 							});
 						}
 					});
@@ -466,15 +463,15 @@ define([
 			/* safe */
 			'.settings-key .generateSafe click': function(){
 				var self = this;
-				var message = "<div class='container-fluid signupForm'>"
-							+ "<form>"
+				var message = "<div class='container-fluid'>"
+							+ "<form class='createSafeForm'>"
 							+ "<div class='form-group'>" 
 							+ "<label for='password'>Password</label>"
 							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
 							+ "</div>"
 							+ "<div class='form-group'>"
 							+ "<label for='passwordRepeat'>Password confirmation</label>"
-							+ "<input type='password' class='form-control' name='passwordRepeat' placeholder='Password confirmation'>"
+							+ "<input type='password' class='form-control' id='safePasswordRepeat' name='passwordRepeat' placeholder='Password confirmation'>"
 							+ "</div>"
 							+ "</form>"
 							+ "</div>";
@@ -485,8 +482,15 @@ define([
 	                    success: {
 	                        label: "OK",
 	                        className: "btn-default",
-	                        callback: function () {
+	                        callback: function (a,b,c) {
 	                            var password = $('#safePassword').val();
+	                            var passwordRepeat = $('#safePasswordRepeat').val();
+	                            if (password!=passwordRepeat || password==''){
+	                            	bootbox.alert("<i class='fa fa-warning'></i> Password and Password Confirmation must be the same.");
+	                            	//self.element.find('.createSafeForm .text-error').show();
+	                            	return false;
+	                            };
+	                            
 	                            SafeModel.create(password).then(function(safe){
 							    	self.data.user.attr("PublicKey",safe.PublicKey);
 							    	self.data.user.attr("PrivateKey",safe.PrivateKey);
@@ -501,42 +505,6 @@ define([
 				});
 			},
 
-//			'.settings-safe .recreateSafeBtn click': function(){
-//				var self = this;
-//				var message = "<div class='container-fluid signupForm'>"
-//							+ "<form>"
-//							+ "<div class='form-group'>" 
-//							+ "<label for='password'>Password</label>"
-//							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
-//							+ "</div>"
-//							+ "<div class='form-group'>"
-//							+ "<label for='passwordRepeat'>Password confirmation</label>"
-//							+ "<input type='password' class='form-control' name='passwordRepeat' placeholder='Password confirmation'>"
-//							+ "</div>"
-//							+ "</form>"
-//							+ "</div>";
-//				bootbox.dialog({
-//					title: "Please enter your Safe password",
-//					message: message,
-//					buttons: {
-//	                    success: {
-//	                        label: "OK",
-//	                        className: "btn-default",
-//	                        callback: function () {
-//	                            var password = $('#safePassword').val();
-//	                            SafeModel.recreate(password).then(function(safe){
-//							    	self.data.user.attr("PublicKey",safe.PublicKey);
-//							    	$('.noKey').mask();
-//									$('.hasKey').unmask();
-//								}).fail(function(){
-//									bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
-//								});
-//                        	}
-//                    	}
-//                    }
-//				});
-//			},
-//
 			'.settings-safe .getPrivateKeyBtn click': function(){
 				var self = this;
 				bootbox.prompt({
