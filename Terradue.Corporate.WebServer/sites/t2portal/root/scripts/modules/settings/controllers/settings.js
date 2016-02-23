@@ -51,7 +51,7 @@ define([
 							showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
 							profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 							emailNotComplete: (user.AccountStatus==1),
-							sshKeyNotComplete: false,
+							sshKeyNotComplete: !(user.PublicKey),
 							githubNotComplete: !(githubData.HasSSHKey)
 						});
 					});
@@ -107,10 +107,9 @@ define([
 				this.isLoginPromise.then(function(user){
 					self.profileData.attr({
 						user: user,
-						isPending: (user.AccountStatus==1 && self.params.registered!='ok'),
-						isNewPending: (user.AccountStatus==1 && self.params.registered=='ok'),
-						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						emailNotComplete: (user.AccountStatus==1),
+						sshKeyNotComplete: !(user.PublicKey)
 					});
 					if (self.params.token && self.profileData.user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
@@ -140,10 +139,9 @@ define([
 				this.isLoginPromise.then(function(user){
 					self.profileData.attr({
 						user: user,
-						isPending: (user.AccountStatus==1 && self.params.registered!='ok'),
-						isNewPending: (user.AccountStatus==1 && self.params.registered=='ok'),
-						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						emailNotComplete: (user.AccountStatus==1),
+						sshKeyNotComplete: !(user.PublicKey)
 					});
 					if (self.params.token && self.profileData.user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
@@ -377,13 +375,16 @@ define([
 	                            	//self.element.find('.createSafeForm .text-error').show();
 	                            	return false;
 	                            };
-	                            
+
 	                            SafeModel.create(password).then(function(safe){
+	                            	self.data.attr({
+										sshKeyNotComplete: false,
+										githubNotComplete: true//we just create a new keys so it cannot be already on github
+									});
 							    	self.keyData.attr("PublicKey",safe.PublicKey);
 							    	self.keyData.attr("PrivateKey",safe.PrivateKey);
 							    	self.keyData.attr("PublicKeyBase64",btoa(safe.PublicKey));
 							    	self.keyData.attr("PrivateKeyBase64",btoa(safe.PrivateKey));
-							    	
 									self.element.find('.copyPublicKeyBtn').copyableInput(safe.PublicKey, {
 										isButton: true,
 									});

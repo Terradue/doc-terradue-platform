@@ -314,10 +314,10 @@ namespace Terradue.Corporate.Controller {
                 safe = Safe.FromUserId(context, this.Id);
                 safe.ClearKeys();
             } catch (Exception e) {
-                //user has no safe yet
+                //user has no safe
+                safe = new Safe(context);
+                safe.OwnerId = this.Id;
             }
-            safe = new Safe(context);
-            safe.OwnerId = this.Id;
             safe.GenerateKeys();
             safe.Store();
             return;
