@@ -10,7 +10,7 @@
 						<b><i class="fa fa-warning"></i> We don't store your private key. You must save it on your computer.</b>
 					</div>
 					<pre class="privKey">{{ user.PrivateKey }}</pre>
-					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard"><i class="fa fa-clipboard"></i></button>
+					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard" data-public-key="{{ user.PrivateKey }}"><i class="fa fa-clipboard"></i></button>
 				&nbsp;&nbsp;<a class="btn btn-small btn-primary" download="id_rsa" href="data:application/octet-stream;charset=utf-8;base64,{{ download.PrivateKeyBase64 }}"><i class="fa fa-download"></i></a>
 				</div>
 				<hr/>
@@ -19,7 +19,8 @@
 				<div class="safePanel pubKey">
 					<div class="key-title">Public ssh key</div>
 					<pre class="pubKey">{{ user.PublicKey }}</pre>
-					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard"><i class="fa fa-clipboard"></i></button>
+					<div class="copyableInput" data-public-key="{{ user.PublicKey }}"></div>
+					<button class="btn btn-small btn-primary copyPublicKeyBtn" title="Copy on clipboard" data-public-key="{{ user.PublicKey }}"><i class="fa fa-clipboard"></i></button>
 					&nbsp;&nbsp;<a class="btn btn-small btn-primary" download="id_rsa.pub" href="data:application/octet-stream;charset=utf-8;base64,{{ download.PublicKeyBase64 }}"><i class="fa fa-download"></i></a>
 				</div>
 				<hr/>

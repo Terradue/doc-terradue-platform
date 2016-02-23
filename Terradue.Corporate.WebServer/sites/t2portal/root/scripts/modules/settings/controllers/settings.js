@@ -13,13 +13,18 @@ define([
 	'modules/settings/models/oneUser',
 	'modules/settings/models/safe',
 	'modules/users/models/plans',
+	'zeroClipboard',
 	'canpromise',
 	'messenger',
 	'jasnyBootstrap',//'bootstrapFileUpload',
 	'jqueryValidate',
 	'ajaxFileUpload',
-	'droppableTextarea'
-], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel){
+	'droppableTextarea',
+	'jqueryCopyableInput'
+], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, ZeroClipboard){
+	
+	window.ZeroClipboard = ZeroClipboard;
+	
 	var SettingsControl = BaseControl(
 		{
 			defaults: { fade: 'slow' },
@@ -191,6 +196,13 @@ define([
 						},
 						fnLoad: function(){
 							self.initSubmenu('key');
+							self.element.find('.copyableInput').each(function(){
+								$(this).copyableInput($(this).data('public-key'), {
+									minWidth: '80',
+									hideInput: true,
+									btnClass: 'btn-small btn-primary',
+								});
+							});
 						}
 					});
 				});
