@@ -149,9 +149,6 @@
     <Reference Include="Terradue.Authentication.OpenId">
       <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.8\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Ldap">
-      <HintPath>..\packages\Terradue.Ldap.1.0.6\lib\net40\Terradue.Ldap.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.WebService.Model">
       <HintPath>..\packages\Terradue.WebService.Model.1.1.9\lib\net40\Terradue.WebService.Model.dll</HintPath>
     </Reference>
@@ -249,6 +246,10 @@
     <ProjectReference Include="..\..\..\components\sugar\Terradue.Portal\Terradue.Portal\Terradue.Portal.csproj">
       <Project>{2E8D7875-8347-4205-936B-F1BBA2164D87}</Project>
       <Name>Terradue.Portal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\components\sugar\DotNetJson2Ldap\Terradue.Ldap\Terradue.Ldap.csproj">
+      <Project>{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}</Project>
+      <Name>Terradue.Ldap</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
