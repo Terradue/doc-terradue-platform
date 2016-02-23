@@ -1,9 +1,87 @@
-<div class="news container">
-	<h2><small>News details:</small> <b>{{ Title }}</b></h2>
-	<hr/>
-	<div class="news">
-		<p class="lead">{{ Abstract}}</p>
-		<p>{{ Content }}</p>
-		<p><small><i class="fa fa-clock-o "></i> {{ Date }}</small></p>
+<div id="newsPage">
+<div class="newses container">
+	<h2>Newsroom</h2>
+
+	{{#if loading}}
+		<br/>
+		<br/>
+		<h3 style="text-align:center"><i class="fa fa-spin fa-spinner"></i>Loading news...</h3>
+	{{/if}}
+		<div class="row margin-vert-30">
+		{{#if news}}
+			{{#news.properties}}
+			<!-- Main Column -->
+			<div class="col-md-9">
+				<div class="blog-post">
+					<div class="blog-post-date pull-left">
+						<span class="day">14</span> <span class="month">Dec</span> <br>
+						<span class="year">2014</span>
+					</div>
+					<div class="blog-item-header">
+						<!-- Title -->
+						<h2>
+							<a href="#">{{title}}</a>
+						</h2>
+						<!-- End Title -->
+						<!-- Blog Item Details -->
+						<div class="blog-post-details">
+							<!-- Author Name -->
+							<div
+								class="blog-post-details-item blog-post-details-item-left user-icon">
+								<i class="fa fa-user color-gray-light"></i> {{authors.0.name}}
+							</div>
+							<!-- End Author Name -->
+							<!-- Date -->
+							<div class="blog-post-details-item blog-post-details-item-left">
+								<i class="fa fa-calendar color-gray-light"></i> {{simpleDate published}}
+							</div>
+							<!-- End Date -->
+							<!-- Tags -->
+							{{#if tags.length}}
+								<div class="blog-post-details-item blog-post-details-item-left blog-post-details-tags">
+									<i class="fa fa-tag color-gray-light"></i>
+									{{#each tags}}{{#if @index}}, {{/if}}
+										<a href="/portal/news/tag/{{.}}" data-tag="{{.}}">{{.}}</a>{{/each}}
+								</div>
+							{{/if}}
+							<!-- End Tags -->
+						</div>
+						<!-- End Blog Item Details -->
+					</div>
+					<!-- Blog Item -->
+					<div class="blog-item">
+						<div class="clearfix"></div>
+						<div class="blog-post-body row margin-top-15">
+							<div class="col-md-12">
+								<p>{{{content}}}</p>
+							</div>
+					</div>
+					</div>
+					<!-- End Blog Item -->
+				</div>
+				<!-- End Blog Post -->
+			</div>
+			<!-- End Main Column -->
+			{{/properties}}
+		{{/if}}
+		<!-- Side Column -->
+		<div class="col-md-3">
+			<!-- Blog Tags -->
+			<div class="blog-tags">
+				<h3>Tags</h3>
+				{{#if tags}}
+					<ul class="blog-tags">
+						{{#each tags}}
+							<li><a href="/portal/news/tag/{{Key}}" class="blog-tag" data-tag="{{Key}}">{{ Key }}</a></li>
+						{{/each}}
+					</ul>
+				{{else}}
+					Loading tags...					
+				{{/if}}
+			</div>
+			<!-- End Blog Tags -->
+			<!-- End Side Column -->
+		</div>
 	</div>
+</div>
 </div>

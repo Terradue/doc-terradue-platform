@@ -1,24 +1,210 @@
 
-.news p {
-	margin: 0px;
+
+/*-----------------------------------------------------------------------------------*/
+/* Blog */
+/*-----------------------------------------------------------------------------------*/
+#newsPage .blog-post-date {
+  background-color: #6f7c8f;
+  padding: 0px;
+  text-align: center;
+  font-weight: 400;
+  font-size: 10px;
+  color: #fff;
+  margin-right: 15px;
+}
+#newsPage .blog-post-date .day,
+#newsPage .blog-post-date .month,
+#newsPage .blog-post-date .year {
+  display: inline-block;
+  padding: 2px 0px;
+  position: relative;
+  top: 0;
+  vertical-align: middle;
+}
+#newsPage .blog-post-date .month {
+  text-transform: uppercase;
+  color: #ebebeb;
+}
+#newsPage .blog-post-date .year {
+  background-color: #596372;
+  font-size: 15px;
+  font-weight: 300;
+  text-align: center;
+  padding: 2px 4px;
+  width: 100%;
+}
+#newsPage .blog-post {
+  margin-bottom: 30px;
+}
+#newsPage .blog-post-details-item {
+  float: left;
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-size: 10px;
+  background: #f4f4f4;
+  margin: 0 10px 0 0;
+  line-height: normal;
+}
+#newsPage .blog-post-details-item a {
+  color: #b3b3b3;
+}
+#newsPage .blog-item-header {
+  display: block;
+  padding-bottom: 0px;
+  margin-bottom: 40px;
+  padding-left: 60px;
+}
+#newsPage .blog-item-header h2 {
+  padding: 0;
+}
+#newsPage .blog-item-header h2 a {
+  color: #555555;
+  text-decoration: none;
+}
+#newsPage .blog-item-footer .blog-author p {
+  padding: 0;
+  margin: 0;
+}
+#newsPage .blog-item-footer .blog-recent-comments .profile-thumb {
+  padding: 10px 20px;
+}
+#newsPage .blog-item-footer .blog-recent-comments h4 {
+  color: #555555;
+}
+#newsPage .blog-item-footer .blog-recent-comments .date {
+  color: #b3b3b3;
+}
+#newsPage .blog-item-footer .blog-recent-comments img {
+  border: 5px solid #ebebeb;
+  border-radius: 5px;
+}
+#newsPage .blog-item-footer .blog-recent-comments .list-group-item {
+  padding-bottom: 30px;
+}
+#newsPage .blog-item-footer hr {
+  width: 100%;
+}
+#newsPage .blog-item-footer h4 {
+  margin: 0;
+  padding: 0;
+}
+/* Blog - Tags */
+#newsPage .blog-tags {
+  list-style: none;
+  margin: 10px 0 20px;
+  overflow: hidden;
+  padding: 0;
+}
+#newsPage .blog-tags li {
+  float: left;
+}
+#newsPage .blog-tag {
+  background: #F4F4F4;
+  border-radius: 3px 0 0 3px;
+  color: #333333;
+  display: inline-block;
+  font-size: 10px;
+  height: 22px;
+  line-height: 22px;
+  padding: 0 25px 0 10px;
+  position: relative;
+  margin: 0 7px 7px 0;
+  text-decoration: none;
+  -webkit-transition: color 0.2s;
+  box-shadow: 1px -1px 0px rgba(0, 0, 0, 0.15) inset;
+}
+#newsPage .blog-tag::before {
+  background: #b3b3b3;
+  border-radius: 10px;
+  box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
+  content: '';
+  height: 6px;
+  right: 10px;
+  position: absolute;
+  width: 6px;
+  top: 8px;
+}
+#newsPage .blog-tag::after {
+  background: #FFF;
+  border-bottom: 11px solid transparent;
+  border-left: 10px solid #F4F4F4;
+  border-top: 11px solid transparent;
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+#newsPage .blog-tag:hover {
+  background-color: #a9b0bb;
+  color: white;
+}
+#newsPage .blog-tag:hover::after {
+  border-left-color: #a9b0bb;
+}
+/* Recent Posts */
+#newsPage ul.posts-list {
+  margin-left: 0;
+  padding-left: 0;
+}
+#newsPage ul.posts-list li {
+  list-style: none;
+}
+#newsPage .recent-post {
+  margin-bottom: 20px;
+}
+#newsPage .recent-post img {
+  padding-right: 10px;
+}
+#newsPage .recent-post .recent-post-date {
+  font-size: 11px;
+}
+#newsPage .posts-list-title {
+  font-size: 12px;
 }
 
-.news hr {
-	margin-top: 10px;
-	margin-bottom: 10px;
+
+/*-------------------------*/
+/*     BLOG T2 updates     */
+/*-------------------------*/
+
+#newsPage .blog-item-header h2  {
+	font-weight: 100;
+	line-height: 1em;
+	margin: 0 0 10px;
+	color: #555555;
+	font-size: 32px;
 }
 
-.newses.newses-min .newsContent {
-	margin-top: 5px;
-	font-size: 14px;
-	font-weight: 300;
+#newsPage .blog-post-date {
+	line-height: 23px;
 }
 
-.newses-min .news .newsContent img {
-	border: 1px solid #ddd;
-	padding: 3px;
+#newsPage .blog-tag:hover {
+	text-decoration: none;
 }
 
-.newses-min .news .newsDate {
-	font-size: 11px;
+#newsPage .blog-post-details-item {
+	color: #aaa;
+}
+#newsPage .blogImg {
+	display: block;
+	max-width: 100%;
+	max-height: 186px;
+	margin: auto;
+}
+#newsPage .blog-post {
+  margin-bottom: 50px;
+}
+#newsPage .blog-tag {
+    padding: 0 27px 0 10px;
+}
+#newsPage .blog-tag>span {
+    position: absolute;
+    color: #a9b0bb;
+    font-size: 9px;
+    right: 10px;
+    top: 1px;
+}
+#newsPage .blog-tag::before {
+	content: none;
 }

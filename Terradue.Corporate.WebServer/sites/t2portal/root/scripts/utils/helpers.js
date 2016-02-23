@@ -85,6 +85,12 @@ define([
 		return moment(dateStr).format("MMM Do YYYY");
 	});
 	
+	can.mustache.registerHelper('formattedDate', function(dateStr, format, options) {
+		var dateStr = (dateStr==null || typeof(dateStr)!='function' ? dateStr : dateStr());
+		var format = (format==null || typeof(format)!='function' ? format : format());
+		return moment(dateStr).format(format);
+	});
+	
 	can.mustache.registerHelper('spacer', function(width) {
 		return '<div style="display:inline-block; width:' + width + 'px"></div>';
 	});
@@ -179,6 +185,57 @@ define([
         }
     });
 
+	can.mustache.registerHelper('paginationBox', function(totalResults, pageOffset, page, count) {
+		
+		var n = totalResults = totalResults();
+		var pageOffset = pageOffset();
+		var page = page();
+		var count = count();
+		var np = totalPages = Math.ceil(totalResults/count);
+		var ePage = page + 1 -pageOffset; // effective page shown to user, from 1 to np
+		
+		if (totalPages<=1)
+			return '';
+		
+		var hasFirst, hasPrevDots, has2Prev, hasPrev, hasNext, has2Next, hasNextDots, hasLast;
+		
+		if (ePage>1) 	hasPrev = true;
+		if (ePage>2)	has2Prev = true;
+		if (ePage>3)	hasFirst = true;
+		if (ePage>4)	hasPrevDots = true;
+		
+		if (ePage<np)   hasNext = true;
+		if (ePage<np-1) has2Next = true;
+		if (ePage<np-2) hasLast = true;
+		if (ePage<np-3) hasNextDots = true;
+		
+		var html = //'totalResults='+totalResults+', pageOffset='+pageOffset+', page='+page+', count='+count+
+			'<ul class="pagination paginationBox">';
+		if (hasPrev)
+			html+= '<li><a data-page="'+(page-1)+'" class="changePage" href="#">Prev</a></li>';
+		if (hasFirst)
+			html+= '<li><a data-page="'+pageOffset+'" class="changePage" href="#">1</a></li>';
+		if (hasPrevDots)
+			html+= '<li><a href="#" class="disabled">...</a></li>';
+		if (has2Prev)
+			html+= '<li><a data-page="'+(page-2)+'" class="changePage" href="#">' + (ePage-2) + '</a></li>';
+		if (hasPrev)
+			html+= '<li><a data-page="'+(page-1)+'" class="changePage" href="#">' + (ePage-1) + '</a></li>';
+		html+= '<li class="active"><a href="#">'+(ePage)+'</a></li>';
+		if (hasNext)
+			html+= '<li><a data-page="'+(page+1)+'" class="changePage" href="#">' + (ePage+1) + '</a></li>';
+		if (has2Next)
+			html+= '<li><a data-page="'+(page+2)+'" class="changePage" href="#">' + (ePage+2) + '</a></li>';
+		if (hasNextDots)
+			html+= '<li><a href="#" class="disabled">...</a></li>';
+		if (hasLast)
+			html+= '<li><a data-page="'+(np+pageOffset-1)+'" class="changePage" href="#">' + (np) + '</a></li>';
+		if (hasNext)
+			html+= '<li><a data-page="'+(page+1)+'" class="changePage" href="#">Next</a></li>';
+		html+= '</ul>';
+		
+		return html;
+	});	
 	
 	////////////////////////////////
 
