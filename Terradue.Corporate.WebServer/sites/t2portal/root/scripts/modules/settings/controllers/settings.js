@@ -200,121 +200,67 @@ define([
 				});
 			},
 
-			freeTrial: function(options) {
-				var self = this;
-				console.log("App.controllers.Settings.freeTrial");
-				self.isLoginPromise.then(function(userData){
-					self.view({
-						url: 'modules/settings/views/freeTrial.html',
-						selector: Config.subContainer,
-						dependency: self.indexDependency(),
-						data: {
-							user: userData,
-						},
-						fnLoad: function(){
-							self.initSubmenu('freeTrial');
-						}
-					});
-				});
-			},
+//			plan: function(options) {
+//				var self = this;
+//				console.log("App.controllers.Settings.plan");
+//				self.isLoginPromise.then(function(userData){
+//					self.planPromise.then(function(plansData){
+//						self.view({
+//							url: 'modules/settings/views/plan.html',
+//							selector: Config.subContainer,
+//							dependency: self.indexDependency(),
+//							data: {
+//								user: userData,
+//								plans: plansData,
+//								planStatus: self.planStatus
+//							},
+//							fnLoad: function(){
+//								self.initSubmenu('plan');
+//							}
+//						});
+//					});
+//				});
+//			},
 
-			earlyBird: function(options) {
-				var self = this;
-				console.log("App.controllers.Settings.earlyBird");
-				self.isLoginPromise.then(function(userData){
-					self.view({
-						url: 'modules/settings/views/earlyBird.html',
-						selector: Config.subContainer,
-						dependency: self.indexDependency(),
-						data: {
-							user: userData,
-						},
-						fnLoad: function(){
-							self.initSubmenu('earlyBird');
-						}
-					});
-				});
-			},
-
-			partnerProgram: function(options) {
-				var self = this;
-				console.log("App.controllers.Settings.partnerProgram");
-				self.isLoginPromise.then(function(userData){
-					self.view({
-						url: 'modules/settings/views/partnerProgram.html',
-						selector: Config.subContainer,
-						dependency: self.indexDependency(),
-						data: {
-							user: userData,
-						},
-						fnLoad: function(){
-							self.initSubmenu('partnerProgram');
-						}
-					});
-				});
-			},
-
-			plan: function(options) {
-				var self = this;
-				console.log("App.controllers.Settings.plan");
-				self.isLoginPromise.then(function(userData){
-					self.planPromise.then(function(plansData){
-						self.view({
-							url: 'modules/settings/views/plan.html',
-							selector: Config.subContainer,
-							dependency: self.indexDependency(),
-							data: {
-								user: userData,
-								plans: plansData,
-								planStatus: self.planStatus
-							},
-							fnLoad: function(){
-								self.initSubmenu('plan');
-							}
-						});
-					});
-				});
-			},
-
-			initSshKeyArea:function(){
-				var githubData = this.githubData;
-					
-				function updateView(){
-					var $dta = $('#myDroppableTextarea');
-					if ($dta.length && $dta.is(':empty')){
-						$dta.droppableTextarea({
-							limitByte: 1000,
-							limitByteMessage: 'The file is too big, are you sure you\'ve dropped your public key?',
-							placeholder: 'ssh-rsa ...',
-							changeCallback: function(text){
-								if (!text || !text.startsWith('ssh-rsa ')){
-									$('.rsaValidation.alert').removeClass('alert-success').html('<i class="icon-exclamation-sign"></i> Insert a valid rsa public key.');
-									$('.settings-github .addPublicKeyFromTextarea').attr('disabled', 'disabled');
-								}
-								else{
-									$('.settings-github .addPublicKeyFromTextarea').removeAttr('disabled');
-									$('.rsaValidation.alert').addClass('alert-success').html('<i class="icon-check-sign"></i> Valid public key inserted.');
-								}
-							}
-						});
-					}
-				};
-				updateView();			
-				githubData.bind('change', function(){
-					updateView();
-				});
-
-				if (this.params.code && this.params.state && this.params.state=='geohazardstep'){
-					$('.githubKeyPanel').mask('wait');
-					GithubModel.getGithubToken(this.params.code, function(){
-						$('.githubKeyPanel').unmask();
-						self.addPublicKey();
-					},function(){
-						$('.githubKeyPanel').unmask();
-						bootbox.alert("<i class='fa fa-warning'></i> Error during put your GitHub token.");
-					});
-				}
-			},
+//			initSshKeyArea:function(){
+//				var githubData = this.githubData;
+//					
+//				function updateView(){
+//					var $dta = $('#myDroppableTextarea');
+//					if ($dta.length && $dta.is(':empty')){
+//						$dta.droppableTextarea({
+//							limitByte: 1000,
+//							limitByteMessage: 'The file is too big, are you sure you\'ve dropped your public key?',
+//							placeholder: 'ssh-rsa ...',
+//							changeCallback: function(text){
+//								if (!text || !text.startsWith('ssh-rsa ')){
+//									$('.rsaValidation.alert').removeClass('alert-success').html('<i class="icon-exclamation-sign"></i> Insert a valid rsa public key.');
+//									$('.settings-github .addPublicKeyFromTextarea').attr('disabled', 'disabled');
+//								}
+//								else{
+//									$('.settings-github .addPublicKeyFromTextarea').removeAttr('disabled');
+//									$('.rsaValidation.alert').addClass('alert-success').html('<i class="icon-check-sign"></i> Valid public key inserted.');
+//								}
+//							}
+//						});
+//					}
+//				};
+//				updateView();			
+//				githubData.bind('change', function(){
+//					updateView();
+//				});
+//
+//				if (this.params.code && this.params.state && this.params.state=='geohazardstep'){
+//					$('.githubKeyPanel').mask('wait');
+//					GithubModel.getGithubToken(this.params.code, function(){
+//						$('.githubKeyPanel').unmask();
+//						self.addPublicKey();
+//					},function(){
+//						$('.githubKeyPanel').unmask();
+//						bootbox.alert("<i class='fa fa-warning'></i> Error during put your GitHub token.");
+//					});
+//				}
+//			},
 			
 			
 			
@@ -333,19 +279,7 @@ define([
 						self.data.attr('emailConfirmOK', true);
 					}
 					
-//					App.Login.init(document, { showLoginMenu: true, pendingActivationOk: true });
-//					self.tokenOk = true;
-//					self.init(self.element, self.options);
-//					can.route.removeAttr('token');
-//					bootbox.alert('<h3><strong>Thank you.</strong></h3><h4>Your email address has been successfully validated.</h4>', function(){
-//					});
-					
-//					$('nav>.topPageAlert')
-//						.html(can.view("modules/settings/views/pendingActivationSuccess.html"))
-//						.show('blind');
-					
 				}).fail(function(xhr){
-					//App.Login.showPendingActivation();
 					self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
 				});
 			},
@@ -354,7 +288,7 @@ define([
 				// get data
 				var self= this,
 					usr = Helpers.retrieveDataFromForm('.settings-profile form',
-						['FirstName','LastName','Email','Affiliation','Country','EmailNotification']);
+						['FirstName','LastName','Affiliation','Country','EmailNotification']);
 				
 				// update
 				App.Login.User.current.attr(usr); 
@@ -433,7 +367,7 @@ define([
 				return false;
 			},
 
-			'.settings-github .addPublicKeyFromTextarea click': function(){
+			'.settings-github .addPublicKeyToGithub click': function(){
 				var sshPublicKey = $('#myDroppableTextarea textarea').val();
 				if (!sshPublicKey)
 					bootbox.alert('Your public key is empty');

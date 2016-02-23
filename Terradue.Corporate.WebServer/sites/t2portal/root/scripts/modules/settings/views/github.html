@@ -59,15 +59,15 @@
 		 					<button class="btn btn-primary btn-small addPublicKey">Add your public key</button>
 						</div>
 					{{else}}
-						{{#if user.Email}}
-							<p>Please add or upload the ssh public and store it in your github account.</p>
-							<div id="myDroppableTextarea"></div>
-							<div class="rsaValidation alert"><i class="icon-exclamation-sign"></i> Insert a valid rsa public key.</div>
-							<button class="btn btn-warning btn-small addPublicKeyFromTextarea" disabled="disabled">Add your public key</button>
+						{{#if user.PublicKey}}
+							<p>You can directly import your public ssh key on github.</p>
+							<button class="btn btn-warning btn-small addPublicKeyToGithub" disabled="disabled">Import public key</button>
 						{{else}}
-							<p class="text-warning"><i class="icon-warning-sign"></i> 
-								<strong>Warning!</strong> Your E-mail is missing.</p>
-							<p>Please set your e-mail <a href="profile">here.</a></p>
+							<p class="alert alert-warning"><i class="icon-warning-sign"></i> 
+								You have no ssh key created for your Terradue Cloud Platform account.
+								<br/>
+								Create it fisrt <a href="key">here</a> to import it on your Github account.
+							</p>
 						{{/if}}
 					{{/if}}
 				{{/if}}

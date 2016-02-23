@@ -1,16 +1,22 @@
 <div class='settings-key container col-md-9'>
 	<div>
 		<div class='settings settings-title'>SSH keys</div>
-		<div class='settings settings-description'>Your <b>ssh keys</b> are the way for you to access your Terradue Cloud Platform development environment.</div>
+		<div class='settings settings-description'>Your <b>SSH keys</b> are the way for you to access your Terradue Cloud Platform development environment.</div>
 		<div class='settings settings-container'>
 			{{#if user.PublicKey }}
+				<div class="safePubKeyPanel">
+<!--				TODO: Copy to clipboard-->
+<!--					<a href="javascript://" class="copySshToClipboard"><i class="fa fa-copy"></i></a>-->
+					<a href="javascript://" class="showPubSshKey">Hide Public SSH Key <i class="icon-caret-right"></i></a>
+					<pre class="pubKey">{{ user.PublicKey }}</pre>
 			<div>
 				<span class='key'>{{ user.PubKey }}</span>
 				&nbsp;&nbsp;
-				<button click='submit' class='btn btn-warning submit'>Change</button>
+				<button click='submit' class='btn btn-warning submit'>Generate a new SSH keys pair</button>
 			</div>
 			{{else}}
-				<button click='submit' class='btn btn-warning submit'>Generate your ssh keys</button>
+				<button click='submit' class='btn btn-warning submit'>Generate a new SSH keys pair</button>
+				<!---TODO: do we return directly the private key as a download ? We display it (only after generation
 			{{/if}}
 
 		</div>

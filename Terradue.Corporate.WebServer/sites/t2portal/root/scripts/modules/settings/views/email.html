@@ -1,7 +1,10 @@
 <div id='settings' class='settings-email container col-md-9'>
 	<div>
 		<div class='settings settings-title'>Email</div>
-		<div class='settings settings-description'>Your <b>email</b> is important to us as we use it as identifier for our cloud platform.</div>
+		<div class='settings settings-description'>
+			Your <b>email</b> is important to us as we use it as identifier for our cloud platform.<br/>
+			If you wish to change your email, it will automatically change your Terradue Cloud platform identifier (used also to access your development environment).
+		</div>
 		<div class='settings settings-container'>
 			{{#if isPending}}
 				<div class="alert alert-warning">
@@ -18,7 +21,6 @@
 				<button click='submit' class='btn btn-warning submit'>Change</button>
 			</div>
 
-			<!--- TODO: Change your email ?? -->
 			<!--- TODO: Email preferences (notifications, ...) ?? -->
 
 		</div>
