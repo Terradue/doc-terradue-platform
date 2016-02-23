@@ -3,24 +3,24 @@
 		<div class='settings settings-title'>SSH keys</div>
 		<div class='settings settings-description'>Your <b>SSH keys</b> are the way for you to access your Terradue Cloud Platform development environment.</div>
 		<div class='settings settings-container'>
-			{{#if user.PrivateKey}}
+			{{#if PrivateKey}}
 				<div class="safePanel privKey">
 					<div class="key-title">Private ssh key</div>
 					<div class="alert alert-danger">
 						<b><i class="fa fa-warning"></i> We don't store your private key. You must save it on your computer.</b>
 					</div>
-					<pre class="privKey">{{ user.PrivateKey }}</pre>
-					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard" data-public-key="{{ user.PrivateKey }}"><i class="fa fa-clipboard"></i></button>
-				&nbsp;&nbsp;<a class="btn btn-small btn-primary" download="id_rsa" href="data:application/octet-stream;charset=utf-8;base64,{{ download.PrivateKeyBase64 }}"><i class="fa fa-download"></i></a>
+					<pre class="privKey">{{ PrivateKey }}</pre>
+					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard" data-public-key="{{ PrivateKey }}"><i class="fa fa-clipboard"></i></button>
+				&nbsp;&nbsp;<a class="btn btn-small btn-primary" download="id_rsa" href="data:application/octet-stream;charset=utf-8;base64,{{ PrivateKeyBase64 }}"><i class="fa fa-download"></i></a>
 				</div>
 				<hr/>
 			{{/if}}
-			{{#if user.PublicKey }}
+			{{#if PublicKey }}
 				<div class="safePanel pubKey">
 					<div class="key-title">Public ssh key</div>
-					<pre class="pubKey">{{ user.PublicKey }}</pre>
-					<button class="btn btn-small btn-primary copyPrivateKeyBtn"><i class="fa fa-clipboard"></i></button>
-					&nbsp;&nbsp;<a class="btn btn-small btn-primary" download="id_rsa.pub" href="data:application/octet-stream;charset=utf-8;base64,{{ download.PublicKeyBase64 }}"><i class="fa fa-download"></i></a>
+					<pre class="pubKey">{{ PublicKey }}</pre>
+					<button class="btn btn-small btn-primary copyPublicKeyBtn"><i class="fa fa-clipboard"></i></button>
+					&nbsp;&nbsp;<a class="btn btn-small btn-primary" download="id_rsa.pub" href="data:application/octet-stream;charset=utf-8;base64,{{ PublicKeyBase64 }}"><i class="fa fa-download"></i></a>
 				</div>
 				<hr/>
 			{{/if}}
@@ -30,46 +30,5 @@
 		</div>
 	</div>
 </div>
-<!--
 
-<br/><br/>
-<div class="settings-safe">
-{{#if user.PublicKey }}
-	<div class="hasKey">
-		<div class="safePubKeyPanel">
-			<img class="key" src="/scripts/modules/settings/img/key.png"></img>
-			<a href="javascript://" class="showPubSshKey">Hide Public SSH Key <i class="icon-caret-right"></i></a>
-			<pre class="pubKey">{{ user.PublicKey }}</pre>
-			{{#if user.PrivateKey }}
-				<br/>
-				<div class="safePrivKeyPanel">
-					<img class="key" src="/scripts/modules/settings/img/key.png"></img>
-					<a href="javascript://" class="showPrivSshKey">Hide Private SSH Key <i class="icon-caret-right"></i></a>
-					<pre class="privKey">{{ user.PrivateKey }}</pre>
-					<br/>
-			{{ else }}
-				<br/>
-				<button class="btn btn-primary getPrivateKeyBtn">Get Private Key</button>&nbsp;&nbsp;	
-			{{/if }}
-			<br/><br/>
-			<div class="alert alert-danger alert-no-bottom-margin">
-				<i class="fa fa-frown-o text-danger"></i>
-				<strong> Forgot your safe password ?</strong>
-				<br>
-				<span>Or just want to recreate your safe ?</span>
-			</div>
-			<button class="btn btn-primary recreateSafeBtn">Recreate Safe</button>&nbsp;&nbsp;
-			{{#if user.PrivateKey }}
-				</div>
-			{{/if}}
-		</div>
-
-	</div>
-
-{{ else }}
-	<div class="noKey">
-		<button class="btn btn-primary createSafeBtn">Create Safe</button>&nbsp;&nbsp;	
-	</div>
-{{/if }}-->
-</div>
 

@@ -43,11 +43,8 @@ define([
 
 
 				this.isLoginPromise.then(function(user){
-					var downloadData = new can.Observe({});
-					downloadData.attr('PublicKeyBase64', btoa(user.PublicKey));
 					self.data.attr({
 						user: user,
-						download: downloadData,
 						isPending: (user.AccountStatus==1),
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
 						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
@@ -182,25 +179,25 @@ define([
 
 			key: function(options) {
 				var self = this;
+				this.keyData = new can.Observe({});
+
 				console.log("App.controllers.Settings.key");
+				
+				self.view({
+					url: 'modules/settings/views/key.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: self.keyData,
+					fnLoad: function(){
+						self.initSubmenu('key');
+					}
+				});
+
 				self.isLoginPromise.then(function(userData){
-					var downloadData = new can.Observe({});
-					downloadData.attr('PublicKeyBase64', btoa(userData.PublicKey));
-					self.view({
-						url: 'modules/settings/views/key.html',
-						selector: Config.subContainer,
-						dependency: self.indexDependency(),
-						data: {
-							user: userData,
-							download: downloadData
-						},
-						fnLoad: function(){
-							self.initSubmenu('key');
-							
-							self.element.find('.copyPrivateKeyBtn').copyableInput(userData.PublicKey, {
-								isButton: true,
-							});
-						}
+					self.keyData.attr(userData.attr());
+					self.keyData.attr('PublicKeyBase64', btoa(userData.PublicKey))
+					self.element.find('.copyPublicKeyBtn').copyableInput(userData.PublicKey, {
+						isButton: true,
 					});
 				});
 			},
@@ -488,10 +485,18 @@ define([
 	                            };
 	                            
 	                            SafeModel.create(password).then(function(safe){
-							    	self.data.user.attr("PublicKey",safe.PublicKey);
-							    	self.data.user.attr("PrivateKey",safe.PrivateKey);
-							    	self.data.download.attr("PublicKeyBase64",btoa(safe.PublicKey));
-							    	self.data.download.attr("PrivateKeyBase64",btoa(safe.PrivateKey));
+							    	self.keyData.attr("PublicKey",safe.PublicKey);
+							    	self.keyData.attr("PrivateKey",safe.PrivateKey);
+							    	self.keyData.attr("PublicKeyBase64",btoa(safe.PublicKey));
+							    	self.keyData.attr("PrivateKeyBase64",btoa(safe.PrivateKey));
+							    	
+									self.element.find('.copyPublicKeyBtn').copyableInput(safe.PublicKey, {
+										isButton: true,
+									});
+									self.element.find('.copyPrivateKeyBtn').copyableInput(safe.PrivateKey, {
+										isButton: true,
+									});
+
 							    	$('.noKey').mask();
 									$('.hasKey').unmask();
 								}).fail(function(){

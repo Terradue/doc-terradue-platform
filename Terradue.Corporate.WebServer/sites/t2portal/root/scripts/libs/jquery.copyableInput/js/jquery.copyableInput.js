@@ -1,5 +1,6 @@
 //
 // COPYABLE INPUT - BY CERAS
+// version 2.0
 //
 // it requires zeroclipboard.js
 //
@@ -7,8 +8,11 @@
 (function($) {
 
 $.fn.copyableInput = function(textToCopy, options){
-	if (this.attr('data-copyableInput-enabled'))
+	if (this.attr('data-copyableInput-enabled')){
+		if (this.data('zeroClient'))
+			this.data('zeroClient').setText(textToCopy); // change the text
 		return;
+	}
 	
 	if (options.isButton)
 		// use the button as content
@@ -37,6 +41,7 @@ $.fn.copyableInput = function(textToCopy, options){
 	var zeroClient = new ZeroClipboard($button).on("aftercopy", function(event) {
 		$button.attr('data-original-title', 'copied!').tooltip('show');
 	});
+	this.data('zeroClient', zeroClient);
 	
 	// set tooltip
 	$button.tooltip({
