@@ -41,18 +41,18 @@ define([
 				this.githubPromise = GithubModel.findOne();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
-				this.isLoginPromise.then(function(user){
+				self.isLoginPromise.then(function(user){
 					self.githubPromise.then(function(githubData){
 						self.data.attr({
 							user: user,
-							github: githubData,
-							isPending: (user.AccountStatus==1),
 							emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
 							showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
 							showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
 							showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-							profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country)
-
+							profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+							emailNotComplete: (user.AccountStatus==1),
+							sshKeyNotComplete: false,
+							githubNotComplete: !(githubData.HasSSHKey)
 						});
 					});
 				}).fail(function(){
@@ -218,70 +218,6 @@ define([
 				});
 			},
 
-//			plan: function(options) {
-//				var self = this;
-//				console.log("App.controllers.Settings.plan");
-//				self.isLoginPromise.then(function(userData){
-//					self.planPromise.then(function(plansData){
-//						self.view({
-//							url: 'modules/settings/views/plan.html',
-//							selector: Config.subContainer,
-//							dependency: self.indexDependency(),
-//							data: {
-//								user: userData,
-//								plans: plansData,
-//								planStatus: self.planStatus
-//							},
-//							fnLoad: function(){
-//								self.initSubmenu('plan');
-//							}
-//						});
-//					});
-//				});
-//			},
-
-//			initSshKeyArea:function(){
-//				var githubData = this.githubData;
-//					
-//				function updateView(){
-//					var $dta = $('#myDroppableTextarea');
-//					if ($dta.length && $dta.is(':empty')){
-//						$dta.droppableTextarea({
-//							limitByte: 1000,
-//							limitByteMessage: 'The file is too big, are you sure you\'ve dropped your public key?',
-//							placeholder: 'ssh-rsa ...',
-//							changeCallback: function(text){
-//								if (!text || !text.startsWith('ssh-rsa ')){
-//									$('.rsaValidation.alert').removeClass('alert-success').html('<i class="icon-exclamation-sign"></i> Insert a valid rsa public key.');
-//									$('.settings-github .addPublicKeyFromTextarea').attr('disabled', 'disabled');
-//								}
-//								else{
-//									$('.settings-github .addPublicKeyFromTextarea').removeAttr('disabled');
-//									$('.rsaValidation.alert').addClass('alert-success').html('<i class="icon-check-sign"></i> Valid public key inserted.');
-//								}
-//							}
-//						});
-//					}
-//				};
-//				updateView();			
-//				githubData.bind('change', function(){
-//					updateView();
-//				});
-//
-//				if (this.params.code && this.params.state && this.params.state=='geohazardstep'){
-//					$('.githubKeyPanel').mask('wait');
-//					GithubModel.getGithubToken(this.params.code, function(){
-//						$('.githubKeyPanel').unmask();
-//						self.addPublicKey();
-//					},function(){
-//						$('.githubKeyPanel').unmask();
-//						bootbox.alert("<i class='fa fa-warning'></i> Error during put your GitHub token.");
-//					});
-//				}
-//			},
-			
-			
-			
 			// profile
 			
 			manageEmailConfirm: function(token){
@@ -373,21 +309,6 @@ define([
 				return false;
 			},
 
-			'.settings-github .addPublicKeyToGithub click': function(){
-				var sshPublicKey = $('#myDroppableTextarea textarea').val();
-				if (!sshPublicKey)
-					bootbox.alert('Your public key is empty');
-				else if (!sshPublicKey.startsWith('ssh-rsa '))
-					bootbox.alert('Your public key is not well-formed');
-				else{
-					var secondSpaceIndex = sshPublicKey.substring(8).indexOf(' ');
-					if (secondSpaceIndex!=-1)
-						sshPublicKey = sshPublicKey.substring(0, secondSpaceIndex+8);
-					
-					this.addPublicKey(sshPublicKey);
-				}
-			},
-
 			'.settings-github .usernameForm .cancel click': function(){
 				$('.settings-github .githubName').css('display', 'inline-block');
 				$('.settings-github .modifyGithubName').hide();
@@ -424,35 +345,6 @@ define([
 									+'&scope=write:public_key,repo&state=geohazardstep&redirect_uri=' + document.location.href
 								
 							}
-					});
-				});
-			},
-			
-			/* cloud */
-			'.createOneUser click': function(){				
-				var self = this, user = App.Login.User.current;
-
-				OneUserModel.createOneUser({
-					Password: user.attr('CertSubject'),
-				}, function(){
-					App.Login.User.current.attr('OnePassword', user.attr('CertSubject'));
-					self.cloud();
-				}, function(xhr){
-					console.error(xhr);
-				});
-			},
-
-			'.setCertificateAsOnePassword click': function(){
-				var self = this, user = App.Login.User.current;
-				OneUserModel.findOne().then(function(oneUser){
-					OneUserModel.setOnePassword({
-						Id: oneUser.attr('Id'),
-						Password: user.attr('CertSubject'),
-					}, function(){
-						App.Login.User.current.attr('OnePassword', user.attr('CertSubject'));
-						self.cloud();
-					}, function(xhr){
-						console.error(xhr);
 					});
 				});
 			},
@@ -514,60 +406,6 @@ define([
                     }
 				});
 			},
-
-			'.settings-safe .getPrivateKeyBtn click': function(){
-				var self = this;
-				bootbox.prompt({
-					title: "Please enter your Safe password",
-	  				inputType: "password",	
-	  				callback: function(result) {             
-					  if (result === null) {                                             
-					    
-					  } else {
-					    SafeModel.get(result).then(function(safe){
-					    	self.data.user.attr("PublicKey",safe.PublicKey);
-					    	self.data.user.attr("PrivateKey",safe.PrivateKey);
-					    	$('.noKey').mask();
-							$('.hasKey').unmask();
-
-						}).fail(function(xhr){
-							bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation: " + Helpers.getErrMsg(xhr));
-						});
-					  }
-					}
-				});
-			},
-
-			/*plan*/
-			'.plan-profile .upgradePlanBtn click': function(){
-				var self = this,
-				selectedPlanId = this.element.find('input[name="planRadio"]:checked').val();
-				self.isLoginPromise.then(function(userData){
-					self.planPromise.then(function(plansData){
-						var planSearch = $.grep(plansData, function(plan){
-							return (plan.Value==selectedPlanId);
-						}),
-						plan = (planSearch.length ? planSearch[0] : null);
-				
-						if (plan && userData){
-							// save plan
-							self.planStatus.attr({
-								planUpgradedLoading: true, planUpgradedSuccessName:null, planUpgradedFailMessage:null
-							});
-							
-							PlansModel.upgrade({
-								Id: userData.Id,
-			 					Level: selectedPlanId
-			 				}).then(function(){
-								self.planStatus.attr('planUpgradedSuccessName', plan.Key);
-			 				}).fail(function(xhr){
-			 					errXhr=xhr; // for debug
-			 					self.planStatus.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
-			 				});
-						}
-					});
-				});
-			}
 
 		}
 	);

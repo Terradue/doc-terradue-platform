@@ -6,15 +6,20 @@
 			<ul class="nav nav-pills nav-stacked">
 				<li class="profile menu-item"><a href="/portal/settings/profile"> 
 					{{#if profileNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
-					Profile</a></li>
+					Profile</a>
+				</li>
 				<li class="email menu-item"><a href="/portal/settings/email"> 
-					{{#if isPending}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
+					{{#if emailNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					Email</a>
 				</li>
-				<li class="key menu-item"><a href="/portal/settings/key"> SSH keys</a></li>
+				<li class="key menu-item"><a href="/portal/settings/key"> 
+					{{#if sshKeyNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
+					SSH keys</a>
+				</li>
 				<li class="github menu-item"><a href="/portal/settings/github">
-					{{#unless github.HasSSHKey}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/unless}}
-					Github</a></li>
+					{{#if githubNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/unless}}
+					Github</a>
+				</li>
 			</ul>
 		</div>
 	</div>
