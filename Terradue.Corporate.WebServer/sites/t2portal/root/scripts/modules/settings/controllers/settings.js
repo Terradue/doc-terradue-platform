@@ -350,61 +350,81 @@ define([
 			/* safe */
 			'.settings-key .generateSafe click': function(){
 				var self = this;
-				var title = "This action requires your password.";
-				if(self.keyData.PublicKey)
-					title += "<br/><small><i>Please note that this will overwrite your current SSH key pair.</i></small>";
+				var $dialog;
+				var createSafeCallback = function(safe){
+					
+					// setup keyData
+					self.keyData.attr({
+						PublicKey: safe.PublicKey,
+						PrivateKey: safe.PrivateKey,
+						PublicKeyBase64: btoa(safe.PublicKey),
+						PrivateKeyBase64: btoa(safe.PrivateKey)
+					});
+					
+					// setup github data
+					self.github.attr('CertPub', safe.PublicKey);
+					
+					// setup global data
+					self.data.attr({
+						sshKeyNotComplete: false,
+						githubNotComplete: true //we just create a new keys so it cannot be already on github
+					});
+					
+					// setup buttons
+					self.element.find('.copyPublicKeyBtn').copyableInput(safe.PublicKey, {
+						isButton: true,
+					});
+					
+					self.element.find('.copyPrivateKeyBtn').copyableInput(safe.PrivateKey, {
+						isButton: true,
+					});
+					self.element.find('.downloadKey').tooltip({
+						trigger: 'hover',
+						title: 'Download',
+						placement:'bottom'
+					});
+				};
+				
+				var submitFormSafeCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    
+                    SafeModel.create(password).then(createSafeCallback).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
+					});
+				};
+				
 				var message = "<div class='container-fluid'>"
-							+ "<form class='createSafeForm'>"
-							+ "<div class='form-group'>" 
-							+ "<label for='password'>Password</label>"
-							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
-							+ "</div>"
-							+ "</form>"
-							+ "</div>";
-				bootbox.dialog({
+					+ "<form class='createSafeForm'>"
+					+ "<div class='form-group'>" 
+					+ "<label for='password'>Password</label>"
+					+ "<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+					+ "</div>"
+					+ "</form>"
+					+ "</div>";
+
+				var title = "This action requires your password.";
+				if (this.keyData.PublicKey)
+					title += "<br/><small><i>Please note that this will overwrite your current SSH key pair.</i></small>";
+				$dialog = bootbox.dialog({
 					title: title,
 					message: message,
 					buttons: {
 	                    success: {
 	                        label: "OK",
 	                        className: "btn-default",
-	                        callback: function (a,b,c) {
-	                            var password = $('#safePassword').val();
-	                            if (password==''){
-	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
-	                            	//self.element.find('.createSafeForm .text-error').show();
-	                            	return false;
-	                            };
-
-	                            SafeModel.create(password).then(function(safe){
-	                            	self.data.attr({
-										sshKeyNotComplete: false,
-										githubNotComplete: true//we just create a new keys so it cannot be already on github
-									});
-							    	self.keyData.attr("PublicKey",safe.PublicKey);
-							    	self.keyData.attr("PrivateKey",safe.PrivateKey);
-							    	self.keyData.attr("PublicKeyBase64",btoa(safe.PublicKey));
-							    	self.keyData.attr("PrivateKeyBase64",btoa(safe.PrivateKey));
-									self.element.find('.copyPublicKeyBtn').copyableInput(safe.PublicKey, {
-										isButton: true,
-									});
-									self.element.find('.copyPrivateKeyBtn').copyableInput(safe.PrivateKey, {
-										isButton: true,
-									});
-									self.element.find('.downloadKey').tooltip({
-										trigger: 'hover',
-										title: 'Download',
-										placement:'bottom'
-									});
-
-							    	$('.noKey').mask();
-									$('.hasKey').unmask();
-								}).fail(function(){
-									bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
-								});
-                        	}
+	                        callback: submitFormSafeCallback
                     	}
                     }
+				});
+				
+				$dialog.find('form').submit(function(){
+					submitFormSafeCallback();
+					$dialog.modal('hide');
+					return false;
 				});
 			},
 
