@@ -369,7 +369,7 @@ define([
 			'.settings-key .generateSafe click': function(){
 				var self = this;
 				var title = "This action requires your password.";
-				if(self.data.user.PublicKey)
+				if(self.keyData.PublicKey)
 					title += "<br/><small><i>Please note that this will overwrite your current SSH key pair.</i></small>";
 				var message = "<div class='container-fluid'>"
 							+ "<form class='createSafeForm'>"
