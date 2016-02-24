@@ -26,6 +26,9 @@
 			{{/if}}
 			<div>
 				<button class="btn btn-warning generateSafe">Generate a new SSH keys pair</button>
+				{{#if loading}}
+					&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
+				{{/if}}
 			</div>
 		</div>
 	</div>

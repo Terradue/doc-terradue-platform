@@ -159,9 +159,22 @@ define([
 				console.log("App.controllers.Settings.github");
 				self.isLoginPromise.then(function(userData){
 
-					if (self.params.code && self.params.state && self.params.state=='geohazardstep'){
+					self.params = Helpers.getUrlParameters();
+
+					if (self.params.code && self.params.state && self.params.state=='t2corporateportalpostkey'){
 						GithubModel.getGithubToken(self.params.code)
 						.then(function(){
+							if(self.params.state=='t2corporateportalpostkey')
+								GithubModel.postSshKey()
+									.then(function(){
+										self.githubData.attr('HasSSHKey', 'true');
+										self.data.attr({
+											githubNotComplete: false
+										});
+									})
+									.fail(function(){
+										bootbox.alert("<i class='fa fa-warning'></i> Cannot post the ssh key.")
+									});
 						})
 						.fail(function(){
 							bootbox.alert("<i class='fa fa-warning'></i> Error during put your GitHub token.");
@@ -324,15 +337,18 @@ define([
 				this.configPromise.then(function(_serviceConfig){
 					var serviceConfig = Helpers.keyValueArrayToJson(_serviceConfig, 'Key', 'Value');
 
-					$('.githubKeyPanel').mask('wait');
+					self.githubData.attr("loading",true);
 					GithubModel.postSshKey()
 					.then(function(){
 						self.githubData.attr('HasSSHKey', 'true');
+						self.data.attr({
+							githubNotComplete: false
+						});
 					})
 					.fail(function(xhr){
 						if (!xhr.responseJSON)
 							xhr.responseJSON = JSON.parse(xhr.responseText)
-							if (xhr.responseJSON.ResponseStatus.Message == "Invalid token"){
+							 
 								// get github client id
 								var githubClientId = serviceConfig['Github-client-id'];
 								if (!githubClientId)
@@ -340,9 +356,11 @@ define([
 								
 								// redirect to github
 								window.location = 'https://github.com/login/oauth/authorize?client_id='+githubClientId
-									+'&scope=write:public_key,repo&state=geohazardstep&redirect_uri=' + document.location.href
+									+'&scope=write:public_key,repo&state=t2corporateportalpostkey&redirect_uri=' + document.location.href
 								
-							}
+					})
+					.always(function(){
+						self.githubData.attr("loading",true);
 					});
 				});
 			},
@@ -375,7 +393,7 @@ define([
 	                            	//self.element.find('.createSafeForm .text-error').show();
 	                            	return false;
 	                            };
-
+	                            self.keyData.attr("loading",true);
 	                            SafeModel.create(password).then(function(safe){
 	                            	self.data.attr({
 										sshKeyNotComplete: false,
@@ -401,6 +419,8 @@ define([
 									$('.hasKey').unmask();
 								}).fail(function(){
 									bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
+								}).always(function(){
+									self.keyData.attr("loading",false);
 								});
                         	}
                     	}
