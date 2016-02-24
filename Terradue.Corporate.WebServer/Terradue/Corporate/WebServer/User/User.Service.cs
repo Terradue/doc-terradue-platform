@@ -190,6 +190,7 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     user.CreateLdapAccount(request.Password);
                     user.LinkToAuthenticationProvider(AuthType, user.Username);
+                    user.CreateGithubProfile();
                 }catch(Exception e){
 //                    user.Delete();
 //                    user.DeleteLdapAccount();
