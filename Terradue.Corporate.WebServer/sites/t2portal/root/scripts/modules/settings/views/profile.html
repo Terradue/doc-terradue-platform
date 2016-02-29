@@ -5,10 +5,17 @@
 
 	{{#if user}}		
 		{{#if profileNotComplete}}
-			<div class="alert alert-warning">
-				<i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete, please fill it up.
-			</div>
-			<br/>
+			{{#if nameMissing}}
+				<div class="alert alert-danger">
+					<i class="fa fa-a"></i>&nbsp;Your profile is not yet complete! <br/>FirstName and LastName are mandatory to create your <b>Unix username</b>.
+				</div>
+				<br/>
+			{{else}}
+				<div class="alert alert-warning">
+					<i class="fa fa-a"></i>&nbsp;Your profile is not yet complete! <br/>Please fill it up.
+				</div>
+				<br/>
+			{{/if}}
 		{{/if}}
 		<form role="form">
 			

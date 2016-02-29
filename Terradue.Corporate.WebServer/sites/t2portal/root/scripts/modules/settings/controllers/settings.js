@@ -108,6 +108,7 @@ define([
 					self.profileData.attr({
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						nameMissing: !(user.FirstName && user.LastName),
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey)
 					});
@@ -140,6 +141,7 @@ define([
 					self.profileData.attr({
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						nameMissing: !(user.FirstName && user.LastName),
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey)
 					});
@@ -269,7 +271,8 @@ define([
 					.then(function(createdUser){
 						self.profileData.attr({
 							saveSuccess: true,
-							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country)
+							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country),
+							nameMissing: !(createdUser.FirstName && createdUser.LastName),
 						});
 						self.data.attr({
 							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country)

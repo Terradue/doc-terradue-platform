@@ -17,6 +17,12 @@ namespace Terradue.Corporate.WebServer {
         public int Id { get; set; }
     }
 
+    [Route("/user/{username}", "GET", Summary = "GET the user", Notes = "User is found from username")]
+    public class GetUserNameT2 : IReturn<WebUserT2> {
+        [ApiMember(Name = "username", Description = "User identifier", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Username { get; set; }
+    }
+
     [Route("/user/passwordreset", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
     public class UserResetPassword : IReturn<WebResponseBool> {
         [ApiMember(Name = "username", Description = "User name", ParameterType = "query", DataType = "string", IsRequired = true)]
@@ -176,6 +182,9 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String Plan { get; set; }
+
+        [ApiMember(Name = "UnixName", Description = "User Unix Name", ParameterType = "query", DataType = "String", IsRequired = false)]
+        public String UnixName { get; set; }
 
 
         /// <summary>
