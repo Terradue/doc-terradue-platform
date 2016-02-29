@@ -1,0 +1,105 @@
+
+/* TABLE */
+
+#newsAdminPage .abstractColumn {
+	width: 200px;
+}
+
+#newsAdminPage .title > span {
+    font-size: 14px;
+    color: gray;
+}
+
+#newsAdminPage .newsInfo>div {
+    display: inline-block;
+    margin-right: 12px;
+    font-size: 10px;
+}
+
+#newsAdminPage .entity {
+    border-bottom: 1px solid gray;
+}
+
+#newsAdminPage .newsInfo {
+    margin-bottom: 6px;
+    color: gray;
+}
+
+#newsAdminPage .note-editable.panel-body {
+	height: 300px;
+}
+
+#bannersModule table > tbody > tr { background: white; }
+#bannersModule table td.table-thumbnail { width: 250px; }
+#bannersModule table .ui-state-highlight { height: 100px; border: 2px dashed yellow; }
+#bannersModule table td.table-thumbnail:hover { cursor: move; }
+#bannersModule table td.table-thumbnail > img { border-radius: 4px; }
+
+
+/* DROPZONE */
+#bannersModule .banner-upload {
+	position: relative;
+	padding: 10px;
+	margin: 10px 0px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	background-color: white;
+}
+
+#bannersModule .dropzone {
+	min-height: 100px;
+	border: 1px solid white;
+}
+
+#bannersModule .dropzone.dz-drag-hover {
+	border: 1px dashed #ccc;
+	background-color: rgb(239, 245, 255);
+}
+
+#bannersModule .dz-default.dz-message {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	text-align: center;
+}
+
+#bannersModule .dz-error-message {
+	color: #b94a48;
+}
+
+#bannersModule .loader {
+	display: none;
+}
+
+#bannersModule .dz-image-preview.dz-processing ~ .loader {
+	display: block;
+}
+
+/* #bannersModule .dz-image-preview.dz-error{
+	display: none;
+}
+ */
+#bannersModule .dz-image > img {
+	border-radius: 4px;
+}
+ 
+#bannersModule .dz-success-mark,#bannersModule .dz-error-mark {
+	display: none;
+}
+
+
+/* BANNER PREVIEW */
+#bannersModule .banner-preview {
+	border: 1px solid #ccc;
+	padding: 10px;
+	border-radius: 4px;
+}
+
+#bannersModule .banner-preview>div {
+	height: 200px;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: 0px 50%;
+	background-color: gray;
+	border-radius: 4px;
+}

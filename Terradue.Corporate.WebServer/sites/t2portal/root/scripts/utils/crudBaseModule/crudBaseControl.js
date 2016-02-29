@@ -1,4 +1,4 @@
-﻿
+
 define([
 	'jquery',
 	'can',
@@ -21,8 +21,6 @@ define([
 			view: '/scripts/utils/crudBaseModule/crudBaseView.html',
 			idName: 'Id',
 			
-			errorCallback: null, // it's a function like function(['CREATE'|'READ'|'UPDATE'|'DELETE'], xhr)
-			
 			msgCreateSuccess: 'Item created.',
 			msgCreateFail: 'Error during item creation.',
 			
@@ -34,6 +32,8 @@ define([
 			
 			msgDeleteSuccess: 'Item removed.',
 			msgDeleteFail: 'Error during item removing.',
+			
+			permissionCheck: null, // deferred
 		}
 	},{
 		
@@ -43,17 +43,10 @@ define([
 				return;
 			}
 			
-			this.log('init');			
-			this.entities = new options.Model.List({});
-			this.state = new can.Observe({
-				entityName: options.entityName,
-				entities: this.entities,
-				showForm: false,
-				selectedEntity: null,
-			});
+			this.log('init');
 			
-			if (this.init2)
-				this.init2(element, options);
+			if (this.onInit)
+				this.onInit(element, options);
 		},
 		
 		log: function(text){
@@ -61,17 +54,45 @@ define([
 		},
 		
 		index: function(){
+			var self = this;
+			
 			if (!this.options.Model)
 				return;
 
 			this.log('index');
-
-			this.element.html(can.view(this.options.view, this.state));
 			
-			if (this.index2)
-				this.index2(element, options);
+			var callback = function(){
+				self.entities = new self.options.Model.List({});
+				self.state = new can.Observe({
+					entityName: self.options.entityName,
+					entities: self.entities,
+					showForm: false,
+					selectedEntity: null,
+				});
+				
+				self.element.html(can.view(self.options.view, self.state));
+
+				if (self.onIndex)
+					self.onIndex(self.element, self.options);
+			};
+			
+			if (this.options.loginDeferred)
+				this.options.loginDeferred
+					.then(function(usr){
+						if (self.options.adminAccess && !App.Login.isAdmin())
+							self.accessDenied();
+						else
+							callback();
+					})
+					.fail(function(){
+						// no logged
+						self.accessDenied();
+					});
+			else
+				// free access
+				callback();
 		},
-		
+				
 		getEntityById: function(id){
 			if (id==null)
 				return null;
@@ -88,14 +109,10 @@ define([
 		
 		getDataFromForm: function($form){
 			var data = {};
-			//TODO: more than input elements
-			$form.find('input').each(function(){
+			$form.find('input, textarea, select').each(function(){
 				if ($(this).attr('name'))
-					data[$(this).attr('name')] = $(this).val();
-			});
-			$form.find('textarea').each(function(){
-				if ($(this).attr('name'))
-					data[$(this).attr('name')] = $(this).val();
+					// consider the generic case (get the val) and the checkbox case (get the checked status)
+					data[$(this).attr('name')] = ($(this).attr('type')=='checkbox') ? $(this).prop('checked').toString() : $(this).val();
 			});
 			return data;
 		},
@@ -168,11 +185,9 @@ define([
 					showForm: true,
 					selectedEntity: entity,
 				});
+				if (this.onEntitySelected)
+					this.onEntitySelected(entity);
 			}
-			
-			if (this.entitySelected)
-				this.entitySelected(entity);
-			
 			return false;
 		},
 		
@@ -204,6 +219,9 @@ define([
 				showForm: true,
 				selectedEntity: null,
 			});
+			if (this.onCreateClick)
+				this.onCreateClick();
+
 			return false;
 		},
 		
@@ -228,8 +246,13 @@ define([
 				entity.save().then(function(){
 					self.log('saved!');
 					self.state.attr('showForm', false);
-					if (!id)
-						self.entities.push(entity);
+					if (!id){
+						if (self.options.insertAtBeginning)
+							self.entities.unshift(entity);
+						else
+							self.entities.push(entity);
+					}
+						
 					self.successMessage(id ? 'UPDATE' : 'CREATE');
 				}).fail(function(xhr){
 					self.failMessage(id ? 'UPDATE' : 'CREATE', xhr);

@@ -20,7 +20,8 @@ define([
 	'jqueryValidate',
 	'ajaxFileUpload',
 	'droppableTextarea',
-	'jqueryCopyableInput'
+	'jqueryCopyableInput',
+	'latinise'
 ], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, ZeroClipboard){
 	
 	window.ZeroClipboard = ZeroClipboard;
@@ -42,18 +43,20 @@ define([
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
 				self.isLoginPromise.then(function(user){
+					self.data.attr({
+						user: user,
+						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
+						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
+						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						emailNotComplete: (user.AccountStatus==1),
+						sshKeyNotComplete: !(user.PublicKey),
+						githubNotComplete: false
+					});
 					self.githubPromise.then(function(githubData){
-						self.data.attr({
-							user: user,
-							emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-							showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
-							showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
-							showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-							profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-							emailNotComplete: (user.AccountStatus==1),
-							sshKeyNotComplete: !(user.PublicKey),
-							githubNotComplete: !(githubData.HasSSHKey)
-						});
+						self.githubData = githubData;
+						self.data.attr('githubNotComplete', !githubData.HasSSHKey);
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -111,6 +114,9 @@ define([
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey)
 					});
+					
+					self.unixUsernameGeneration();
+					
 					if (self.params.token && self.profileData.user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
 					
@@ -159,9 +165,22 @@ define([
 				console.log("App.controllers.Settings.github");
 				self.isLoginPromise.then(function(userData){
 
-					if (self.params.code && self.params.state && self.params.state=='geohazardstep'){
+					self.params = Helpers.getUrlParameters();
+
+					if (self.params.code && self.params.state && self.params.state=='t2corporateportalpostkey'){
 						GithubModel.getGithubToken(self.params.code)
 						.then(function(){
+							if(self.params.state=='t2corporateportalpostkey')
+								GithubModel.postSshKey()
+									.then(function(){
+										self.githubData.attr('HasSSHKey', 'true');
+										self.data.attr({
+											githubNotComplete: false
+										});
+									})
+									.fail(function(){
+										bootbox.alert("<i class='fa fa-warning'></i> Cannot post the ssh key.")
+									});
 						})
 						.fail(function(){
 							bootbox.alert("<i class='fa fa-warning'></i> Error during put your GitHub token.");
@@ -169,7 +188,6 @@ define([
 					}
 
 					self.githubPromise.then(function(githubData){
-						self.githubData = githubData;
 						self.view({
 							url: 'modules/settings/views/github.html',
 							selector: Config.subContainer,
@@ -236,6 +254,31 @@ define([
 				});
 			},
 			
+			unixUsernameGeneration: function(){
+				var $firstName = this.element.find('input[name="FirstName"]');
+				var $lastName = this.element.find('input[name="LastName"]');
+				var $unixUsername = this.element.find('input[name="UnixUsername"]');
+				var timeout;
+				
+				var setUnixUsernameFn = function(){
+					var firstName = $firstName.val();
+					var lastName = $lastName.val();
+					if (!firstName || !lastName)
+						return;
+					
+					var firstChar = firstName.split(' ')[0][0];
+					var lastNames = lastName.split(' ');
+					var lastSurname = lastNames[lastNames.length-1];
+					var unixUsername = (firstChar.latinise() + lastSurname.latinise()).substring(0,32);
+					
+					$unixUsername.val(unixUsername);
+				};
+				
+				$firstName.keyup(setUnixUsernameFn);
+				$lastName.keyup(setUnixUsernameFn);
+				setUnixUsernameFn();
+			},
+			
 			'.settings-profile .submit click': function(){
 				// get data
 				var self= this,
@@ -285,6 +328,7 @@ define([
 				// get data
 				var githubName = Helpers.retrieveDataFromForm('.modifyGithubName',	'GithubName');
 				
+				// TODO check!
 				this.githubPromise.then(function(githubData){
 					githubData.attr('Name', githubName);
 
@@ -324,15 +368,18 @@ define([
 				this.configPromise.then(function(_serviceConfig){
 					var serviceConfig = Helpers.keyValueArrayToJson(_serviceConfig, 'Key', 'Value');
 
-					$('.githubKeyPanel').mask('wait');
+					self.githubData.attr("loading",true);
 					GithubModel.postSshKey()
 					.then(function(){
 						self.githubData.attr('HasSSHKey', 'true');
+						self.data.attr({
+							githubNotComplete: false
+						});
 					})
 					.fail(function(xhr){
 						if (!xhr.responseJSON)
 							xhr.responseJSON = JSON.parse(xhr.responseText)
-							if (xhr.responseJSON.ResponseStatus.Message == "Invalid token"){
+							 
 								// get github client id
 								var githubClientId = serviceConfig['Github-client-id'];
 								if (!githubClientId)
@@ -340,9 +387,11 @@ define([
 								
 								// redirect to github
 								window.location = 'https://github.com/login/oauth/authorize?client_id='+githubClientId
-									+'&scope=write:public_key,repo&state=geohazardstep&redirect_uri=' + document.location.href
+									+'&scope=write:public_key,repo&state=t2corporateportalpostkey&redirect_uri=' + document.location.href
 								
-							}
+					})
+					.always(function(){
+						self.githubData.attr("loading",true);
 					});
 				});
 			},
@@ -362,7 +411,8 @@ define([
 					});
 					
 					// setup github data
-					self.github.attr('CertPub', safe.PublicKey);
+					if (self.githubData)
+						self.githubData.attr('CertPub', safe.PublicKey);
 					
 					// setup global data
 					self.data.attr({
@@ -392,8 +442,11 @@ define([
                     	return false;
                     };
                     
+                    self.keyData.attr("loading",true);
                     SafeModel.create(password).then(createSafeCallback).fail(function(){
 						bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
+					}).always(function(){
+						self.keyData.attr("loading",false);
 					});
 				};
 				

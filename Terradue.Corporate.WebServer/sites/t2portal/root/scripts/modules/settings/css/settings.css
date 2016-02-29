@@ -65,7 +65,7 @@
 
  #settingsPage .settings-github .panel {
 	width: 350px;
-	height: 62px;
+	/* height: 62px; TODO: check*/
  }
 
  #settingsPage .settings-github .fa-github {

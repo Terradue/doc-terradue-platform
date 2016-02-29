@@ -24,7 +24,9 @@ require.config({
 		jasnyBootstrap: 'libs/jasny-bootstrap/js/jasny-bootstrap.min',
 		droppableTextarea: 'libs/jquery.droppableTextarea/js/jquery.droppableTextarea',
 		zeroClipboard: 'libs/zeroClipboard/ZeroClipboard',
-		jqueryCopyableInput: 'libs/jquery.copyableInput/js/jquery.copyableInput'
+		jqueryCopyableInput: 'libs/jquery.copyableInput/js/jquery.copyableInput',
+		summernote: 'http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote',
+		latinise: 'libs/latinise/latinise.min'
 	},
 	shim: {
 		underscore: {
@@ -50,7 +52,8 @@ require.config({
 		zeroClipboard: {
 			exports: 'ZeroClipboard'
 		},
-		jqueryCopyableInput: ['zeroClipboard', 'jquery']
+		jqueryCopyableInput: ['zeroClipboard', 'jquery'],
+		summernote: ['jquery', 'bootstrap']
 	}
 });
 

@@ -17,7 +17,7 @@ var NewsControl = BaseControl({}, {
 		this.data = new can.Observe({
 			q: null,
 			page: 1,
-			count: 3,
+			count: 5,
 			pageOffset: 1,
 			totalResults: 0,
 			newses: null,

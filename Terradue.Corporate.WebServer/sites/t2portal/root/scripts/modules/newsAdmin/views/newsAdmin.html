@@ -1,0 +1,96 @@
+<link href="/scripts/modules/newsAdmin/css/newsAdmin.css" type="text/css" rel="stylesheet" />
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css" type="text/css" rel="stylesheet" />
+<style>
+.shortLink {
+    width: 250px;
+/*     text-overflow: ellipsis; */
+    white-space: nowrap;
+    overflow: scroll;
+    height: 40px;
+}
+</style>
+<div class="container banners" id="newsAdminPage">
+	<h2>News</h2>
+	{{#if showForm}}
+		<div class="form well" data-id="{{selectedEntity.Id}}">
+			{{#if selectedEntity}}
+				<h4>Update News {{selectedEntity.Id}}</h4>
+			{{else}}
+				<h4>Create News</h4>
+			{{/if}}
+			
+			<div class="form-group">
+				<label for="Title">Title</label>
+				<input type="text" class="form-control" title="Title" name="Title" value="{{selectedEntity.Title}}" placeholder="Title" /> <br/>
+			</div>
+			<div class="form-group">
+				<label for="Abstract">Abstract</label>
+				<textarea name="Abstract" class="form-control" title="Abstract" value="{{selectedEntity.Abstract}}" placeholder="Description"></textarea> <br/>
+			</div>
+			<div class="form-group">
+				<label for="Content">Content</label>
+				<textarea name="Content" class="form-control" title="Content" value="{{selectedEntity.Content}}" placeholder="Content"></textarea> <br/>
+			</div>
+			<div class="form-group">
+				<label for="Author">Author</label>
+				<input type="text" class="form-control" title="Author" name="Author" value="{{selectedEntity.Author}}" placeholder="Author" /> <br/>
+			</div>
+			<div class="form-group">
+				<label for="Date">Date</label>
+				<input type="text" class="form-control" title="Date" name="Date" value="{{selectedEntity.Date}}" placeholder="Date" /> <br/>
+			</div>
+			<div class="form-group">
+				<label for="Tags">Tags</label>
+				<input type="text" class="form-control" title="Tags" name="Tags" value="{{selectedEntity.Tags}}" placeholder="Tags" /> <br/>
+			</div>
+			<a href="javascript://" class="btn btn-info save">{{#if selectedEntity}}Save{{else}}Create{{/if}}</a>
+			<a href="javascript://" class="btn btn-info preview">Preview</a>
+			<a href="javascript://" class="btn btn-info cancel">Cancel</a>
+		</div>
+	{{/if}}
+	{{#if entities.isResolved}}
+		{{#each entities}}
+			<div class="summerNote{{Id}}"></div>
+			<div class="entity" data-id="{{Id}}">
+				<h4 class="title"><span>{{Id}}</span> {{Title}}</h4>
+				<div class="newsInfo">
+					<div>
+						<i class="fa fa-user color-gray-light"></i> {{Author}}
+					</div>
+					<div>
+						<i class="fa fa-calendar color-gray-light"></i> {{Date}}
+					</div>
+					<div>
+						{{Tags}}
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span4">
+						<img class="image" src="{{imageUrl}}">
+					</div>
+					<div class="span8">
+						<p class="abstract">{{ Abstract }}</p>
+					</div>
+				</div>
+				<p class="buttons">
+					<a href="javascript://" class="btn btn-info update"><i class="fa fa-pencil"></i></a>
+					<a href="javascript://" class="btn btn-info delete"><i class="fa fa-trash-o"></i></a>
+				</p>
+				<hr/>
+			</div>
+		{{/each}}
+
+ 		<a href="javascript://" class="btn openCreate">Create</a>
+ 		<br/><br/>
+	{{else}}
+		{{#if entities.isPending}}
+			<h3><center><i class="fa fa-spin fa-spinner"></i> Loading News...</center></h3>
+		{{else}}
+			<div class="alert alert-error">
+			  <button type="button" class="close" data-dismiss="alert">&times;</button>
+			  <strong>Error!</strong> Unable to load News.
+			</div>
+		{{/if}}
+	{{/if}}
+	
+</div>
