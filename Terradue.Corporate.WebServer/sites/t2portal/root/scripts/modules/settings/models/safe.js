@@ -9,17 +9,16 @@ define(['jquery','can', 'config'], function($, can, Config){
 				data : {Password:password}
 			});
 		},
+
+		delete: function(password){
+			return $.ajax('/'+Config.api+'/user/safe?password='+password, {
+				type : "DELETE",
+				dataType : "json"
+			});
+		},
 				
 		get: function(password){
 			return $.ajax('/'+Config.api+'/user/safe/private', {
-				type : "PUT",
-				dataType : "json",
-				data : {Password:password}
-			});
-		},
-
-		recreate: function(password){
-			return $.ajax('/'+Config.api+'/user/safe', {
 				type : "PUT",
 				dataType : "json",
 				data : {Password:password}

@@ -7,7 +7,6 @@ using System.Web;
 using System.Web.SessionState;
 using ServiceStack.ServiceHost;
 using ServiceStack.ServiceInterface.ServiceModel;
-using Terradue.Authentication.Ldap;
 using Terradue.Authentication.OAuth;
 using Terradue.Corporate.WebServer.Common;
 using Terradue.Portal;

@@ -74,7 +74,8 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
                 GithubProfile user = GithubProfile.FromId(context, context.UserId);
                 try{
-                    user.LoadPublicKeyFromSafe();
+                    UserT2 usr = UserT2.FromId(context, context.UserId);
+                    user.PublicSSHKey = usr.PublicKey;
                 }catch(Exception e){
                     user.PublicSSHKey = null;
                 }

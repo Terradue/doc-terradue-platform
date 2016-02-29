@@ -86,12 +86,11 @@ namespace Terradue.Corporate.WebServer {
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
-                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
 
                 var client_id = request.client_id ?? context.GetConfigValue("sso-clientId");
                 var response_type = request.response_type ?? "code";
-                var scope = request.scope ?? "openid email";
+                var scope = request.scope ?? context.GetConfigValue("sso-scopes").Replace(","," ");
+//                scope = "openid email profile sshPublicKey rn";
                 var state = request.state ?? Guid.NewGuid().ToString();
                 var redirect_uri = request.redirect_uri ?? context.GetConfigValue("sso-callback");
 
@@ -124,7 +123,8 @@ namespace Terradue.Corporate.WebServer {
                     //no new scope to consent
                     if(oauthsession.scope.new_claims.Count == 0 
                        || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid"))){
-                        var consent = GenerateConsent(null);
+                        var scopes = new List<string>(context.GetConfigValue("sso-scopes").Split(",".ToCharArray()));
+                        var consent = GenerateConsent(scopes);
                         var redirect = client.ConsentSession(oauthsession.sid, consent);
                         if(request.ajax){
                             HttpResult redirectResponse = new HttpResult();
@@ -178,14 +178,10 @@ namespace Terradue.Corporate.WebServer {
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
-                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
+
+                var defaultscopes = new List<string>(context.GetConfigValue("sso-scopes").Split(",".ToCharArray()));
 
                 var query = HttpUtility.UrlDecode(request.query);
-
-                if(string.IsNullOrEmpty(query))
-                    query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
-                                      "code", "openid email", context.GetConfigValue("sso-clientId"), Guid.NewGuid(), context.GetConfigValue("sso-callback"));
 
                 OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                     query = query,
@@ -203,8 +199,8 @@ namespace Terradue.Corporate.WebServer {
                 if(oauthsession.type == "auth"){
                     LdapUser user = null;
                     try{
-                        user = client.Authenticate(request.username, request.password);
-                        //TODO: add user email ?
+                        var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
+                        user = j2ldapclient.Authenticate(request.username, request.password, context.GetConfigValue("ldap-apikey"));
                     }catch(Exception e){
                         return new HttpError(System.Net.HttpStatusCode.Forbidden, e);
                     }
@@ -224,8 +220,9 @@ namespace Terradue.Corporate.WebServer {
                     //user is now authenticated and need to consent
                     if(oauthsession.type == "consent"){
                         OauthConsentRequest consent = null;
-                        if(oauthsession.scope.new_claims.Count == 0) consent = GenerateConsent(null);
-                        else if(request.autoconsent) consent = GenerateConsent(oauthsession.scope.new_claims);
+                        if(oauthsession.scope.new_claims.Count == 0){
+                            consent = GenerateConsent(defaultscopes);
+                        } else if(request.autoconsent) consent = GenerateConsent(oauthsession.scope.new_claims);
                         else return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
                             
                         var redirect = client.ConsentSession(oauthsession.sid, consent);
@@ -248,9 +245,9 @@ namespace Terradue.Corporate.WebServer {
 
                     if(request.scope != null)
                         consent = GenerateConsent(request.scope);
-                    else if(oauthsession.scope.new_claims.Count == 0)
-                        consent = GenerateConsent(null);
-                    else if(request.autoconsent || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid")))
+                    else if(oauthsession.scope.new_claims.Count == 0){
+                        consent = GenerateConsent(defaultscopes);
+                    } else if(request.autoconsent || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid")))
                         consent = GenerateConsent(oauthsession.scope.new_claims);
                     else if (request.username != null && request.password != null){
                         //return to the login page so it can display the consent
@@ -290,14 +287,12 @@ namespace Terradue.Corporate.WebServer {
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
-                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
 
                 var query = HttpUtility.UrlDecode(request.query);
 
-                if(string.IsNullOrEmpty(query))
-                    query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
-                                          "code", "openid email", context.GetConfigValue("sso-clientId"), Guid.NewGuid(), context.GetConfigValue("sso-callback"));
+//                if(string.IsNullOrEmpty(query))
+//                    query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
+//                                          "code", context.GetConfigValue("sso-scopes"), context.GetConfigValue("sso-clientId"), Guid.NewGuid(), context.GetConfigValue("sso-callback"));
 
                 OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                     query = query,
@@ -326,7 +321,6 @@ namespace Terradue.Corporate.WebServer {
         }
 
         private OauthConsentRequest GenerateConsent(List<string> scope){
-            if (scope == null || scope.Count == 0) scope = new List<string>{"openid"};
 
             bool openid = false;
             foreach (var s in scope)
@@ -336,10 +330,13 @@ namespace Terradue.Corporate.WebServer {
 
             var consent = new OauthConsentRequest {
                 scope = scope,
-                claims = new List<string>(),
-                preset_claims = new OauthPresetClaims{
-
-                },
+//                scope = new List<string>{ "openid", "email", "profile", "rn" },
+//                claims = new List<string>{ "openid", "email", "sshPublicKey", "given_name", "rn" },
+//                preset_claims = new OauthPresetClaims{
+//                    userinfo = new OauthAuthzClaimsUserInfoRequest{
+//                        sshPublicKey = ""
+//                    }
+//                },
                 audience = new List<string>(),
                 long_lived = true,
                 refresh_token = new OauthRefreshToken{

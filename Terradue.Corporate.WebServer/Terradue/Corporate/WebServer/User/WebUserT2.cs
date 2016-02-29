@@ -59,6 +59,12 @@ namespace Terradue.Corporate.WebServer {
         public string password { get; set; }
     }
 
+    [Route("/user/safe", "DELETE", Summary = "delete a safe for user", Notes = "User is the current user.")]
+    public class DeleteSafeUserT2 : IReturn<WebSafe> {
+        [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string password { get; set; }
+    }
+
     [Route("/user/safe", "PUT", Summary = "recreate a safe for user", Notes = "")]
     public class ReCreateSafeUserT2 : IReturn<WebSafe> {
         [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
@@ -184,9 +190,8 @@ namespace Terradue.Corporate.WebServer {
         public WebUserT2(UserT2 entity) : base(entity) {
             this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
-            if (entity.HasSafe()) {
-                this.PublicKey = entity.GetPublicKey();
-            }
+
+            this.PublicKey = entity.PublicKey;
             this.Plan = entity.GetPlan();
         }
 
