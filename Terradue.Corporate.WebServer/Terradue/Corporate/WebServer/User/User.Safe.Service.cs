@@ -37,22 +37,23 @@ namespace Terradue.Corporate.WebServer {
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
-                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
 
                 UserT2 user = UserT2.FromId(context, context.UserId);
 
                 //authenticate user
                 try{
-                    client.Authenticate(user.Identifier, request.password);
+                    var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
+                    var usr = j2ldapclient.Authenticate(user.Identifier, request.password, context.GetConfigValue("ldap-apikey"));
                 }catch(Exception e){
                     throw new Exception("Invalid password");
                 }
 
                 user.CreateSafe();
+                user.UpdateLdapAccount();    
+
                 result = new WebSafe();
-                result.PublicKey = user.GetPublicKey();
-                result.PrivateKey = user.GetPrivateKey();
+                result.PublicKey = user.PublicKey;
+                result.PrivateKey = user.PrivateKey;
 
                 context.Close ();
             }catch(Exception e) {
@@ -60,6 +61,21 @@ namespace Terradue.Corporate.WebServer {
                 throw e;
             }
             return result;
+        }
+
+        public object Delete(DeleteSafeUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                user.DeletePublicKey();
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+            return new WebResponseBool(true);
         }
 
     }

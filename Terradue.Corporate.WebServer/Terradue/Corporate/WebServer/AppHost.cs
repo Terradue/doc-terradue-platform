@@ -22,7 +22,7 @@ namespace Terradue.Corporate.WebServer {
         : AppHostBase {
         /// <summary>AppHost contructor</summary>
         public AppHost()
-            : base("Terradue Corporate Web Services", typeof(LoginService).Assembly) {
+            : base("Terradue Corporate Web Services", typeof(OAuthService).Assembly) {
         }
 
         /// <summary>Override Configure method</summary>
@@ -30,8 +30,11 @@ namespace Terradue.Corporate.WebServer {
             System.Configuration.Configuration rootWebConfig =
                 System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration(null);
 
-            JsConfig.ExcludeTypeInfo = false;
+            JsConfig.IncludeTypeInfo = false;
+            JsConfig.ExcludeTypeInfo = true;
             JsConfig.IncludePublicFields = false;
+            JsConfig<DateTime>.SerializeFn = time => time.ToString("O");
+
 
             //Permit modern browsers (e.g. Firefox) to allow sending of any REST HTTP Method
             base.SetConfig(new EndpointHostConfig {

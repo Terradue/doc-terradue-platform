@@ -13,7 +13,6 @@ using System.IO;
 using ServiceStack.Text;
 using System.Runtime.Serialization;
 using ServiceStack.Common.Web;
-using Terradue.Authentication.Ldap;
 using Terradue.Authentication.OAuth;
 using Terradue.Ldap;
 
@@ -203,15 +202,27 @@ namespace Terradue.Corporate.WebServer {
                     user.SendMail(UserMailType.Registration, true);
                 }catch(Exception){}
 
-                using (var service = base.ResolveService<OAuthGatewayService>()) { 
-                    var response = service.Post(new OauthLoginRequest{
-                        username = request.Email,
-                        password = request.Password,
-                        ajax = true,
-                        autoconsent = true
-                    });
-                    return response;
-                }; 
+                try{
+                    using (var service = base.ResolveService<OAuthGatewayService>()) { 
+                        var client_id = context.GetConfigValue("sso-clientId");
+                        var response_type = "code";
+                        var scope = context.GetConfigValue("sso-scopes").Replace(","," ");
+                        var state = Guid.NewGuid().ToString();
+                        var redirect_uri = context.GetConfigValue("sso-callback");
+                        var query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
+                                          response_type, scope, client_id, state, redirect_uri);
+                        var response = service.Post(new OauthLoginRequest{
+                            username = request.Email,
+                            password = request.Password,
+                            ajax = true,
+                            query = query,
+                            autoconsent = true
+                        });
+                        return response;
+                    }; 
+                }catch(Exception e){
+                    throw new Exception("Your account has been successfully created, but there has been a problem to log you in. Please try again to sign-in.", e);
+                }
 
                 context.Close ();
             }catch(Exception e) {

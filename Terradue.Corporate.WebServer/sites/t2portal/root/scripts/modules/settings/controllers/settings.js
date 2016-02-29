@@ -111,6 +111,7 @@ define([
 					self.profileData.attr({
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						nameMissing: !(user.FirstName && user.LastName),
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey)
 					});
@@ -146,6 +147,7 @@ define([
 					self.profileData.attr({
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						nameMissing: !(user.FirstName && user.LastName),
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey)
 					});
@@ -231,6 +233,11 @@ define([
 						title: 'Download',
 						placement:'bottom'
 					});
+					self.element.find('.deletePublicKeyBtn').tooltip({
+						trigger: 'hover',
+						title: 'Delete',
+						placement:'bottom'
+					});
 				});
 			},
 
@@ -294,7 +301,8 @@ define([
 					.then(function(createdUser){
 						self.profileData.attr({
 							saveSuccess: true,
-							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country)
+							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country),
+							nameMissing: !(createdUser.FirstName && createdUser.LastName),
 						});
 						self.data.attr({
 							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country)
@@ -396,7 +404,7 @@ define([
 				});
 			},
 
-			/* safe */
+			/* ssh key */
 			'.settings-key .generateSafe click': function(){
 				var self = this;
 				var $dialog;
@@ -480,6 +488,54 @@ define([
 					return false;
 				});
 			},
+
+			'.settings-key .deletePublicKeyBtn click': function(){
+				var self = this;
+				var title = "This action requires your password.";
+				if(self.keyData.PublicKey)
+					title += "<br/><small><i>Please note that this will delete your current SSH key pair from your VMs.</i></small>";
+				var message = "<div class='container-fluid'>"
+							+ "<form class='createSafeForm'>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "</form>"
+							+ "</div>";
+				bootbox.dialog({
+					title: title,
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function (a,b,c) {
+	                            var password = $('#safePassword').val();
+	                            if (password==''){
+	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+	                            	return false;
+	                            };
+	                            self.keyData.attr("loading",true);
+	                            SafeModel.delete(password).then(function(safe){
+	                            	self.data.attr({
+										sshKeyNotComplete: true,
+										githubNotComplete: true//we just create a new keys so it cannot be already on github
+									});
+							    	self.keyData.attr("PublicKey",null);
+							    	self.keyData.attr("PrivateKey",null);
+							    	self.keyData.attr("PublicKeyBase64",null);
+							    	self.keyData.attr("PrivateKeyBase64",null);
+
+								}).fail(function(){
+									bootbox.alert("<i class='fa fa-warning'></i> Error during ssh keys delete.");
+								}).always(function(){
+									self.keyData.attr("loading",false);
+								});
+                        	}
+                    	}
+                    }
+				});
+			}
 
 		}
 	);

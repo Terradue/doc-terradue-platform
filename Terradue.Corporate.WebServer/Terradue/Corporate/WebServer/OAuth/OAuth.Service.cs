@@ -123,7 +123,7 @@ UA -> UA : display user name
             var redirect = "";
 
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
-            Terradue.Portal.User user = null;
+            UserT2 user = null;
             try {
                 context.Open();
 
@@ -137,15 +137,14 @@ UA -> UA : display user name
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                client.LdapAuthEndpoint = context.GetConfigValue("ldap-authEndpoint");
-                client.LdapApiKey = context.GetConfigValue("ldap-apikey");
                 client.RedirectUri = context.GetConfigValue("sso-callback");
                 client.AccessToken(request.Code);
 
                 OAuth2AuthenticationType auth = new OAuth2AuthenticationType(context);
                 auth.SetConnect2IdCLient(client);
 
-                user = auth.GetUserProfile(context);
+                user = (UserT2)auth.GetUserProfile(context);
+                user.LoadPublicKey();//TODO: should be done automatically on the previous call
 
                 redirect = context.BaseUrl + "/portal/settings/profile";
 

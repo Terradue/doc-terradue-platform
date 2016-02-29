@@ -49,6 +49,18 @@ namespace Terradue.Corporate.Controller {
             } 
         }
 
+        /// <summary>
+        /// Gets or sets the public key.
+        /// </summary>
+        /// <value>The public key.</value>
+        public string PublicKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the private key.
+        /// </summary>
+        /// <value>The private key.</value>
+        public string PrivateKey { get; set; }
+
         private string onepwd { get; set; }
 
         private int oneId { get; set; }
@@ -56,8 +68,6 @@ namespace Terradue.Corporate.Controller {
         private OneClient oneClient { get; set; }
 
         private Json2LdapClient Json2Ldap { get; set; }
-
-        private Safe safe { get; set; }
 
         private Plan plan { get; set; }
 
@@ -139,6 +149,19 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
+        /// Load this instance.
+        /// </summary>
+        public override void Load(){
+            base.Load();
+
+            //get the ssh Public Key from Ldap
+            //TODO: should be done automatically from the claims (connect2id)
+            this.LoadPublicKey();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
         /// Gets the token.
         /// </summary>
         /// <returns>The token.</returns>
@@ -184,30 +207,6 @@ namespace Terradue.Corporate.Controller {
         /// <returns><c>true</c> if this instance has cloud account; otherwise, <c>false</c>.</returns>
         public bool HasCloudAccount() {
             return context.GetQueryBooleanValue(String.Format("SELECT username IS NOT NULL FROM usr_cloud WHERE id={0};", this.Id));
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Determines whether this instance has a safe created.
-        /// </summary>
-        /// <returns><c>true</c> if this instance has a safe; otherwise, <c>false</c>.</returns>
-        public bool HasSafe() {
-            return (this.safe != null);
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Load this instance.
-        /// </summary>
-        public override void Load() {
-            base.Load();
-            try {
-                safe = Safe.FromUserId(context, this.Id);
-            } catch (Exception) {
-                safe = null;
-            }
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -310,56 +309,10 @@ namespace Terradue.Corporate.Controller {
         /// Creates the safe.
         /// </summary>
         public void CreateSafe() {
-            try {
-                safe = Safe.FromUserId(context, this.Id);
-                safe.ClearKeys();
-            } catch (Exception e) {
-                //user has no safe
-                safe = new Safe(context);
-                safe.OwnerId = this.Id;
-            }
+            Safe safe = new Safe(context);
             safe.GenerateKeys();
-            safe.Store();
-            return;
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Recreates the safe.
-        /// </summary>
-        /// <param name="password">Password.</param>
-//        public void RecreateSafe(string password) {
-//            if (safe == null)
-//                throw new Exception("User has no Safe");
-//            safe.ClearKeys();
-//            safe.GenerateKeys(password);
-//            safe.Store();
-//        }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Gets the public key.
-        /// </summary>
-        /// <returns>The public key.</returns>
-        public string GetPublicKey() {
-            if (!HasSafe())
-                return null;
-            return safe.GetBase64SSHPublicKey();
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Gets the private key.
-        /// </summary>
-        /// <returns>The private key.</returns>
-        /// <param name="password">Password.</param>
-        public string GetPrivateKey() {
-            if (!HasSafe())
-                return null;
-            return safe.GetBase64SSHPrivateKey();
+            this.PublicKey = safe.GetBase64SSHPublicKey();
+            this.PrivateKey = safe.GetBase64SSHPrivateKey();
         }
 
         #endregion
@@ -379,6 +332,7 @@ namespace Terradue.Corporate.Controller {
             user.FirstName = this.FirstName;
             user.LastName = this.LastName;
             user.Name = string.Format("{0} {1}", this.FirstName, this.LastName);
+            user.PublicKey = this.PublicKey;
             return user;
         }
 
@@ -466,13 +420,71 @@ namespace Terradue.Corporate.Controller {
             string dn = CreateLdapDN();
             LdapUser ldapusr = this.ToLdapUser();
             ldapusr.DN = dn;
+            ldapusr.PublicKey = this.PublicKey;
 
             //login as ldap admin to have creation rights
             Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-            Json2Ldap.ModifyUserInformation(ldapusr);
+
+            try{
+                Json2Ldap.ModifyUserInformation(ldapusr);
+            }catch(Exception e){
+                try{
+                    //user may not have sshPublicKey
+                    if(e.Message.Contains("sshPublicKey")){
+                        Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
+                        Json2Ldap.ModifyUserInformation(ldapusr);
+                    } else throw e;
+                }catch(Exception e2){
+                    throw e2;
+                }
+            }
 
             Json2Ldap.Close();
         }
+
+        public void DeletePublicKey(){
+            //open the connection
+            Json2Ldap.Connect();
+
+            string dn = CreateLdapDN();
+
+            //login as ldap admin to have creation rights
+            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+
+            Json2Ldap.DeleteAttributeString(dn, "sshPublicKey", null);
+
+            //TODO: delete also from OpenNebula
+
+            Json2Ldap.Close();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Loads the public key.
+        /// </summary>
+        public void LoadPublicKey(){
+            Json2Ldap.Connect();
+
+            var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
+            this.PublicKey = ldapusr.PublicKey;
+
+            Json2Ldap.Close();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Add the public key.
+        /// </summary>
+        public void AddPublicKeyAttribute(){
+            Json2Ldap.Connect();
+
+            Json2Ldap.AddNewAttributeString(CreateLdapDN(), "objectClass", "ldapPublicKey");
+
+            Json2Ldap.Close();
+        }
+
 
         #endregion
 

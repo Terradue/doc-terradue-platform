@@ -17,6 +17,12 @@ namespace Terradue.Corporate.WebServer {
         public int Id { get; set; }
     }
 
+    [Route("/user/{username}", "GET", Summary = "GET the user", Notes = "User is found from username")]
+    public class GetUserNameT2 : IReturn<WebUserT2> {
+        [ApiMember(Name = "username", Description = "User identifier", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Username { get; set; }
+    }
+
     [Route("/user/passwordreset", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
     public class UserResetPassword : IReturn<WebResponseBool> {
         [ApiMember(Name = "username", Description = "User name", ParameterType = "query", DataType = "string", IsRequired = true)]
@@ -55,6 +61,12 @@ namespace Terradue.Corporate.WebServer {
 
     [Route("/user/safe", "POST", Summary = "create a safe for user", Notes = "User is contained in the POST data.")]
     public class CreateSafeUserT2 : IReturn<WebSafe> {
+        [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string password { get; set; }
+    }
+
+    [Route("/user/safe", "DELETE", Summary = "delete a safe for user", Notes = "User is the current user.")]
+    public class DeleteSafeUserT2 : IReturn<WebSafe> {
         [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string password { get; set; }
     }
@@ -171,6 +183,9 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String Plan { get; set; }
 
+        [ApiMember(Name = "UnixName", Description = "User Unix Name", ParameterType = "query", DataType = "String", IsRequired = false)]
+        public String UnixName { get; set; }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
@@ -184,9 +199,8 @@ namespace Terradue.Corporate.WebServer {
         public WebUserT2(UserT2 entity) : base(entity) {
             this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
-            if (entity.HasSafe()) {
-                this.PublicKey = entity.GetPublicKey();
-            }
+
+            this.PublicKey = entity.PublicKey;
             this.Plan = entity.GetPlan();
         }
 
