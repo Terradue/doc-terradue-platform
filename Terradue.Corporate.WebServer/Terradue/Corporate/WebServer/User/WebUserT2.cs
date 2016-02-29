@@ -83,6 +83,12 @@ namespace Terradue.Corporate.WebServer {
         public string password { get; set; }
     }
 
+    [Route("/user/posix/free", "GET", Summary = "GET if the posix username is free or not", Notes = "")]
+    public class GetExistsPosixnameT2 : IReturn<WebUserT2> {
+        [ApiMember(Name = "posixname", Description = "posixname", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string posixname { get; set; }
+    }
+
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
@@ -183,8 +189,8 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String Plan { get; set; }
 
-        [ApiMember(Name = "UnixName", Description = "User Unix Name", ParameterType = "query", DataType = "String", IsRequired = false)]
-        public String UnixName { get; set; }
+        [ApiMember(Name = "PosixName", Description = "User Posix Name", ParameterType = "query", DataType = "String", IsRequired = false)]
+        public String PosixUsername { get; set; }
 
 
         /// <summary>
@@ -199,7 +205,7 @@ namespace Terradue.Corporate.WebServer {
         public WebUserT2(UserT2 entity) : base(entity) {
             this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
-
+            this.PosixUsername = entity.PosixName;
             this.PublicKey = entity.PublicKey;
             this.Plan = entity.GetPlan();
         }
@@ -212,6 +218,7 @@ namespace Terradue.Corporate.WebServer {
         public UserT2 ToEntity(IfyContext context, UserT2 input) {
             UserT2 user = (input == null ? new UserT2(context) : input);
             base.ToEntity(context, user);
+            user.PosixName = this.PosixUsername;
 
             return user;
         }

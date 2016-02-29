@@ -38,6 +38,7 @@ define([
 				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
+				this.keyData = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
@@ -208,7 +209,6 @@ define([
 
 			key: function(options) {
 				var self = this;
-				this.keyData = new can.Observe({});
 
 				console.log("App.controllers.Settings.key");
 				
@@ -264,21 +264,21 @@ define([
 			unixUsernameGeneration: function(){
 				var $firstName = this.element.find('input[name="FirstName"]');
 				var $lastName = this.element.find('input[name="LastName"]');
-				var $unixUsername = this.element.find('input[name="UnixUsername"]');
+				var $unixUsername = this.element.find('input[name="PosixUsername"]');
 				var timeout;
 				
 				var setUnixUsernameFn = function(){
-					var firstName = $firstName.val();
-					var lastName = $lastName.val();
+					var firstName = $firstName.val().toLowerCase();;
+					var lastName = $lastName.val().toLowerCase();;
 					if (!firstName || !lastName)
 						return;
 					
 					var firstChar = firstName.split(' ')[0][0];
 					var lastNames = lastName.split(' ');
 					var lastSurname = lastNames[lastNames.length-1];
-					var unixUsername = (firstChar.latinise() + lastSurname.latinise()).substring(0,32);
+					var PosixUsername = (firstChar.latinise() + lastSurname.latinise()).substring(0,32);
 					
-					$unixUsername.val(unixUsername);
+					$unixUsername.val(PosixUsername);
 				};
 				
 				$firstName.keyup(setUnixUsernameFn);
@@ -290,7 +290,7 @@ define([
 				// get data
 				var self= this,
 					usr = Helpers.retrieveDataFromForm('.settings-profile form',
-						['FirstName','LastName','Affiliation','Country','EmailNotification']);
+						['FirstName','LastName','PosixUsername','Affiliation','Country','EmailNotification']);
 				
 				// update
 				App.Login.User.current.attr(usr); 

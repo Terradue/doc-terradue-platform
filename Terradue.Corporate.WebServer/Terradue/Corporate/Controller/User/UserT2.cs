@@ -50,6 +50,12 @@ namespace Terradue.Corporate.Controller {
         }
 
         /// <summary>
+        /// Gets or sets the name of the posix.
+        /// </summary>
+        /// <value>The name of the posix.</value>
+        public string PosixName { get; set; }
+
+        /// <summary>
         /// Gets or sets the public key.
         /// </summary>
         /// <value>The public key.</value>
@@ -154,9 +160,9 @@ namespace Terradue.Corporate.Controller {
         public override void Load(){
             base.Load();
 
-            //get the ssh Public Key from Ldap
+            //get the ssh Public Key / Posix Username from Ldap
             //TODO: should be done automatically from the claims (connect2id)
-            this.LoadPublicKey();
+            this.LoadLdapInfo();
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -421,6 +427,7 @@ namespace Terradue.Corporate.Controller {
             LdapUser ldapusr = this.ToLdapUser();
             ldapusr.DN = dn;
             ldapusr.PublicKey = this.PublicKey;
+            ldapusr.PosixUsername = this.PosixName;
 
             //login as ldap admin to have creation rights
             Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
@@ -430,7 +437,7 @@ namespace Terradue.Corporate.Controller {
             }catch(Exception e){
                 try{
                     //user may not have sshPublicKey
-                    if(e.Message.Contains("sshPublicKey")){
+                    if(e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")){
                         Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
                         Json2Ldap.ModifyUserInformation(ldapusr);
                     } else throw e;
@@ -461,13 +468,14 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Loads the public key.
+        /// Loads the LDAP info.
         /// </summary>
-        public void LoadPublicKey(){
+        public void LoadLdapInfo(){
             Json2Ldap.Connect();
 
             var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
             this.PublicKey = ldapusr.PublicKey;
+            this.PosixName = ldapusr.PosixUsername;
 
             Json2Ldap.Close();
         }
@@ -483,6 +491,32 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.AddNewAttributeString(CreateLdapDN(), "objectClass", "ldapPublicKey");
 
             Json2Ldap.Close();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Determines whether this instance is unix username is free on ldap
+        /// </summary>
+        /// <returns><c>true</c> if this unix username is free; otherwise, <c>false</c>.</returns>
+        /// <param name="username">Username.</param>
+        public bool IsUnixUsernameFree(string username){
+            bool result = false;
+
+            //open the connection
+            Json2Ldap.Connect();
+
+            string basedn = "ou=people, dc=terradue, dc=com";
+            string filter = string.Format("(sshUsername={0})",username);
+
+            //login as ldap admin to have creation rights
+            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+
+            var response = Json2Ldap.SearchEntries(basedn, Json2LdapSearchScopes.SUB, filter);
+            if (response.matches == null || response.matches.Count == 0) result = true;
+                
+            Json2Ldap.Close();
+            return result;
         }
 
 

@@ -1,18 +1,21 @@
 <div id='settings' class='settings-profile container col-md-9'>
 	<div class='settings settings-title'>Public profile</div>
-	<div class='settings settings-description'>Some basic information about you.</div>
+	<div class='settings settings-description'>
+		Some basic information about you.<br/>
+		The <b>Cloud Username</b> is your username on the Terradue Cloud Platform, it is used for example to login on your VMs.
+	</div>
 	<div class='settings settings-container'>
 
 	{{#if user}}		
 		{{#if profileNotComplete}}
 			{{#if nameMissing}}
-				<div class="alert alert-danger">
-					<i class="fa fa-a"></i>&nbsp;Your profile is not yet complete! <br/>FirstName and LastName are mandatory to create your <b>Unix username</b>.
+				<div class="alert alert-warning">
+					<i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete! <br/><b>First name</b> and <b>Last name</b> are mandatory to create your <b>Cloud username</b>.
 				</div>
 				<br/>
 			{{else}}
 				<div class="alert alert-warning">
-					<i class="fa fa-a"></i>&nbsp;Your profile is not yet complete! <br/>Please fill it up.
+					<i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete, please fill it up.
 				</div>
 				<br/>
 			{{/if}}
@@ -30,11 +33,11 @@
 			</div>
 			
 			<div class="form-group">
-				<label>Unix Username</label>
-				{{#if user.UnixUsername}}
-	 				<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.UnixUsername }}">
+				<label>Cloud Username</label>
+				{{#if user.PosixUsername}}
+	 				<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.PosixUsername }}">
 				{{else}}
-					<input type="text" class="form-control" placeholder="" name="UnixUsername">
+					<input type="text" class="form-control" placeholder="" name="PosixUsername">
 				{{/if}}
 			</div>
 			

@@ -42,6 +42,23 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
+        public object Get(GetUserNameT2 request) {
+            WebUserT2 result;
+
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            try {
+                context.Open();
+                UserT2 user = UserT2.FromUsername(context, request.Username);
+                result = new WebUserT2(user);
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }
+
         /// <summary>
         /// Get the current user.
         /// </summary>
@@ -102,7 +119,9 @@ namespace Terradue.Corporate.WebServer {
                 user.Store();
 
                 //update the Ldap account with the modifications
-                user.UpdateLdapAccount();
+                if(user.IsUnixUsernameFree(request.PosixUsername))
+                    user.UpdateLdapAccount();
+                else throw new Exception("The Cloud Username is not available, please choose another.");
 
                 result = new WebUserT2(user);
                 context.Close();
@@ -357,6 +376,25 @@ namespace Terradue.Corporate.WebServer {
                 throw e;
             }
             return new WebResponseBool(true);
+        }
+
+        public object Get(GetExistsPosixnameT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            bool result = true;
+            try {
+                context.Open();
+
+                if(string.IsNullOrEmpty(request.posixname)) throw new Exception("Posix name is empty");
+
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                result = user.IsUnixUsernameFree(request.posixname);
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return new WebResponseBool(result);
         }
 
         public void ValidateCaptcha(string secret, string response){

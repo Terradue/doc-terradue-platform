@@ -144,7 +144,7 @@ UA -> UA : display user name
                 auth.SetConnect2IdCLient(client);
 
                 user = (UserT2)auth.GetUserProfile(context);
-                user.LoadPublicKey();//TODO: should be done automatically on the previous call
+                user.LoadLdapInfo();//TODO: should be done automatically on the previous call
 
                 redirect = context.BaseUrl + "/portal/settings/profile";
 
