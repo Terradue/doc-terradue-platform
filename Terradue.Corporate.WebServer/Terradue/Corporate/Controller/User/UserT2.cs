@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Net.Mail;
 using System.Net;
 using Terradue.Ldap;
+using System.Collections.Generic;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
@@ -53,7 +54,7 @@ namespace Terradue.Corporate.Controller {
         /// Gets or sets the name of the posix.
         /// </summary>
         /// <value>The name of the posix.</value>
-        public string PosixName { get; set; }
+        public string PosixUsername { get; set; }
 
         /// <summary>
         /// Gets or sets the public key.
@@ -418,16 +419,24 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Updates the LDAP account.
         /// </summary>
-        public void UpdateLdapAccount(){
-
-            //open the connection
-            Json2Ldap.Connect();
-
+        /// <param name="updatePosixname">If set to <c>true</c> update posixname.</param>
+        public void UpdateLdapAccount(bool updatePosixname=false){
+            
             string dn = CreateLdapDN();
             LdapUser ldapusr = this.ToLdapUser();
             ldapusr.DN = dn;
             ldapusr.PublicKey = this.PublicKey;
-            ldapusr.PosixUsername = this.PosixName;
+            if (updatePosixname) {
+                //validate the posix name is correct
+                ValidatePosixUsername(this.PosixUsername);
+                //validate the posix name is nt already used
+                if(!IsPosixUsernameFree(this.PosixUsername)) throw new Exception("The Cloud Username is not available, please choose another.");
+                //set the posix name
+                ldapusr.PosixUsername = this.PosixUsername;
+            }
+
+            //open the connection
+            Json2Ldap.Connect();
 
             //login as ldap admin to have creation rights
             Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
@@ -449,6 +458,33 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Close();
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Validates the posix username.
+        /// </summary>
+        /// <returns><c>true</c>, if posix username was validated, <c>false</c> otherwise.</returns>
+        /// <param name="posixusername">Posixusername.</param>
+        public void ValidatePosixUsername(string posixusername){
+            Regex r = new Regex("^[a-z][0-9a-z]{1,31}$");
+            if (r.IsMatch(posixusername)) return;
+
+            if (posixusername.Length > 32)
+                throw new Exception("Invalid Cloud username: You must use at max 32 characters");
+            if (Regex.Match(posixusername, @"[A-Z]").Success)
+                throw new Exception("Invalid Cloud username: You must not use capital letters");
+            if (!Regex.Match(posixusername, @"^[0-9a-z]").Success)
+                throw new Exception("Invalid Cloud username: You must use only alphanumeric values");
+            if (!Regex.Match(posixusername,"^[a-z][0-9a-z]{1,31}$").Success)
+                throw new Exception("Invalid Cloud username: You must use at least one numerical value");
+            throw new Exception("Invalid Cloud username");
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Deletes the public key.
+        /// </summary>
         public void DeletePublicKey(){
             //open the connection
             Json2Ldap.Connect();
@@ -475,7 +511,7 @@ namespace Terradue.Corporate.Controller {
 
             var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
             this.PublicKey = ldapusr.PublicKey;
-            this.PosixName = ldapusr.PosixUsername;
+            this.PosixUsername = ldapusr.PosixUsername;
 
             Json2Ldap.Close();
         }
@@ -500,7 +536,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns><c>true</c> if this unix username is free; otherwise, <c>false</c>.</returns>
         /// <param name="username">Username.</param>
-        public bool IsUnixUsernameFree(string username){
+        public bool IsPosixUsernameFree(string username){
             bool result = false;
 
             //open the connection

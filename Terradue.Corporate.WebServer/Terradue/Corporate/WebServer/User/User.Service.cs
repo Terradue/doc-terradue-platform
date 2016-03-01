@@ -115,13 +115,12 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
+                bool noposix = string.IsNullOrEmpty(user.PosixUsername);
                 user = request.ToEntity(context, user);
                 user.Store();
 
                 //update the Ldap account with the modifications
-                if(user.IsUnixUsernameFree(request.PosixUsername))
-                    user.UpdateLdapAccount();
-                else throw new Exception("The Cloud Username is not available, please choose another.");
+                user.UpdateLdapAccount(noposix);
 
                 result = new WebUserT2(user);
                 context.Close();
@@ -387,7 +386,7 @@ namespace Terradue.Corporate.WebServer {
                 if(string.IsNullOrEmpty(request.posixname)) throw new Exception("Posix name is empty");
 
                 UserT2 user = UserT2.FromId(context, context.UserId);
-                result = user.IsUnixUsernameFree(request.posixname);
+                result = user.IsPosixUsernameFree(request.posixname);
 
                 context.Close();
             } catch (Exception e) {

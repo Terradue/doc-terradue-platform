@@ -2,7 +2,6 @@
 	<div class='settings settings-title'>Public profile</div>
 	<div class='settings settings-description'>
 		Some basic information about you.<br/>
-		The <b>Cloud Username</b> is your username on the Terradue Cloud Platform, it is used for example to login on your VMs.
 	</div>
 	<div class='settings settings-container'>
 
@@ -34,6 +33,8 @@
 			
 			<div class="form-group">
 				<label>Cloud Username</label>
+				&nbsp;<i class="text text-info small fa fa-info-circle posixInfo" data-toggle="tooltip"></i>
+<!--				<span class="text text-info small"> Username on the Terradue Cloud Platform, used to login on your VMs.</span>-->
 				{{#if user.PosixUsername}}
 	 				<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.PosixUsername }}">
 				{{else}}

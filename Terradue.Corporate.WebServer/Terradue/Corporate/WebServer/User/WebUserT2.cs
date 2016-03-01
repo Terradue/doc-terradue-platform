@@ -205,7 +205,7 @@ namespace Terradue.Corporate.WebServer {
         public WebUserT2(UserT2 entity) : base(entity) {
             this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
-            this.PosixUsername = entity.PosixName;
+            this.PosixUsername = entity.PosixUsername;
             this.PublicKey = entity.PublicKey;
             this.Plan = entity.GetPlan();
         }
@@ -218,7 +218,7 @@ namespace Terradue.Corporate.WebServer {
         public UserT2 ToEntity(IfyContext context, UserT2 input) {
             UserT2 user = (input == null ? new UserT2(context) : input);
             base.ToEntity(context, user);
-            user.PosixName = this.PosixUsername;
+            user.PosixUsername = this.PosixUsername;
 
             return user;
         }

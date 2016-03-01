@@ -95,7 +95,7 @@ define([
 			
 			profile: function(options) {
 				var self = this;
-				
+								
 				this.profileData = new can.Observe({});
 				this.view({
 					url: 'modules/settings/views/profile.html',
@@ -118,6 +118,12 @@ define([
 					});
 					
 					self.unixUsernameGeneration();
+
+					self.element.find('.posixInfo').tooltip({
+						trigger: 'hover',
+						title: 'Username on the Terradue Cloud Platform, used to login on your VMs.',
+						placement:'right'
+					});
 					
 					if (self.params.token && self.profileData.user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
