@@ -25,6 +25,13 @@ define([
 ], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, ZeroClipboard){
 	
 	window.ZeroClipboard = ZeroClipboard;
+	// regexpr validator
+	$.validator.addMethod('regExpr', function(value, element, regExprStr) {
+		var regExpr = new RegExp(regExprStr);
+		return regExpr.test(value);
+	}, function(regExprStr){
+		return 'Enter a value which suits the regexpr "'+regExprStr+'"';
+	});
 	
 	var SettingsControl = BaseControl(
 		{
@@ -90,7 +97,7 @@ define([
 				var self = this;
 				this.isLoginPromise.then(function(user){
 					self.view(self.indexDependency());
-				})
+				});
 			},
 			
 			profile: function(options) {
@@ -117,6 +124,7 @@ define([
 						sshKeyNotComplete: !(user.PublicKey)
 					});
 					
+					self.initProfileValidation();
 					self.unixUsernameGeneration();
 
 					self.element.find('.posixInfo').tooltip({
@@ -267,13 +275,71 @@ define([
 				});
 			},
 			
+			initProfileValidation: function(){
+				var self = this;
+				var $form = this.element.find('form.profileForm').validate({
+					rules: {
+						FirstName: 'required',
+						LastName: 'required',
+						PosixUsername: {
+							regExpr: '^[a-z][0-9a-z]{1,31}$',
+							remote: {
+						        url: "/t2api/user/posix/free?format=json",
+						        type: "GET",
+						        processData: true,
+						        data: {
+						        	posixname: function() {
+						        		return self.element.find('input[name="PosixUsername"]').val();
+						        	}
+						        },
+						        noStringify: true,
+						        beforeSend: function(){
+						        	self.profileData.attr('posixUsernameLoader', true);
+						        },
+						        complete: function(){
+						        	self.profileData.attr('posixUsernameLoader', false);
+						        }
+							}
+						}
+					},
+					messages: {
+						FirstName: '<i class="fa fa-times-circle"></i> Please insert your First Name',
+						LastName: '<i class="fa fa-times-circle"></i> Please insert your Last Name',
+						PosixUsername: {
+							regExpr: '<i class="fa fa-times-circle"></i> The username should start by a letter, have letters and numbers and 32 chars.</span>',
+							remote: '<i class="fa fa-times-circle"></i> This username is already taken, please choose another one.</span>'
+						}
+					},
+					// set this class to error-labels to indicate valid fields
+					success: function(label, element) {
+						if ($(element).attr('name')=='PosixUsername')
+							label.html('<span class="text-success"><i class="fa fa-check-circle"></i> The username is free and available.</span>');
+					},
+
+					submitHandler: function(form){
+						var posixUsername = $(form).find('input[name="PosixUsername"]').val();
+						bootbox.confirm('Your Cloud Username will be <b>'+posixUsername+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
+							if (confirmed)
+								self.profileSubmit();
+						});
+						return false;
+					}
+				});
+			},
+			
 			unixUsernameGeneration: function(){
+				if (this.profileData.user.PosixUsername) // if is set do nothing
+					return;
+				
 				var $firstName = this.element.find('input[name="FirstName"]');
 				var $lastName = this.element.find('input[name="LastName"]');
 				var $unixUsername = this.element.find('input[name="PosixUsername"]');
 				var timeout;
 				
-				var setUnixUsernameFn = function(){
+				var setUnixUsernameFn = function(e){
+					if (e && e.keyCode && (e.keyCode==9 || e.keyCode==16))
+						return;
+					
 					var firstName = $firstName.val().toLowerCase();;
 					var lastName = $lastName.val().toLowerCase();;
 					if (!firstName || !lastName)
@@ -284,15 +350,16 @@ define([
 					var lastSurname = lastNames[lastNames.length-1];
 					var PosixUsername = (firstChar.latinise() + lastSurname.latinise()).substring(0,32);
 					
-					$unixUsername.val(PosixUsername);
+					$unixUsername.val(PosixUsername).valid();
 				};
 				
+				$firstName.on('change', function(){console.log('change')});
 				$firstName.keyup(setUnixUsernameFn);
 				$lastName.keyup(setUnixUsernameFn);
 				setUnixUsernameFn();
 			},
 			
-			'.settings-profile .submit click': function(){
+			profileSubmit: function(){
 				// get data
 				var self= this,
 					usr = Helpers.retrieveDataFromForm('.settings-profile form',

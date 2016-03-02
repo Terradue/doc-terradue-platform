@@ -468,7 +468,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close();
                 throw e;
             }
-            return new WebResponseBool(result);
+			return result;//new WebResponseBool(result);
         }
 
         public void ValidateCaptcha(string secret, string response){
