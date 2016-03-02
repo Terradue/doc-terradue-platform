@@ -16,6 +16,81 @@ using ServiceStack.Common.Web;
 using Terradue.Authentication.OAuth;
 using Terradue.Ldap;
 
+
+/*
+ * Sequence diagram for User registration
+participant "GEP" as GP
+participant "User" as US
+participant "T2Portal" as T2
+participant "T2portal Database" as DB
+participant "LDAP" as LP
+participant "EO-SSO" as SS
+participant "Zendesk" as ZK
+participant "Cloud Controller" as CC
+
+== DEFAULT REGISTRATION ==
+US -> T2 : <b>Sign up</b>\n(email, password)
+T2 -> DB : <b>Create User</b>\nUsername=email\nEmail=email\n
+T2 -> LP : <b>Create User</b>\nuid=email\nemail=email\npassword=password
+T2 -> US : sends a confirmation email
+US -> T2 : confirm email
+T2 -> DB : Update user status
+T2 -> US : redirect to profile page
+T2 -> US : auto propose username on names completion
+US -> T2 : <b>Edit Profile</b>\n(firstname, lastname, username)
+T2 -> DB : <b>Update User</b>\nUsername=username\nFirstName=firstname\nLastName=lastname\nEmail=email\n
+T2 -> LP : <b>Update User</b>\nuid=username\nname=firstname\ngiven_name=lastname\nemail=email\n
+
+== REGISTRATION FROM TEP ==
+US -> GP : Login with EO-SSO Account
+GP -> SS : login + (callback_url = /login)
+US -> SS : username / password
+SS -> GP : /login + username / email
+
+alt exists ldap entry with eosso=eosso username
+GP -> US : wants to setup Terradue Account ? (profile page)
+US -> GP : Setup Account
+GP -> T2 : redirects to (GET) /oauth + query including eosso
+T2 -> T2 : auto login (client is trusted) + maj infos user if necessary
+else
+alt exists ldap entry with email=email
+GP -> US : wants to setup Terradue Account ? (profile page)
+US -> GP : Setup Account
+GP -> T2 : redirects to (GET) /oauth + query including eosso
+T2 -> T2 : auto login (client is trusted) + maj eosso username + maj infos user if necessary
+else
+T2 -> T2 : auto create user + maj eosso username + maj infos user if necessary + random password
+T2 -> US : redirects to profile page
+US -> T2 : <b>Edit Profile</b>\n(firstname, lastname, username) + GEP callback url
+T2 -> DB : <b>Update User</b>\nUsername=username\nFirstName=firstname\nLastName=lastname\nEmail=email\n
+T2 -> LP : <b>Update User</b>\nuid=username\nname=firstname\ngiven_name=lastname\nemail=email\n
+end
+end
+T2 -> GP : returns username
+GP -> GP : save username for user
+
+== LOGIN USING EO-SSO ==
+US -> T2 : login with EO-SSO
+T2 -> GP : /t2login
+GP -> SS : login + (callback_url = /t2login)
+US -> SS : username / password
+SS -> GP : /t2login + username / email
+GP -> T2 : returns json (including eosso username, email, first name, last name) (or JWT ?)
+alt exists ldap entry with eosso=eosso username
+T2 -> T2 : auto login (client is trusted) + maj infos user if necessary
+else
+alt exists ldap entry with email=email
+T2 -> T2 : auto login (client is trusted) + maj eosso username + maj infos user if necessary
+else
+T2 -> T2 : auto create user + maj eosso username + maj infos user if necessary + random password
+end
+end
+T2 -> US : profile page
+US -> T2 : <b>Edit Profile</b>\n(firstname, lastname, username)
+T2 -> DB : <b>Update User</b>\nUsername=username\nFirstName=firstname\nLastName=lastname\nEmail=email\n
+T2 -> LP : <b>Update User</b>\nuid=username\nname=firstname\ngiven_name=lastname\nemail=email\n
+ */
+
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
