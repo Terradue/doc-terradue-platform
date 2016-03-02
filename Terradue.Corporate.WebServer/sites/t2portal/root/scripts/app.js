@@ -41,7 +41,7 @@ define([
 			    processData : false,
 			});
 			$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-			    if (options.data)
+			    if (options.data && !options.noStringify)
 			        options.data=JSON.stringify(options.data);
 			});
 

@@ -1,4 +1,4 @@
-<div id='settings' class='settings-profile container col-md-9'>
+<div class="settings-profile container col-md-9">
 	<div class='settings settings-title'>Public profile</div>
 	<div class='settings settings-description'>
 		Some basic information about you.<br/>
@@ -19,7 +19,7 @@
 				<br/>
 			{{/if}}
 		{{/if}}
-		<form role="form">
+		<form role="form" class="profileForm">
 			
 			<div class="form-group">
 				<label>First name</label>
@@ -33,11 +33,14 @@
 			
 			<div class="form-group">
 				<label>Cloud Username</label>
-				&nbsp;<i class="text text-info small fa fa-info-circle posixInfo" data-toggle="tooltip"></i>
-<!--				<span class="text text-info small"> Username on the Terradue Cloud Platform, used to login on your VMs.</span>-->
+				<div class="alert alert-warning posixUsernameWarning" role="alert">
+					<i class="fa fa-warning"></i> <b>Important!</b>
+					The Cloud Username will be used on the Terradue Cloud Platform to login on your VMs. Once set, it cannot be changed. Please choose it wisely!
+				</div>
 				{{#if user.PosixUsername}}
 	 				<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.PosixUsername }}">
 				{{else}}
+					<span class="posixLoader{{#unless posixUsernameLoader}} hidden{{/unless}}"><i class="fa fa-spin fa-spinner"></i> Checking username availability...</span>
 					<input type="text" class="form-control" placeholder="" name="PosixUsername">
 				{{/if}}
 			</div>
@@ -62,4 +65,5 @@
 			<button type="submit" class="btn btn-warning submit">Submit</button>
 		</form>
 	{{/if}}
+	</div>
 </div>
