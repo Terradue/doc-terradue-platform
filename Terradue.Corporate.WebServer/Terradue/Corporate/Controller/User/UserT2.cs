@@ -125,6 +125,15 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
+        public override string AlternativeIdentifyingCondition{
+            get { 
+                if (!string.IsNullOrEmpty(Email)) return String.Format("t.email='{0}'",Email); 
+                return null;
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// Creates a new User instance representing the user with the specified ID.
         /// </summary>
@@ -149,6 +158,15 @@ namespace Terradue.Corporate.Controller {
         public new static UserT2 FromUsername(IfyContext context, string username) {
             UserT2 user = new UserT2(context);
             user.Identifier = username;
+            user.Load();
+            return user;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        public new static UserT2 FromEmail(IfyContext context, string email) {
+            UserT2 user = new UserT2(context);
+            user.Email = email;
             user.Load();
             return user;
         }
@@ -350,7 +368,11 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns>The LDAP DN.</returns>
         private string CreateLdapDN(){
-            string dn = string.Format("uid={0}, ou=people, dc=terradue, dc=com", this.Username);
+            return CreateLdapDN(this.Username);
+        }
+
+        private string CreateLdapDN(string uid){
+            string dn = string.Format("uid={0}, ou=people, dc=terradue, dc=com", uid);
             string dnn = Json2Ldap.NormalizeDN(dn);
             if (!Json2Ldap.IsValidDN(dnn)) throw new Exception(string.Format("Unvalid DN: {0}", dnn));
             return dnn;
@@ -417,23 +439,34 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
+        /// Updates the LDAP uid.
+        /// </summary>
+        public void UpdateLdapUid(){
+            ValidateUsername(this.Username);
+            var dn = CreateLdapDN(this.Email);
+
+            //open the connection
+            Json2Ldap.Connect();
+
+            //login as ldap admin to have creation rights
+            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+
+            Json2Ldap.ModifyUID(dn, this.Username);
+
+            Json2Ldap.Close();
+        }
+
+        /// <summary>
         /// Updates the LDAP account.
         /// </summary>
-        /// <param name="updatePosixname">If set to <c>true</c> update posixname.</param>
-        public void UpdateLdapAccount(bool updatePosixname=false){
-            
+        public void UpdateLdapAccount(){
+
             string dn = CreateLdapDN();
+
             LdapUser ldapusr = this.ToLdapUser();
             ldapusr.DN = dn;
             ldapusr.PublicKey = this.PublicKey;
-            if (updatePosixname) {
-                //validate the posix name is correct
-                ValidatePosixUsername(this.PosixUsername);
-                //validate the posix name is nt already used
-                if(!IsPosixUsernameFree(this.PosixUsername)) throw new Exception("The Cloud Username is not available, please choose another.");
-                //set the posix name
-                ldapusr.PosixUsername = this.PosixUsername;
-            }
+
 
             //open the connection
             Json2Ldap.Connect();
@@ -461,21 +494,20 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Validates the posix username.
+        /// Validates the username.
         /// </summary>
-        /// <returns><c>true</c>, if posix username was validated, <c>false</c> otherwise.</returns>
-        /// <param name="posixusername">Posixusername.</param>
-        public void ValidatePosixUsername(string posixusername){
+        /// <param name="username">Username.</param>
+        public void ValidateUsername(string username){
             Regex r = new Regex("^[a-z][0-9a-z]{1,31}$");
-            if (r.IsMatch(posixusername)) return;
+            if (r.IsMatch(username)) return;
 
-            if (posixusername.Length > 32)
+            if (username.Length > 32)
                 throw new Exception("Invalid Cloud username: You must use at max 32 characters");
-            if (Regex.Match(posixusername, @"[A-Z]").Success)
+            if (Regex.Match(username, @"[A-Z]").Success)
                 throw new Exception("Invalid Cloud username: You must not use capital letters");
-            if (!Regex.Match(posixusername, @"^[0-9a-z]").Success)
+            if (!Regex.Match(username, @"^[0-9a-z]").Success)
                 throw new Exception("Invalid Cloud username: You must use only alphanumeric values");
-            if (!Regex.Match(posixusername,"^[a-z][0-9a-z]{1,31}$").Success)
+            if (!Regex.Match(username,"^[a-z][0-9a-z]{1,31}$").Success)
                 throw new Exception("Invalid Cloud username: You must use at least one numerical value");
             throw new Exception("Invalid Cloud username");
         }
@@ -508,6 +540,8 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public void LoadLdapInfo(){
             Json2Ldap.Connect();
+
+            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
 
             var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
             this.PublicKey = ldapusr.PublicKey;
@@ -554,7 +588,6 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Close();
             return result;
         }
-
 
         #endregion
 

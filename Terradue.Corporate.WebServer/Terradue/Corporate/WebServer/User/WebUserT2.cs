@@ -10,7 +10,7 @@ using Terradue.WebService.Model;
 using Terradue.Corporate.Controller;
 
 namespace Terradue.Corporate.WebServer {
-
+    
     [Route("/user/{id}", "GET", Summary = "GET the user", Notes = "User is found from id")]
     public class GetUserT2 : IReturn<WebUserT2> {
         [ApiMember(Name = "id", Description = "User id", ParameterType = "query", DataType = "int", IsRequired = true)]

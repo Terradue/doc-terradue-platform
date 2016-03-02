@@ -205,6 +205,10 @@ namespace Terradue.Corporate.WebServer {
                         return new HttpError(System.Net.HttpStatusCode.Forbidden, e);
                     }
 
+//                    //JWT token
+//                    string jwt = client.GetJWT(user.Username);
+//                    client.JWTBearerToken(jwt);
+
                     OauthAuthzPutSessionRequest oauthrequest2 = new OauthAuthzPutSessionRequest {
                         sub = user.Username,
                         acr = "1",

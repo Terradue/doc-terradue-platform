@@ -190,12 +190,17 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
-                bool noposix = string.IsNullOrEmpty(user.PosixUsername);
+                bool newusername = (user.Username == user.Email);
                 user = request.ToEntity(context, user);
                 user.Store();
 
+                //update the Ldap uid
+                if(newusername){
+                    user.UpdateLdapUid();
+                }
+
                 //update the Ldap account with the modifications
-                user.UpdateLdapAccount(noposix);
+                user.UpdateLdapAccount();
 
                 result = new WebUserT2(user);
                 context.Close();
@@ -210,35 +215,35 @@ namespace Terradue.Corporate.WebServer {
         /// Post the specified request.
         /// </summary>
         /// <param name="request">Request.</param>
-        public object Post(CreateUserT2 request)
-        {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            WebUserT2 result;
-            try{
-                context.Open();
-				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
-				user = request.ToEntity(context, user);
-                if(request.Id != 0 && context.UserLevel == UserLevel.Administrator){
-                    user.AccountStatus = AccountStatusType.Enabled;
-                }
-                else{
-                    user.AccountStatus = AccountStatusType.PendingActivation;
-                }
-
-                user.IsNormalAccount = true;
-                user.Level = UserLevel.User;
-
-                user.Store();
-                user.StorePassword(request.Password);
-
-                result = new WebUserT2(user);
-                context.Close ();
-            }catch(Exception e) {
-                context.Close ();
-                throw e;
-            }
-            return result;
-        }
+//        public object Post(CreateUserT2 request)
+//        {
+//            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+//            WebUserT2 result;
+//            try{
+//                context.Open();
+//				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
+//				user = request.ToEntity(context, user);
+//                if(request.Id != 0 && context.UserLevel == UserLevel.Administrator){
+//                    user.AccountStatus = AccountStatusType.Enabled;
+//                }
+//                else{
+//                    user.AccountStatus = AccountStatusType.PendingActivation;
+//                }
+//
+//                user.IsNormalAccount = true;
+//                user.Level = UserLevel.User;
+//
+//                user.Store();
+//                user.StorePassword(request.Password);
+//
+//                result = new WebUserT2(user);
+//                context.Close ();
+//            }catch(Exception e) {
+//                context.Close ();
+//                throw e;
+//            }
+//            return result;
+//        }
 
         /// <summary>
         /// Post the specified request.
@@ -256,18 +261,19 @@ namespace Terradue.Corporate.WebServer {
 
                 bool exists = false;
                 try{
-                    User.FromUsername(context, request.Email);
+                    UserT2.FromEmail(context, request.Email);
                     exists = true;
                 }catch(Exception){}
 
+                if(exists) throw new Exception("Sorry, this email is already used.");
+
                 try{
-                    var ldapauth = new Terradue.Ldap.LdapAuthClient(context.GetConfigValue("ldapauth-baseurl"), context.GetConfigValue("ldap-port"));
-                    var usr = ldapauth.GetUser(request.Email);
-                    if(usr != null) exists = true;
+                    var json2Ldap = new Json2LdapFactory(context);
+                    if (json2Ldap.GetUserFromEmail(request.Email) != null) exists = true;
                 }catch(Exception){}
 
-                if(exists) throw new Exception("User already exists");
-
+                if(exists) throw new Exception("Sorry, this email is already used.");
+                    
                 AuthenticationType AuthType = IfyWebContext.GetAuthenticationType(typeof(OAuth2AuthenticationType));
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));
