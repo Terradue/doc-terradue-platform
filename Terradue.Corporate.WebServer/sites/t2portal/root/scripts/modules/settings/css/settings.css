@@ -65,14 +65,11 @@
 #settingsPage .settings-profile input[type="text"] {
 	width: 400px;
 }
-#settingsPage .settings-profile .posixUsernameWarning{
-	margin-bottom: 0px;
-}
 #settingsPage .settings-profile label.error{
 	color: #a94442;
 }
 #settingsPage .settings-profile label.error:empty {
-    display: none;
+    display: none!important;
 }
 
 

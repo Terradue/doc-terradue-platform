@@ -285,6 +285,7 @@ define([
 						FirstName: 'required',
 						LastName: 'required',
 						Username: {
+							required: true,
 							regExpr: '^[a-z][0-9a-z]{1,31}$',
 							remote: {
 						        url: "/t2api/user/ldap/available?format=json",
@@ -298,6 +299,7 @@ define([
 						        noStringify: true,
 						        beforeSend: function(){
 						        	self.profileData.attr('usernameLoader', true);
+						        	self.element.find('input[name="Username"]').parent().find('label.error').empty();
 						        },
 						        complete: function(){
 						        	self.profileData.attr('usernameLoader', false);
@@ -309,6 +311,7 @@ define([
 						FirstName: '<i class="fa fa-times-circle"></i> Please insert your First Name',
 						LastName: '<i class="fa fa-times-circle"></i> Please insert your Last Name',
 						Username: {
+							required: '<i class="fa fa-times-circle"></i> Please insert your Cloud Username',
 							regExpr: '<i class="fa fa-times-circle"></i> The username should start by a letter, have letters and numbers and 32 chars.</span>',
 							remote: '<i class="fa fa-times-circle"></i> This username is already taken, please choose another one.</span>'
 						}
@@ -371,12 +374,13 @@ define([
 				// update
 				App.Login.User.current.attr(usr); 
 				// save
-				self.profileData.attr({saveSuccess: false, saveFail: false});
+				self.profileData.attr({saveLoading: true, saveSuccess: false, saveFail: false});
 				new ProfileModel(App.Login.User.current.attr())
 					.save()
 					.then(function(createdUser){
 						self.profileData.attr({
 							saveSuccess: true,
+							saveLoading: false, 
 							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country),
 							usernameNotSet: createdUser.Username == createdUser.Email,
 							nameMissing: !(createdUser.FirstName && createdUser.LastName),
@@ -386,7 +390,7 @@ define([
 						});
 
 					}).fail(function(xhr){
-						self.profileData.attr({saveFail: true, saveFailMessage: Helpers.getErrMsg(xhr)});
+						self.profileData.attr({saveLoading: false, saveFail: true, saveFailMessage: Helpers.getErrMsg(xhr)});
 					});
 				
 				return false;
