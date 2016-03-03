@@ -14,6 +14,8 @@ using System.Collections.Generic;
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
     public class UserT2 : User {
+
+        private Json2LdapFactory LdapFactory { get; set; }
         
         /// <summary>
         /// Gets or sets the one password.
@@ -95,7 +97,8 @@ namespace Terradue.Corporate.Controller {
         public UserT2(IfyContext context) : base(context) {
             OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
             this.oneClient = oneCloud.XmlRpc;
-            this.Json2Ldap = new Json2LdapClient(context.GetConfigValue("ldap-baseurl"));
+            this.LdapFactory = new Json2LdapFactory(context);
+            this.Json2Ldap = LdapFactory.Json2Ldap;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -363,15 +366,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns>The LDAP DN.</returns>
         private string CreateLdapDN() {
-            return CreateLdapDN(this.Username);
-        }
-
-        private string CreateLdapDN(string uid) {
-            string dn = string.Format("uid={0}, ou=people, dc=terradue, dc=com", uid);
-            string dnn = Json2Ldap.NormalizeDN(dn);
-            if (!Json2Ldap.IsValidDN(dnn))
-                throw new Exception(string.Format("Unvalid DN: {0}", dnn));
-            return dnn;
+            return LdapFactory.CreateLdapDN(this.Username);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -453,7 +448,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public void UpdateLdapUid() {
             ValidateUsername(this.Username);
-            var dn = CreateLdapDN(this.Email);
+            var dn = LdapFactory.CreateLdapDN(this.Email);
 
             //open the connection
             Json2Ldap.Connect();
@@ -571,7 +566,7 @@ namespace Terradue.Corporate.Controller {
 
 //                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
 
-                var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
+                    var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
                 if(ldapusr != null){
                     this.PublicKey = ldapusr.PublicKey;
                 }
@@ -599,33 +594,7 @@ namespace Terradue.Corporate.Controller {
             }
             Json2Ldap.Close();
         }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Determines whether this instance is unix username is free on ldap
-        /// </summary>
-        /// <returns><c>true</c> if this unix username is free; otherwise, <c>false</c>.</returns>
-        /// <param name="username">Username.</param>
-        public bool IsUsernameFree(string username) {
-            bool result = false;
-
-            //open the connection
-            Json2Ldap.Connect();
-            try {
-                var dn = CreateLdapDN(username);
-
-                var response = Json2Ldap.GetEntry(dn);
-                if (response == null)
-                    result = true;
-            } catch (Exception e) {
-                Json2Ldap.Close();
-                throw e;
-            }
-            Json2Ldap.Close();
-            return result;
-        }
-
+       
         #endregion
 
         //--------------------------------------------------------------------------------------------------------------

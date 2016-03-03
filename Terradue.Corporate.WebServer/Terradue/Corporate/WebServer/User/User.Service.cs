@@ -466,9 +466,8 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
-
-                UserT2 user = UserT2.FromId(context, context.UserId);
-                result = user.IsUsernameFree(request.username);
+                Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
+                result = ldapfactory.IsUsernameFree(request.username);
 
                 context.Close();
             } catch (Exception e) {
