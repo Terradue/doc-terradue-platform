@@ -43,21 +43,29 @@ namespace Terradue.Corporate.WebServer {
         /// <param name="value">Value.</param>
         public LdapUser GetUserFromFilter(string key, string value){
 
+            LdapUser usr = null;
+
             //open the connection
             Json2Ldap.Connect();
+            try{
+                string basedn = "ou=people, dc=terradue, dc=com";
+                string filter = string.Format("({0}={1})",key, value);
 
-            string basedn = "ou=people, dc=terradue, dc=com";
-            string filter = string.Format("({0}={1})",key, value);
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(Context.GetConfigValue("ldap-admin-dn"), Context.GetConfigValue("ldap-admin-pwd"));
 
-            //login as ldap admin to have creation rights
-            Json2Ldap.SimpleBind(Context.GetConfigValue("ldap-admin-dn"), Context.GetConfigValue("ldap-admin-pwd"));
+                var response = Json2Ldap.SearchEntries(basedn, Json2LdapSearchScopes.SUB, filter);
 
-            var response = Json2Ldap.SearchEntries(basedn, Json2LdapSearchScopes.SUB, filter);
-
-            if (response.matches == null || response.matches.Count == 0) return null;
-
+                if (response.matches == null || response.matches.Count == 0) 
+                    usr=null;
+                else 
+                    usr = new LdapUser(response.matches[0]);
+            }catch(Exception e){
+                Json2Ldap.Close();
+                throw e;
+            }
             Json2Ldap.Close();
-            return new LdapUser(response.matches[0]);
+            return usr;
         }
 
     }

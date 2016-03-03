@@ -192,12 +192,13 @@ namespace Terradue.Corporate.WebServer {
 				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
                 bool newusername = (user.Username == user.Email);
                 user = request.ToEntity(context, user);
-                user.Store();
 
                 //update the Ldap uid
                 if(newusername){
                     user.UpdateLdapUid();
                 }
+
+                user.Store();
 
                 //update the Ldap account with the modifications
                 user.UpdateLdapAccount();
@@ -458,16 +459,16 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Get(GetExistsPosixnameT2 request){
+        public object Get(GetExistsLdapUsernameT2 request){
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             bool result = true;
             try {
                 context.Open();
 
-                if(string.IsNullOrEmpty(request.posixname)) throw new Exception("Posix name is empty");
+                if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
 
                 UserT2 user = UserT2.FromId(context, context.UserId);
-                result = user.IsPosixUsernameFree(request.posixname);
+                result = user.IsUsernameFree(request.username);
 
                 context.Close();
             } catch (Exception e) {

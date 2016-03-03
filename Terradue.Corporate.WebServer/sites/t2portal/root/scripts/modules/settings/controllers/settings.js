@@ -116,18 +116,21 @@ define([
 				
 				console.log("App.controllers.Settings.profile");
 				this.isLoginPromise.then(function(user){
+					var usernameDefault = (user.Username == user.Email);
+					if(usernameDefault) user.Username = null;
 					self.profileData.attr({
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						nameMissing: !(user.FirstName && user.LastName),
+						usernameNotSet: usernameDefault,
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey)
 					});
 					
 					self.initProfileValidation();
-					self.unixUsernameGeneration();
+					self.usernameGeneration();
 
-					self.element.find('.posixInfo').tooltip({
+					self.element.find('.usernameInfo').tooltip({
 						trigger: 'hover',
 						title: 'Username on the Terradue Cloud Platform, used to login on your VMs.',
 						placement:'right'
@@ -281,23 +284,23 @@ define([
 					rules: {
 						FirstName: 'required',
 						LastName: 'required',
-						PosixUsername: {
+						Username: {
 							regExpr: '^[a-z][0-9a-z]{1,31}$',
 							remote: {
-						        url: "/t2api/user/posix/free?format=json",
+						        url: "/t2api/user/ldap/available?format=json",
 						        type: "GET",
 						        processData: true,
 						        data: {
-						        	posixname: function() {
-						        		return self.element.find('input[name="PosixUsername"]').val();
+						        	Username: function() {
+						        		return self.element.find('input[name="Username"]').val();
 						        	}
 						        },
 						        noStringify: true,
 						        beforeSend: function(){
-						        	self.profileData.attr('posixUsernameLoader', true);
+						        	self.profileData.attr('usernameLoader', true);
 						        },
 						        complete: function(){
-						        	self.profileData.attr('posixUsernameLoader', false);
+						        	self.profileData.attr('usernameLoader', false);
 						        }
 							}
 						}
@@ -305,20 +308,20 @@ define([
 					messages: {
 						FirstName: '<i class="fa fa-times-circle"></i> Please insert your First Name',
 						LastName: '<i class="fa fa-times-circle"></i> Please insert your Last Name',
-						PosixUsername: {
+						Username: {
 							regExpr: '<i class="fa fa-times-circle"></i> The username should start by a letter, have letters and numbers and 32 chars.</span>',
 							remote: '<i class="fa fa-times-circle"></i> This username is already taken, please choose another one.</span>'
 						}
 					},
 					// set this class to error-labels to indicate valid fields
 					success: function(label, element) {
-						if ($(element).attr('name')=='PosixUsername')
+						if ($(element).attr('name')=='Username')
 							label.html('<span class="text-success"><i class="fa fa-check-circle"></i> The username is free and available.</span>');
 					},
 
 					submitHandler: function(form){
-						var posixUsername = $(form).find('input[name="PosixUsername"]').val();
-						bootbox.confirm('Your Cloud Username will be <b>'+posixUsername+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
+						var username = $(form).find('input[name="Username"]').val();
+						bootbox.confirm('Your Cloud Username will be <b>'+username+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
 							if (confirmed)
 								self.profileSubmit();
 						});
@@ -327,16 +330,16 @@ define([
 				});
 			},
 			
-			unixUsernameGeneration: function(){
-				if (this.profileData.user.PosixUsername) // if is set do nothing
+			usernameGeneration: function(){
+				if (this.profileData.user.Username) // if is set do nothing
 					return;
 				
 				var $firstName = this.element.find('input[name="FirstName"]');
 				var $lastName = this.element.find('input[name="LastName"]');
-				var $unixUsername = this.element.find('input[name="PosixUsername"]');
+				var $username = this.element.find('input[name="Username"]');
 				var timeout;
 				
-				var setUnixUsernameFn = function(e){
+				var setUsernameFn = function(e){
 					if (e && e.keyCode && (e.keyCode==9 || e.keyCode==16))
 						return;
 					
@@ -348,22 +351,22 @@ define([
 					var firstChar = firstName.split(' ')[0][0];
 					var lastNames = lastName.split(' ');
 					var lastSurname = lastNames[lastNames.length-1];
-					var PosixUsername = (firstChar.latinise() + lastSurname.latinise()).substring(0,32);
+					var Username = (firstChar.latinise() + lastSurname.latinise()).substring(0,32);
 					
-					$unixUsername.val(PosixUsername).valid();
+					$username.val(Username).valid();
 				};
 				
 				$firstName.on('change', function(){console.log('change')});
-				$firstName.keyup(setUnixUsernameFn);
-				$lastName.keyup(setUnixUsernameFn);
-				setUnixUsernameFn();
+				$firstName.keyup(setUsernameFn);
+				$lastName.keyup(setUsernameFn);
+				setUsernameFn();
 			},
 			
 			profileSubmit: function(){
 				// get data
 				var self= this,
 					usr = Helpers.retrieveDataFromForm('.settings-profile form',
-						['FirstName','LastName','PosixUsername','Affiliation','Country','EmailNotification']);
+						['FirstName','LastName','Username','Affiliation','Country','EmailNotification']);
 				
 				// update
 				App.Login.User.current.attr(usr); 
@@ -375,6 +378,7 @@ define([
 						self.profileData.attr({
 							saveSuccess: true,
 							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country),
+							usernameNotSet: createdUser.Username == createdUser.Email,
 							nameMissing: !(createdUser.FirstName && createdUser.LastName),
 						});
 						self.data.attr({

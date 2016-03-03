@@ -5,22 +5,27 @@
 	</div>
 	<div class='settings settings-container'>
 
-	{{#if user}}		
+	{{#if user}}
 		{{#if profileNotComplete}}
-			{{#if nameMissing}}
-				<div class="alert alert-warning">
-					<i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete! <br/><b>First name</b> and <b>Last name</b> are mandatory to create your <b>Cloud username</b>.
-				</div>
-				<br/>
-			{{else}}
-				<div class="alert alert-warning">
-					<i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete, please fill it up.
-				</div>
-				<br/>
-			{{/if}}
+			<div class="alert alert-warning">
+				<b><i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete!</b>
+				{{#if usernameNotSet}}
+					<div class="small">
+					<br>The <b>Cloud username</b> will be used on the Terradue Cloud Platform to login on your VMs. 
+					<br>Once set, it cannot be changed. Please choose it wisely!
+					</div>
+				{{/if}}
+			</div>
 		{{/if}}
 		<form role="form" class="profileForm">
-			
+
+			{{#unless usernameNotSet}}
+				<div class="form-group">
+					<label>Terradue Cloud Username</label>
+					<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.Username }}">
+				</div>
+			{{/unless}}
+
 			<div class="form-group">
 				<label>First name</label>
 				<input type="text" class="form-control" placeholder="" name="FirstName" value="{{ user.FirstName }}">
@@ -30,20 +35,20 @@
 				<label>Last name</label>
 				<input type="text" class="form-control" placeholder="" name="LastName" value="{{ user.LastName }}">
 			</div>
-			
-			<div class="form-group">
-				<label>Cloud Username</label>
-				<div class="alert alert-warning posixUsernameWarning" role="alert">
-					<i class="fa fa-warning"></i> <b>Important!</b>
-					The Cloud Username will be used on the Terradue Cloud Platform to login on your VMs. Once set, it cannot be changed. Please choose it wisely!
+
+			{{#if usernameNotSet}}
+				<div class="form-group">
+					<label>Cloud username</label>
+	 				<span class="usernameLoader{{#unless usernameLoader}} hidden{{/unless}}"><i class="fa fa-spin fa-spinner"></i> Checking username availability...</span>
+					<input type="text" class="form-control" placeholder="" name="Username">
+<!--					<div class="alert alert-info small" role="alert">
+						<b><i class="fa fa-warning"></i> IMPORTANT !!! </b>
+					  	<br>The Cloud Username will be used on the Terradue Cloud Platform to login on your VMs. 
+					  	<br>Once set, it cannot be changed. Please choose it wisely!
+					</div>-->
 				</div>
-				{{#if user.PosixUsername}}
-	 				<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.PosixUsername }}">
-				{{else}}
-					<span class="posixLoader{{#unless posixUsernameLoader}} hidden{{/unless}}"><i class="fa fa-spin fa-spinner"></i> Checking username availability...</span>
-					<input type="text" class="form-control" placeholder="" name="PosixUsername">
-				{{/if}}
-			</div>
+			{{/if}}
+			
 			
 			<div class="form-group">
 				<label>Affiliation</label>

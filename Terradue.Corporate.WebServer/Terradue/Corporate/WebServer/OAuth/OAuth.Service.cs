@@ -105,6 +105,15 @@ UA -> UA : display user name
         public string error { get; set; }
     }
 
+    [Route("/sso/user", "GET")]
+    public class GetUserFromSSORequest {
+        [ApiMember(Name = "eosso", Description = "eosso name", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string EoSSO { get; set; }
+
+        [ApiMember(Name = "email", Description = "email", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Email { get; set; }
+    }
+
     [Route("/logout", "GET", Summary = "logout", Notes = "Logout from the platform")]
     [Route("/auth", "DELETE", Summary = "logout", Notes = "Logout from the platform")]
     public class OauthLogoutRequest : IReturn<String> {
@@ -183,14 +192,23 @@ UA -> UA : display user name
             return true;
         }
 
-        private string BuildOauthQuery(IfyContext context){
-            var query = "";
-            query += "?client_id=" + context.GetConfigValue("sso-clientId");
-            query += "&redirect_uri=" + HttpUtility.UrlEncode(context.GetConfigValue("sso-callback"));
-            query += "&state=" + Guid.NewGuid();
-            query += "&scope=openid";
-            query += "&response_type=code";
-            return query;
+        public object Get(GetUserFromSSORequest request){
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                var json2Ldap = new Json2LdapFactory(context);
+                var usr = json2Ldap.GetUserFromEOSSO(request.EoSSO);
+                if(usr != null) return usr.Username;
+                usr = json2Ldap.GetUserFromEmail(request.Email);
+                if(usr != null) return usr.Username;
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return null;
         }
     }
 }
