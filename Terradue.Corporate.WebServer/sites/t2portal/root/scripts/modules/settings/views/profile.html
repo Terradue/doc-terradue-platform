@@ -67,7 +67,12 @@
 			{{#if saveFail}}
 				<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ saveFailMessage }}</div>
 			{{/if}}
-			<button type="submit" class="btn btn-warning submit">Submit</button>
+			{{#if saveLoading}}
+				<button type="button" class="btn btn-warning submit" disabled="disabled">Submit</button> 
+				<i class="fa fa-spin fa-spinner"></i> Saving...
+			{{else}}
+				<button type="submit" class="btn btn-warning submit">Submit</button>
+			{{/if}}
 		</form>
 	{{/if}}
 	</div>
