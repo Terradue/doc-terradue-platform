@@ -409,7 +409,7 @@ namespace Terradue.Corporate.Controller {
 
                 string dn = CreateLdapDN();
 
-                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                Json2Ldap.SimpleBind(dn, password);
                 Json2Ldap.ModifyPassword(dn, password);
             } catch (Exception e) {
                 Json2Ldap.Close();
@@ -483,7 +483,8 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Updates the LDAP account.
         /// </summary>
-        public void UpdateLdapAccount() {
+        /// <param name="password">Password.</param>
+        public void UpdateLdapAccount(string password = null) {
 
             //open the connection
             Json2Ldap.Connect();
@@ -496,8 +497,14 @@ namespace Terradue.Corporate.Controller {
                 ldapusr.DN = dn;
                 ldapusr.PublicKey = this.PublicKey;
 
-                //login as ldap admin to have creation rights
-                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                //simple bind to have creation rights
+                if(password == null){
+                    Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                } else {
+                    Json2Ldap.SimpleBind(dn, password);
+                }
+                
+                
 
                 try {
                     Json2Ldap.ModifyUserInformation(ldapusr);
@@ -548,7 +555,8 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Deletes the public key.
         /// </summary>
-        public void DeletePublicKey() {
+        /// <param name="password">Password.</param>
+        public void DeletePublicKey(string password) {
             //open the connection
             Json2Ldap.Connect();
             try {
@@ -556,8 +564,7 @@ namespace Terradue.Corporate.Controller {
                 string dn = CreateLdapDN();
 
                 //login as ldap admin to have creation rights
-//                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-
+                Json2Ldap.SimpleBind(dn, password);
                 Json2Ldap.DeleteAttributeString(dn, "sshPublicKey", null);
 
                 //TODO: delete also from OpenNebula
@@ -577,10 +584,7 @@ namespace Terradue.Corporate.Controller {
         public void LoadLdapInfo() {
             Json2Ldap.Connect();
             try {
-
-//                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-
-                    var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
+                var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
                 if(ldapusr != null){
                     this.PublicKey = ldapusr.PublicKey;
                 }

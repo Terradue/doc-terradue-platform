@@ -555,6 +555,7 @@
     <Content Include="styles\img\separators\shapes.jpg" />
     <Content Include="scripts\modules\settings\views\key.html" />
     <Content Include="scripts\modules\settings\views\email.html" />
+    <Content Include="scripts\modules\settings\views\account.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\" />

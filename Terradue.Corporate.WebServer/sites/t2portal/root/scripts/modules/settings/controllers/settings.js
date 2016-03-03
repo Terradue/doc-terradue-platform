@@ -146,6 +146,31 @@ define([
 						self.accessDenied();
 				});
 			},
+
+			account: function(options) {
+				var self = this;
+								
+				this.profileData = new can.Observe({});
+				this.view({
+					url: 'modules/settings/views/account.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.profileData,
+					fnLoad: function(){
+						self.initSubmenu('profile');
+					}
+				});
+				
+				console.log("App.controllers.Settings.account");
+				this.isLoginPromise.then(function(user){
+					self.profileData.attr({
+						user: user
+					});
+
+				}).fail(function(){
+					self.accessDenied();
+				});
+			},
 			
 			email: function(options) {
 				var self = this;

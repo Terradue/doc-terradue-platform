@@ -69,7 +69,14 @@ namespace Terradue.Corporate.WebServer {
             try{
                 context.Open();
                 UserT2 user = UserT2.FromId(context, context.UserId);
-                user.DeletePublicKey();
+                //authenticate user
+                try{
+                    var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
+                    var usr = j2ldapclient.Authenticate(user.Identifier, request.password, context.GetConfigValue("ldap-apikey"));
+                }catch(Exception e){
+                    throw new Exception("Invalid password");
+                }
+                user.DeletePublicKey(request.password);
                 context.Close ();
             }catch(Exception e) {
                 context.Close ();
