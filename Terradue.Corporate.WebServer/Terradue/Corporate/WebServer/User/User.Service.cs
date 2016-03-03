@@ -195,7 +195,7 @@ namespace Terradue.Corporate.WebServer {
 
                 //update the Ldap uid
                 if(newusername){
-                    user.UpdateLdapUid();
+                    user.UpdateUsername();
                 }
 
                 user.Store();

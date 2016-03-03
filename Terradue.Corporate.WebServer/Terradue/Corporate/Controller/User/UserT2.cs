@@ -446,8 +446,10 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Updates the LDAP uid.
         /// </summary>
-        public void UpdateLdapUid() {
+        public void UpdateUsername() {
             ValidateUsername(this.Username);
+
+            //change username on LDAP
             var dn = LdapFactory.CreateLdapDN(this.Email);
 
             //open the connection
@@ -464,6 +466,18 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+
+            //Change username on the db
+            AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(Terradue.Authentication.OAuth.OAuth2AuthenticationType));
+            string sql = string.Format("UPDATE usr_auth SET username={0} WHERE id_usr={1} and id_auth={2};",
+                                       StringUtils.EscapeSql(this.Username),
+                                       this.Id,
+                                       authType.Id);
+            context.Execute(sql);
+            sql = string.Format("UPDATE usr SET username={0} WHERE id={1};",
+                                StringUtils.EscapeSql(this.Username),
+                                this.Id);
+            context.Execute(sql);
         }
 
         /// <summary>
