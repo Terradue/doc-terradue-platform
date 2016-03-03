@@ -23,14 +23,14 @@ namespace Terradue.Corporate.WebServer {
         public string Username { get; set; }
     }
 
-    [Route("/user/passwordreset", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
-    public class UserResetPassword : IReturn<WebResponseBool> {
+    [Route("/user/passwordreset", "POST", Summary = "PUT the user password to reset", Notes = "User is found from username")]
+    public class ResetPassword : IReturn<WebResponseBool> {
         [ApiMember(Name = "username", Description = "User name", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Username { get; set; }
     }
 
-    [Route("/user/password", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
-    public class UserUpdatePassword : IReturn<WebResponseBool> {
+    [Route("/user/passwordreset", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
+    public class UserResetPassword : IReturn<WebResponseBool> {
         [ApiMember(Name = "username", Description = "User name", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Username { get; set; }
 
@@ -39,6 +39,16 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name = "token", Description = "User token", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Token { get; set; }
+    }
+
+    [Route("/user/password", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
+    public class UserUpdatePassword : IReturn<WebResponseBool> {
+
+        [ApiMember(Name = "newpassword", Description = "User new password", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string NewPassword { get; set; }
+
+        [ApiMember(Name = "oldpassword", Description = "User old password", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string OldPassword { get; set; }
     }
 
     [Route("/user/current", "GET", Summary = "GET the current user", Notes = "User is the current user")]

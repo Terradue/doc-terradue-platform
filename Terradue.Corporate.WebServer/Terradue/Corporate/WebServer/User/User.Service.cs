@@ -403,7 +403,7 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Put(UserResetPassword request) {
+        public object Put(ResetPassword request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
@@ -436,7 +436,7 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Put(UserUpdatePassword request) {
+        public object Put(UserResetPassword request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
@@ -448,6 +448,28 @@ namespace Terradue.Corporate.WebServer {
 
                 try{
                     user.ChangeLdapPassword(request.Password);
+                }catch(Exception e){
+                    throw new Exception("Unable to change password", e);    
+                }
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return new WebResponseBool(true);
+        }
+
+        public object Put(UserUpdatePassword request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                if(string.IsNullOrEmpty(request.NewPassword)) throw new Exception("Password is empty");
+
+                UserT2 user = UserT2.FromId(context, context.UserId);
+
+                try{
+                    user.ChangeLdapPassword(request.NewPassword, request.OldPassword);
                 }catch(Exception e){
                     throw new Exception("Unable to change password", e);    
                 }

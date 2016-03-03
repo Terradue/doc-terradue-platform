@@ -13,6 +13,7 @@ define([
 	'modules/settings/models/oneUser',
 	'modules/settings/models/safe',
 	'modules/users/models/plans',
+	'modules/passwordreset/models/passwordreset',
 	'zeroClipboard',
 	'canpromise',
 	'messenger',
@@ -22,7 +23,7 @@ define([
 	'droppableTextarea',
 	'jqueryCopyableInput',
 	'latinise'
-], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, ZeroClipboard){
+], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, PasswordResetModel, ZeroClipboard){
 	
 	window.ZeroClipboard = ZeroClipboard;
 	// regexpr validator
@@ -46,6 +47,7 @@ define([
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
 				this.keyData = new can.Observe({});
+				this.passwordData = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
@@ -150,12 +152,15 @@ define([
 			account: function(options) {
 				var self = this;
 								
-				this.profileData = new can.Observe({});
+				self.passwordData.attr({
+					loading: false, 
+					success: false,
+				});
 				this.view({
 					url: 'modules/settings/views/account.html',
 					selector: Config.subContainer,
 					dependency: self.indexDependency(),
-					data: this.profileData,
+					data: this.passwordData,
 					fnLoad: function(){
 						self.initSubmenu('profile');
 					}
@@ -163,9 +168,6 @@ define([
 				
 				console.log("App.controllers.Settings.account");
 				this.isLoginPromise.then(function(user){
-					self.profileData.attr({
-						user: user
-					});
 
 				}).fail(function(){
 					self.accessDenied();
@@ -434,6 +436,27 @@ define([
 					$span.addClass('text-success').html('<br/><strong>Email sent!</strong>');
 				}).fail(function(xhr){
 					$span.addClass('text-danger').html('<br/><strong>Error: </strong>'+Helpers.getErrMsg(xhr));
+				});
+			},
+
+			'.settings-account .passwordForm .submit click': function(){
+				var self = this;
+				var oldpassword = Helpers.retrieveDataFromForm('.passwordForm','oldpassword');
+				var newpassword = Helpers.retrieveDataFromForm('.passwordForm','newpassword');
+				self.passwordData.attr({
+					loading: true, 
+					success: false,
+				});
+				PasswordResetModel.updatePassword(oldpassword,newpassword).then(function(){
+					self.passwordData.attr({
+						loading: false, 
+						success: true,
+					});
+				}).fail(function(xhr){
+					self.passwordData.attr({
+						loading: false, 
+						errorMessage: Helpers.getErrMsg(xhr, 'Unable to update the password. Please contact the Administrator.'),
+					});
 				});
 			},
 			

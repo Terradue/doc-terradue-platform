@@ -2,21 +2,33 @@
 	<div class='settings settings-title'>Change password</div>
 	<div class='settings settings-container'>
 
-	<form class='createSafeForm'>
+	<form class='passwordForm'>
 		<div class='form-group'>
-			<label for='password'>Old password</label>
-			<input type='password' class='form-control' name='oldpassword' placeholder='Password'>
+			<label for='password passwordform'>Old password</label>
+			<input type='password' class='form-control' name='oldpassword' placeholder='Old Password'>
 		</div>
-		<div class='form-group'>
+		<div class='form-group passwordform'>
 			<label for='password'>New password</label>
-			<input type='password' class='form-control' name='newpassword' placeholder='Password'>
+			<input type='password' class='form-control' name='newpassword' placeholder='New Password'>
 		</div>
 		<div class='form-group'>
 			<label for='password'>Confirm new password</label>
-			<input type='password' class='form-control' name='newpassword2' placeholder='Password'>
+			<input type='password' class='form-control' name='newpassword2' placeholder='New Password'>
 		</div>
-		<button type="submit" class="btn btn-warning submit">Change password</button>
-		&nbsp;<a href="/portal/passwordreset" class="small">I forgot my password</a>
+
+		{{#if loading}}
+			<button type="button" class="btn btn-warning submit" disabled="disabled">Change password</button>
+			<i class="fa fa-spin fa-spinner"></i> Saving...
+		{{else}}
+			<button type="submit" class="btn btn-warning submit">Change password</button>
+			&nbsp;<a href="/portal/passwordreset" class="small">I forgot my password</a>
+		{{/if}}
+
+		{{#if success}}
+			<div class="alert alert-success alert-dismiss">
+				Congratulations, your password have been changed successfully.
+			</div>
+		{{/if}}
 	</form>
 
 	</div>

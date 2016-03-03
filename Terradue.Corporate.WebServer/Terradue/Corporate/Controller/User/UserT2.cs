@@ -401,7 +401,7 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Creates the LDAP account.
         /// </summary>
-        public void ChangeLdapPassword(string password) {
+        public void ChangeLdapPassword(string newpassword, string oldpassword = null) {
 
             //open the connection
             Json2Ldap.Connect();
@@ -409,8 +409,8 @@ namespace Terradue.Corporate.Controller {
 
                 string dn = CreateLdapDN();
 
-                Json2Ldap.SimpleBind(dn, password);
-                Json2Ldap.ModifyPassword(dn, password);
+                Json2Ldap.SimpleBind(dn, oldpassword);
+                Json2Ldap.ModifyPassword(dn, newpassword, oldpassword);
             } catch (Exception e) {
                 Json2Ldap.Close();
                 throw e;
