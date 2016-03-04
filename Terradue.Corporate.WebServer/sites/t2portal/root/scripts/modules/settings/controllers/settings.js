@@ -47,7 +47,7 @@ define([
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
 				this.keyData = new can.Observe({});
-				this.passwordData = new can.Observe({});
+				this.accountData = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
@@ -151,16 +151,12 @@ define([
 
 			account: function(options) {
 				var self = this;
-								
-				self.passwordData.attr({
-					loading: false, 
-					success: false,
-				});
+
 				this.view({
 					url: 'modules/settings/views/account.html',
 					selector: Config.subContainer,
 					dependency: self.indexDependency(),
-					data: this.passwordData,
+					data: this.accountData,
 					fnLoad: function(){
 						self.initSubmenu('profile');
 					}
@@ -168,7 +164,7 @@ define([
 				
 				console.log("App.controllers.Settings.account");
 				this.isLoginPromise.then(function(user){
-
+					self.accountData.attr('user',user);
 				}).fail(function(){
 					self.accessDenied();
 				});
@@ -443,18 +439,35 @@ define([
 				var self = this;
 				var oldpassword = Helpers.retrieveDataFromForm('.passwordForm','oldpassword');
 				var newpassword = Helpers.retrieveDataFromForm('.passwordForm','newpassword');
-				self.passwordData.attr({
-					loading: true, 
-					success: false,
+				self.accountData.attr({
+					passwordLoading: true, 
 				});
 				PasswordResetModel.updatePassword(oldpassword,newpassword).then(function(){
-					self.passwordData.attr({
-						loading: false, 
-						success: true,
+					self.accountData.attr({
+						passwordLoading: false, 
+						passwordSaveSuccess: true,
 					});
 				}).fail(function(xhr){
-					self.passwordData.attr({
+					self.accountData.attr({
+						passwordLoading: false, 
+						passwordSaveFail: true,
+						passwordErrorMessage: Helpers.getErrMsg(xhr, 'Unable to update the password. Please contact the Administrator.'),
+					});
+				});
+			},
+
+			'.settings-email .email-change .submit click': function(){
+				var self = this;
+
+				ProfileModel.updatePassword(oldpassword,newpassword).then(function(){
+					self.accountData.attr({
 						loading: false, 
+						saveSuccess: true,
+					});
+				}).fail(function(xhr){
+					self.accountData.attr({
+						loading: false, 
+						saveFail: true,
 						errorMessage: Helpers.getErrMsg(xhr, 'Unable to update the password. Please contact the Administrator.'),
 					});
 				});
