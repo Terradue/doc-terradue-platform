@@ -2,12 +2,12 @@
 	<div>
 		<div class='settings settings-title'>Cloud username</div>
 		<div class='settings settings-description'>
-			Changing your <b>Cloud username</b> can have unintended side-effects, so it cannot be done automatically.
+			Changing your <b>Cloud username</b> can have unintended side-effects, so it is highly recommended not to do it.
 			<br/>If you wish to do it anyway, please <a href="mailto:support@terradue.com">contact us</a>.
 		</div>
 
 		<div class='settings settings-container'>
-				<span class='email'>{{ user.Username }}</span>
+			<span class='account-value'>{{ user.Username }}</span>
 		</div>
 			<!--- TODO: Email preferences (notifications, ...) ?? -->
 
@@ -33,8 +33,8 @@
 			{{/if}}
 
 			<div class="email-change">
-				<span class='email'>{{ user.Email }}</span>
-				&nbsp;&nbsp;
+				<span class='account-value'>{{ user.Email }}</span>
+				<br/><br/>
 				<button click='submit' class='btn btn-warning submit'>Change email</button>
 			</div>
 

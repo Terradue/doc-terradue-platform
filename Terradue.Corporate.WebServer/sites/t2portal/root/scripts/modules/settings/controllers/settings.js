@@ -165,6 +165,9 @@ define([
 				console.log("App.controllers.Settings.account");
 				this.isLoginPromise.then(function(user){
 					self.accountData.attr('user',user);
+
+					if (self.params.token && user.AccountStatus==1)
+						self.manageEmailConfirm(self.params.token);
 				}).fail(function(){
 					self.accessDenied();
 				});
