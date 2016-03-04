@@ -114,7 +114,7 @@ var PasswordResetControl = BaseControl(
 						atLeastOneSpecialChar: 'Password must include at least one special character in the list !@#$%^&*()_+',
 						noOtherSpecialChars: 'Password can\'t include special characters different from the list !@#$%^&*()_+',
 					},
-					passwordRepeat: 'The password is not equal with the first'
+					passwordRepeat: 'Password does not match the confirm password.'
 				},
 				submitHandler: function(form){
 					self.submitForm2(form);

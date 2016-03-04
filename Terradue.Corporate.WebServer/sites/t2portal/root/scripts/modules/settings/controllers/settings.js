@@ -478,7 +478,7 @@ define([
 							atLeastOneSpecialChar: 'Password must include at least one special character in the list !@#$%^&*()_+',
 							noOtherSpecialChars: 'Password can\'t include special characters different from the list !@#$%^&*()_+',
 						},
-						newpassword2: 'The password is not equal with the first',
+						newpassword2: 'Password does not match the confirm password.',
 					},
 
 					submitHandler: function(form){
