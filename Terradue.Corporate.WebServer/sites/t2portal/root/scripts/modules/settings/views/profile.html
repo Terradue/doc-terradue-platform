@@ -21,7 +21,7 @@
 
 			{{#unless usernameNotSet}}
 				<div class="form-group">
-					<label>Terradue Cloud Username</label>
+					<label>Cloud username</label>
 					<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.Username }}">
 				</div>
 			{{/unless}}
@@ -41,11 +41,6 @@
 					<label>Cloud username</label>
 	 				<span class="usernameLoader{{#unless usernameLoader}} hidden{{/unless}}"><i class="fa fa-spin fa-spinner"></i> Checking username availability...</span>
 					<input type="text" class="form-control" placeholder="" name="Username">
-<!--					<div class="alert alert-info small" role="alert">
-						<b><i class="fa fa-warning"></i> IMPORTANT !!! </b>
-					  	<br>The Cloud Username will be used on the Terradue Cloud Platform to login on your VMs. 
-					  	<br>Once set, it cannot be changed. Please choose it wisely!
-					</div>-->
 				</div>
 			{{/if}}
 			
