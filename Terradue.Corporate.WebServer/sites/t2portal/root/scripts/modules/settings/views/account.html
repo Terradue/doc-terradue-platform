@@ -23,7 +23,7 @@
 			If you wish to change your email, you will have to validate the new one before being able to access your Cloud environment again.
 		</div>
 		<div class='settings settings-container'>
-			{{#if isPending}}
+			{{#if emailNotComplete}}
 				<div class="alert alert-warning">
 					<i class="fa fa-warning"></i> Your email needs to be verified, please check your emails or <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
 				</div>
@@ -34,9 +34,33 @@
 
 			<div class="email-change">
 				<span class='account-value'>{{ user.Email }}</span>
-				<br/><br/>
-				<button click='submit' class='btn btn-warning submit'>Change email</button>
+				<br/>
+				<br/>
 			</div>
+
+			<form class='changeEmailForm'>
+				<div class='form-group'>
+					<label for='Email'>New email</label>
+					<input type='email' class='form-control' name='Email' placeholder='New email'>
+				</div>
+
+				{{#if emailSaveSuccess}}
+					<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Congratulations!</strong> Your email have been changed successfully.</div>
+					<br/>
+				{{/if}}
+				{{#if emailSaveFail}}
+					<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ emailErrorMessage }}</div>
+					<br/>
+				{{/if}}
+
+				{{#if emailLoading}}
+					<button type="button" class="btn btn-warning submit" disabled="disabled">Change email</button>
+					<i class="fa fa-spin fa-spinner"></i> Saving...
+				{{else}}
+					<button type="submit" class="btn btn-warning submit">Change email</button>
+				{{/if}}
+
+			</form>
 
 			<!--- TODO: Email preferences (notifications, ...) ?? -->
 

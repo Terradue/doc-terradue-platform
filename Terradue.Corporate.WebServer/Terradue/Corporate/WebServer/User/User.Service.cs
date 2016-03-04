@@ -481,6 +481,41 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
+        public object Put(UpdateEmailUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            WebUserT2 result = null;
+            try {
+                context.Open();
+
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                user.ValidateNewEmail(request.Email);
+                if(user.Email == request.Email) throw new Exception("You must choose an email different from the current one.");
+
+                user.Email = request.Email;
+                user.AccountStatus = AccountStatusType.PendingActivation;
+
+                //update on ldap
+                user.UpdateLdapAccount();
+
+                //update on db
+                user.Store();
+
+                //we dont want to send an error if mail was not sent
+                //user can still have it resent from the portal
+                try{
+                    user.SendMail(UserMailType.Registration, true);
+                }catch(Exception){}
+
+                result = new WebUserT2(user);
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }
+
         public object Get(GetExistsLdapUsernameT2 request){
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             bool result = true;

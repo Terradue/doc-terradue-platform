@@ -59,7 +59,7 @@ namespace Terradue.Corporate.Controller {
         /// <returns>The user from email.</returns>
         /// <param name="email">Email.</param>
         public LdapUser GetUserFromEmail(string email){
-            return GetUserFromFilter("email", email);
+            return GetUserFromFilter("mail", email);
         }
 
         /// <summary>

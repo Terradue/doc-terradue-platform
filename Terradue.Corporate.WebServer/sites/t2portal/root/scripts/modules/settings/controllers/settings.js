@@ -159,12 +159,16 @@ define([
 					data: this.accountData,
 					fnLoad: function(){
 						self.initSubmenu('profile');
+						self.initAccount();
 					}
 				});
 				
 				console.log("App.controllers.Settings.account");
 				this.isLoginPromise.then(function(user){
-					self.accountData.attr('user',user);
+					self.accountData.attr({
+						user: user,
+						emailNotComplete: (user.AccountStatus==1)
+					});
 
 					if (self.params.token && user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
@@ -284,8 +288,7 @@ define([
 				});
 			},
 
-			// profile
-			
+			// profile	
 			manageEmailConfirm: function(token){
 				var self=this;
 				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
@@ -426,7 +429,51 @@ define([
 				App.Login.openLoginForm();
 			},
 
-			// send email pending activation
+			// account
+			initAccount: function(){
+				var self = this;
+				this.element.find('form.changeEmailForm').validate({
+					rules: {
+						Email: {
+							required: true,
+							email: true
+						}
+					},
+
+					submitHandler: function(form){
+						var email = $(form).find('input[name="Email"]').val();
+						self.changeEmail(email);
+//						bootbox.confirm('Your Cloud Username will be <b>'+username+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
+//							if (confirmed)
+//								self.profileSubmit();
+//						});
+						return false;
+					}
+				});
+			},
+
+			changeEmail: function(email){
+				var self = this;
+
+				self.accountData.attr({
+						emailLoading: true
+					});
+
+				ProfileModel.changeEmail(email).then(function(user){
+					self.accountData.attr({
+						emailLoading: false, 
+						emailSaveSuccess: true,
+						user: user
+					});
+				}).fail(function(xhr){
+					self.accountData.attr({
+						emailLoading: false, 
+						emailSaveFail: true,
+						emailErrorMessage: Helpers.getErrMsg(xhr, 'Unable to update your email. Please contact the Administrator.'),
+					});
+				});
+			},
+
 			'a.sendConfirmationEmail click': function(elem){
 				var $span = $('<span> <i class="fa fa-spin fa-spinner"></i></span>')
 					.insertAfter(elem);
@@ -455,23 +502,6 @@ define([
 						passwordLoading: false, 
 						passwordSaveFail: true,
 						passwordErrorMessage: Helpers.getErrMsg(xhr, 'Unable to update the password. Please contact the Administrator.'),
-					});
-				});
-			},
-
-			'.settings-email .email-change .submit click': function(){
-				var self = this;
-
-				ProfileModel.updatePassword(oldpassword,newpassword).then(function(){
-					self.accountData.attr({
-						loading: false, 
-						saveSuccess: true,
-					});
-				}).fail(function(xhr){
-					self.accountData.attr({
-						loading: false, 
-						saveFail: true,
-						errorMessage: Helpers.getErrMsg(xhr, 'Unable to update the password. Please contact the Administrator.'),
 					});
 				});
 			},

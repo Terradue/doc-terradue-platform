@@ -87,6 +87,10 @@ namespace Terradue.Corporate.WebServer {
         public string password { get; set; }
     }
 
+    [Route("/user/email", "PUT", Summary = "update email for user", Notes = "")]
+    public class UpdateEmailUserT2 : WebUserT2, IReturn<WebUserT2> {
+    }
+
     [Route("/user/safe/private", "PUT", Summary = "get a safe for user", Notes = "")]
     public class GetSafeUserT2 : IReturn<WebSafe> {
         [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
@@ -210,6 +214,10 @@ namespace Terradue.Corporate.WebServer {
         /// </summary>
         /// <param name="entity">Entity.</param>
         public WebUserT2(UserT2 entity) : base(entity) {
+
+            if (entity.PublicKey == null)
+                entity.LoadLdapInfo();
+
             this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
             this.PublicKey = entity.PublicKey;

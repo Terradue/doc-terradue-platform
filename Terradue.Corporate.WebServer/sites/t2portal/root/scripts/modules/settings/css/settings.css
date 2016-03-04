@@ -30,6 +30,11 @@
  	font-style: italic;
  }
 
+ #settingsPage form label.error {
+	font-size: 11px;
+	color: rgb(200, 0, 0);
+}
+
  #settingsPage .key-title {
  	font-weight: bold;
  }
