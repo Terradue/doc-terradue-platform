@@ -1,0 +1,120 @@
+{{#if user}}
+<div id='settings' class='settings-email container col-md-9'>
+	<div>
+		<div class='settings settings-title'>Email</div>
+		<div class='settings settings-description'>
+			Your <b>email</b> is important as it is used to verify your account.<br/>
+			If you wish to change your email, you will have to validate the new one before being able to access your Cloud environment again.
+		</div>
+		<div class='settings settings-container'>
+			{{#if emailNotComplete}}
+				<div class="alert alert-warning">
+					<i class="fa fa-warning"></i> Your email needs to be verified, please check your emails or <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
+				</div>
+			{{else}}
+				{{#if emailConfirmOK}}
+					<div class="alert alert-success"><i class="fa fa-check-square"></i> Your email has been successfully validated!</div>
+				{{/if}}
+			{{/if}}
+
+			<div class="email-change">
+				<span class='account-value'>{{ user.Email }}</span>
+				<br/>
+				<br/>
+			</div>
+
+			<form class='changeEmailForm'>
+				<div class='form-group'>
+					<label for='Email'>New email</label>
+					<input type='email' class='form-control' name='Email' placeholder='New email'>
+				</div>
+
+				{{#if emailSaveSuccess}}
+					<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Congratulations!</strong> Your email have been changed successfully.</div>
+				{{/if}}
+				{{#if emailSaveFail}}
+					<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ emailErrorMessage }}</div>
+				{{/if}}
+
+				{{#if emailLoading}}
+					<button type="button" class="btn btn-warning submit" disabled="disabled">Change email</button>
+					<i class="fa fa-spin fa-spinner"></i> Saving...
+				{{else}}
+					<button type="submit" class="btn btn-warning submit">Change email</button>
+				{{/if}}
+
+			</form>
+
+			<!--- TODO: Email preferences (notifications, ...) ?? -->
+
+		</div>
+	</div>
+</div>
+<div class='container col-md-9'><br/></div>
+<div class='settings-username container col-md-9'>
+	<div>
+		<div class='settings settings-title'>Cloud username</div>
+		{{#if usernameSet}}
+			<div class='settings settings-description'>
+				Changing your <b>Cloud username</b> can have unintended side-effects, so it is highly recommended not to do it.
+				<br/>If you wish to do it anyway, please <a href="mailto:support@terradue.com">contact us</a>.
+			</div>
+
+			<div class='settings settings-container'>
+				<span class='account-value'>{{ user.Username }}</span>
+			</div>
+		{{else}}
+			<div class='settings settings-description'>
+				Your <b>Cloud username</b> is very important. It will be used as unique identifier to access your Cloud environment.
+			</div>
+			<div class='settings settings-container'>
+				<div class='alert alert-info'>Please go now to your <a href="profile">profile</a> to set your Cloud username.</div>
+			</div>
+		{{/if}}
+
+		</div>
+	</div>
+</div>
+<div class='container col-md-9'><br/></div>
+<div class="settings-account container col-md-9">
+	<div class='settings settings-title'>Change password</div>
+	<div class='settings settings-container'>
+
+	<form class='changePasswordForm'>
+		<div class='form-group'>
+			<label for='password passwordform'>Old password</label>
+			<input type='password' class='form-control' name='oldpassword' placeholder='Old Password'>
+		</div>
+		<div class='form-group passwordform'>
+			<label for='password'>New password</label>
+			<input type='password' class='form-control' name='newpassword' placeholder='New Password'>
+		</div>
+		<div class='form-group'>
+			<label for='password'>Confirm new password</label>
+			<input type='password' class='form-control' name='newpassword2' placeholder='New Password'>
+		</div>
+
+		{{#if passwordLoading}}
+			<button type="button" class="btn btn-warning submit" disabled="disabled">Change password</button>
+			<i class="fa fa-spin fa-spinner"></i> Saving...
+		{{else}}
+			<button type="submit" class="btn btn-warning submit">Change password</button>
+			&nbsp;<a href="/portal/passwordreset" class="small">I forgot my password</a>
+		{{/if}}
+
+		{{#if passwordSaveSuccess}}
+			<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Congratulations!</strong> Your password have been changed successfully.</div>
+		{{/if}}
+		{{#if passwordSaveFail}}
+			<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ passwordErrorMessage }}</div>
+		{{/if}}
+
+	</form>
+
+	</div>
+</div>
+{{else}}
+	{{#if emailConfirmOK}}
+		<div class="alert alert-success"><i class="fa fa-check-square"></i> Your email has been successfully validated!</div>
+	{{/if}}
+{{/if}}

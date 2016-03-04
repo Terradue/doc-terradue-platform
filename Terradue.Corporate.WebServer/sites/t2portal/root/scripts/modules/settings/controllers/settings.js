@@ -13,6 +13,7 @@ define([
 	'modules/settings/models/oneUser',
 	'modules/settings/models/safe',
 	'modules/users/models/plans',
+	'modules/passwordreset/models/passwordreset',
 	'zeroClipboard',
 	'canpromise',
 	'messenger',
@@ -22,7 +23,7 @@ define([
 	'droppableTextarea',
 	'jqueryCopyableInput',
 	'latinise'
-], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, ZeroClipboard){
+], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, PasswordResetModel, ZeroClipboard){
 	
 	window.ZeroClipboard = ZeroClipboard;
 	// regexpr validator
@@ -43,9 +44,12 @@ define([
 				console.log("settingsControl.init");
 				var self = this;
 				
+				Helpers.addPasswordValidationMethods();
+				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
 				this.keyData = new can.Observe({});
+				this.accountData = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
@@ -116,26 +120,55 @@ define([
 				
 				console.log("App.controllers.Settings.profile");
 				this.isLoginPromise.then(function(user){
+					var usernameDefault = (user.Username == null || user.Username == user.Email);
+					if(usernameDefault) user.Username = null;
 					self.profileData.attr({
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						nameMissing: !(user.FirstName && user.LastName),
+						usernameNotSet: usernameDefault,
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey)
 					});
 					
 					self.initProfileValidation();
-					self.unixUsernameGeneration();
-
-					self.element.find('.posixInfo').tooltip({
+					self.usernameGeneration();
+					
+					self.element.find('.usernameInfo').tooltip({
 						trigger: 'hover',
 						title: 'Username on the Terradue Cloud Platform, used to login on your VMs.',
 						placement:'right'
 					});
 					
-					if (self.params.token && self.profileData.user.AccountStatus==1)
+				}).fail(function(){
+					self.accessDenied();
+				});
+			},
+
+			account: function(options) {
+				var self = this;
+				self.params = Helpers.getUrlParameters();
+				this.view({
+					url: 'modules/settings/views/account.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.accountData,
+					fnLoad: function(){
+						self.initSubmenu('account');
+						self.initAccount();
+					}
+				});
+				
+				console.log("App.controllers.Settings.account");
+				this.isLoginPromise.then(function(user){
+					if (self.params.token && user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
-					
+					self.accountData.attr({
+						user: user,
+						usernameSet: !(user.Email == user.Username),
+						emailNotComplete: (user.AccountStatus==1),
+						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok'
+					});
 				}).fail(function(){
 					if (self.params.token)
 						self.manageEmailConfirm(self.params.token);
@@ -255,21 +288,13 @@ define([
 				});
 			},
 
-			// profile
-			
+			// profile	
 			manageEmailConfirm: function(token){
 				var self=this;
 				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
-					// reinit
-					//document.location = '/portal/settings/profile?emailConfirm=ok';
-					if (self.profileData.user)
-						document.location = '/portal/settings/profile?emailConfirm=ok';
-					else {
-						// you are not connected, only show the message
-						self.profileData.attr('emailConfirmOK', true);
-						self.data.attr('emailConfirmOK', true);
-					}
-					
+					self.accountData.attr('emailConfirmOK', true);
+					self.accountData.attr('emailNotComplete', false);
+					self.data.attr('emailNotComplete', false);
 				}).fail(function(xhr){
 					self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
 				});
@@ -281,23 +306,25 @@ define([
 					rules: {
 						FirstName: 'required',
 						LastName: 'required',
-						PosixUsername: {
-							regExpr: '^[a-z][0-9a-z]{1,31}$',
+						Username: {
+							required: true,
+							regExpr: '^[a-zA-Z][0-9a-zA-Z]{1,31}$',
 							remote: {
-						        url: "/t2api/user/posix/free?format=json",
+						        url: "/t2api/user/ldap/available?format=json",
 						        type: "GET",
 						        processData: true,
 						        data: {
-						        	posixname: function() {
-						        		return self.element.find('input[name="PosixUsername"]').val();
+						        	Username: function() {
+						        		return self.element.find('input[name="Username"]').val();
 						        	}
 						        },
 						        noStringify: true,
 						        beforeSend: function(){
-						        	self.profileData.attr('posixUsernameLoader', true);
+						        	self.profileData.attr('usernameLoader', true);
+						        	self.element.find('input[name="Username"]').parent().find('label.error').empty();
 						        },
 						        complete: function(){
-						        	self.profileData.attr('posixUsernameLoader', false);
+						        	self.profileData.attr('usernameLoader', false);
 						        }
 							}
 						}
@@ -305,38 +332,51 @@ define([
 					messages: {
 						FirstName: '<i class="fa fa-times-circle"></i> Please insert your First Name',
 						LastName: '<i class="fa fa-times-circle"></i> Please insert your Last Name',
-						PosixUsername: {
-							regExpr: '<i class="fa fa-times-circle"></i> The username should start by a letter, have letters and numbers and 32 chars.</span>',
+						Username: {
+							required: '<i class="fa fa-times-circle"></i> Please insert your Cloud Username',
+							regExpr: '<i class="fa fa-times-circle"></i> The username is not valid.</span>',
 							remote: '<i class="fa fa-times-circle"></i> This username is already taken, please choose another one.</span>'
 						}
 					},
 					// set this class to error-labels to indicate valid fields
 					success: function(label, element) {
-						if ($(element).attr('name')=='PosixUsername')
+						if ($(element).attr('name')=='Username')
 							label.html('<span class="text-success"><i class="fa fa-check-circle"></i> The username is free and available.</span>');
 					},
 
 					submitHandler: function(form){
-						var posixUsername = $(form).find('input[name="PosixUsername"]').val();
-						bootbox.confirm('Your Cloud Username will be <b>'+posixUsername+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
+						var username = $(form).find('input[name="Username"]').val();
+						bootbox.confirm('Your Cloud Username will be <b>'+username+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
 							if (confirmed)
 								self.profileSubmit();
 						});
 						return false;
 					}
 				});
+
+				this.element.find('form.profileForm .UsernameNotSet').popover({
+				trigger: 'focus',
+				placement: 'left',
+				title: 'Username',
+				html: true,
+				content: 'It must have:<ul>'
+					+'<li>a maximum of 32 characters</li>'
+					+'<li>only alphanumeric characters</li>'
+					+'<li>starts with a letter</li>'
+					+'</ul>',
+			});
 			},
 			
-			unixUsernameGeneration: function(){
-				if (this.profileData.user.PosixUsername) // if is set do nothing
+			usernameGeneration: function(){
+				if (this.profileData.user.Username) // if is set do nothing
 					return;
 				
 				var $firstName = this.element.find('input[name="FirstName"]');
 				var $lastName = this.element.find('input[name="LastName"]');
-				var $unixUsername = this.element.find('input[name="PosixUsername"]');
+				var $username = this.element.find('input[name="Username"]');
 				var timeout;
 				
-				var setUnixUsernameFn = function(e){
+				var setUsernameFn = function(e){
 					if (e && e.keyCode && (e.keyCode==9 || e.keyCode==16))
 						return;
 					
@@ -348,33 +388,35 @@ define([
 					var firstChar = firstName.split(' ')[0][0];
 					var lastNames = lastName.split(' ');
 					var lastSurname = lastNames[lastNames.length-1];
-					var PosixUsername = (firstChar.latinise() + lastSurname.latinise()).substring(0,32);
+					var Username = (firstChar.latinise() + lastSurname.latinise()).substring(0,32);
 					
-					$unixUsername.val(PosixUsername).valid();
+					$username.val(Username).valid();
 				};
 				
 				$firstName.on('change', function(){console.log('change')});
-				$firstName.keyup(setUnixUsernameFn);
-				$lastName.keyup(setUnixUsernameFn);
-				setUnixUsernameFn();
+				$firstName.keyup(setUsernameFn);
+				$lastName.keyup(setUsernameFn);
+				setUsernameFn();
 			},
 			
 			profileSubmit: function(){
 				// get data
 				var self= this,
 					usr = Helpers.retrieveDataFromForm('.settings-profile form',
-						['FirstName','LastName','PosixUsername','Affiliation','Country','EmailNotification']);
+						['FirstName','LastName','Username','Affiliation','Country','EmailNotification']);
 				
 				// update
 				App.Login.User.current.attr(usr); 
 				// save
-				self.profileData.attr({saveSuccess: false, saveFail: false});
+				self.profileData.attr({saveLoading: true, saveSuccess: false, saveFail: false});
 				new ProfileModel(App.Login.User.current.attr())
 					.save()
 					.then(function(createdUser){
 						self.profileData.attr({
 							saveSuccess: true,
+							saveLoading: false, 
 							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country),
+							usernameNotSet: createdUser.Username == createdUser.Email,
 							nameMissing: !(createdUser.FirstName && createdUser.LastName),
 						});
 						self.data.attr({
@@ -382,7 +424,7 @@ define([
 						});
 
 					}).fail(function(xhr){
-						self.profileData.attr({saveFail: true, saveFailMessage: Helpers.getErrMsg(xhr)});
+						self.profileData.attr({saveLoading: false, saveFail: true, saveFailMessage: Helpers.getErrMsg(xhr)});
 					});
 				
 				return false;
@@ -392,7 +434,120 @@ define([
 				App.Login.openLoginForm();
 			},
 
-			// send email pending activation
+			// account
+			initAccount: function(){
+				var self = this;
+				
+				// change email form
+				this.element.find('form.changeEmailForm').validate({
+					rules: {
+						Email: {
+							required: true,
+							email: true
+						}
+					},
+
+					submitHandler: function(form){
+						var email = $(form).find('input[name="Email"]').val();
+						self.changeEmail(email);
+						return false;
+					}
+				});
+				
+				// change password form
+				this.element.find('form.changePasswordForm').validate({
+					rules: {
+						oldpassword: 'required',
+						newpassword: {
+							required: true,
+							minlength: 8,
+							atLeastOneUpper: true,
+							atLeastOneLower: true,
+							atLeastOneNumber: true,
+							atLeastOneSpecialChar: true,
+							noOtherSpecialChars: true,
+						},
+						newpassword2: {
+							equalTo: '[name="newpassword"]',
+						}
+					},
+					messages : {
+						newpassword: {
+							required: 'Insert a password',
+							minlength: 'Password must be at least 8 characters',
+							atLeastOneUpper: 'Password must include at least one uppercase character',
+							atLeastOneLower: 'Password must include at least one lowercase character',
+							atLeastOneNumber: 'Password must include at least one number',
+							atLeastOneSpecialChar: 'Password must include at least one special character in the list !@#$%^&*()_+',
+							noOtherSpecialChars: 'Password can\'t include special characters different from the list !@#$%^&*()_+',
+						},
+						newpassword2: 'Password does not match the confirm password.',
+					},
+
+					submitHandler: function(form){
+						self.changePassword();
+					}
+				});
+				
+				this.element.find('form.changePasswordForm input[name="newpassword"]').popover({
+					trigger: 'focus',
+					placement: 'left',
+					title: 'Password',
+					html: true,
+					content: 'It must have:<ul>'
+						+'<li>at least 8 characters</li>'
+						+'<li>at least one uppercase character</li>'
+						+'<li>at least one lowercase character</li>'
+						+'<li>at least one number</li>'
+						+'<li>at least one special character, chosen from the list: ! @ # $ % ^ & * ( ) _ +</li>'
+						+'<li>no other special characters are permitted</li>'
+						+'</ul>',
+				});
+			},
+
+			changeEmail: function(email){
+				var self = this;
+
+				self.accountData.attr({
+						emailLoading: true
+					});
+
+				ProfileModel.changeEmail(email).then(function(user){
+					self.accountData.attr({
+						emailLoading: false, 
+						emailSaveSuccess: true,
+						user: user
+					});
+				}).fail(function(xhr){
+					self.accountData.attr({
+						emailLoading: false, 
+						emailSaveFail: true,
+						emailErrorMessage: Helpers.getErrMsg(xhr, 'Unable to update your email. Please contact the Administrator.'),
+					});
+				});
+			},
+
+			changePassword : function(){
+				var self = this;
+				var oldpassword = Helpers.retrieveDataFromForm('.changePasswordForm','oldpassword');
+				var newpassword = Helpers.retrieveDataFromForm('.changePasswordForm','newpassword');
+				this.accountData.attr({
+					passwordLoading: true, 
+				});
+				PasswordResetModel.updatePassword(oldpassword,newpassword).then(function(){
+					self.accountData.attr({
+						passwordLoading: false, 
+						passwordSaveSuccess: true,
+					});
+				}).fail(function(xhr){
+					self.accountData.attr({
+						passwordLoading: false, 
+						passwordSaveFail: true,
+						passwordErrorMessage: Helpers.getErrMsg(xhr, 'Unable to update the password. Please contact the Administrator.'),
+					});
+				});
+			},
+			
 			'a.sendConfirmationEmail click': function(elem){
 				var $span = $('<span> <i class="fa fa-spin fa-spinner"></i></span>')
 					.insertAfter(elem);

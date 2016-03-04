@@ -75,12 +75,12 @@ namespace Terradue.Corporate.WebServer {
                 GithubProfile user = GithubProfile.FromId(context, context.UserId);
                 try{
                     UserT2 usr = UserT2.FromId(context, context.UserId);
+                    usr.LoadLdapInfo();
                     user.PublicSSHKey = usr.PublicKey;
                 }catch(Exception e){
                     user.PublicSSHKey = null;
                 }
                 result = new WebGithubProfile(user);
-//                result.HasSSHKey = true;
                 context.Close();
             } catch (Exception e) {
                 context.Close();

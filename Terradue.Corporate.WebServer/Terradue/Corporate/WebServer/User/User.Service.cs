@@ -190,12 +190,18 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
-                bool noposix = string.IsNullOrEmpty(user.PosixUsername);
+                bool newusername = (user.Username == user.Email);
                 user = request.ToEntity(context, user);
+
+                //update the Ldap uid
+                if(newusername){
+                    user.UpdateUsername();
+                }
+
                 user.Store();
 
                 //update the Ldap account with the modifications
-                user.UpdateLdapAccount(noposix);
+                user.UpdateLdapAccount();
 
                 result = new WebUserT2(user);
                 context.Close();
@@ -210,35 +216,35 @@ namespace Terradue.Corporate.WebServer {
         /// Post the specified request.
         /// </summary>
         /// <param name="request">Request.</param>
-        public object Post(CreateUserT2 request)
-        {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-            WebUserT2 result;
-            try{
-                context.Open();
-				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
-				user = request.ToEntity(context, user);
-                if(request.Id != 0 && context.UserLevel == UserLevel.Administrator){
-                    user.AccountStatus = AccountStatusType.Enabled;
-                }
-                else{
-                    user.AccountStatus = AccountStatusType.PendingActivation;
-                }
-
-                user.IsNormalAccount = true;
-                user.Level = UserLevel.User;
-
-                user.Store();
-                user.StorePassword(request.Password);
-
-                result = new WebUserT2(user);
-                context.Close ();
-            }catch(Exception e) {
-                context.Close ();
-                throw e;
-            }
-            return result;
-        }
+//        public object Post(CreateUserT2 request)
+//        {
+//            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+//            WebUserT2 result;
+//            try{
+//                context.Open();
+//				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
+//				user = request.ToEntity(context, user);
+//                if(request.Id != 0 && context.UserLevel == UserLevel.Administrator){
+//                    user.AccountStatus = AccountStatusType.Enabled;
+//                }
+//                else{
+//                    user.AccountStatus = AccountStatusType.PendingActivation;
+//                }
+//
+//                user.IsNormalAccount = true;
+//                user.Level = UserLevel.User;
+//
+//                user.Store();
+//                user.StorePassword(request.Password);
+//
+//                result = new WebUserT2(user);
+//                context.Close ();
+//            }catch(Exception e) {
+//                context.Close ();
+//                throw e;
+//            }
+//            return result;
+//        }
 
         /// <summary>
         /// Post the specified request.
@@ -256,18 +262,19 @@ namespace Terradue.Corporate.WebServer {
 
                 bool exists = false;
                 try{
-                    User.FromUsername(context, request.Email);
+                    UserT2.FromEmail(context, request.Email);
                     exists = true;
                 }catch(Exception){}
 
+                if(exists) throw new Exception("Sorry, this email is already used.");
+
                 try{
-                    var ldapauth = new Terradue.Ldap.LdapAuthClient(context.GetConfigValue("ldapauth-baseurl"), context.GetConfigValue("ldap-port"));
-                    var usr = ldapauth.GetUser(request.Email);
-                    if(usr != null) exists = true;
+                    var json2Ldap = new Json2LdapFactory(context);
+                    if (json2Ldap.GetUserFromEmail(request.Email) != null) exists = true;
                 }catch(Exception){}
 
-                if(exists) throw new Exception("User already exists");
-
+                if(exists) throw new Exception("Sorry, this email is already used.");
+                    
                 AuthenticationType AuthType = IfyWebContext.GetAuthenticationType(typeof(OAuth2AuthenticationType));
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));
@@ -396,7 +403,7 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Put(UserResetPassword request) {
+        public object Put(ResetPassword request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
@@ -429,7 +436,7 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Put(UserUpdatePassword request) {
+        public object Put(UserResetPassword request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
@@ -452,16 +459,72 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Get(GetExistsPosixnameT2 request){
+        public object Put(UserUpdatePassword request) {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            try {
+                context.Open();
+
+                if(string.IsNullOrEmpty(request.NewPassword)) throw new Exception("Password is empty");
+
+                UserT2 user = UserT2.FromId(context, context.UserId);
+
+                try{
+                    user.ChangeLdapPassword(request.NewPassword, request.OldPassword);
+                }catch(Exception e){
+                    throw new Exception("Unable to change password", e);    
+                }
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return new WebResponseBool(true);
+        }
+
+        public object Put(UpdateEmailUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            WebUserT2 result = null;
+            try {
+                context.Open();
+
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                user.ValidateNewEmail(request.Email);
+                if(user.Email == request.Email) throw new Exception("You must choose an email different from the current one.");
+
+                user.Email = request.Email;
+                user.AccountStatus = AccountStatusType.PendingActivation;
+
+                //update on ldap
+                user.UpdateLdapAccount();
+
+                //update on db
+                user.Store();
+
+                //we dont want to send an error if mail was not sent
+                //user can still have it resent from the portal
+                try{
+                    user.SendMail(UserMailType.Registration, true);
+                }catch(Exception){}
+
+                result = new WebUserT2(user);
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Get(GetExistsLdapUsernameT2 request){
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             bool result = true;
             try {
                 context.Open();
 
-                if(string.IsNullOrEmpty(request.posixname)) throw new Exception("Posix name is empty");
-
-                UserT2 user = UserT2.FromId(context, context.UserId);
-                result = user.IsPosixUsernameFree(request.posixname);
+                if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
+                Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
+                result = ldapfactory.IsUsernameFree(request.username);
 
                 context.Close();
             } catch (Exception e) {
