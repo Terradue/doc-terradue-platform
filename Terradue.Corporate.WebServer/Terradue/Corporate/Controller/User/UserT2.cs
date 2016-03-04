@@ -521,18 +521,16 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="username">Username.</param>
         public void ValidateUsername(string username) {
-            Regex r = new Regex("^[a-z][0-9a-z]{1,31}$");
+            Regex r = new Regex("^[a-zA-Z][0-9a-zA-Z]{1,31}$");
             if (r.IsMatch(username))
                 return;
 
             if (username.Length > 32)
                 throw new Exception("Invalid Cloud username: You must use at max 32 characters");
-            if (Regex.Match(username, @"[A-Z]").Success)
-                throw new Exception("Invalid Cloud username: You must not use capital letters");
-            if (!Regex.Match(username, @"^[0-9a-z]").Success)
+            if (!Regex.Match(username, @"^[0-9a-zA-Z]").Success)
                 throw new Exception("Invalid Cloud username: You must use only alphanumeric values");
-            if (!Regex.Match(username, "^[a-z][0-9a-z]{1,31}$").Success)
-                throw new Exception("Invalid Cloud username: You must use at least one numerical value");
+            if (!Regex.Match(username, "^[a-zA-Z][0-9a-zA-Z]{1,31}$").Success)
+                throw new Exception("Invalid Cloud username: You must start with a letter");
             throw new Exception("Invalid Cloud username");
         }
 

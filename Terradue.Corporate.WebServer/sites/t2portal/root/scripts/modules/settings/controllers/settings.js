@@ -317,7 +317,7 @@ define([
 						LastName: 'required',
 						Username: {
 							required: true,
-							regExpr: '^[a-z][0-9a-z]{1,31}$',
+							regExpr: '^[a-zA-Z][0-9a-zA-Z]{1,31}$',
 							remote: {
 						        url: "/t2api/user/ldap/available?format=json",
 						        type: "GET",
@@ -343,7 +343,7 @@ define([
 						LastName: '<i class="fa fa-times-circle"></i> Please insert your Last Name',
 						Username: {
 							required: '<i class="fa fa-times-circle"></i> Please insert your Cloud Username',
-							regExpr: '<i class="fa fa-times-circle"></i> The username should start by a letter, have letters and numbers and 32 chars.</span>',
+							regExpr: '<i class="fa fa-times-circle"></i> The username is not valid.</span>',
 							remote: '<i class="fa fa-times-circle"></i> This username is already taken, please choose another one.</span>'
 						}
 					},
@@ -362,6 +362,18 @@ define([
 						return false;
 					}
 				});
+
+				this.element.find('form.profileForm .UsernameNotSet').popover({
+				trigger: 'focus',
+				placement: 'left',
+				title: 'Username',
+				html: true,
+				content: 'It must have:<ul>'
+					+'<li>a maximum of 32 characters</li>'
+					+'<li>only alphanumeric characters</li>'
+					+'<li>starts with a letter</li>'
+					+'</ul>',
+			});
 			},
 			
 			usernameGeneration: function(){
