@@ -172,19 +172,6 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Load this instance.
-        /// </summary>
-        public override void Load() {
-            base.Load();
-
-            //get the ssh Public Key / Posix Username from Ldap
-            //TODO: should be done automatically from the claims (connect2id)
-            this.LoadLdapInfo();
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
         /// Gets the token.
         /// </summary>
         /// <returns>The token.</returns>
@@ -495,7 +482,6 @@ namespace Terradue.Corporate.Controller {
 
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
-                ldapusr.PublicKey = this.PublicKey;
 
                 //simple bind to have creation rights
                 if(password == null){
@@ -623,6 +609,16 @@ namespace Terradue.Corporate.Controller {
         /// <returns>The plan.</returns>
         public string GetPlan() {
             return Plan.PlanToString(this.Plan.PlanType);
+        }
+
+        public void ValidateNewEmail(string email){
+
+            //simple checks on the email
+            if(string.IsNullOrEmpty(email)) throw new Exception("Your new email is empty.");
+            if(!email.Contains("@")) throw new Exception("Invalid email.");
+
+            //check the email is not already used on LDAP
+            if(LdapFactory.GetUserFromEmail(email) != null) throw new Exception("This email is already used.");
         }
 
     }
