@@ -44,6 +44,8 @@ define([
 				console.log("settingsControl.init");
 				var self = this;
 				
+				Helpers.addPasswordValidationMethods();
+				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
 				this.keyData = new can.Observe({});
@@ -131,7 +133,7 @@ define([
 					
 					self.initProfileValidation();
 					self.usernameGeneration();
-
+					
 					self.element.find('.usernameInfo').tooltip({
 						trigger: 'hover',
 						title: 'Username on the Terradue Cloud Platform, used to login on your VMs.',
@@ -432,6 +434,8 @@ define([
 			// account
 			initAccount: function(){
 				var self = this;
+				
+				// change email form
 				this.element.find('form.changeEmailForm').validate({
 					rules: {
 						Email: {
@@ -443,12 +447,58 @@ define([
 					submitHandler: function(form){
 						var email = $(form).find('input[name="Email"]').val();
 						self.changeEmail(email);
-//						bootbox.confirm('Your Cloud Username will be <b>'+username+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
-//							if (confirmed)
-//								self.profileSubmit();
-//						});
 						return false;
 					}
+				});
+				
+				// change password form
+				this.element.find('form.changePasswordForm').validate({
+					rules: {
+						oldpassword: 'required',
+						newpassword: {
+							required: true,
+							minlength: 8,
+							atLeastOneUpper: true,
+							atLeastOneLower: true,
+							atLeastOneNumber: true,
+							atLeastOneSpecialChar: true,
+							noOtherSpecialChars: true,
+						},
+						newpassword2: {
+							equalTo: '[name="newpassword"]',
+						}
+					},
+					messages : {
+						newpassword: {
+							required: 'Insert a password',
+							minlength: 'Password must be at least 8 characters',
+							atLeastOneUpper: 'Password must include at least one uppercase character',
+							atLeastOneLower: 'Password must include at least one lowercase character',
+							atLeastOneNumber: 'Password must include at least one number',
+							atLeastOneSpecialChar: 'Password must include at least one special character in the list !@#$%^&*()_+',
+							noOtherSpecialChars: 'Password can\'t include special characters different from the list !@#$%^&*()_+',
+						},
+						newpassword2: 'The password is not equal with the first',
+					},
+
+					submitHandler: function(form){
+						self.changePassword();
+					}
+				});
+				
+				this.element.find('form.changePasswordForm input[name="newpassword"]').popover({
+					trigger: 'focus',
+					placement: 'left',
+					title: 'Password',
+					html: true,
+					content: 'It must have:<ul>'
+						+'<li>at least 8 characters</li>'
+						+'<li>at least one uppercase character</li>'
+						+'<li>at least one lowercase character</li>'
+						+'<li>at least one number</li>'
+						+'<li>at least one special character, chosen from the list: ! @ # $ % ^ & * ( ) _ +</li>'
+						+'<li>no other special characters are permitted</li>'
+						+'</ul>',
 				});
 			},
 
@@ -474,22 +524,11 @@ define([
 				});
 			},
 
-			'a.sendConfirmationEmail click': function(elem){
-				var $span = $('<span> <i class="fa fa-spin fa-spinner"></i></span>')
-					.insertAfter(elem);
-				//elem.remove();
-				$.post('/'+Config.api+'/user/emailconfirm?format=json', {}, function(){
-					$span.addClass('text-success').html('<br/><strong>Email sent!</strong>');
-				}).fail(function(xhr){
-					$span.addClass('text-danger').html('<br/><strong>Error: </strong>'+Helpers.getErrMsg(xhr));
-				});
-			},
-
-			'.settings-account .passwordForm .submit click': function(){
+			changePassword : function(){
 				var self = this;
-				var oldpassword = Helpers.retrieveDataFromForm('.passwordForm','oldpassword');
-				var newpassword = Helpers.retrieveDataFromForm('.passwordForm','newpassword');
-				self.accountData.attr({
+				var oldpassword = Helpers.retrieveDataFromForm('.changePasswordForm','oldpassword');
+				var newpassword = Helpers.retrieveDataFromForm('.changePasswordForm','newpassword');
+				this.accountData.attr({
 					passwordLoading: true, 
 				});
 				PasswordResetModel.updatePassword(oldpassword,newpassword).then(function(){
@@ -503,6 +542,17 @@ define([
 						passwordSaveFail: true,
 						passwordErrorMessage: Helpers.getErrMsg(xhr, 'Unable to update the password. Please contact the Administrator.'),
 					});
+				});
+			},
+			
+			'a.sendConfirmationEmail click': function(elem){
+				var $span = $('<span> <i class="fa fa-spin fa-spinner"></i></span>')
+					.insertAfter(elem);
+				//elem.remove();
+				$.post('/'+Config.api+'/user/emailconfirm?format=json', {}, function(){
+					$span.addClass('text-success').html('<br/><strong>Email sent!</strong>');
+				}).fail(function(xhr){
+					$span.addClass('text-danger').html('<br/><strong>Error: </strong>'+Helpers.getErrMsg(xhr));
 				});
 			},
 			
