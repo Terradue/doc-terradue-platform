@@ -223,6 +223,7 @@ namespace Terradue.Corporate.WebServer {
                     try{
                         var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
                         user = j2ldapclient.Authenticate(request.username, request.password, context.GetConfigValue("ldap-apikey"));
+
                     }catch(Exception e){
                         return new HttpError(System.Net.HttpStatusCode.Forbidden, e);
                     }

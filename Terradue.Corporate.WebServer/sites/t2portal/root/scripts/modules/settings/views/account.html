@@ -1,20 +1,4 @@
-<div class='settings-username container col-md-9'>
-	<div>
-		<div class='settings settings-title'>Cloud username</div>
-		<div class='settings settings-description'>
-			Changing your <b>Cloud username</b> can have unintended side-effects, so it is highly recommended not to do it.
-			<br/>If you wish to do it anyway, please <a href="mailto:support@terradue.com">contact us</a>.
-		</div>
-
-		<div class='settings settings-container'>
-			<span class='account-value'>{{ user.Username }}</span>
-		</div>
-			<!--- TODO: Email preferences (notifications, ...) ?? -->
-
-		</div>
-	</div>
-</div>
-<div class='container col-md-9'><br/></div>
+{{#if user}}
 <div id='settings' class='settings-email container col-md-9'>
 	<div>
 		<div class='settings settings-title'>Email</div>
@@ -27,9 +11,10 @@
 				<div class="alert alert-warning">
 					<i class="fa fa-warning"></i> Your email needs to be verified, please check your emails or <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
 				</div>
-				<br/>
 			{{else}}
-<!--				<div class="text text-success small"><i class="fa fa-check-square"></i> Your email has been validated!</div>-->
+				{{#if emailConfirmOK}}
+					<div class="alert alert-success"><i class="fa fa-check-square"></i> Your email has been successfully validated!</div>
+				{{/if}}
 			{{/if}}
 
 			<div class="email-change">
@@ -61,6 +46,31 @@
 			</form>
 
 			<!--- TODO: Email preferences (notifications, ...) ?? -->
+
+		</div>
+	</div>
+</div>
+<div class='container col-md-9'><br/></div>
+<div class='settings-username container col-md-9'>
+	<div>
+		<div class='settings settings-title'>Cloud username</div>
+		{{#if usernameSet}}
+			<div class='settings settings-description'>
+				Changing your <b>Cloud username</b> can have unintended side-effects, so it is highly recommended not to do it.
+				<br/>If you wish to do it anyway, please <a href="mailto:support@terradue.com">contact us</a>.
+			</div>
+
+			<div class='settings settings-container'>
+				<span class='account-value'>{{ user.Username }}</span>
+			</div>
+		{{else}}
+			<div class='settings settings-description'>
+				Your <b>Cloud username</b> is very important. It will be used as unique identifier to access your Cloud environment.
+			</div>
+			<div class='settings settings-container'>
+				<div class='alert alert-info'>Please go now to your <a href="profile">profile</a> to set your Cloud username.</div>
+			</div>
+		{{/if}}
 
 		</div>
 	</div>
@@ -103,4 +113,8 @@
 
 	</div>
 </div>
-
+{{else}}
+	{{#if emailConfirmOK}}
+		<div class="alert alert-success"><i class="fa fa-check-square"></i> Your email has been successfully validated!</div>
+	{{/if}}
+{{/if}}

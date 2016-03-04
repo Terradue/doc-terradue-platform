@@ -120,7 +120,7 @@ define([
 				
 				console.log("App.controllers.Settings.profile");
 				this.isLoginPromise.then(function(user){
-					var usernameDefault = (user.Username == user.Email);
+					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					if(usernameDefault) user.Username = null;
 					self.profileData.attr({
 						user: user,
@@ -140,42 +140,40 @@ define([
 						placement:'right'
 					});
 					
-					if (self.params.token && self.profileData.user.AccountStatus==1)
-						self.manageEmailConfirm(self.params.token);
-					
 				}).fail(function(){
-					if (self.params.token)
-						self.manageEmailConfirm(self.params.token);
-					else
-						self.accessDenied();
+					self.accessDenied();
 				});
 			},
 
 			account: function(options) {
 				var self = this;
-
+				self.params = Helpers.getUrlParameters();
 				this.view({
 					url: 'modules/settings/views/account.html',
 					selector: Config.subContainer,
 					dependency: self.indexDependency(),
 					data: this.accountData,
 					fnLoad: function(){
-						self.initSubmenu('profile');
+						self.initSubmenu('account');
 						self.initAccount();
 					}
 				});
 				
 				console.log("App.controllers.Settings.account");
 				this.isLoginPromise.then(function(user){
-					self.accountData.attr({
-						user: user,
-						emailNotComplete: (user.AccountStatus==1)
-					});
-
 					if (self.params.token && user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
+					self.accountData.attr({
+						user: user,
+						usernameSet: !(user.Email == user.Username),
+						emailNotComplete: (user.AccountStatus==1),
+						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok'
+					});
 				}).fail(function(){
-					self.accessDenied();
+					if (self.params.token)
+						self.manageEmailConfirm(self.params.token);
+					else
+						self.accessDenied();
 				});
 			},
 			
@@ -294,16 +292,9 @@ define([
 			manageEmailConfirm: function(token){
 				var self=this;
 				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
-					// reinit
-					//document.location = '/portal/settings/profile?emailConfirm=ok';
-					if (self.profileData.user)
-						document.location = '/portal/settings/profile?emailConfirm=ok';
-					else {
-						// you are not connected, only show the message
-						self.profileData.attr('emailConfirmOK', true);
-						self.data.attr('emailConfirmOK', true);
-					}
-					
+					self.accountData.attr('emailConfirmOK', true);
+					self.accountData.attr('emailNotComplete', false);
+					self.data.attr('emailNotComplete', false);
 				}).fail(function(xhr){
 					self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
 				});

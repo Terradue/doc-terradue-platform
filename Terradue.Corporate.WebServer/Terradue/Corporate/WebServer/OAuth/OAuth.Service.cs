@@ -154,7 +154,7 @@ UA -> UA : display user name
 
                 user = (UserT2)auth.GetUserProfile(context);
                 user.LoadLdapInfo();//TODO: should be done automatically on the previous call
-
+                user.Store();
                 redirect = context.BaseUrl + "/portal/settings/profile";
 
                 context.Close();
@@ -199,9 +199,27 @@ UA -> UA : display user name
 
                 var json2Ldap = new Json2LdapFactory(context);
                 var usr = json2Ldap.GetUserFromEOSSO(request.EoSSO);
-                if(usr != null) return usr.Username;
+                if(usr != null){
+                    if(usr.Email != request.Email){
+                        UserT2 user = UserT2.FromEmail(context, usr.Email);
+                        //update on ldap
+                        user.UpdateLdapAccount();
+
+                        //update on db
+                        user.Store();
+                    }
+                    return usr.Username;
+                }
                 usr = json2Ldap.GetUserFromEmail(request.Email);
-                if(usr != null) return usr.Username;
+                if(usr != null){
+                    if(string.IsNullOrEmpty(usr.EoSSO)){
+                        UserT2 user = UserT2.FromEmail(context, usr.Email);
+                        usr.EoSSO = request.EoSSO;
+                        //update on ldap
+                        user.UpdateLdapAccount();
+                    }
+                    return usr.Username;
+                }
 
                 context.Close();
             } catch (Exception e) {

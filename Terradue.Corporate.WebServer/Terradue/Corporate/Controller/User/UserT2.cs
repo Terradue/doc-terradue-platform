@@ -570,7 +570,11 @@ namespace Terradue.Corporate.Controller {
             try {
                 var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
                 if(ldapusr != null){
-                    this.PublicKey = ldapusr.PublicKey;
+                    if(!string.IsNullOrEmpty(ldapusr.Username)) this.Username = ldapusr.Username;
+                    if(!string.IsNullOrEmpty(ldapusr.Email)) this.Email = ldapusr.Email;
+                    if(!string.IsNullOrEmpty(ldapusr.FirstName)) this.FirstName = ldapusr.FirstName;
+                    if(!string.IsNullOrEmpty(ldapusr.LastName)) this.LastName = ldapusr.LastName;
+                    if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
                 }
             } catch (Exception e) {
                 Json2Ldap.Close();

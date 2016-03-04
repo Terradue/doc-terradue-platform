@@ -68,7 +68,7 @@ namespace Terradue.Corporate.Controller {
         /// <returns>The user from EOSSO.</returns>
         /// <param name="eosso">Eosso.</param>
         public LdapUser GetUserFromEOSSO(string eosso){
-            return GetUserFromFilter("eosso", eosso);
+            return GetUserFromFilter("eossoUserid", eosso);
         }
 
         /// <summary>
