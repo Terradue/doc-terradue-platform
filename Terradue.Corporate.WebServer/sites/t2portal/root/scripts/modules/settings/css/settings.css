@@ -25,9 +25,15 @@
  	border-top: 0px;
  }
 
- #settingsPage .email {
+ #settingsPage .account-value {
  	color: DimGray;
+ 	font-style: italic;
  }
+
+ #settingsPage form label.error {
+	font-size: 11px;
+	color: rgb(200, 0, 0);
+}
 
  #settingsPage .key-title {
  	font-weight: bold;
@@ -65,14 +71,11 @@
 #settingsPage .settings-profile input[type="text"] {
 	width: 400px;
 }
-#settingsPage .settings-profile .posixUsernameWarning{
-	margin-bottom: 0px;
-}
 #settingsPage .settings-profile label.error{
 	color: #a94442;
 }
 #settingsPage .settings-profile label.error:empty {
-    display: none;
+    display: none!important;
 }
 
 

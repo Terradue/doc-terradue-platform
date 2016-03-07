@@ -63,6 +63,28 @@ namespace Terradue.Corporate.WebServer {
         public bool ajax { get; set; }
     }
 
+    [Route("/oauth/JWT", "POST", Summary = "login", Notes = "")]
+    public class OAuthJWTTokenRequest
+    {
+        [ApiMember(Name="grant_type", Description = "grant type string", ParameterType = "path", DataType = "String", IsRequired = true)]
+        public String grant_type { get; set; }
+
+        [ApiMember(Name="assertion", Description = "assertion string", ParameterType = "path", DataType = "String", IsRequired = true)]
+        public String assertion { get; set; }
+
+        [ApiMember(Name="scope", Description = "Scope", ParameterType = "path", DataType = "List<String>", IsRequired = true)]
+        public List<String> scope { get; set; }
+
+        [ApiMember(Name="eosso", Description = "eosso string", ParameterType = "path", DataType = "String", IsRequired = true)]
+        public String eossotype { get; set; }
+
+        [ApiMember(Name="redirect_uri", Description = "Redirect uri", ParameterType = "path", DataType = "String", IsRequired = true)]
+        public String redirect_uri { get; set; }
+
+        [ApiMember(Name="ajax", Description = "ajax", ParameterType = "path", DataType = "bool", IsRequired = true)]
+        public bool ajax { get; set; }
+    }
+
     [Api("Terradue Corporate webserver")]
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
@@ -201,9 +223,14 @@ namespace Terradue.Corporate.WebServer {
                     try{
                         var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
                         user = j2ldapclient.Authenticate(request.username, request.password, context.GetConfigValue("ldap-apikey"));
+
                     }catch(Exception e){
                         return new HttpError(System.Net.HttpStatusCode.Forbidden, e);
                     }
+
+//                    //JWT token
+//                    string jwt = client.GetJWT(user.Username);
+//                    client.JWTBearerToken(jwt);
 
                     OauthAuthzPutSessionRequest oauthrequest2 = new OauthAuthzPutSessionRequest {
                         sub = user.Username,
@@ -274,6 +301,29 @@ namespace Terradue.Corporate.WebServer {
                 throw e;
             }
             return null;
+        }
+
+        public object Post(OAuthJWTTokenRequest request){
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            string token = null;
+            try {
+                context.Open();
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+
+                //we do the JWT token (this authenticates the client)
+                client.JWTBearerToken(request.assertion);
+                token = client.OAUTHTOKEN.access_token;
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return token;
         }
 
 

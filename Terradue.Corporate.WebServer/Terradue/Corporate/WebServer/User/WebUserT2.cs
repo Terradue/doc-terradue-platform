@@ -10,7 +10,7 @@ using Terradue.WebService.Model;
 using Terradue.Corporate.Controller;
 
 namespace Terradue.Corporate.WebServer {
-
+    
     [Route("/user/{id}", "GET", Summary = "GET the user", Notes = "User is found from id")]
     public class GetUserT2 : IReturn<WebUserT2> {
         [ApiMember(Name = "id", Description = "User id", ParameterType = "query", DataType = "int", IsRequired = true)]
@@ -23,14 +23,14 @@ namespace Terradue.Corporate.WebServer {
         public string Username { get; set; }
     }
 
-    [Route("/user/passwordreset", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
-    public class UserResetPassword : IReturn<WebResponseBool> {
+    [Route("/user/passwordreset", "POST", Summary = "PUT the user password to reset", Notes = "User is found from username")]
+    public class ResetPassword : IReturn<WebResponseBool> {
         [ApiMember(Name = "username", Description = "User name", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Username { get; set; }
     }
 
-    [Route("/user/password", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
-    public class UserUpdatePassword : IReturn<WebResponseBool> {
+    [Route("/user/passwordreset", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
+    public class UserResetPassword : IReturn<WebResponseBool> {
         [ApiMember(Name = "username", Description = "User name", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Username { get; set; }
 
@@ -39,6 +39,16 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name = "token", Description = "User token", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Token { get; set; }
+    }
+
+    [Route("/user/password", "PUT", Summary = "PUT the user password to reset", Notes = "User is found from username")]
+    public class UserUpdatePassword : IReturn<WebResponseBool> {
+
+        [ApiMember(Name = "newpassword", Description = "User new password", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string NewPassword { get; set; }
+
+        [ApiMember(Name = "oldpassword", Description = "User old password", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string OldPassword { get; set; }
     }
 
     [Route("/user/current", "GET", Summary = "GET the current user", Notes = "User is the current user")]
@@ -77,16 +87,20 @@ namespace Terradue.Corporate.WebServer {
         public string password { get; set; }
     }
 
+    [Route("/user/email", "PUT", Summary = "update email for user", Notes = "")]
+    public class UpdateEmailUserT2 : WebUserT2, IReturn<WebUserT2> {
+    }
+
     [Route("/user/safe/private", "PUT", Summary = "get a safe for user", Notes = "")]
     public class GetSafeUserT2 : IReturn<WebSafe> {
         [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string password { get; set; }
     }
 
-    [Route("/user/posix/free", "GET", Summary = "GET if the posix username is free or not", Notes = "")]
-    public class GetExistsPosixnameT2 : IReturn<WebUserT2> {
-        [ApiMember(Name = "posixname", Description = "posixname", ParameterType = "query", DataType = "string", IsRequired = true)]
-        public string posixname { get; set; }
+    [Route("/user/ldap/available", "GET", Summary = "GET if the username is free or not", Notes = "")]
+    public class GetExistsLdapUsernameT2 : IReturn<WebUserT2> {
+        [ApiMember(Name = "username", Description = "username", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string username { get; set; }
     }
 
     //-------------------------------------------------------------------------------------------------------------------------
@@ -189,9 +203,6 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String Plan { get; set; }
 
-        [ApiMember(Name = "PosixName", Description = "User Posix Name", ParameterType = "query", DataType = "String", IsRequired = false)]
-        public String PosixUsername { get; set; }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
@@ -203,9 +214,12 @@ namespace Terradue.Corporate.WebServer {
         /// </summary>
         /// <param name="entity">Entity.</param>
         public WebUserT2(UserT2 entity) : base(entity) {
+
+            if (entity.PublicKey == null)
+                entity.LoadLdapInfo();
+
             this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
-            this.PosixUsername = entity.PosixUsername;
             this.PublicKey = entity.PublicKey;
             this.Plan = entity.GetPlan();
         }
@@ -218,8 +232,6 @@ namespace Terradue.Corporate.WebServer {
         public UserT2 ToEntity(IfyContext context, UserT2 input) {
             UserT2 user = (input == null ? new UserT2(context) : input);
             base.ToEntity(context, user);
-            user.PosixUsername = this.PosixUsername;
-
             return user;
         }
 

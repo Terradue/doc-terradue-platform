@@ -2,8 +2,8 @@
 	<div>
 		<div class='settings settings-title'>Email</div>
 		<div class='settings settings-description'>
-			Your <b>email</b> is important as it is used as identifier for our cloud platform.<br/>
-			If you wish to change your email, it will automatically change your Terradue Cloud platform identifier.
+			Your <b>email</b> is important as it is used to verify your account.<br/>
+			If you wish to change your email, you will have to validate the new one before being able to access your Cloud environment again.
 		</div>
 		<div class='settings settings-container'>
 			{{#if isPending}}
@@ -15,7 +15,7 @@
 <!--				<div class="text text-success small"><i class="fa fa-check-square"></i> Your email has been validated!</div>-->
 			{{/if}}
 
-			<div>
+			<div class="email-change">
 				<span class='email'>{{ user.Email }}</span>
 				&nbsp;&nbsp;
 				<button click='submit' class='btn btn-warning submit'>Change</button>

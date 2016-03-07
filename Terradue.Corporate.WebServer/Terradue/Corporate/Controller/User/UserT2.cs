@@ -14,6 +14,8 @@ using System.Collections.Generic;
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
     public class UserT2 : User {
+
+        private Json2LdapFactory LdapFactory { get; set; }
         
         /// <summary>
         /// Gets or sets the one password.
@@ -49,12 +51,6 @@ namespace Terradue.Corporate.Controller {
                 onepwd = value;
             } 
         }
-
-        /// <summary>
-        /// Gets or sets the name of the posix.
-        /// </summary>
-        /// <value>The name of the posix.</value>
-        public string PosixUsername { get; set; }
 
         /// <summary>
         /// Gets or sets the public key.
@@ -101,7 +97,8 @@ namespace Terradue.Corporate.Controller {
         public UserT2(IfyContext context) : base(context) {
             OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
             this.oneClient = oneCloud.XmlRpc;
-            this.Json2Ldap = new Json2LdapClient(context.GetConfigValue("ldap-baseurl"));
+            this.LdapFactory = new Json2LdapFactory(context);
+            this.Json2Ldap = LdapFactory.Json2Ldap;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -121,6 +118,16 @@ namespace Terradue.Corporate.Controller {
             this.Affiliation = user.Affiliation;
             this.Country = user.Country;
             this.Level = user.Level;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        public override string AlternativeIdentifyingCondition {
+            get { 
+                if (!string.IsNullOrEmpty(Email))
+                    return String.Format("t.email='{0}'", Email); 
+                return null;
+            }
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -155,15 +162,11 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Load this instance.
-        /// </summary>
-        public override void Load(){
-            base.Load();
-
-            //get the ssh Public Key / Posix Username from Ldap
-            //TODO: should be done automatically from the claims (connect2id)
-            this.LoadLdapInfo();
+        public new static UserT2 FromEmail(IfyContext context, string email) {
+            UserT2 user = new UserT2(context);
+            user.Email = email;
+            user.Load();
+            return user;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -172,13 +175,13 @@ namespace Terradue.Corporate.Controller {
         /// Gets the token.
         /// </summary>
         /// <returns>The token.</returns>
-        public string GetToken(){
-			var token = base.GetActivationToken();
-			if (token == null) {
-				CreateActivationToken ();
-				token = base.GetActivationToken ();
-			}
-			return token;
+        public string GetToken() {
+            var token = base.GetActivationToken();
+            if (token == null) {
+                CreateActivationToken();
+                token = base.GetActivationToken();
+            }
+            return token;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -349,11 +352,8 @@ namespace Terradue.Corporate.Controller {
         /// Creates the LDAP Distinguished Name
         /// </summary>
         /// <returns>The LDAP DN.</returns>
-        private string CreateLdapDN(){
-            string dn = string.Format("uid={0}, ou=people, dc=terradue, dc=com", this.Username);
-            string dnn = Json2Ldap.NormalizeDN(dn);
-            if (!Json2Ldap.IsValidDN(dnn)) throw new Exception(string.Format("Unvalid DN: {0}", dnn));
-            return dnn;
+        private string CreateLdapDN() {
+            return LdapFactory.CreateLdapDN(this.Username);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -365,16 +365,21 @@ namespace Terradue.Corporate.Controller {
             
             //open the connection
             Json2Ldap.Connect();
+            try {
 
-            string dn = CreateLdapDN();
-            LdapUser ldapusr = this.ToLdapUser();
-            ldapusr.DN = dn;
-            ldapusr.Password = password;
+                string dn = CreateLdapDN();
+                LdapUser ldapusr = this.ToLdapUser();
+                ldapusr.DN = dn;
+                ldapusr.Password = password;
 
-            //login as ldap admin to have creation rights
-            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-            Json2Ldap.AddEntry(ldapusr);
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                Json2Ldap.AddEntry(ldapusr);
 
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
             Json2Ldap.Close();
         }
 
@@ -383,15 +388,20 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Creates the LDAP account.
         /// </summary>
-        public void ChangeLdapPassword(string password) {
+        public void ChangeLdapPassword(string newpassword, string oldpassword = null) {
 
             //open the connection
             Json2Ldap.Connect();
+            try {
 
-            string dn = CreateLdapDN();
+                string dn = CreateLdapDN();
 
-            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-            Json2Ldap.ModifyPassword(dn, password);
+                Json2Ldap.SimpleBind(dn, oldpassword);
+                Json2Ldap.ModifyPassword(dn, newpassword, oldpassword);
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
             Json2Ldap.Close();
         }
 
@@ -400,83 +410,127 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Deletes the LDAP account.
         /// </summary>
-        public void DeleteLdapAccount(){
+        public void DeleteLdapAccount() {
             //open the connection
             Json2Ldap.Connect();
+            try {
 
-            string dn = CreateLdapDN();
+                string dn = CreateLdapDN();
 
-            //login as ldap admin to have creation rights
-            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-            Json2Ldap.DeleteEntry(dn);
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                Json2Ldap.DeleteEntry(dn);
 
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
             Json2Ldap.Close();
-            
         }
 
         //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Updates the LDAP uid.
+        /// </summary>
+        public void UpdateUsername() {
+            ValidateUsername(this.Username);
+
+            //change username on LDAP
+            var dn = LdapFactory.CreateLdapDN(this.Email);
+
+            //open the connection
+            Json2Ldap.Connect();
+            try {
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+
+                Json2Ldap.ModifyUID(dn, this.Username);
+
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+
+            //Change username on the db
+            AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(Terradue.Authentication.OAuth.OAuth2AuthenticationType));
+            string sql = string.Format("UPDATE usr_auth SET username={0} WHERE id_usr={1} and id_auth={2};",
+                                       StringUtils.EscapeSql(this.Username),
+                                       this.Id,
+                                       authType.Id);
+            context.Execute(sql);
+            sql = string.Format("UPDATE usr SET username={0} WHERE id={1};",
+                                StringUtils.EscapeSql(this.Username),
+                                this.Id);
+            context.Execute(sql);
+        }
 
         /// <summary>
         /// Updates the LDAP account.
         /// </summary>
-        /// <param name="updatePosixname">If set to <c>true</c> update posixname.</param>
-        public void UpdateLdapAccount(bool updatePosixname=false){
-            
-            string dn = CreateLdapDN();
-            LdapUser ldapusr = this.ToLdapUser();
-            ldapusr.DN = dn;
-            ldapusr.PublicKey = this.PublicKey;
-            if (updatePosixname) {
-                //validate the posix name is correct
-                ValidatePosixUsername(this.PosixUsername);
-                //validate the posix name is nt already used
-                if(!IsPosixUsernameFree(this.PosixUsername)) throw new Exception("The Cloud Username is not available, please choose another.");
-                //set the posix name
-                ldapusr.PosixUsername = this.PosixUsername;
-            }
+        /// <param name="password">Password.</param>
+        public void UpdateLdapAccount(string password = null) {
 
             //open the connection
             Json2Ldap.Connect();
 
-            //login as ldap admin to have creation rights
-            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+            try {
 
-            try{
-                Json2Ldap.ModifyUserInformation(ldapusr);
-            }catch(Exception e){
-                try{
-                    //user may not have sshPublicKey
-                    if(e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")){
-                        Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
-                        Json2Ldap.ModifyUserInformation(ldapusr);
-                    } else throw e;
-                }catch(Exception e2){
-                    throw e2;
+                string dn = CreateLdapDN();
+
+                LdapUser ldapusr = this.ToLdapUser();
+                ldapusr.DN = dn;
+
+                //simple bind to have creation rights
+                if(password == null){
+                    Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                } else {
+                    Json2Ldap.SimpleBind(dn, password);
                 }
-            }
+                
+                
 
+                try {
+                    Json2Ldap.ModifyUserInformation(ldapusr);
+                } catch (Exception e) {
+                    try {
+                        //user may not have sshPublicKey
+                        if (e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")) {
+                            Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
+                            Json2Ldap.ModifyUserInformation(ldapusr);
+                        } else
+                            throw e;
+                    } catch (Exception e2) {
+                        throw e2;
+                    }
+                }
+
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
             Json2Ldap.Close();
         }
 
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Validates the posix username.
+        /// Validates the username.
         /// </summary>
-        /// <returns><c>true</c>, if posix username was validated, <c>false</c> otherwise.</returns>
-        /// <param name="posixusername">Posixusername.</param>
-        public void ValidatePosixUsername(string posixusername){
-            Regex r = new Regex("^[a-z][0-9a-z]{1,31}$");
-            if (r.IsMatch(posixusername)) return;
+        /// <param name="username">Username.</param>
+        public void ValidateUsername(string username) {
+            Regex r = new Regex("^[a-zA-Z][0-9a-zA-Z]{1,31}$");
+            if (r.IsMatch(username))
+                return;
 
-            if (posixusername.Length > 32)
+            if (username.Length > 32)
                 throw new Exception("Invalid Cloud username: You must use at max 32 characters");
-            if (Regex.Match(posixusername, @"[A-Z]").Success)
-                throw new Exception("Invalid Cloud username: You must not use capital letters");
-            if (!Regex.Match(posixusername, @"^[0-9a-z]").Success)
+            if (!Regex.Match(username, @"^[0-9a-zA-Z]").Success)
                 throw new Exception("Invalid Cloud username: You must use only alphanumeric values");
-            if (!Regex.Match(posixusername,"^[a-z][0-9a-z]{1,31}$").Success)
-                throw new Exception("Invalid Cloud username: You must use at least one numerical value");
+            if (!Regex.Match(username, "^[a-zA-Z][0-9a-zA-Z]{1,31}$").Success)
+                throw new Exception("Invalid Cloud username: You must start with a letter");
             throw new Exception("Invalid Cloud username");
         }
 
@@ -485,19 +539,24 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Deletes the public key.
         /// </summary>
-        public void DeletePublicKey(){
+        /// <param name="password">Password.</param>
+        public void DeletePublicKey(string password) {
             //open the connection
             Json2Ldap.Connect();
+            try {
 
-            string dn = CreateLdapDN();
+                string dn = CreateLdapDN();
 
-            //login as ldap admin to have creation rights
-            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                Json2Ldap.DeleteAttributeString(dn, "sshPublicKey", null);
 
-            Json2Ldap.DeleteAttributeString(dn, "sshPublicKey", null);
+                //TODO: delete also from OpenNebula
 
-            //TODO: delete also from OpenNebula
-
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
             Json2Ldap.Close();
         }
 
@@ -506,13 +565,21 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Loads the LDAP info.
         /// </summary>
-        public void LoadLdapInfo(){
+        public void LoadLdapInfo() {
             Json2Ldap.Connect();
-
-            var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
-            this.PublicKey = ldapusr.PublicKey;
-            this.PosixUsername = ldapusr.PosixUsername;
-
+            try {
+                var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
+                if(ldapusr != null){
+                    if(!string.IsNullOrEmpty(ldapusr.Username)) this.Username = ldapusr.Username;
+                    if(!string.IsNullOrEmpty(ldapusr.Email)) this.Email = ldapusr.Email;
+                    if(!string.IsNullOrEmpty(ldapusr.FirstName)) this.FirstName = ldapusr.FirstName;
+                    if(!string.IsNullOrEmpty(ldapusr.LastName)) this.LastName = ldapusr.LastName;
+                    if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
+                }
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
             Json2Ldap.Close();
         }
 
@@ -521,41 +588,19 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Add the public key.
         /// </summary>
-        public void AddPublicKeyAttribute(){
+        public void AddPublicKeyAttribute() {
             Json2Ldap.Connect();
+            try {
 
-            Json2Ldap.AddNewAttributeString(CreateLdapDN(), "objectClass", "ldapPublicKey");
+                Json2Ldap.AddNewAttributeString(CreateLdapDN(), "objectClass", "ldapPublicKey");
 
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
             Json2Ldap.Close();
         }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Determines whether this instance is unix username is free on ldap
-        /// </summary>
-        /// <returns><c>true</c> if this unix username is free; otherwise, <c>false</c>.</returns>
-        /// <param name="username">Username.</param>
-        public bool IsPosixUsernameFree(string username){
-            bool result = false;
-
-            //open the connection
-            Json2Ldap.Connect();
-
-            string basedn = "ou=people, dc=terradue, dc=com";
-            string filter = string.Format("(sshUsername={0})",username);
-
-            //login as ldap admin to have creation rights
-            Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-
-            var response = Json2Ldap.SearchEntries(basedn, Json2LdapSearchScopes.SUB, filter);
-            if (response.matches == null || response.matches.Count == 0) result = true;
-                
-            Json2Ldap.Close();
-            return result;
-        }
-
-
+       
         #endregion
 
         //--------------------------------------------------------------------------------------------------------------
@@ -566,6 +611,16 @@ namespace Terradue.Corporate.Controller {
         /// <returns>The plan.</returns>
         public string GetPlan() {
             return Plan.PlanToString(this.Plan.PlanType);
+        }
+
+        public void ValidateNewEmail(string email){
+
+            //simple checks on the email
+            if(string.IsNullOrEmpty(email)) throw new Exception("Your new email is empty.");
+            if(!email.Contains("@")) throw new Exception("Invalid email.");
+
+            //check the email is not already used on LDAP
+            if(LdapFactory.GetUserFromEmail(email) != null) throw new Exception("This email is already used.");
         }
 
     }

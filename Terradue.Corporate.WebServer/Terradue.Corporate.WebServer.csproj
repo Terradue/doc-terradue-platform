@@ -186,8 +186,11 @@
     <Reference Include="Terradue.Authentication.OpenId">
       <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.9\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
     </Reference>
+    <Reference Include="JWT">
+      <HintPath>..\packages\JWT.1.3.4\lib\3.5\JWT.dll</HintPath>
+    </Reference>
     <Reference Include="Terradue.Ldap">
-      <HintPath>..\packages\Terradue.Ldap.1.0.8\lib\net40\Terradue.Ldap.dll</HintPath>
+      <HintPath>..\packages\Terradue.Ldap.1.0.9\lib\net40\Terradue.Ldap.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -212,13 +215,13 @@
     <Compile Include="Terradue\Corporate\Controller\User\UserT2.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\EmailConfirm.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Common\Configuration.Service.cs" />
-    <Compile Include="Terradue\Corporate\Controller\LDAP\LdapControl.cs" />
     <Compile Include="Terradue\Corporate\Controller\LDAP\LdapResponse.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Pricing\Plans.Service.cs" />
     <Compile Include="Terradue\Corporate\Controller\Pricing\Plan.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Safe.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Gateway.Service.cs" />
+    <Compile Include="Terradue\Corporate\Controller\LDAP\Json2LdapFactory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
