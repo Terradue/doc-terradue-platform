@@ -548,7 +548,7 @@ namespace Terradue.Corporate.Controller {
                 string dn = CreateLdapDN();
 
                 //login as ldap admin to have creation rights
-                Json2Ldap.SimpleBind(dn, password);
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
                 Json2Ldap.DeleteAttributeString(dn, "sshPublicKey", null);
 
                 //TODO: delete also from OpenNebula

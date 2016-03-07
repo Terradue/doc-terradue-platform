@@ -237,15 +237,16 @@ define([
 						});
 					}
 
-					self.githubPromise.then(function(githubData){
+					self.githubPromise.then(function(){
+						self.githubData.attr({
+							user: userData,
+							github: self.githubData
+						});
 						self.view({
 							url: 'modules/settings/views/github.html',
 							selector: Config.subContainer,
 							dependency: self.indexDependency(),
-							data: {
-								user: userData,
-								github: githubData
-							},
+							data: self.githubData,
 							fnLoad: function(){
 								self.initSubmenu('github');
 							}
@@ -345,11 +346,11 @@ define([
 					},
 
 					submitHandler: function(form){
-						var username = $(form).find('input[name="Username"]').val();
-						bootbox.confirm('Your Cloud Username will be <b>'+username+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
-							if (confirmed)
-								self.profileSubmit();
-						});
+						if(username != null)
+							bootbox.confirm('Your Cloud Username will be <b>'+username+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
+								if (confirmed)
+									self.profileSubmit();
+							});
 						return false;
 					}
 				});
@@ -747,13 +748,20 @@ define([
 	                            SafeModel.delete(password).then(function(safe){
 	                            	self.data.attr({
 										sshKeyNotComplete: true,
-										githubNotComplete: true//we just create a new keys so it cannot be already on github
+										githubNotComplete: true//we just deleted the keys so it cannot be on github
 									});
-							    	self.keyData.attr("PublicKey",null);
-							    	self.keyData.attr("PrivateKey",null);
-							    	self.keyData.attr("PublicKeyBase64",null);
-							    	self.keyData.attr("PrivateKeyBase64",null);
 
+									if (self.githubData){
+										self.githubData.attr('HasSSHKey',false);
+										self.githubData.attr('CertPub',null);
+									}
+
+									if(self.keyData){
+							    		self.keyData.attr("PublicKey",null);
+							    		self.keyData.attr("PrivateKey",null);
+							    		self.keyData.attr("PublicKeyBase64",null);
+							    		self.keyData.attr("PrivateKeyBase64",null);
+							    	}
 								}).fail(function(){
 									bootbox.alert("<i class='fa fa-warning'></i> Error during ssh keys delete.");
 								}).always(function(){
