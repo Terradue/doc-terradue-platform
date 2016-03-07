@@ -8,7 +8,8 @@ define([
 	'utils/helpers',
 	'modules/newsAdmin/models/newsAdmin',
 	'messenger',
-	'summernote'
+	'summernote',
+	'datePicker'
 ], function($, can, bootbox, CrudBaseControl, Config, Helpers, NewsModel){
 	
 	var NewsAdminControl = CrudBaseControl({}, {
@@ -25,12 +26,20 @@ define([
 			
 			// init summernote
 			this.element.find('textarea[name="Content"]').summernote();
+			
+			this.element.find('input[name="Date"]').datepicker({
+				format: "yyyy-mm-dd"
+			});
 		},
 		
 		onCreateClick: function(){
 			Helpers.scrollTop();
 			this.element.find('textarea[name="Content"]').summernote('reset');
 		},
+		
+		'.setDateNow click': function(){
+			this.element.find('input[name="Date"]').val((new Date()).toISOString());
+		}
 		
 	});
 	

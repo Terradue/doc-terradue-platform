@@ -26,7 +26,8 @@ require.config({
 		zeroClipboard: 'libs/zeroClipboard/ZeroClipboard',
 		jqueryCopyableInput: 'libs/jquery.copyableInput/js/jquery.copyableInput',
 		summernote: 'http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote',
-		latinise: 'libs/latinise/latinise.min'
+		latinise: 'libs/latinise/latinise.min',
+		datePicker: 'libs/datePicker/js/bootstrap-datepicker'
 	},
 	shim: {
 		underscore: {

@@ -1,5 +1,6 @@
 <link href="/scripts/modules/newsAdmin/css/newsAdmin.css" type="text/css" rel="stylesheet" />
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css" type="text/css" rel="stylesheet" />
+<link href="/scripts/libs/datePicker/css/bootstrap-datepicker.css" type="text/css" rel="stylesheet" />
 <style>
 .shortLink {
     width: 250px;
@@ -21,27 +22,28 @@
 			
 			<div class="form-group">
 				<label for="Title">Title</label>
-				<input type="text" class="form-control" title="Title" name="Title" value="{{selectedEntity.Title}}" placeholder="Title" /> <br/>
+				<input type="text" class="form-control" title="Title" name="Title" value="{{selectedEntity.Title}}" placeholder="Title" />
 			</div>
 			<div class="form-group">
 				<label for="Abstract">Abstract</label>
-				<textarea name="Abstract" class="form-control" title="Abstract" value="{{selectedEntity.Abstract}}" placeholder="Description"></textarea> <br/>
+				<textarea name="Abstract" class="form-control" title="Abstract" value="{{selectedEntity.Abstract}}" placeholder="Description"></textarea>
 			</div>
 			<div class="form-group">
 				<label for="Content">Content</label>
-				<textarea name="Content" class="form-control" title="Content" value="{{selectedEntity.Content}}" placeholder="Content"></textarea> <br/>
+				<textarea name="Content" class="form-control" title="Content" value="{{selectedEntity.Content}}" placeholder="Content"></textarea>
 			</div>
 			<div class="form-group">
 				<label for="Author">Author</label>
-				<input type="text" class="form-control" title="Author" name="Author" value="{{selectedEntity.Author}}" placeholder="Author" /> <br/>
+				<input type="text" class="form-control" title="Author" name="Author" value="{{selectedEntity.Author}}" placeholder="Author" />
 			</div>
 			<div class="form-group">
 				<label for="Date">Date</label>
-				<input type="text" class="form-control" title="Date" name="Date" value="{{selectedEntity.Date}}" placeholder="Date" /> <br/>
+				<input type="text" class="form-control" title="Date" name="Date" value="{{selectedEntity.Date}}" placeholder="Date" />
+				<button class="btn setDateNow">Now</button>
 			</div>
 			<div class="form-group">
 				<label for="Tags">Tags</label>
-				<input type="text" class="form-control" title="Tags" name="Tags" value="{{selectedEntity.Tags}}" placeholder="Tags" /> <br/>
+				<input type="text" class="form-control" title="Tags" name="Tags" value="{{selectedEntity.Tags}}" placeholder="Tags" />
 			</div>
 			<a href="javascript://" class="btn btn-info save">{{#if selectedEntity}}Save{{else}}Create{{/if}}</a>
 			<a href="javascript://" class="btn btn-info preview">Preview</a>
@@ -58,7 +60,7 @@
 						<i class="fa fa-user color-gray-light"></i> {{Author}}
 					</div>
 					<div>
-						<i class="fa fa-calendar color-gray-light"></i> {{Date}}
+						<i class="fa fa-calendar color-gray-light"></i> {{simpleDate Date}}
 					</div>
 					<div>
 						{{Tags}}

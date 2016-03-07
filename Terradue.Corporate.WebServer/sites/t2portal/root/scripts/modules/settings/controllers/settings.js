@@ -204,14 +204,14 @@ define([
 						});
 					}
 
-					self.githubPromise.then(function(githubData){
+					self.githubPromise.then(function(){
 						self.view({
 							url: 'modules/settings/views/github.html',
 							selector: Config.subContainer,
 							dependency: self.indexDependency(),
 							data: {
 								user: userData,
-								github: githubData
+								github: self.githubData
 							},
 							fnLoad: function(){
 								self.initSubmenu('github');
@@ -317,11 +317,15 @@ define([
 					},
 
 					submitHandler: function(form){
-						var posixUsername = $(form).find('input[name="PosixUsername"]').val();
-						bootbox.confirm('Your Cloud Username will be <b>'+posixUsername+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
-							if (confirmed)
-								self.profileSubmit();
-						});
+						var $username = $(form).find('input[name="Username"]');
+						if ($username.length){
+							var username = $(form).find('input[name="Username"]').val();
+							bootbox.confirm('Your Cloud Username will be <b>'+username+'</b> and it cannot be changed. <br/>Are you sure?', function(confirmed){
+								if (confirmed)
+									self.profileSubmit();
+							});
+						} else
+							self.profileSubmit();
 						return false;
 					}
 				});
