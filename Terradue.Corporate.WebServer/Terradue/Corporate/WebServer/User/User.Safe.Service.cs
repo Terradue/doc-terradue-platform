@@ -85,6 +85,46 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
+        public object Get(GetSafeUserT2 request)
+        {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            WebSafe result;
+            try{
+                context.Open();
+
+                if(string.IsNullOrEmpty(request.token) || !request.token.Equals(context.GetConfigValue("t2-safe-token"))){
+                    throw new Exception("Invalid token");
+                }
+                if(string.IsNullOrEmpty(request.username)){
+                    throw new Exception("Invalid username");
+                }
+
+                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+
+                UserT2 user = null;
+                try{
+                    user = UserT2.FromUsername(context, request.username);
+                }catch(Exception e){
+                    throw new Exception("Invalid username");
+                }
+
+                user.LoadLdapInfo();
+
+                result = new WebSafe();
+                result.PublicKey = user.PublicKey;
+
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
     }
   
 }

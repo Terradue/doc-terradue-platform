@@ -69,6 +69,15 @@ namespace Terradue.Corporate.WebServer {
     [Route("/user/upgrade", "POST", Summary = "Upgrade a user", Notes = "User is contained in the POST data.")]
     public class UpgradeUserT2 : WebUserUpgradeT2, IReturn<WebUserT2> {}
 
+    [Route("/user/safe", "GET", Summary = "get ssh pubkey safe for user", Notes = "Username is contained in the GET data.")]
+    public class GetSafeUserT2 : IReturn<WebSafe> {
+        [ApiMember(Name = "username", Description = "Username", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string username { get; set; }
+
+        [ApiMember(Name = "token", Description = "token", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string token { get; set; }
+    }
+
     [Route("/user/safe", "POST", Summary = "create a safe for user", Notes = "User is contained in the POST data.")]
     public class CreateSafeUserT2 : IReturn<WebSafe> {
         [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
@@ -92,7 +101,7 @@ namespace Terradue.Corporate.WebServer {
     }
 
     [Route("/user/safe/private", "PUT", Summary = "get a safe for user", Notes = "")]
-    public class GetSafeUserT2 : IReturn<WebSafe> {
+    public class GetPrivateSafeUserT2 : IReturn<WebSafe> {
         [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string password { get; set; }
     }
