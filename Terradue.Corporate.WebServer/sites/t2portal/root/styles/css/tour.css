@@ -19,6 +19,8 @@
 
 .tour-panel-refs-intro {
   padding-top: 160px;
+  margin-left: 5%;
+  margin-right: 5%;
   text-align: center;
   color: #fff;
 }
@@ -705,3 +707,27 @@ i.earthflow-icon {
   }
 }
 /**/
+
+
+@media (max-width: 600px) {
+   .tcp-logo {
+   width: 90%;  } 
+   #hornav {
+   display: none;  }
+   .tour-panel-refs-intro .img-circle {
+   width: 20% }
+}
+
+@media (min-width: 601px) and (max-width: 991px) {
+   .tcp-logo {
+   width: 60%;  }
+   .tour-panel-refs-intro .img-circle {
+   width: 15% }
+}
+
+@media (min-width: 992px) {
+   .tcp-logo {
+   width: 40%;  } 
+   .tour-panel-refs-intro .img-circle {
+   width: 10% }
+}	

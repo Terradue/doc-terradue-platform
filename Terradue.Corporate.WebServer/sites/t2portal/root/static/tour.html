@@ -5,7 +5,7 @@
 		<br/>
 	    <div class="tour-panel">
 			</br>
-			<img src="../styles/img/corporate/terradue_cloud_platform_logo.png" width="40%"  alt="Terradue Cloud Platform">
+			<img class="tcp-logo" src="../styles/img/corporate/terradue_cloud_platform_logo.png" alt="Terradue Cloud Platform">
 			
 				<!-- Top Menu -->
                 <div id="hornav" class="hornav text-light">
@@ -16,7 +16,7 @@
                                     <span id="menu-icon" class="fa-gears">Processing</span>
                                     <ul>
                                         <li>
-                                            <a href="pages-about-us.html">Earthflow Designer: scalable workflows</a>
+                                            <a href="#earthflow-designer">Earthflow Designer: scalable workflows</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -24,7 +24,7 @@
                                     <span id="menu-icon" class="fa-share-alt-square">Data Casting</span>
                                     <ul>
                                         <li>
-                                            <a href="pages-about-us.html">Earthflow Agency: the ultimate broker</a>
+                                            <a href="#earthflow-agency">Earthflow Agency: the ultimate broker</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -32,7 +32,7 @@
                                     <span id="menu-icon" class="fa-users">Portfolio</span>
                                     <ul>
                                         <li>
-                                            <a href="portfolio-2-column.html">Our growing list of user organizations</a>
+                                            <a href="#references">Our growing list of user organizations</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -40,7 +40,7 @@
                                     <span id="menu-icon" class="fa-list-ul">Pricing</span>
                                     <ul>
                                         <li>
-                                            <a href="blog-list.html">NEW! Cloud Platform subscription plans</a>
+                                            <a href="#plans-pricing">NEW! Cloud Platform subscription plans</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -54,12 +54,12 @@
 	
 <!-- /Our Earthflow Designer Intro -->	
 	<!-- WHITE AREA #1 -->
-	<div id="tour-solutions" class="tour-panel-solutions">
+	<div id="earthflow-designer" class="tour-panel-solutions">
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2 text-center">
                 <h2>
-					Earthflow Designer,</br> hit the ground running with Hadoop Streaming
+					Earthflow Designer,</br> hit the ground running with Hadoop Processing
                 </h2>
 				<h3>
 					<span class="fa-stack fa-lg">
@@ -67,7 +67,7 @@
 						<i class="fa fa-video-camera fa-stack-1x"></i>
 					</span>
 				</h3>
-                <p class="lead">See our <a target="_blank" href="http://trailers.terradue.com/dataagency">Hadoop Streaming</a> trailer</p> 
+                <p class="lead">See our <a target="_blank" href="http://trailers.terradue.com/dataagency">Hadoop Processing</a> trailer</p> 
             </div>
         </div>
     </div>
@@ -86,14 +86,14 @@
                 <div class="earthflow-item">
                     <i class="earthflow-icon fa fa-rocket"></i>
                     <h4>Design tools</h4>
-                    <p>Design your hosted processing application as a scalable workflow for massive processing</p>
+                    <p>Design your hosted processing application as a scalable workflow for distributed computing</p>
                 </div>
             </div>
             <div class="col-md-2 text-center">
                 <div class="earthflow-item">
                     <i class="earthflow-icon fa fa-file-code-o"></i>
                     <h4>Integration API</h4>
-                    <p>Wrap your processing library and write Hadoop Streaming callbacks with R, Python or Bash</p>
+                    <p>Wrap your processing library and write Hadoop callbacks with R, Python or Bash</p>
                 </div>
             </div>
             <div class="col-md-2 text-center">
@@ -119,7 +119,7 @@
 						<i class="fa fa-hand-o-right fa-stack-1x"></i>   <!-- fa-wrench -->
 					</span>
                 </h3>
-                <p class="lead" style="font-size:16px"> Check this Developer's Quickstart from the <a target="_blank" href="http://docs.terradue.com/developer-sandbox/developer/index.html">Eathflow Designer</a> documentation.</p>                 
+                <p class="lead" style="font-size:16px"> Check this Developer's Quickstart from the <a target="_blank" href="http://docs.terradue.com/developer-sandbox/developer/index.html" style="font-weight:bold">Eathflow Designer</a> documentation.</p>                 
             </div>
         </div>
     </div> 
@@ -129,7 +129,7 @@
 
 <!-- /Our Earthflow Agency Intro -->	
 	<!-- WHITE AREA #2 -->
-	<div id="tour-solutions" class="tour-panel-solutions">	
+	<div id="earthflow-agency" class="tour-panel-solutions">	
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-md-offset-3 text-center">
@@ -194,7 +194,7 @@
 						<i class="fa fa-hand-o-right fa-stack-1x"></i>   <!-- fa-wrench -->
 					</span>
                 </h3>
-                <p class="lead" style="font-size:16px"> Check this OpenSearch cheatsheet from the <a target="_blank" href="http://docs.terradue.com/data-agency">Eathflow Agency</a> documentation.</p>                 
+                <p class="lead" style="font-size:16px"> Check this OpenSearch cheatsheet from the <a target="_blank" href="http://docs.terradue.com/data-agency" style="font-weight:bold">Eathflow Agency</a> documentation.</p>                 
             </div>
         </div>
     </div> 
@@ -210,7 +210,7 @@
        			<h3 style="padding-bottom:50px;">
            		Users of Terradue Cloud Platform work in industry, intitutions and universities</br>
         		</h3>			        		
-        		<img src="../styles/img/corporate/terradue_2.0.png" class="img-circle" width="8%" alt="Platform users of reference">
+        		<img class="img-circle" src="../styles/img/corporate/terradue_2.0.png" alt="Platform users of reference">
 				</br>
 		</div>
 	</div>
@@ -401,7 +401,10 @@
 			Plans and Pricing
 		</div>
 	</div>
+
+
 	<!-- WHITE AREA -->	
+<!--  
 		<div style="background-color:#ffffff; color:black;">
 	
 			<div class="container">
@@ -482,24 +485,25 @@
                         </div>
                     </div>
                 </div>
-                <!-- end-row -->
+                <!-- end-row
             </div>
          </div>   
-         
+-->         
 
+	
 <!-- WHITE AREA -->
-	<div id="third-option">
-		<div class="container third-option">
-			<div class="row header">
+	<div id="plans-pricing">
+		<div class="container plans-pricing">
+			<div class="row plans-header">
 				<div class="col-md-12">
-					<h3>Another format to show pricing</h3>
-					<p>This one shows plans as a cluster for value-creation, and a special Partner agreement for service providers</p>
+					<h3>NEW ! Terradue Cloud Platform plans & pricing</h3>
+					<p>We have three plans specificaly purposed for value-creation, and we have Partner programs to cover Operating Level Agreements with providers</p>
 				</div>
 			</div>
 
 			<div class="row charts">
-				<div class="col-md-12">
-					<div class="chart first">
+				<div >
+					<div class="chart explorer">
 						<div class="plan-name">Explorer</div>
 						<div class="quantity">
 							<span class="dollar">EUR</span>
@@ -535,8 +539,10 @@
 							<span>Start now</span>
 						</a>
 					</div>
-					<div class="chart featured">
-						<img src="../styles/img/decorations/ribbon.png" class="popular" alt="ribbon" />
+					
+					<div id="premium-lg-device">
+					<div class="chart premium">
+						<img src="../styles/img/decorations/ribbon-offer.png" class="popular" alt="ribbon" />
 						<div class="plan-name">Premium </br> Partner</div>
 						<div class="quantity">
 							<span class="dollar">EUR</span>
@@ -572,7 +578,8 @@
 							<span>Subscribe</span>
 						</a>
 					</div>
-					<div class="chart last">
+					</div> 
+					<div class="chart scaler">
 						<div class="plan-name">Scaler</div>
 						<div class="quantity">
 							<span class="dollar">EUR</span>
@@ -608,32 +615,29 @@
 							<span>Start now</span>
 						</a>
 					</div>
-					<div class="basic-plan">
+	
+					<div class="chart ultimate">
 						<div class="plan-name">Ultimate </br> Partner</div>
 						<div class="quantity">
 							</br>
-							<span class="period">For service providers</span>
+							<span class="period">Tailor-made partner programs</span>
 						</div>
 						<div class="specs">
 							<div class="spec">
-								<span class="variable">Technology</span>
-								Alliance Partner
+								<span class="variable">Science</span>
+								Federation program
 							</div>
 							<div class="spec">
-								<span class="variable">Processor</span>
-								Science Partner
+								<span class="variable">Technology</span>
+								Alliance program
 							</div>
 							<div class="spec">
 								<span class="variable">Sensor</span>
-								Archive Partner
-							</div>
-							<div class="spec">
-								<span class="variable">Cloud</span>
-								Appliances Partner
-							</div>						
+								Partnership program
+							</div>					
 						</div>
 						<p class="description">
-							Become a Service provider on Terradue Cloud Platform.
+							This plan <i>&agrave; la carte</i> is for Partner organizations & offers to serve users on Terradue Cloud Platform
 							<a href="signup.html">Contact us</a>
 						</p>
 					</div>

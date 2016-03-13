@@ -69,7 +69,7 @@
             <div class="col-lg-12" style="margin-bottom: 20px;">
                 <h2 class="page-header">Terradue Cloud Platform</h2>
                 <ul id="myTab" class="nav nav-tabs">
-                    <li class="active"><a href="#service-one" data-toggle="tab">Hadoop Streaming Apps</a>
+                    <li class="active"><a href="#service-one" data-toggle="tab">Hadoop Processing Apps</a>
                     </li>
                     <li><a href="#service-two" data-toggle="tab">Developer Guide</a>
                     </li>
@@ -83,7 +83,7 @@
                     </li>
                 </ul>
                 <div id="myTabContent" class="tab-content">
-                    <div class="tab-pane fade in active" id="service-one" name="Hadoop Streaming Apps">
+                    <div class="tab-pane fade in active" id="service-one" name="Hadoop Processing Apps">
                         <i class="fa fa-gear pull-left fa-4x"></i>
                         <p style="margin-top:10px">You'll find many DCS Apps on GitHub already, leveraging executables in Python, R, IDL, Matlab, ...</p>
                     </div>
@@ -240,48 +240,64 @@
                 <ul id="myTab" class="nav nav-tabs">
                     <li class="active"><a href="#esa-tep" data-toggle="tab">Thematic exploitation platforms</a>
                     </li>
-                    <li><a href="#esa-data" data-toggle="tab">EO data catalogue server</a>
+                    <li><a href="#esa-data" data-toggle="tab">EO data dissemination solutions</a>
                     </li>
                     <li><a href="#esa-eceo" data-toggle="tab">Data challenges platform</a>
                     </li>
-                    <li><a href="#esa-ngeo" data-toggle="tab">Ground segment webserver</a>
+                    <li><a href="#esa-ngeo" data-toggle="tab">EO data products webserver</a>
                     </li>
                     <li><a href="#esa-gpod" data-toggle="tab">Grid Processing on-Demand</a>
                     </li>
                 </ul>
                 <div id="myTabContent" class="tab-content">
-                    <div class="tab-pane fade in active" id="esa-tep" title="Thematic Exploitation Platforms">
-                        <i class="fa fa-gear pull-left fa-4x"></i>
+                    <div id="esa-tep" class="tab-pane fade in active" title="Thematic Exploitation Platforms">
+                        <i class="fa fa-flask pull-left fa-4x"></i>
                         <p style="margin-top:10px">ESA TEP-QuickWin and Geohazards Exploitation Platform</p>
                         <p>ESA TEP Urban.</p>
                         <p>ESA TEP Hydro.</p>
                     </div>
-                    <div class="tab-pane fade" id="esa-data" title="EO data dissemination servers">
-                        <i class="fa fa-gears pull-left fa-4x"></i>
+                    <div id="esa-data" class="tab-pane fade" title="EO data dissemination solutions">
+                        <i class="fa fa-gear pull-left fa-4x"></i>
                         <p style="margin-top:10px">Virtual Archive 4</p>
                         <p>Sentinel-2 BICS</p>
                     </div>
-                    <div class="tab-pane fade" id="esa-eceo" title="Data challenges platform">
+                    <div id="esa-eceo" class="tab-pane fade" title="Data challenges platform">
                         <i class="fa fa-magic pull-left fa-4x"></i>
                         <p style="margin-top:10px">https://challenges.esa.int/</p>
                         <p>xxx</p>
                     </div>
-                    <div class="tab-pane fade" id="esa-ngeo" title="Ground segment webserver">
-                        <i class="fa fa-flask pull-left fa-4x"></i>
-                        <p style="margin-top:10px">ngEO Webserver</p>
-                        <p>xxx.</p>
-                    </div>
-                    <div class="tab-pane fade" id="esa-gpod" title="Grid Processing on-Demand">
+                    <div id="esa-ngeo" class="tab-pane fade" title="EO data products webserver">
                         <i class="fa fa-flag pull-left fa-4x"></i>
-                        <p style="margin-top:10px">Over the years, we have served the European Space Agency with numerous software engineering projects.
-                        We've built a long-standing experience in software maintenance and evolutions, creating a core business know-how 
-                        in support of the ESA Grid-Processing on Demand (G-POD) system, 
+                        <p style="margin-top:10px">
+                        By joining the ngEO consortium (Next Generation User Services for Earth Observation), 
+                        in charge of new multi-mission User Services for the European Space Agency, 
+                        we brought our expertise acquired with the G-POD Web Server Component,
+                        as well as the ESA HMA and OGC OpenSearch standardization efforts for advanced product search and ordering functions,
+                        and we endorsed the responsibility for the development of the <b>ngEO Web Server</b>, 
+                        the decision engine orchestrating the data discovery and access user services.</p>
+                        <p>Overall ngEO defines a set of services dealing with product metadata catalogue, 
+                        browsing images, data access, shop-cart management, authorization & access management.
+                        and develops cross-cutting end-user Earth Observation services, 
+                        integrable on top of different operational contexts such as 
+                        the Sentinel Payload Data Ground Segments, 
+                        the Copernicus Data access Services, 
+                        the Multi-mission infrastructure and EarthCARE.</p>
+                    </div>
+                    <div id="esa-gpod" class="tab-pane fade" title="Grid Processing on-Demand">
+                        <i class="fa fa-gears pull-left fa-4x"></i>
+                        <p style="margin-top:10px">
+                        Over the years, we have served the European Space Agency with numerous software engineering projects.
+                        We've built a long-standing experience in software maintenance and evolutions, 
+                        creating a core business know-how in support of the ESA <b>Grid-Processing on Demand (G-POD)</b> system, 
                         a flagship facility serving hundreds on scientists since 2006.</p>
                         <p>Grid Processing on-Demand (G-POD), an ESA-initiated project industrialized by Terradue since mid-2006, 
                         provides a user-segment putting EO data and processors closer together. 
-                        This common shared infrastructure, accessible to science users and operations provides cost-effective support for EO operations, science and application development. 
-                        The G-POD is a hybrid Grid/Cloud based high-performance and high through-put computing infrastructure promoting the access to Earth Observation data, 
-                        offering on-line access to products with attached computing infrastructure and tools to generate scientific added-value products.</p>
+                        This common shared infrastructure, accessible to science users and operations provides 
+                        cost-effective support for EO operations, science and application development. 
+                        The G-POD is a hybrid Grid/Cloud based high-performance and high through-put computing infrastructure 
+                        promoting the access to Earth Observation data, 
+                        and offering on-line access to products with attached computing infrastructure and tools 
+                        to generate scientific added-value products.</p>
                     </div>
                 </div>
             </div>
