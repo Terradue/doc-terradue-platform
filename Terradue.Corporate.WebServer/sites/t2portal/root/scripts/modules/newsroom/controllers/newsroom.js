@@ -3,7 +3,7 @@ define(['jquery',
 	'can',
 	'config', 
 	'utils/baseControl',
-	'modules/news/models/news', 
+	'modules/newsroom/models/news', 
 	'utils/helpers'
 ], function($, can, Config, BaseControl, NewsModel, Helpers){
 
@@ -38,7 +38,7 @@ var NewsControl = BaseControl({}, {
 		// reset q and page
 		this.data.attr({ q: null, page: 1 });
 		this.view({
-			url: 'modules/news/views/newses.html',
+			url: 'modules/newsroom/views/newses.html',
 			data: this.data
 		});
 
@@ -53,7 +53,7 @@ var NewsControl = BaseControl({}, {
 		// reset q and page
 		this.data.attr({ q: tag, page: 1 });
 		this.view({
-			url: 'modules/news/views/newses.html',
+			url: 'modules/newsroom/views/newses.html',
 			data: this.data
 		});
 
@@ -75,7 +75,7 @@ var NewsControl = BaseControl({}, {
 		});
 
 		this.view({
-			url: 'modules/news/views/news.html',
+			url: 'modules/newsroom/views/news.html',
 			data: this.data
 		});
 		
