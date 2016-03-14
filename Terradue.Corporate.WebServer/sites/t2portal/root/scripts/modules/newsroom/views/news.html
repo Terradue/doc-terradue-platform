@@ -41,7 +41,7 @@
 								<div class="blog-post-details-item blog-post-details-item-left blog-post-details-tags">
 									<i class="fa fa-tag color-gray-light"></i>
 									{{#each tags}}{{#if @index}}, {{/if}}
-										<a href="/portal/news/tag/{{.}}" data-tag="{{.}}">{{.}}</a>{{/each}}
+										<a href="/portal/newsroom/tag/{{.}}" data-tag="{{.}}">{{.}}</a>{{/each}}
 								</div>
 							{{/if}}
 							<!-- End Tags -->
@@ -72,7 +72,7 @@
 				{{#if tags}}
 					<ul class="blog-tags">
 						{{#each tags}}
-							<li><a href="/portal/news/tag/{{Key}}" class="blog-tag" data-tag="{{Key}}">{{ Key }}</a></li>
+							<li><a href="/portal/newsroom/tag/{{Key}}" class="blog-tag" data-tag="{{Key}}">{{ Key }}</a></li>
 						{{/each}}
 					</ul>
 				{{else}}

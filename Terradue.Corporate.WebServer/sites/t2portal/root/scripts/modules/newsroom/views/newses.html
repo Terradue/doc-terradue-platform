@@ -39,7 +39,7 @@
 							<div class="blog-item-header">
 								<!-- Title -->
 								<h2>
-									<a href="/portal/news/details/{{identifier}}"> {{title}}</a>
+									<a href="/portal/newsroom/details/{{identifier}}"> {{title}}</a>
 								</h2>
 								<!-- End Title -->
 								<!-- Blog Item Details -->
@@ -60,7 +60,7 @@
 											class="blog-post-details-item blog-post-details-item-left blog-post-details-tags">
 											<i class="fa fa-tag color-gray-light"></i>
 											{{#each tags}}{{#if @index}}, {{/if}}
-												<a href="/portal/news/tag/{{.}}" data-tag="{{.}}">{{.}}</a>{{/each}}
+												<a href="/portal/newsroom/tag/{{.}}" data-tag="{{.}}">{{.}}</a>{{/each}}
 										</div>
 									{{/if}}
 									<!-- End Tags -->
@@ -80,7 +80,7 @@
 									<div class="{{#if imageUrl}}col-md-7{{else}}col-md-12{{/if}}">
 										<p>{{summary}}</p>
 										<!-- Read More -->
-										<a href="/portal/news/details/{{identifier}}" class="btn btn-primary"> Read More <i
+										<a href="/portal/newsroom/details/{{identifier}}" class="btn btn-primary"> Read More <i
 											class="icon-chevron-right readmore-icon"></i>
 										</a>
 										<!-- End Read More -->
@@ -109,7 +109,7 @@
 					{{#if tags}}
 						<ul class="blog-tags">
 							{{#each tags}}
-								<li><a href="/portal/news/tag/{{Key}}" class="blog-tag" data-tag="{{Key}}">{{ Key }} <span>{{ Value }}</span></a></li>
+								<li><a href="/portal/newsroom/tag/{{Key}}" class="blog-tag" data-tag="{{Key}}">{{ Key }} <span>{{ Value }}</span></a></li>
 							{{/each}}
 						</ul>
 					{{else}}
