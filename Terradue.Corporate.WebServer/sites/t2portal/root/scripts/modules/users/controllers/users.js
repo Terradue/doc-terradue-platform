@@ -9,7 +9,7 @@ define([
 	'utils/helpers',
 	'modules/users/models/user',
 	'modules/users/models/plans',
-	'canpromise'
+	//'canpromise'
 ], function($, can, bootbox, CrudBaseControl, Config, Helpers, UserModel, PlansModel){
 	
 //	var UsersControl = can.Control({

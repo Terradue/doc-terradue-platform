@@ -8,7 +8,7 @@ define([
 	'utils/helpers',
 	'bootstrap',
 	'underscorestring',
-	'canpromise'
+	//'canpromise'
 ], function(require, $, can, _, Config, Helpers) {
 	
 	//private properties

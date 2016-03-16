@@ -36,9 +36,7 @@ define([
 
 				// rebind events after all views added
 				self.on();
-
-				// scroll to top
-				Helpers.scrollToTop();
+				
 			};
 
 			// load and merge data if applicable

@@ -7,12 +7,13 @@ define([
 	'config',
 	'utils/helpers',
 	'underscorestring',
-	'canroutepushstate'
+	//'canroutepushstate'
 ], function($, can, _, App, Pages, Config, Helpers){
 	// merge string plugin to underscore namespace
 	_.mixin(_.str.exports());
 	
 	can.route.bindings.pushstate.root = "/portal/";
+	//can.route.bindings.pushstate.querySeparator ="-";
 		
 	var Router = can.Control ({
 		init: function () {},
@@ -23,9 +24,18 @@ define([
 		'pages/:id&:selector route': 'pages',
 		'pages/:id route': 'pages',
 		
-		':controller/:action/:id route': 'dispatch',
-		':controller/:action route': 'dispatch',
-		':controller route': 'dispatch',
+		':controller/:action/:id route': function(data){
+			this.dispatch(data)
+		},
+		':controller/:action route': function(data){
+			this.dispatch(data)
+		},
+		':controller#:hash route': function(data){
+			this.dispatch(data);
+		},
+		':controller route': function(data){
+			this.dispatch(data);
+		},
 
 		// ACTIONS
 		
@@ -41,6 +51,24 @@ define([
 
 		// rest route actions
 		dispatch: function (data) {
+			// check if only the hash is changed
+			if (this.previousData 
+					&& this.previousData.controller==data.controller 
+					&& this.previousData.action==data.action
+					&& this.previousData.hash!=data.hash){
+				console.log('ONLY SCROLL');
+				
+				Helpers.scrollToHash(data.hash, true);
+				this.previousData = data;
+				return;
+			}
+			else if (data.hash)
+				console.log('CHANGE PAGE AND SCROLL');
+			else
+				console.log('ONLY CHANGE PAGE');
+			this.previousData = data;
+			
+			
 			var me = this;
 			
 			// dispatch static
@@ -59,9 +87,11 @@ define([
 				// call action if applicable
 				if (controller && controller[actionName]){
 					controller[actionName](data);
+					
 					setTimeout(function(){
-						Helpers.scrollToTop();
+						Helpers.scrollToHash();
 					}, 100);
+					
 				}
 				else Pages.errorView({}, "Controller not found: "+ControllerName);
 				$('.dropdown-toggle').dropdown();
@@ -75,11 +105,22 @@ define([
 		dispatchStatic: function(resPage){
 			if (typeof(Config.staticPages[resPage])=='string')
 				Config.staticPages[resPage] = { url: Config.staticPages[resPage] };
-			if (Config.staticPages[resPage].selector==null)
-				Config.staticPages[resPage].selector = Config.mainContainer;
-			Pages.view(Config.staticPages[resPage]);
+			
+			var viewOpt = $.extend({}, Config.staticPages[resPage], {
+				fnLoad: function(el){
+					setTimeout(function(){
+						Helpers.scrollToHash(); // scrolling to hash if exists, or to top
+					}, 100);
+					if (Config.staticPages[resPage].fnLoad)
+						Config.staticPages[resPage].fnLoad(el);
+				},
+				selector: Config.staticPages[resPage].selector || Config.mainContainer
+			});
+			
+			Pages.view(viewOpt);
+			
 			return false;
-		}
+		},
 	});
 	
 	return {

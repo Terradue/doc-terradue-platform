@@ -430,6 +430,27 @@ define([
 				scrollTop: 0
 			}, 'slow');
 		},
+		
+		scrollToHash: function(hash, animate){
+			// get the hash
+			if (hash){
+				if (hash[0]!='#')
+					hash = '#' + hash;
+			} else
+				hash = document.location.hash;
+			
+			var scrollPosition = 0; // go on the top by default
+			if (hash && $(hash).length)
+				scrollPosition = $(hash).offset().top - 50;
+			
+			// scroll
+			if (animate)
+				$('html,body').animate({
+					scrollTop: scrollPosition
+				});
+			else
+				$('html,body').scrollTop(scrollPosition);
+		},
 
 		openWindow: function(url, title, width, height) {
 			var options = 'width=' + (width || 500) + ',height=' + (height || 500);

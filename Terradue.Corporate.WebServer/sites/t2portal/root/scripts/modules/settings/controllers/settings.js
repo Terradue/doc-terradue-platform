@@ -15,7 +15,7 @@ define([
 	'modules/users/models/plans',
 	'modules/passwordreset/models/passwordreset',
 	'zeroClipboard',
-	'canpromise',
+	//'canpromise',
 	'messenger',
 	'jasnyBootstrap',//'bootstrapFileUpload',
 	'jqueryValidate',
