@@ -21,7 +21,7 @@ define([
 			index: function (options, data) {
 				// view is an utility method
 				Pages.view({
-					url: 'modules/samplePage/views/samplePage.html',
+					url: 'modules/samplepage/views/samplepage.html',
 					selector: Config.mainContainer
 				});
 			},
