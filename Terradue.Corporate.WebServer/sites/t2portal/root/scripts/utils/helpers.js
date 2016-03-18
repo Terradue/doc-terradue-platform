@@ -439,9 +439,14 @@ define([
 			} else
 				hash = document.location.hash;
 			
+			// disable for tabs
+			var $el = $(hash);
+			if ($el.hasClass('tab-pane'))
+				return;
+			
 			var scrollPosition = 0; // go on the top by default
-			if (hash && $(hash).length)
-				scrollPosition = $(hash).offset().top - 50;
+			if (hash && $el.length)
+				scrollPosition = $el.offset().top - 50;
 			
 			// scroll
 			if (animate)
