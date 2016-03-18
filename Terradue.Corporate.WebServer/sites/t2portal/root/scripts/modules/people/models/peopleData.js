@@ -125,7 +125,7 @@ define({
 			surname: 'Fabrizio', 
 			name: 'Pacini', 
 			image: '/styles/img/people/fabrizio.pacini.jpg', 
-			focus1: {title: 'Key account management', url: 'http://www.linkedin.com/skills/skill/key_account_manager'},
+			focus1: {title: 'Manager, Key accounts', url: 'http://www.linkedin.com/skills/skill/key_account_manager'},
 			focus2: {title: 'Distributed Computing', url: 'http://www.linkedin.com/skills/skill/Distributed_Systems'},
 			focus3: {title: 'Systems Engineering', url: 'https://en.wikipedia.org/wiki/Systems_engineering'},
 			focus4: {title: 'Data Processing', url: 'http://en.wikipedia.org/wiki/Data_Processing'},
