@@ -155,6 +155,7 @@ UA -> UA : display user name
                 user = (UserT2)auth.GetUserProfile(context);
                 user.LoadLdapInfo();//TODO: should be done automatically on the previous call
                 user.Store();
+                if(!user.HasGithubProfile()) user.CreateGithubProfile();
                 redirect = context.BaseUrl + "/portal/settings/profile";
 
                 context.Close();
