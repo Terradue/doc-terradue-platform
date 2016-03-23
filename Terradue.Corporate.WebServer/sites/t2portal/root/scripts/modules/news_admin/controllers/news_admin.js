@@ -6,7 +6,7 @@ define([
 	'utils/crudBaseModule/crudBaseControl',
 	'config',
 	'utils/helpers',
-	'modules/newsAdmin/models/newsAdmin',
+	'modules/news_admin/models/news_admin',
 	'messenger',
 	'summernote',
 	'datePicker'
@@ -46,7 +46,7 @@ define([
 	return new NewsAdminControl(Config.mainContainer, {
 		Model: NewsModel,
 		entityName: 'news',
-		view: '/scripts/modules/newsAdmin/views/newsAdmin.html',
+		view: '/scripts/modules/news_admin/views/news_admin.html',
 		insertAtBeginning: true,
 		loginDeferred: App.Login.isLoggedDeferred,
 		adminAccess: true
