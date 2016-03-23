@@ -242,18 +242,9 @@ namespace Terradue.Corporate.WebServer {
                         }
                     };
 
-                    oauthsession = client.AuthzSession(oauthsession.sid, oauthrequest2);
-
-                    //user is now authenticated and need to consent
-                    if(oauthsession.type == "consent"){
-                        OauthConsentRequest consent = null;
-                        if(oauthsession.scope.new_claims.Count == 0){
-                            consent = GenerateConsent(defaultscopes);
-                        } else if(request.autoconsent) consent = GenerateConsent(oauthsession.scope.new_claims);
-                        else return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
-                            
-                        var redirect = client.ConsentSession(oauthsession.sid, consent);
-
+                    var oauthputsession = client.AuthzSession(oauthsession.sid, oauthrequest2, request.ajax);
+                    if(!(oauthputsession is OauthAuthzSessionResponse)){
+                        var redirect = (string)oauthputsession;
                         if(request.ajax){
                             HttpResult redirectResponse = new HttpResult();
                             redirectResponse.Headers[HttpHeaders.Location] = redirect;
@@ -261,6 +252,27 @@ namespace Terradue.Corporate.WebServer {
                             return redirectResponse;
                         } else {
                             HttpContext.Current.Response.Redirect(redirect, true);
+                        }
+                    } else {
+                        oauthsession = oauthputsession as OauthAuthzSessionResponse;
+                        //user is now authenticated and need to consent
+                        if(oauthsession.type == "consent"){
+                            OauthConsentRequest consent = null;
+                            if(oauthsession.scope.new_claims.Count == 0){
+                                consent = GenerateConsent(defaultscopes);
+                            } else if(request.autoconsent) consent = GenerateConsent(oauthsession.scope.new_claims);
+                            else return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
+                                
+                            var redirect = client.ConsentSession(oauthsession.sid, consent);
+
+                            if(request.ajax){
+                                HttpResult redirectResponse = new HttpResult();
+                                redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                                redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                                return redirectResponse;
+                            } else {
+                                HttpContext.Current.Response.Redirect(redirect, true);
+                            }
                         }
                     }
                 }
