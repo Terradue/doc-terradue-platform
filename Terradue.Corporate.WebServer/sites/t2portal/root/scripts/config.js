@@ -17,7 +17,7 @@ define({
 		partners: '/static/partners.html',
 		tour: '/static/tour.html',
 		resources: '/static/resources.html',
-
+		media: '/static/media.html',
 	},
 	
 	recaptchaPublicKey: '6Lc1ZgMTAAAAAFB21z0ElV23MU1friFPmkBXTtNc',
