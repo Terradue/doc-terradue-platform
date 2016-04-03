@@ -26,11 +26,36 @@
 }
 
 .tour-panel-references {
-/*    height: 100vh;   100% of the viewport height */
+  /* height: 100vh;  100% of the viewport height */
   text-align: center;
-  margin-top: 40px;
-  margin-bottom: 40px;
+  padding-top: 60px; 
+  margin-bottom: 60px;
   color: #fff;
+}
+
+.tour-panel-plans-pricing {
+  min-height:300px;
+  text-align: center;
+  background-color:#B71427; 
+  color:white; 
+}
+
+/* Links color scheme for Red background */
+/* unvisited link */
+#redbase .a:link {
+    color: white;
+}
+/* visited link */
+#redbase .a:visited {
+    color: pink;
+}
+/* mouse over link */
+#redbase .a:hover {
+    color: hotpink;
+}
+/* selected link */
+#redbase .a:active {
+    color: violet;
 }
 
 
@@ -550,6 +575,21 @@ ul.grid li:first-child a {
   opacity: 1;
   -webkit-transform: scale(1);
   transform: scale(1);
+}
+
+
+.plans-header {
+  padding-top: 10px;
+  text-align: center;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.plans-footer {
+  padding-top: 20px;
+  text-align: center;
+  margin-left: 5%;
+  margin-right: 5%; 	
 }
 
 
