@@ -5,7 +5,9 @@
 		<div class='settings settings-container'>
 			<div class='plan-profile'>
 				{{#ifEquals user.Plan "No plan"}}
-					<div><i class="fa fa-cube fa-1x"></i>&nbsp; subscribe to a plan and manage your Cloud services</div>
+					<div class="alert alert-warning">
+						You haven't suscribed to any plan yet.
+					</div>
 				{{/ifEquals}}
 				{{#ifEquals user.Plan "Free Trial"}}
 					<div class="alert alert-success">
@@ -17,25 +19,55 @@
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Explorer</strong> plan.
 					</div>
-					<div>It allows you to: ...</div>
+					<div>
+						It allows you to:
+						<ul>
+							<li>Do this</li>
+							<li>And that</li>
+							<li>...</li>
+						</ul>
+					</div>
 				{{/ifEquals}}
 				{{#ifEquals user.Plan 'Integrator'}}
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Premium</strong> plan.
 					</div>
-					<div>It allows you to: ...</div>
+					<div>
+						It allows you to:
+						<ul>
+							<li>Do this</li>
+							<li>And that</li>
+							<li>...</li>
+						</ul>
+					</div>
 				{{/ifEquals}}
 				{{#ifEquals user.Plan "Producer"}}
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Scaler</strong> plan.
 					</div>
-					<div>It allows you to: ...</div>
+					<div>
+						It allows you to:
+						<ul>
+							<li>Do this</li>
+							<li>And that</li>
+							<li>...</li>
+						</ul>
+					</div>
 				{{/ifEquals}}
-				<br/><br/><br/>
 				<div>
-					<b>Want to change your plan ?</b>
-					<br/>
-					Discover which plan is made for you !
+					{{#ifEquals user.Plan "No plan"}}
+						<b>Want to get a plan ?</b>
+						<br/>
+						Discover which is the best plan for you !
+					{{/ifEquals}}
+
+					{{#ifNotEquals user.Plan "No plan"}}
+						<br/>
+						<b>Want to change your plan ?</b>
+						<br/>
+						Discover which is the best plan for you !
+					{{/ifNotEquals}}
+
 					<br/>
 					<br/>
 					<a class="btn btn-small btn-warning" href="/portal/tour#plans-pricing">Upgrade</a>
