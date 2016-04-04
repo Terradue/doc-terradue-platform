@@ -254,6 +254,35 @@ define([
 				});
 			},
 
+			plan: function(options) {
+				var self = this;
+				self.profileData = new can.Observe({});
+				console.log("App.controllers.Settings.plan");
+				
+				self.view({
+					url: 'modules/settings/views/plan.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: self.profileData,
+					fnLoad: function(){
+						self.initSubmenu('key');
+					}
+				});
+
+				this.isLoginPromise.then(function(user){
+					self.profileData.attr({
+						user: user,
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						nameMissing: !(user.FirstName && user.LastName),
+						emailNotComplete: (user.AccountStatus==1),
+						sshKeyNotComplete: !(user.PublicKey)
+					});
+					
+				}).fail(function(){
+					self.accessDenied();
+				});
+			},
+
 			key: function(options) {
 				var self = this;
 

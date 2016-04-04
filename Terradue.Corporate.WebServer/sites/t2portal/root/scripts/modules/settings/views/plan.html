@@ -1,45 +1,46 @@
-<div class='plan-profile'>
-	<h3>Plans</h3>
-	{{#ifEquals user.Plan "No plan"}}
-		<div><i class="fa fa-cube fa-1x"></i>&nbsp; subscribe to a plan and manage your Cloud services</div>
-	{{/ifEquals}}
-	{{#ifEquals user.Plan "Developer"}}
-		<div><i class="fa fa-cube fa-1x"></i>&nbsp; You are currently using the <strong>Developer</strong> plan.</div>
-		<div>It allows you to: ...</div>
-	{{/ifEquals}}
-	{{#ifEquals user.Plan 'Integrator'}}
-		<div><i class="fa fa-cube fa-1x"></i>&nbsp; You are currently using the <strong>Integrator</strong> plan.</div>
-		<div>It allows you to: ...</div>
-	{{/ifEquals}}
-	{{#ifEquals user.Plan "Producer"}}
-		<div><i class="fa fa-cube fa-1x"></i>&nbsp; You are currently using the <strong>Producer</strong> plan.</div>
-		<div>It allows you to: ...</div>
-	{{/ifEquals}}
-	<br/><br/><br/>
-	<div class="alert alert-info">Want to change your plan ?<br/>Upgrade for one of the following plans</div>
-	<div class="panel-body">
-		{{#each plans}}
-			<div class="radio">
-				<label>
-					<input type="radio" name="planRadio" value="{{Value}}" {{#ifEquals Key ../user.Plan}}checked="checked"{{/ifEquals}}>
-					{{Key}}
-				</label>
+<div class='settings-plan container col-md-9'>
+	<div>
+		<div class='settings settings-title'>Plan</div>
+		<div class='settings settings-description'>Find out what you can do with your current plan or change to a new one.</div>
+		<div class='settings settings-container'>
+			<div class='plan-profile'>
+				{{#ifEquals user.Plan "No plan"}}
+					<div><i class="fa fa-cube fa-1x"></i>&nbsp; subscribe to a plan and manage your Cloud services</div>
+				{{/ifEquals}}
+				{{#ifEquals user.Plan "Free Trial"}}
+					<div class="alert alert-success">
+						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Free Trial</strong> plan.
+					</div>
+					<div>It allows you to: ...</div>
+				{{/ifEquals}}
+				{{#ifEquals user.Plan "Developer"}}
+					<div class="alert alert-success">
+						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Explorer</strong> plan.
+					</div>
+					<div>It allows you to: ...</div>
+				{{/ifEquals}}
+				{{#ifEquals user.Plan 'Integrator'}}
+					<div class="alert alert-success">
+						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Premium</strong> plan.
+					</div>
+					<div>It allows you to: ...</div>
+				{{/ifEquals}}
+				{{#ifEquals user.Plan "Producer"}}
+					<div class="alert alert-success">
+						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Scaler</strong> plan.
+					</div>
+					<div>It allows you to: ...</div>
+				{{/ifEquals}}
+				<br/><br/><br/>
+				<div>
+					<b>Want to change your plan ?</b>
+					<br/>
+					Discover which plan is made for you !
+					<br/>
+					<br/>
+					<a class="btn btn-small btn-warning" href="/portal/tour#plans-pricing">Upgrade</a>
+					</div>
 			</div>
-		{{/each}}
-		<button class="btn btn-warning upgradePlanBtn">Upgrade</button>&nbsp;&nbsp;
-		{{#if planStatus.planUpgradedSuccessName}}
-			<span class="text-success">Your request will be treated as soon as possible by our Sales Team.</strong></span>
-		{{else}}
-			{{#if planStatus.planUpgradedFailMessage}}
-				<span class="text-danger">Error while upgrade user <strong>{{user.Username}}</strong> account: <strong>{{planUpgradedFailMessage}}</strong></span>
-			{{else}}
-				{{#if planStatus.planUpgradedLoading}}
-					&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
-				{{/if}}
-			{{/if}}
-		{{/if}}
-		
+		</div>
 	</div>
-
-
 </div>
