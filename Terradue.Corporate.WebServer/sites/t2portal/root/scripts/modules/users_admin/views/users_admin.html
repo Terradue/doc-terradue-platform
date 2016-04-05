@@ -1,0 +1,42 @@
+<div class="container banners" id="usersAdminPage">
+	<h2>Users</h2>
+	{{#if entities.isResolved}}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Username</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Plan</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each entities}}
+					<tr class="entity" data-id="{{ Id }}">
+						<td>{{ Id }}</td>
+						<td>{{ Username }}</td>
+						<td>{{ FirstName }} {{ LastName }}</td>
+						<td>{{ Email }}</td>
+						<td>{{ Plan }}</td>
+						<td>
+							<a href="/portal/users_admin/details/{{ Id }}" class="btn btn-info plans" title="Manage plan"><i class="fa fa-star"></i></a>
+							<a href="javascript://" class="btn btn-info delete" title="Delete"><i class="fa fa-trash-o"></i></a>
+						</td>
+					</tr>
+				{{/each}}
+			</tbody>
+		</table>
+		<!-- <a href="javascript://" class="btn openCreate">Create</a> -->
+	{{else}}
+		{{#if entities.isPending}}
+			<h3><center><i class="fa fa-spin fa-spinner"></i> Loading Users...</center></h3>
+		{{else}}
+			<div class="alert alert-error">
+			  <button type="button" class="close" data-dismiss="alert">&times;</button>
+			  <strong>Error!</strong> Unable to load Users.
+			</div>
+		{{/if}}
+	{{/if}}
+	
+</div>
