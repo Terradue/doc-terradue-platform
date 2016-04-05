@@ -16,6 +16,7 @@ namespace Terradue.Corporate.Controller {
     public class UserT2 : User {
 
         private Json2LdapFactory LdapFactory { get; set; }
+        private PlanFactory PlanFactory { get; set; }
         
         /// <summary>
         /// Gets or sets the one password.
@@ -74,10 +75,10 @@ namespace Terradue.Corporate.Controller {
 
         private Plan plan { get; set; }
 
-        private Plan Plan { 
+        public Plan Plan { 
             get {
                 if (plan == null && this.Id != 0) {
-                    plan = new Plan(context, this.Id);
+                    plan = this.PlanFactory.GetPlanForUser(this.Id);
                 }
                 return plan;
             }
@@ -99,6 +100,7 @@ namespace Terradue.Corporate.Controller {
             this.oneClient = oneCloud.XmlRpc;
             this.LdapFactory = new Json2LdapFactory(context);
             this.Json2Ldap = LdapFactory.Json2Ldap;
+            this.PlanFactory = new PlanFactory(context);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -222,10 +224,10 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Upgrade the account of the current user
+        /// Upgrade with the specified plan.
         /// </summary>
-        /// <param name="level">Level.</param>
-        public void Upgrade(PlanType level) {
+        /// <param name="plan">Plan.</param>
+        public void Upgrade(Plan plan) {
             context.StartTransaction();
 
             if (!HasGithubProfile())
@@ -235,7 +237,7 @@ namespace Terradue.Corporate.Controller {
             if (this.DomainId == 0)
                 CreateDomain();
 
-            this.Plan.Upgrade(level);
+            this.PlanFactory.UpgradeUserPlan(this.Id, plan);
 
             context.Commit();
         }
@@ -604,14 +606,6 @@ namespace Terradue.Corporate.Controller {
         #endregion
 
         //--------------------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Gets the plan.
-        /// </summary>
-        /// <returns>The plan.</returns>
-        public string GetPlan() {
-            return Plan.PlanToString(this.Plan.PlanType);
-        }
 
         public void ValidateNewEmail(string email){
 

@@ -165,7 +165,7 @@ namespace Terradue.Corporate.WebServer {
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
 
-    public class WebUserUpgradeT2 : WebUser{
+    public class WebUserUpgradeT2 : WebUserT2{
         
         [ApiMember(Name = "Message", Description = "User message", ParameterType = "query", DataType = "String", IsRequired = true)]
         public String Message { get; set; }
@@ -230,7 +230,7 @@ namespace Terradue.Corporate.WebServer {
             this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
             this.PublicKey = entity.PublicKey;
-            this.Plan = entity.GetPlan();
+            this.Plan = entity.Plan.Name;
         }
 
         /// <summary>

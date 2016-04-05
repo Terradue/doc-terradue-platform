@@ -18,8 +18,9 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
-                foreach (PlanType plan in Enum.GetValues(typeof(PlanType))){
-                    result.Add(new KeyValuePair<string, int>(Plan.PlanToString(plan), (int)plan));
+                PlanFactory pfactory = new PlanFactory(context);
+                foreach(var plan in pfactory.GetAllPlans()){
+                    result.Add(new KeyValuePair<string, int>(plan.Name, plan.Id));
                 }
 
                 context.Close();

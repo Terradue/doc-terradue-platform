@@ -12,24 +12,25 @@ define([
 	//'canpromise'
 ], function($, can, bootbox, CrudBaseControl, Config, Helpers, UserModel, PlansModel){
 	
-//	var UsersControl = can.Control({
-//		init: function($element, options){
-//			console.log("usersControl.init");
-//			this.$element = $element;
-//		},
-//		index: function(){
-//			console.log("App.controllers.Users.index");
-//			var self = this;
-//			UserModel.findAll({}, function(users){
-//				window.users = users; $el = self.$element;
-//				self.$element.html(can.view("modules/user/views/users.html", users));
-//			});
-//		},
-//	});
-	
-	UsersControl = CrudBaseControl({
-		init2: function(){
+	var UsersControl = can.Control({
+		init: function($element, options){
+			console.log("usersControl.init");
+			this.$element = $element;
 		},
+		index: function(){
+			console.log("App.controllers.Users.index");
+			var self = this;
+			UserModel.findAll({}, function(users){
+				window.users = users; 
+				$el = self.$element;
+				self.$element.html(can.view("modules/users/views/users.html", users));
+			});
+		},
+//	});
+//	
+//	UsersControl = CrudBaseControl({
+//		init2: function(){
+//		},
 		
 		entitySelected: function(entity){
 			var self = this;

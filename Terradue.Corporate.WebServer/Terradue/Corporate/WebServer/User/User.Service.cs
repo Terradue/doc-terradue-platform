@@ -342,33 +342,19 @@ namespace Terradue.Corporate.WebServer {
 
                 UserT2 user = UserT2.FromId(context, request.Id);
 
+                Plan plan = Plan.FromName(context, request.Plan);
+
                 if(context.UserLevel == UserLevel.Administrator){
-                    user.Upgrade((PlanType)request.Level);
+                    user.Upgrade(plan);
                 } else {
                     if(context.UserId != request.Id) throw new Exception("Wrong user Id");
-
-                    string plan = "";
-                    switch(request.Level){
-                        case (int)PlanType.DEVELOPER:
-                            plan = "Developer";
-                            break;
-                        case (int)PlanType.INTEGRATOR:
-                            plan = "Integrator";
-                            break;
-                        case (int)PlanType.PRODUCER:
-                            plan = "Provider";
-                            break;
-                        default:
-                            plan = "Developer";
-                            break;
-                    }
 
                     string subject = context.GetConfigValue("EmailSupportUpgradeSubject");
                     subject = subject.Replace("$(PORTAL)", context.GetConfigValue("SiteName"));
 
                     string body = context.GetConfigValue("EmailSupportUpgradeBody");
                     body = body.Replace("$(USERNAME)", user.Username);
-                    body = body.Replace("$(PLAN)", plan);
+                    body = body.Replace("$(PLAN)", plan.Name);
                     body = body.Replace("$(MESSAGE)", request.Message);
 
                     context.SendMail(user.Email, context.GetConfigValue("MailSenderAddress"), subject, body); 

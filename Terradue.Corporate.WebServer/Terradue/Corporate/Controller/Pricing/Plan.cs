@@ -59,6 +59,8 @@ endfooter
 using System;
 using Terradue.Portal;
 using Terradue.Util;
+using System.Collections.Generic;
+using System.Data;
 
 
 namespace Terradue.Corporate.Controller {
@@ -76,103 +78,115 @@ namespace Terradue.Corporate.Controller {
     /// </summary>
     public class Plan {
 
-        private const string PLAN_NONE = "No plan";
-        private const string PLAN_TRIAL = "Free Trial";
-        private const string PLAN_DEVELOPER = "Developer";
-        private const string PLAN_INTEGRATOR = "Integrator";
-        private const string PLAN_PRODUCER = "Producer";
+        public int Id { get; set; }
+        public string Name { get; set; }
 
-        public PlanType PlanType { get; set; }
-        IfyContext context { get; set; }
-        int UserId { get; set; }
+        private const string DEFAULT_NAME = "No Plan";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Terradue.Corporate.Controller.Plan"/> class.
-        /// </summary>
-        /// <param name="context">Context.</param>
-        /// <param name="usrid">Usrid.</param>
-        public Plan(IfyContext context, int usrid){
+        public Plan(){
+            Id = 0;
+            Name = DEFAULT_NAME;
+        }
+
+        public static Plan FromId(IfyContext context, int id){
+            Plan plan = new Plan();
+            if (id != 0) {
+                plan.Id = id;
+                plan.Name = context.GetQueryStringValue(String.Format("SELECT role.name FROM role WHERE role.id={0};",id));
+            }
+            return plan;
+        }
+
+        public static Plan FromName(IfyContext context, string name){
+            Plan plan = new Plan();
+            if (!name.Equals(DEFAULT_NAME)) {
+                var pid = context.GetQueryIntegerValue(String.Format("SELECT role.id FROM role WHERE role.name={0};",StringUtils.EscapeSql(name)));
+                if (pid == 0) throw new Exception("Invalid plan name");
+                plan.Name = name;
+                plan.Id = pid;
+            }
+            return plan;
+        }
+    }
+
+    public class PlanFactory{
+
+        private IfyContext context { get; set; }
+
+        public PlanFactory(IfyContext context){
             this.context = context;
-            this.UserId = usrid;
-            this.PlanType = GetPlan();
-        }
-
-        /// <summary>
-        /// Transform from PlanType to string.
-        /// </summary>
-        /// <returns>The plan as string.</returns>
-        /// <param name="type">Type.</param>
-        public static string PlanToString(PlanType type){
-            switch ((int)type) {
-                case (int)PlanType.TRIAL:
-                    return PLAN_TRIAL;
-                case (int)PlanType.DEVELOPER:
-                    return PLAN_DEVELOPER;
-                case (int)PlanType.INTEGRATOR:
-                    return PLAN_INTEGRATOR;
-                case (int)PlanType.PRODUCER:
-                    return PLAN_PRODUCER;
-                default:
-                    return PLAN_NONE;
-            }
-        }
-
-        /// <summary>
-        /// transform from string to PlanType.
-        /// </summary>
-        /// <returns>The string as plantype.</returns>
-        /// <param name="type">Type.</param>
-        public static PlanType StringToPlan(string type){
-            switch (type) {
-                case PLAN_TRIAL:
-                    return PlanType.TRIAL;
-                case PLAN_DEVELOPER:
-                    return PlanType.DEVELOPER;
-                case PLAN_INTEGRATOR:
-                    return PlanType.INTEGRATOR;
-                case PLAN_PRODUCER:
-                    return PlanType.PRODUCER;
-                default:
-                    return PlanType.NONE;
-            }
         }
 
         /// <summary>
         /// Gets the plan.
         /// </summary>
         /// <returns>The plan.</returns>
-        public PlanType GetPlan(){
-            string sql = String.Format("SELECT role.name FROM role INNER JOIN usr_role ON role.id=usr_role.id_role WHERE usr_role.id_usr={0};",
-                                       this.UserId);
+        public Plan GetPlanForUser(int userId){
+            Plan plan = new Plan();
+
+            string sql = String.Format("SELECT role.id, role.name FROM role INNER JOIN usr_role ON role.id=usr_role.id_role WHERE usr_role.id_usr={0};",
+                                       userId);
+            IDbConnection dbConnection = context.GetDbConnection();
+            IDataReader reader = context.GetQueryResult(sql, dbConnection);
             try{
-                string plan = context.GetQueryStringValue(sql); 
-                return StringToPlan(plan);
-            }catch(Exception){
-                return PlanType.NONE;
+                if(reader.Read()){
+                    plan = new Plan{
+                        Id = reader.GetInt32(0),
+                        Name = reader.GetString(1)
+                    };
+                }
+            }catch(Exception e){
+                var t = e;
             }
+            reader.Close();
+            return plan;
         }
 
         /// <summary>
-        /// Upgrade the specified type.
+        /// Gets all plans.
         /// </summary>
-        /// <param name="type">Type.</param>
-        public void Upgrade(PlanType type){
+        /// <returns>The all plans.</returns>
+        public List<Plan> GetAllPlans(){
+            List<Plan> plans = new List<Plan>();
+
+            //add default plan
+            plans.Add(new Plan());
+
+            string sql = String.Format("SELECT id, name FROM role order by id;");
+            IDbConnection dbConnection = context.GetDbConnection();
+            IDataReader reader = context.GetQueryResult(sql, dbConnection);
+
+            while (reader.Read()) {
+                if (reader.GetValue(0) != DBNull.Value)
+                    plans.Add(new Plan{
+                    Id = reader.GetInt32(0),
+                    Name = reader.GetString(1)
+                });
+            }
+            reader.Close();
+            return plans;
+        }
+
+        /// <summary>
+        /// Upgrades the user plan.
+        /// </summary>
+        /// <param name="usrId">Usr identifier.</param>
+        /// <param name="plan">Plan.</param>
+        public void UpgradeUserPlan(int usrId,Plan plan){
             //delete old plan
-            string sql = String.Format ("DELETE FROM usr_role WHERE id_usr={0} AND id_role IN (SELECT role.id FROM role WHERE role.name={1});",
-                                        this.UserId,
-                                        StringUtils.EscapeSql(PlanToString(this.PlanType)));
+            string sql = String.Format ("DELETE FROM usr_role WHERE id_usr={0};",
+                                        usrId);
+                                                    
             context.Execute (sql);
 
-            this.PlanType = type;
-            if (type != PlanType.NONE) {
+            if (plan.Id != 0) {
                 //insert new plan
-                sql = String.Format("INSERT INTO usr_role (id_usr,id_role) SELECT usr.id, role.id FROM usr INNER JOIN role WHERE usr.id={0} AND role.name={1};", 
-                                this.UserId, 
-                                StringUtils.EscapeSql(PlanToString(this.PlanType)));
+                sql = String.Format("INSERT INTO usr_role (id_usr,id_role) VALUES ({0},{1});", 
+                                    usrId, 
+                                    plan.Id);
                 context.Execute(sql);
             }
         }
-
     }
 }
 

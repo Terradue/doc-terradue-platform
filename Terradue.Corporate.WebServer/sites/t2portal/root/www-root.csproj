@@ -556,6 +556,15 @@
     <Content Include="scripts\modules\settings\views\key.html" />
     <Content Include="scripts\modules\settings\views\email.html" />
     <Content Include="scripts\modules\settings\views\account.html" />
+    <Content Include="scripts\modules\news_admin\controllers\news_admin.js" />
+    <Content Include="scripts\modules\news_admin\css\news_admin.css" />
+    <Content Include="scripts\modules\news_admin\models\news_admin.js" />
+    <Content Include="scripts\modules\news_admin\views\news_admin.html" />
+    <Content Include="scripts\modules\users_admin\models\plans.js" />
+    <Content Include="scripts\modules\users_admin\views\plans.html" />
+    <Content Include="scripts\modules\users_admin\views\users_admin.html" />
+    <Content Include="scripts\modules\users_admin\controllers\users_admin.js" />
+    <Content Include="scripts\modules\users_admin\models\users_admin.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\" />

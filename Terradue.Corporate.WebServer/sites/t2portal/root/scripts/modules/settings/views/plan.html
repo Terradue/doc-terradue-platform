@@ -4,7 +4,7 @@
 		<div class='settings settings-description'>Find out what you can do with your current plan or change to a new one.</div>
 		<div class='settings settings-container'>
 			<div class='plan-profile'>
-				{{#ifEquals user.Plan "No plan"}}
+				{{#ifEquals user.Plan "No Plan"}}
 					<div class="alert alert-warning">
 						You haven't suscribed to any plan yet.
 					</div>
@@ -55,13 +55,13 @@
 					</div>
 				{{/ifEquals}}
 				<div>
-					{{#ifEquals user.Plan "No plan"}}
+					{{#ifEquals user.Plan "No Plan"}}
 						<b>Want to get a plan ?</b>
 						<br/>
 						Discover which is the best plan for you !
 					{{/ifEquals}}
 
-					{{#ifNotEquals user.Plan "No plan"}}
+					{{#ifNotEquals user.Plan "No Plan"}}
 						<br/>
 						<b>Want to change your plan ?</b>
 						<br/>
