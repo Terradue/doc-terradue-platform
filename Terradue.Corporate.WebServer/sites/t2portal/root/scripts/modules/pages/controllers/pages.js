@@ -9,11 +9,11 @@ define([
     	'app',
     	'config',
     	'utils/baseControl',
-    	'utils/menu',
     	'modules/login/controllers/login',
     	'skrollr',
     	'loadmask',
-], function($, _, can, App, Config, BaseControl, Menu, LoginControl, skrollr){
+    	'bootstrapHoverDropdown'
+], function($, _, can, App, Config, BaseControl, LoginControl, skrollr){
 	
 if (App.controllers.Pages==null)
 	App.controllers.Pages = new (BaseControl(
@@ -23,9 +23,15 @@ if (App.controllers.Pages==null)
 			init: function (element, options) {
 				
 				var self = this;
+				
 				$(function(){
 					// on page ready
 					self.initMenu();
+
+					// set dropdown hover to the menu
+					$('#menu .dropdown-toggle').dropdownHover({
+						delay: 100
+					});
 				});
 				
 				// set login public accessible
@@ -33,12 +39,40 @@ if (App.controllers.Pages==null)
 					showLoginMenu: true,
 				});
 				
-				// set dropdown
-				$('.dropdown-toggle').dropdown();
 			},
 			
-			initMenu: function () {
-				//Menu.activate('header ul.nav li');
+			initMenu: function() {
+				_.mixin(_.str.exports());
+				
+				var activated = false;
+				
+				//ENSURE NAV PARAM IS A JQUERY OBJECT
+				var $el = $('#menu li');
+				// remove each previous active link
+				$el.removeClass('active');
+				
+				//ACTIVATE NAV BUTTON
+				$el.each(function() {
+					// GET LINK AND COMPARE AGAINST URL
+					var url = $('a', this).attr('href');
+					var location = window.location.pathname;
+					var hash = window.location.hash;
+					
+					// aearch routes mathing nav url link
+					if (location+hash === url) {
+						// found
+						activated = true;
+						
+						// set class active
+						$(this).addClass('active');
+						
+						// if is a submenu, set class active to topmenu too
+						if ($(this).parent().hasClass('dropdown-menu'))
+							$(this).parent().parent().addClass('active');
+						
+						return false; // stop each search
+					}
+				});
 			},
 			
 			// actions

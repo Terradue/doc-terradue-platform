@@ -162,6 +162,15 @@ html, body {
 }
 
 /* Top page menu */
+
+
+#menu .dropdown-menu > .active > a,
+#menu .dropdown-menu > .active > a:hover,
+#menu .dropdown-menu > .active > a:focus {
+	color: black;
+	background: #e7e7e7;
+}
+
 .navbar-header {
 	margin-left: 20px;
 	margin-right: 20px;
