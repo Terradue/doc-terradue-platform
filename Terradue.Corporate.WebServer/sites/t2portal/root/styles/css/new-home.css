@@ -1,30 +1,28 @@
 /* Global Styles */
-
-html,
-body {
-  height: 100%;
-  width: 100%;
+html, body {
+	height: 100%;
+	width: 100%;
 }
 
 /* Wrapper for page content to push down footer */
 #wrap {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  /* Negative indent footer by its height */
-  margin: 0 auto -60px;
-  /* Pad bottom by footer height */
-  padding: 0 0 60px;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	/* Negative indent footer by its height */
+	margin: 0 auto -60px;
+	/* Pad bottom by footer height */
+	padding: 0 0 60px;
 }
 /**/
 
 /* Set the fixed height of the footer here */
 #footer {
-  height: 100%;
-  width: 100%;
-  padding-left: 50px;
-  padding-right: 50px;
-  background-color: #222;
+	height: 100%;
+	width: 100%;
+	padding-left: 50px;
+	padding-right: 50px;
+	background-color: #222;
 }
 /**/
 
@@ -33,9 +31,11 @@ body {
 	margin: 0;
 	color: #54697F;
 }
+
 #footer img {
 	max-width: 100%;
 }
+
 #footer h3 {
 	border-bottom: 1px solid #BAC1C8;
 	color: #54697F;
@@ -45,6 +45,7 @@ body {
 	padding: 10px 0 10px;
 	text-transform: uppercase;
 }
+
 #footer ul {
 	font-size: 13px;
 	list-style-type: none;
@@ -53,19 +54,23 @@ body {
 	margin-top: 15px;
 	color: #7F8C8D;
 }
+
 #footer ul li a {
 	padding: 0 0 5px 0;
 	display: block;
 }
+
 #footer a {
 	color: #78828D
 }
+
 #footer-bottom {
 	background: #E3E3E3;
 	border-top: 10px solid #FF0000;
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
+
 #footer-bottom p.pull-left {
 	padding-top: 6px;
 }
@@ -73,6 +78,7 @@ body {
 .social {
 	list-style-type: none;
 }
+
 .social li {
 	background: none repeat scroll 0 0 #B5B5B5;
 	border: 2px solid #B5B5B5;
@@ -94,6 +100,7 @@ body {
 	-ms-transition: all 0.5s ease 0s;
 	-o-transition: all 0.5s ease 0s;
 }
+
 .social li:hover {
 	transform: scale(1.15);
 	-webkit-transform: scale(1.1);
@@ -101,13 +108,16 @@ body {
 	-ms-transform: scale(1.1);
 	-o-transform: scale(1.1);
 }
+
 .social li a {
 	color: #EDEFF1;
 }
+
 .social li:hover {
 	border: 2px solid #2c3e50;
 	background: #2c3e50;
 }
+
 .social li a i {
 	font-size: 20px;
 	margin: 0 0 0 0px;
@@ -116,39 +126,39 @@ body {
 
 /**/
 
-
-
 /* Vertical texts in call-outs */
 .vert-text {
-  display: table-cell; 
-  vertical-align: middle;
-  text-align: center;
-  color: #fff;
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+	color: #fff;
 }
+
 .vert-text h1 {
-  padding: 0;
-  margin: 0;
-  font-size: 4.5em;
-  font-weight: 700;
-  color: #fff;
+	padding: 0;
+	margin: 0;
+	font-size: 4.5em;
+	font-weight: 700;
+	color: #fff;
 }
+
 .vert-text h1black {
-  padding: 0;
-  margin: 0;
-  font-size: 4.5em;
-  font-weight: 700;
-  color: #222;
+	padding: 0;
+	margin: 0;
+	font-size: 4.5em;
+	font-weight: 700;
+	color: #222;
 }
 /**/
 
 /* In-page separators */
-
 .separator {
-  padding: 20px 20px;
-  color: #000000;
-  height: 80px;
-  background: url(../img/separators/shapes.jpg) no-repeat center center fixed;
-  background-attachment: inherit;
+	padding: 20px 20px;
+	color: #000000;
+	height: 80px;
+	background: url(../img/separators/shapes.jpg) no-repeat center center
+		fixed;
+	background-attachment: inherit;
 }
 
 /* Top page menu */
@@ -157,158 +167,167 @@ body {
 	margin-right: 20px;
 	float: left;
 }
+
 .navbar-right {
 	float: right;
 }
 
 /**/
 
-
 /* Full page width image, for vertical scroll */
 .slider-home {
-  display: table;
-  height: 100vh;  /*100% of the viewport height */
-  width: 100%;
-  position: relative;
-  background: url(../img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.optimized.jpg) no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+	display: table;
+	height: 100vh; /*100% of the viewport height */
+	width: 100%;
+	position: relative;
+	background:
+		url(../img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.optimized.jpg)
+		no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 
-
-
 /**/
-
-
 
 /* Your Benefits | call-out area */
 .intro {
-  padding: 50px 0;
+	padding: 50px 0;
 }
 /**/
-
-
 
 /* Our Cloud Services | info area */
 #services {
-  background: #7fbbda;  /* light blue */
-  padding: 50px 0;
-  color: #ffffff;
+	background: #7fbbda; /* light blue */
+	padding: 50px 0;
+	color: #ffffff;
 }
+
 .service-item {
-  margin-bottom: 15px;
+	margin-bottom: 15px;
 }
+
 i.service-icon {
-  border: 3px solid #ffffff;
-  border-radius: 50%;
-  display: inline-block;
-  font-size: 56px;
-  width: 140px;
-  height: 140px;
-  line-height: 136px;
-  vertical-align: middle; 
-  text-align: center;
+	border: 3px solid #ffffff;
+	border-radius: 50%;
+	display: inline-block;
+	font-size: 56px;
+	width: 140px;
+	height: 140px;
+	line-height: 136px;
+	vertical-align: middle;
+	text-align: center;
 }
 /**/
-
 
 /* Why us | call-out area */
 /* IMAGE */
 #whyus {
-  color: #ffffff;
-  padding: 50px 0;
-  display: table;
-  height: 300px;
-  width: 100%;
-  background: url(../img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.optimized.jpg) no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+	color: #ffffff;
+	padding: 50px 0;
+	display: table;
+	height: 300px;
+	width: 100%;
+	background:
+		url(../img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.optimized.jpg)
+		no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 /**/
-
 .summary {
-  color: #ffffff;
-  padding: 50px 0;
-  display: table;
-  height: 300px;
-  width: 100%;
-  background: url(../img/eo-images/i3-SPOT5-Phytoplankton-Bloom.optimized.jpg) no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+	color: #ffffff;
+	padding: 50px 0;
+	display: table;
+	height: 300px;
+	width: 100%;
+	background:
+		url(../img/eo-images/i3-SPOT5-Phytoplankton-Bloom.optimized.jpg)
+		no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 
 /* Portfolio area */
 .thumbnail {
-  padding: 20px;
-  padding-bottom: 10px; 
-  color: #333333;
+	padding: 20px;
+	padding-bottom: 10px;
+	color: #333333;
 }
-.caption {
-  padding: 9px;
-  color: #FFFFFF;
 
+.caption {
+	padding: 9px;
+	color: #FFFFFF;
 }
+
 .portfolio {
-  padding: 50px 0;
+	padding: 50px 0;
 }
+
 .portfolio-item {
-  margin-bottom: 25px;
+	margin-bottom: 25px;
 }
+
 .img-portfolio {
-  margin: 0 auto;
+	margin: 0 auto;
 }
 /**/
-
 
 /* Call to Action area */
 .call-to-action {
-  color: #ffffff;
-  background: #0a5175;   /* deep blue */
-  padding: 50px 0;
+	color: #ffffff;
+	background: #0a5175; /* deep blue */
+	padding: 50px 0;
 }
+
 .call-to-action .btn {
-  margin: 10px;
+	margin: 10px;
 }
 /**/
-
 
 /**/
 .top-scroll {
-  margin-top: 50px;
+	margin-top: 50px;
 }
+
 .top-scroll a {
-  text-decoration: none;
-  color: inherit;
+	text-decoration: none;
+	color: inherit;
 }
+
 i.scroll {
-  color: #333333;
+	color: #333333;
 }
+
 i.scroll:hover {
-  color: #0a5175;
+	color: #0a5175;
 }
 /**/
-
 
 /* Responsive */
-@media (max-width: 768px) {	
-  .header {
-	background: url(../img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.optimized.jpg) no-repeat center center scroll; 
-  }
-  .whyus {
-	background: url(../img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.optimized.jpg) no-repeat center center scroll; 
-  }
-  .summary {
-	background: url(../img/eo-images/i3-SPOT5-Phytoplankton-Bloom.optimized.jpg) no-repeat center center scroll; 
-  }
+@media ( max-width : 768px) {
+	.header {
+		background:
+			url(../img/eo-images/i3-LANDSAT-Mississippi-RiverDelta.optimized.jpg)
+			no-repeat center center scroll;
+	}
+	.whyus {
+		background:
+			url(../img/eo-images/i3-ENVISAT-NorthwestPassage-IceFree.optimized.jpg)
+			no-repeat center center scroll;
+	}
+	.summary {
+		background:
+			url(../img/eo-images/i3-SPOT5-Phytoplankton-Bloom.optimized.jpg)
+			no-repeat center center scroll;
+	}
 }
 /**/
-
 
 /* Main container */
 #mainContainer {
@@ -320,25 +339,65 @@ i.scroll:hover {
 	background-color: white;
 }
 
-
 /* NEW RULES*/
-
-#menu .navbar-default .navbar-nav > li > a {
-    margin-right: 0px;
+#menu .navbar-default .navbar-nav>li>a {
+	margin-right: 0px;
 	text-align: left;
 }
 
 #menu button.navbar-toggle {
-    margin-left: 10px;
+	margin-left: 10px;
 }
 
-@media (max-width: 767px){
+@media ( max-width : 767px) {
 	.navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
-	    margin-right: 0px;
-	    margin-left: 0px;
+		margin-right: 0px;
+		margin-left: 0px;
 	}
 	.navbar-collapse {
-	    margin-top: 55px;
-	    max-height: none;
+		margin-top: 55px;
+		max-height: none;
 	}
+}
+
+/* CAROUSEL */
+
+/* put control left and right in the middle */
+.carousel-control.left, .carousel-control.right {
+	position: absolute;
+	top: 25%;
+	bottom: inherit;
+	height: auto;
+	width: auto;
+	background: none;
+}
+
+/* little gray circle around the arrows */
+.carousel-control.left>span, .carousel-control.right>span {
+	background: #333;
+	border-radius: 100px;
+	padding: 9px;
+}
+
+/* remove opacity behaviour on focus (set default 0.5) */
+.carousel-control:focus {
+	opacity: 0.5;
+}
+
+.carousel-indicators-container {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	z-index: 10;
+	text-align: center;
+}
+
+ol.carousel-indicators {
+	position: static;
+	display: inline-block;
+	width: auto;
+	margin: 0px;
+	background: rgba(51, 51, 51, 0.5);
+	border-radius: 100px;
+	padding: 3px 8px 2px 8px;
 }

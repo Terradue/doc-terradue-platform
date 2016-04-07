@@ -2,6 +2,7 @@
 //main require
 require.config({
 	baseUrl: '/scripts', 
+	urlArgs: 'v=1.0',
 	paths: {
 		jquery: 'libs/jquery/jquery-1.10.2',
 		underscore: 'libs/underscore/underscore-min',
