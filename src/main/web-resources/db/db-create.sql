@@ -88,9 +88,9 @@ UPDATE auth SET `activation_rule`='1' WHERE `identifier`='ldap';
 
 -- Create roles ... \
 INSERT into role (name, description) VALUES ('Free Trial', 'non paying user role');
-INSERT into role (name, description) VALUES ('Developer', 'paying developer user role');
-INSERT into role (name, description) VALUES ('Integrator', 'paying integrator user role');
-INSERT into role (name, description) VALUES ('Producer', 'paying producer user role');
+INSERT into role (name, description) VALUES ('Explorer', 'paying developer user role');
+INSERT into role (name, description) VALUES ('Premium', 'paying integrator user role');
+INSERT into role (name, description) VALUES ('Scaler', 'paying producer user role');
 -- RESULT
 
 /*****************************************************************************/
