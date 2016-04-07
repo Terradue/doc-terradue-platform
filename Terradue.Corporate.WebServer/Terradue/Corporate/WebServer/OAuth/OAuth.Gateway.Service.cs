@@ -127,7 +127,7 @@ namespace Terradue.Corporate.WebServer {
                 var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
 
                 //session is not active
-                if (oauthsession.type == "auth"){
+                if (oauthsession.error != null || oauthsession.type == "auth"){
                     //redirect to T2 login page
                     var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query) + "&type=auth";
                     if(request.ajax){
@@ -211,6 +211,10 @@ namespace Terradue.Corporate.WebServer {
                 };
 
                 var oauthsession = client.AuthzSession(oauthrequest1);
+
+                if(oauthsession.error != null){
+                    throw new Exception("Error accessing the SSO: " + oauthsession.error_description);
+                }
 
                 //request was done just to get the oauthsession (and the list of scopes to consent)
                 if(request.username == null && request.password == null && request.scope == null){

@@ -185,7 +185,7 @@ var SigninControl = BaseControl(
 			
 		}).fail(function(xhr){
 			window.res = xhr;
-			data.attr('signinErrorMessage', 'Signin failed. Wrong username or password.'); // TODO improve messages
+			data.attr('signinErrorMessage', Helpers.getErrMsg(xhr)); // TODO improve messages
 		}).always(function(){
 			data.attr('signinLoading', false);
 		});
