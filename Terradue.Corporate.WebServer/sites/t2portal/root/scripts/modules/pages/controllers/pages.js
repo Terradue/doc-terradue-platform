@@ -73,6 +73,9 @@ if (App.controllers.Pages==null)
 							forceHeight: false
 						});
 						$('.dropdown-toggle').dropdown();
+						
+						if (options.fnLoad)
+							options.fnLoad(el);
 					}
 				});
 			},
