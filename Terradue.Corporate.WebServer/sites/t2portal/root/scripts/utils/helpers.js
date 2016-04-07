@@ -439,9 +439,9 @@ define([
 			} else
 				hash = document.location.hash;
 			
-			// disable for tabs
+			// disable for tabs and carousel
 			var $el = $(hash);
-			if ($el.hasClass('tab-pane'))
+			if ($el.hasClass('tab-pane') || $el.hasClass('carousel'))
 				return;
 			
 			var scrollPosition = 0; // go on the top by default

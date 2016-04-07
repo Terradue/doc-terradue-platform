@@ -20,6 +20,7 @@ define([
 
 		// ROUTES
 		'route': 'index',
+		'#:hash route': 'index',
 		
 		'pages/:id&:selector route': 'pages',
 		'pages/:id route': 'pages',
@@ -40,8 +41,19 @@ define([
 		// ACTIONS
 		
 		// index
-		index: function () {
-			Pages.index({ fade: false });
+		index: function (data) {
+
+			if (this.checkHash(data))
+				return; // if true you go to the hash, so doesn't change the controller
+
+			Pages.index({
+				fade: false,
+				fnLoad: function(el){
+					setTimeout(function(){
+						Helpers.scrollToHash(); // scrolling to hash if exists, or to top
+					}, 100);
+				}
+			});
 		},
 		
 		// pages route action (dynamic open of static pages)
@@ -51,23 +63,9 @@ define([
 
 		// rest route actions
 		dispatch: function (data) {
-			// check if only the hash is changed
-			if (this.previousData 
-					&& this.previousData.controller==data.controller 
-					&& this.previousData.action==data.action
-					&& this.previousData.hash!=data.hash){
-				console.log('ONLY SCROLL');
-				
-				Helpers.scrollToHash(data.hash, true);
-				this.previousData = data;
-				return;
-			}
-			else if (data.hash)
-				console.log('CHANGE PAGE AND SCROLL');
-			else
-				console.log('ONLY CHANGE PAGE');
-			this.previousData = data;
 			
+			if (this.checkHash(data))
+				return; // if true you go to the hash, so doesn't change the controller
 			
 			var me = this;
 			
@@ -121,6 +119,27 @@ define([
 			
 			return false;
 		},
+		
+		checkHash: function(data){
+			// check if only the hash is changed
+			if (this.previousData 
+					&& this.previousData.controller==data.controller 
+					&& this.previousData.action==data.action
+					&& this.previousData.hash!=data.hash){
+				//console.log('ONLY SCROLL');
+				
+				Helpers.scrollToHash(data.hash, true);
+				this.previousData = data;
+				return true;
+			}
+			else if (data.hash)
+				;//console.log('CHANGE PAGE AND SCROLL');
+			else
+				;//console.log('ONLY CHANGE PAGE');
+			this.previousData = data;
+			
+			return false;
+		}
 	});
 	
 	return {
