@@ -87,10 +87,10 @@ define([
 
 			initSubmenu: function(item){
 				this.element
-					.find('nav.submenu li.active')
+					.find('.submenu li.active')
 					.removeClass('active');
 				this.element
-					.find('nav.submenu li.'+item)
+					.find('.submenu li.'+item)
 					.addClass('active');				
 			},
 			
@@ -106,23 +106,16 @@ define([
 			
 			profile: function(options) {
 				var self = this;
-								
-				this.profileData = new can.Observe({});
-				this.view({
-					url: 'modules/settings/views/profile.html',
-					selector: Config.subContainer,
-					dependency: self.indexDependency(),
-					data: this.profileData,
-					fnLoad: function(){
-						self.initSubmenu('profile');
-					}
-				});
 				
 				console.log("App.controllers.Settings.profile");
+				
+				// first wait user is ready
 				this.isLoginPromise.then(function(user){
+					// create the view
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					if(usernameDefault) user.Username = null;
-					self.profileData.attr({
+
+					self.profileData = new can.Observe({
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						nameMissing: !(user.FirstName && user.LastName),
@@ -130,14 +123,23 @@ define([
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey)
 					});
-					
-					self.initProfileValidation();
-					self.usernameGeneration();
-					
-					self.element.find('.usernameInfo').tooltip({
-						trigger: 'hover',
-						title: 'Username on the Terradue Cloud Platform, used to login on your VMs.',
-						placement:'right'
+					self.view({
+						url: 'modules/settings/views/profile.html',
+						selector: Config.subContainer,
+						dependency: self.indexDependency(),
+						data: self.profileData,
+						fnLoad: function(){
+							self.initSubmenu('profile');
+
+							self.initProfileValidation();
+							self.usernameGeneration();
+							
+							self.element.find('.usernameInfo').tooltip({
+								trigger: 'hover',
+								title: 'Username on the Terradue Cloud Platform, used to login on your VMs.',
+								placement:'right'
+							});
+						}
 					});
 					
 				}).fail(function(){
@@ -148,30 +150,47 @@ define([
 			account: function(options) {
 				var self = this;
 				self.params = Helpers.getUrlParameters();
-				this.view({
-					url: 'modules/settings/views/account.html',
-					selector: Config.subContainer,
-					dependency: self.indexDependency(),
-					data: this.accountData,
-					fnLoad: function(){
-						self.initSubmenu('account');
-						self.initAccount();
-					}
-				});
 				
 				console.log("App.controllers.Settings.account");
+				// first wait user is ready
 				this.isLoginPromise.then(function(user){
-					if (self.params.token && user.AccountStatus==1)
-						self.manageEmailConfirm(self.params.token);
+
 					self.accountData.attr({
 						user: user,
 						usernameSet: !(user.Email == user.Username),
 						emailNotComplete: (user.AccountStatus==1),
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok'
 					});
-				}).fail(function(){
-					if (self.params.token)
+
+					self.view({
+						url: 'modules/settings/views/account.html',
+						selector: Config.subContainer,
+						dependency: self.indexDependency(),
+						data: self.accountData,
+						fnLoad: function(){
+							self.initSubmenu('account');
+							self.initAccount(); // in this way we are sure that the view
+								// contains the user data, because user is inside accountData
+								// before to start the view
+						}
+					});
+
+					if (self.params.token && user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
+					
+				}).fail(function(){
+					if (self.params.token){
+						self.view({
+							url: 'modules/settings/views/account.html',
+							selector: Config.subContainer,
+							dependency: self.indexDependency(),
+							data: self.accountData,
+							fnLoad: function(){
+								self.initSubmenu('account');
+								self.manageEmailConfirm(self.params.token);
+							}
+						});						
+					}
 					else
 						self.accessDenied();
 				});
@@ -324,6 +343,8 @@ define([
 					self.accountData.attr('emailConfirmOK', true);
 					self.accountData.attr('emailNotComplete', false);
 					self.data.attr('emailNotComplete', false);
+					
+					
 				}).fail(function(xhr){
 					self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
 				});

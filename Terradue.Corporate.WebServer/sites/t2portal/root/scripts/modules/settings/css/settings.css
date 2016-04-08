@@ -148,3 +148,8 @@
  	margin-bottom: 5px;
  }
 
+#settingsPage .submenu .nav-pills li.active > a {
+	background-color: #D0D2C1;
+	color: black;
+}
+
