@@ -284,10 +284,10 @@ namespace Terradue.Corporate.WebServer {
                 user.AccountStatus = AccountStatusType.PendingActivation;
                 user.Level = UserLevel.User;
                 user.PasswordAuthenticationAllowed = true;
-                user.Store();
 
                 try{
                     user.CreateLdapAccount(request.Password);
+                    user.Store();
                     user.LinkToAuthenticationProvider(AuthType, user.Username);
                     user.CreateGithubProfile();
                 }catch(Exception e){
