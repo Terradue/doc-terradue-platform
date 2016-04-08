@@ -83,6 +83,7 @@ UPDATE config SET value='Terradue Corporate platform' WHERE name='SiteName';
 
 UPDATE auth SET `activation_rule`='1' WHERE `identifier`='password';
 UPDATE auth SET `activation_rule`='1' WHERE `identifier`='ldap';
+UPDATE auth SET `activation_rule`='2' WHERE `identifier`='oauth';
 
 /*****************************************************************************/
 

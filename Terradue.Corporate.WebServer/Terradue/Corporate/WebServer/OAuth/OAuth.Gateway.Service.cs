@@ -229,7 +229,7 @@ namespace Terradue.Corporate.WebServer {
                         user = j2ldapclient.Authenticate(request.username, request.password, context.GetConfigValue("ldap-apikey"));
 
                     }catch(Exception e){
-                        return new HttpError(System.Net.HttpStatusCode.Forbidden, e);
+                        return new HttpError(System.Net.HttpStatusCode.Forbidden, "Wrong username or password");
                     }
 
 //                    //JWT token
