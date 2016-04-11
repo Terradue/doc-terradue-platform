@@ -24,6 +24,9 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name="scope", Description = "Scope", ParameterType = "path", DataType = "String", IsRequired = true)]
         public String scope { get; set; }
 
+        [ApiMember(Name="nonce", Description = "Scope", ParameterType = "path", DataType = "String", IsRequired = true)]
+        public String nonce { get; set; }
+
         [ApiMember(Name="response_type", Description = "Response type", ParameterType = "path", DataType = "String", IsRequired = true)]
         public String response_type { get; set; }
 
@@ -111,20 +114,35 @@ namespace Terradue.Corporate.WebServer {
 
                 var client_id = request.client_id ?? context.GetConfigValue("sso-clientId");
                 var response_type = request.response_type ?? "code";
+                var nonce = request.nonce ?? Guid.NewGuid().ToString();
                 var scope = request.scope ?? context.GetConfigValue("sso-scopes").Replace(","," ");
-//                scope = "openid email profile sshPublicKey rn";
                 var state = request.state ?? Guid.NewGuid().ToString();
                 var redirect_uri = request.redirect_uri ?? context.GetConfigValue("sso-callback");
 
-                var query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}",
-                                          response_type, scope, client_id, state, redirect_uri);
+                var query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}&nonce={5}",
+                                          response_type, scope, client_id, state, redirect_uri, nonce);
 
                 var oauthrequest = new OauthAuthzPostSessionRequest {
                     query = query,
                     sub_sid = client.SESSIONSID
                 };
 
-                var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
+                OauthAuthzSessionResponse oauthsession = new OauthAuthzSessionResponse();
+                var oauthsessionresponse = client.AuthzSession(oauthrequest, request.ajax);
+
+                if(!(oauthsessionresponse is OauthAuthzSessionResponse)){
+                    var redirect = (string)oauthsessionresponse;
+                    if(request.ajax){
+                        HttpResult redirectResponse = new HttpResult();
+                        redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                        redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                        return redirectResponse;
+                    } else {
+                        HttpContext.Current.Response.Redirect(redirect, true);
+                    }
+                } else {
+                    oauthsession = oauthsessionresponse as OauthAuthzSessionResponse;
+                }
 
                 //session is not active
                 if (oauthsession.error != null || oauthsession.type == "auth"){
@@ -210,7 +228,23 @@ namespace Terradue.Corporate.WebServer {
                     sub_sid = client.SESSIONSID
                 };
 
-                var oauthsession = client.AuthzSession(oauthrequest1);
+                OauthAuthzSessionResponse oauthsession = new OauthAuthzSessionResponse();
+                var oauthsessionresponse = client.AuthzSession(oauthrequest1);
+
+                if(!(oauthsessionresponse is OauthAuthzSessionResponse)){
+                    var redirect = (string)oauthsessionresponse;
+                    if(request.ajax){
+                        HttpResult redirectResponse = new HttpResult();
+                        redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                        redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                        return redirectResponse;
+                    } else {
+                        HttpContext.Current.Response.Redirect(redirect, true);
+                    }
+                } else {
+                    oauthsession = oauthsessionresponse as OauthAuthzSessionResponse;
+                }
+
 
                 if(oauthsession.error != null){
                     throw new Exception("Error accessing the SSO: " + oauthsession.error_description);
@@ -365,17 +399,33 @@ namespace Terradue.Corporate.WebServer {
                     sub_sid = client.SESSIONSID
                 };
 
-                var oauthsession = client.AuthzSession(oauthrequest1);
+                OauthAuthzSessionResponse oauthsession = new OauthAuthzSessionResponse();
+                var oauthsessionresponse = client.AuthzSession(oauthrequest1);
 
-                var redirect = client.DeleteAuthz(oauthsession.sid);
+                if(!(oauthsessionresponse is OauthAuthzSessionResponse)){
+                    var redirect = (string)oauthsessionresponse;
+                    if(request.ajax){
+                        HttpResult redirectResponse = new HttpResult();
+                        redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                        redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                        return redirectResponse;
+                    } else {
+                        HttpContext.Current.Response.Redirect(redirect, true);
+                    }
+                } else {
+                    oauthsession = oauthsessionresponse as OauthAuthzSessionResponse;
+                }
+
+
+                var redirectD = client.DeleteAuthz(oauthsession.sid);
 
                 if(request.ajax){
                     HttpResult redirectResponse = new HttpResult();
-                    redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                    redirectResponse.Headers[HttpHeaders.Location] = redirectD;
                     redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
                     return redirectResponse;
                 } else {
-                    HttpContext.Current.Response.Redirect(redirect, true);
+                    HttpContext.Current.Response.Redirect(redirectD, true);
                 }
 
                 context.Close();
