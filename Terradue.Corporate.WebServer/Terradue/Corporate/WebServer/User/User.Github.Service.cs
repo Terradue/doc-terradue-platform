@@ -99,6 +99,15 @@ namespace Terradue.Corporate.WebServer {
                 user = request.ToEntity(context, user);
                 user.Store();
                 user.Load(); //to get information from Github
+
+                try{
+                    UserT2 usr = UserT2.FromId(context, context.UserId);
+                    usr.LoadLdapInfo();
+                    user.PublicSSHKey = usr.PublicKey;
+                }catch(Exception e){
+                    user.PublicSSHKey = null;
+                }
+
                 result = new WebGithubProfile(user);
                 context.Close();
             } catch (Exception e) {
