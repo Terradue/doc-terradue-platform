@@ -520,6 +520,71 @@ namespace Terradue.Corporate.WebServer {
 			return result;//new WebResponseBool(result);
         }
 
+        public object Get(GetPrivateUserInfoT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            try{
+                context.Open();
+
+                if(string.IsNullOrEmpty(request.request)){
+                    return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid request parameter"));
+                }
+                if(string.IsNullOrEmpty(request.token) || !request.token.Equals(context.GetConfigValue("t2-safe-token"))){
+                    return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid token parameter"));
+                }
+                if(string.IsNullOrEmpty(request.username)){
+                    return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid username parameter"));
+                }
+
+                UserT2 user = null;
+                try{
+                    user = UserT2.FromUsername(context, request.username);
+                }catch(Exception e){
+                    return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid username parameter"));
+                }
+
+                switch(request.request){
+                    case "sshPublicKey":
+                        var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                        client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                        client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                        client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                        client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                        user.LoadLdapInfo();
+                        return new HttpResult(user.PublicKey);
+                        break;
+                    case "s3":
+                        break;
+                    case "githubToken":
+                        var githubProfile = Terradue.Github.GithubProfile.FromId(context, user.Id);
+                        return new HttpResult(githubProfile.Token);
+                        break;
+                    case "redmineApiKey":
+                        /*
+                         * string sql = String.Format ("SELECT apikey FROM usr_redmine WHERE id_usr={0};",this.Id);
+            IDbConnection dbConnection = context.GetDbConnection();
+            IDataReader reader = context.GetQueryResult(sql, dbConnection);
+
+            if (!reader.Read()) {
+                RedmineKey = null;
+                reader.Close();
+                return;
+            }
+            RedmineKey = reader.GetString (0);
+            context.CloseQueryResult(reader, dbConnection);
+                        */
+                        break;
+                    default:
+                        break;
+                }
+
+                context.Close ();
+            }catch(Exception e) {
+                context.Close ();
+                throw e;
+            }
+                return new HttpResult();
+        }
+
         public void ValidateCaptcha(string secret, string response){
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
             request.Method = "POST";
