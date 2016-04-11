@@ -284,7 +284,7 @@ define([
 					dependency: self.indexDependency(),
 					data: self.profileData,
 					fnLoad: function(){
-						self.initSubmenu('key');
+						self.initSubmenu('plan');
 					}
 				});
 
