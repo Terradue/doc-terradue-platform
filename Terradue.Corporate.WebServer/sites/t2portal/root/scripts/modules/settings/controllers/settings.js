@@ -641,13 +641,13 @@ define([
 			},
 
 			'.settings-github .usernameForm .cancel click': function(){
-				$('.settings-github .githubName').css('display', 'inline-block');
 				$('.settings-github .modifyGithubName').hide();
+				$('.settings-github .githubName').css('display', 'inline-block');
 			},
 			
 			'.settings-github .showModifyGithubName click': function(){
 				$('.settings-github .githubName').hide();
-				$('.settings-github .modifyGithubName').removeClass('hide');
+				$('.settings-github .modifyGithubName').removeClass('hide').show();
 			},
 			
 			'.settings-github .addPublicKey click': 'addPublicKey',
