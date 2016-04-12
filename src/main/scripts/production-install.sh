@@ -38,7 +38,7 @@ else
 fi
 
 #mono and mysql
-mono $portal_path/sites/$site/root/bin/Terradue.Portal.AdminTool.exe auto -r $portal_path/sites/$site/root -u root -S $db
+mono $portal_path/sites/$site/root/bin/Terradue.Portal.AdminTool.exe auto -r $portal_path/sites/$site/root -u root -p romho1l@T2 -S $db
 
 chkconfig --add t2portal-agent
 

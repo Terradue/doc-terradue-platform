@@ -260,7 +260,7 @@ namespace Terradue.Corporate.WebServer {
                     else return new HttpResult(oauthputsession, System.Net.HttpStatusCode.OK);
                         
                     var redirect = client.ConsentSession(oauthputsession.sid, consent);
-                    return DoRedirect(context, oauthputsession.redirect, request.ajax);
+                    return DoRedirect(context, redirect, request.ajax);
                     
                 }
                 

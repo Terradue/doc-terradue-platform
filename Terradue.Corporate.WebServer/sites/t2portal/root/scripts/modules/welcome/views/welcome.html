@@ -1,0 +1,46 @@
+<div id="welcomePage" class="container">
+	{{#if loading}}
+		<div class="row text-center"><h2><i class="fa fa-spin fa-spinner"></i> Loading...</h2>
+	{{else}}
+		<br/>
+		<div class="welcome-title">Welcome {{user.FirstName}} {{user.LastName}},</div>
+		<br/>
+		{{#if profileNotComplete}}
+			<div class="welcome-container row text-center">
+				<h3><i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete!</h3>
+				<h4>Please <a href="/portal/settings/profile">fill it up!</a> It is a necessary step to start working with us.</h4>
+			</div>
+		{{/if}}
+		<div class="welcome-container row text-center" style="background-color:#D0D2C1;">
+				<h3><i class="fa fa-hand-o-right"></i>&nbsp; Take a tour and discover the <a href="/portal/tour#platform">Terradue Cloud Platform</a !</h3>
+	    </div>
+		<div class="welcome-container row text-center">
+			<div class="welcome-plan">
+			{{#ifEquals user.Plan "No Plan"}}
+				<h3><i class="fa fa-frown-o"></i>&nbsp; You haven't suscribed to any plan yet.</h3>
+				<h4>Discover which is the best plan for you !</h4>
+			{{/ifEquals}}
+			{{#ifEquals user.Plan "Free Trial"}}
+				<h3><i class="fa fa-smile-o"></i>&nbsp; You have a <strong>Free Trial</strong> plan.</h3>
+				<h4>Wants to upgrade ? Discover which is the best plan for you !</h4>
+			{{/ifEquals}}
+			{{#ifEquals user.Plan "Developer"}}
+				<h3><i class="fa fa-smile-o"></i>&nbsp; You have an <strong>Explorer</strong> plan.</h3>
+				<h4>Wants to upgrade ? Discover which is the best plan for you !</h4>
+			{{/ifEquals}}
+			{{#ifEquals user.Plan 'Integrator'}}
+				<h3><i class="fa fa-smile-o"></i>&nbsp; You have a <strong>Premium</strong> plan.</h3>
+				<h4>Wants to upgrade ? Discover which is the best plan for you !</h4>
+			{{/ifEquals}}
+			{{#ifEquals user.Plan "Producer"}}
+				<h3><i class="fa fa-smile-o"></i>&nbsp; You have a <strong>Scaler</strong> plan.</h3>
+				<h4>Wants to upgrade ? Discover which is the best plan for you !</h4>
+			{{/ifEquals}}
+				<h3><a href="/portal/tour#plans-pricing">Upgrade</a></h3>
+			</div>
+		</div>
+		<div class="welcome-container row text-center" style="background-color:#D0D2C1;">
+			<h3>Follow us on twitter <a href="http://twitter.com/terradue" target="_blank"><i class="fa fa-twitter"></i></a></h3> 
+		</div>
+	{{/if}}
+</div>
