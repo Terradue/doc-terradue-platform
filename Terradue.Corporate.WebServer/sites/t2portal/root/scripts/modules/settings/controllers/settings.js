@@ -94,6 +94,12 @@ define([
 					.addClass('active');				
 			},
 			
+			// overwrite accessDenied default function
+			accessDenied: function(){
+				document.location = '/t2api/oauth'
+			},
+
+			
 			// actions
 			
 			index: function (options) {
