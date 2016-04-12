@@ -6,7 +6,7 @@ site="t2portal"
 db="t2portal"
 dump="/tmp/t2portal-db-dump.sql"
 dbuser="root"
-publicIP="http://www.terradue.com"
+publicIP="https://www.terradue.com"
 
 mkdir -p $portal_path/services
 mkdir -p $portal_path/modules
