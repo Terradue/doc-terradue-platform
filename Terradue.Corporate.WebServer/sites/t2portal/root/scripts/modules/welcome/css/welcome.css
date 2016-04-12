@@ -1,0 +1,155 @@
+
+ #welcomePage .container {
+ 	display: block;
+    padding: 9px 10px 10px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 17px;
+    border: 1px solid #d8d8d8;
+    border-radius: 3px 3px 0 0;
+ }
+
+ #welcomePage .welcome-title {
+ 	font-weight: bold;
+ 	border-bottom: 0px;
+ 	text-align: center;
+ }
+
+ #welcomePage .welcome-container {
+ 	position: relative;
+    padding: 15px 15px 15px 55px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    background-color: #fafafa;
+    border: solid 1px #d8d8d8;
+    border-radius: 3px;
+ }
+
+ #settingsPage .account-value {
+ 	color: DimGray;
+ 	font-style: italic;
+ }
+
+ #settingsPage form label.error {
+	font-size: 11px;
+	color: rgb(200, 0, 0);
+}
+
+ #settingsPage .key-title {
+ 	font-weight: bold;
+ }
+
+ #settingsPage .safePanel {
+	width: 100%;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box; /* Firefox */
+	-webkit-box-sizing:border-box; /* Safari */
+ }
+
+ #settingsPage .safePanel .circle {
+	float: left;
+	width: 30px;
+ }
+
+ #settingsPage .safePanel .key {
+	float: left;
+	padding: 5px;
+	width: 20px;
+ }
+
+ #settingsPage .pubKey {
+	overflow: hidden;
+ }
+
+ #subContainer {
+  margin-bottom: 20px;
+ }
+ 
+ 
+ /* PROFILE*/
+
+#settingsPage .settings-profile input[type="text"] {
+	width: 400px;
+}
+#settingsPage .settings-profile label.error{
+	color: #a94442;
+}
+#settingsPage .settings-profile label.error:empty {
+    display: none!important;
+}
+
+
+/* GITHUB */
+ #settingsPage .settings-github .panel {
+	width: 350px;
+	/* height: 62px; TODO: check*/
+ }
+
+ #settingsPage .settings-github .fa-github {
+	color: gray;
+ }
+
+ #settingsPage .settings-github input[name="GithubName"] {
+	/* margin: 0px 5px 11px; */
+	width: 160px;
+	height: 21px;
+	font-size: 12px;
+ }
+
+ #settingsPage .settings-github .githubAvatar {
+	width: 50px;
+	border: 1px solid gray;
+	border-radius: 6px;
+	padding: 5px;
+	margin-right: 13px;
+	float: left;
+ }
+
+ #settingsPage .settings-github .githubName {
+	display: inline-block;
+	position: absolute;
+	margin-top: 3px;
+	margin-left: 10px;
+ }
+
+ #settingsPage .settings-github .githubName .showModifyGithubName { font-size: 11px; opacity: 0.6; }
+ #settingsPage .settings-github .githubName .showModifyGithubName:hover { opacity: 1 }
+ #settingsPage .settings-github .modifyGithubName.hide { display: none; }
+
+ #settingsPage .settings-github .githubKeyPanel {
+	width: 100%;
+	height: 90px;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box; /* Firefox */
+	-webkit-box-sizing:border-box; /* Safari */
+ }
+ #settingsPage .settings-github .githubKeyPanel .circle {
+	float: left;
+	width: 30px;
+ }
+ #settingsPage .settings-github .githubKeyPanel .key {
+	float: left;
+	padding: 5px;
+	width: 20px;
+ }
+ #settingsPage .settings-github .githubKeyPanel .certPub {
+	overflow: hidden;
+ }
+
+
+
+ #settingsPage .settings-certificate .encodedPem{
+	display: none;
+	font-family: monospace;
+	width: 700px;
+ }
+
+ #settingsPage .alert-no-bottom-margin {
+ 	margin-bottom: 5px;
+ }
+
+#settingsPage .submenu .nav-pills li.active > a {
+	background-color: #D0D2C1;
+	color: black;
+}
+

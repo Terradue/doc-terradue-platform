@@ -91,12 +91,12 @@ define([
 					}, 100);
 					
 				}
-				else Pages.errorView({}, "Controller not found: "+ControllerName);
+				else Pages.errorView({}, null, null); //"Controller not found: "+ControllerName);
 				$('.dropdown-toggle').dropdown();
 			}, function(err){
 				console.error(err.stack);
 				window.err = err;
-				Pages.errorView({}, "Controller not found: "+ControllerName);
+				Pages.errorView({}, null, null); //"Controller not found: "+ControllerName);
 			});
 		},
 		
@@ -161,6 +161,10 @@ define([
 						Pages.initMenu();
 					}
 				});
+				
+				can.route.hashChange = function(hash){
+					//Helpers.scrollToHash(data.hash, true);
+				};
 
 				// activate routing
 				can.route.ready();

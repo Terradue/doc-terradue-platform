@@ -90,6 +90,8 @@ US -> T2 : <b>Edit Profile</b>\n(firstname, lastname, username)
 T2 -> DB : <b>Update User</b>\nUsername=username\nFirstName=firstname\nLastName=lastname\nEmail=email\n
 T2 -> LP : <b>Update User</b>\nuid=username\nname=firstname\ngiven_name=lastname\nemail=email\n
  */
+using System.Linq;
+using System.Web;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]
@@ -286,10 +288,36 @@ namespace Terradue.Corporate.WebServer {
                 user.PasswordAuthenticationAllowed = true;
 
                 try{
+                    //first we delete the current cookie
+                    Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                    client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
+                    client.SSOApiClient = context.GetConfigValue("sso-clientId");
+                    client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
+                    client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
+                    var client_id = context.GetConfigValue("sso-clientId");
+                    var response_type = "code";
+                    var nonce = Guid.NewGuid().ToString();
+                    var scope = context.GetConfigValue("sso-scopes").Replace(","," ");
+                    var state = Guid.NewGuid().ToString();
+                    var redirect_uri = HttpUtility.UrlEncode(context.GetConfigValue("sso-callback"));
+
+                    var query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}&nonce={5}",
+                                              response_type, scope, client_id, state, redirect_uri, nonce);
+                    
+                    client.SID = null;
+                    client.SUB_SID = null;
+                    client.OAUTHTOKEN_ACCESS = null;
+                    client.OAUTHTOKEN_REFRESH = null;
+
                     user.CreateLdapAccount(request.Password);
                     user.Store();
                     user.LinkToAuthenticationProvider(AuthType, user.Username);
                     user.CreateGithubProfile();
+
+                    //create new SID
+                    var oauthsession = client.AuthzSession(new OauthAuthzPostSessionRequest { query = query }, true);
+
+                    client.SID = oauthsession.sid;
                 }catch(Exception e){
 //                    user.Delete();
 //                    user.DeleteLdapAccount();
@@ -389,7 +417,7 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Put(ResetPassword request) {
+        public object Post(ResetPassword request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
@@ -398,7 +426,11 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     user = UserT2.FromUsername(context, request.Username);
                 }catch(Exception){
-                    return new WebResponseBool(true);
+                    try{
+                        user = UserT2.FromEmail(context, request.Username);
+                    }catch(Exception){
+                            return new WebResponseBool(true);
+                        }
                 }
 
                 //send email to user with new token
@@ -539,17 +571,12 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     user = UserT2.FromUsername(context, request.username);
                 }catch(Exception e){
-                    return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid username parameter"));
+                    user = new UserT2(context);
                 }
 
                 switch(request.request){
                     case "sshPublicKey":
-                        var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
-                        client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
-                        client.SSOApiClient = context.GetConfigValue("sso-clientId");
-                        client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
-                        client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                        user.LoadLdapInfo();
+                        user.PublicLoadSshPubKey(request.username);
                         return new HttpResult(user.PublicKey);
                         break;
                     case "s3":
