@@ -565,9 +565,18 @@
     <Content Include="scripts\modules\users_admin\views\users_admin.html" />
     <Content Include="scripts\modules\users_admin\controllers\users_admin.js" />
     <Content Include="scripts\modules\users_admin\models\users_admin.js" />
+    <Content Include="scripts\modules\welcome\models\welcome.js" />
+    <Content Include="scripts\modules\welcome\controllers\welcome.js" />
+    <Content Include="scripts\modules\welcome\views\welcome.html" />
+    <Content Include="scripts\modules\welcome\css\welcome.css" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\" />
+    <Folder Include="scripts\modules\welcome\" />
+    <Folder Include="scripts\modules\welcome\controllers\" />
+    <Folder Include="scripts\modules\welcome\models\" />
+    <Folder Include="scripts\modules\welcome\views\" />
+    <Folder Include="scripts\modules\welcome\css\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Goodies.cs" />
