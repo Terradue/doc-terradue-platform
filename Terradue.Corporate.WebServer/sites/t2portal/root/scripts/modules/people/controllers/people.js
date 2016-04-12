@@ -32,10 +32,10 @@ define([
 			
 			
 			// sample event
-			'ul.tags>li click': function(elem){
-				bootbox.alert('You have clicked on '+elem.find('a').html());
-				return false;
-			}
+			//'ul.tags>li click': function(elem){
+			//	bootbox.alert('You have clicked on '+elem.find('a').html());
+			//	return false;
+			//}
 			
 		}
 	);
