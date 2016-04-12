@@ -6,7 +6,7 @@ define(['can', 'config'], function(can, Config){
 		create: 'POST /'+Config.api+'/user/passwordreset',
 		
 		resetPassword: function(userData){
-			return $.ajax('/'+Config.api+'/user/password/reset', {
+			return $.ajax('/'+Config.api+'/user/passwordreset', {
 				method: 'PUT',
 				data: userData
 			});

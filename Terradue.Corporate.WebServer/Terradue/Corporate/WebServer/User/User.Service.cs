@@ -389,7 +389,7 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Put(ResetPassword request) {
+        public object Post(ResetPassword request) {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
