@@ -426,7 +426,11 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     user = UserT2.FromUsername(context, request.Username);
                 }catch(Exception){
-                    return new WebResponseBool(true);
+                    try{
+                        user = UserT2.FromEmail(context, request.Username);
+                    }catch(Exception){
+                            return new WebResponseBool(true);
+                        }
                 }
 
                 //send email to user with new token
@@ -567,17 +571,12 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     user = UserT2.FromUsername(context, request.username);
                 }catch(Exception e){
-                    return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid username parameter"));
+                    user = new UserT2(context);
                 }
 
                 switch(request.request){
                     case "sshPublicKey":
-                        var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
-                        client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
-                        client.SSOApiClient = context.GetConfigValue("sso-clientId");
-                        client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
-                        client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                        user.LoadLdapInfo();
+                        user.PublicLoadSshPubKey(request.username);
                         return new HttpResult(user.PublicKey);
                         break;
                     case "s3":
