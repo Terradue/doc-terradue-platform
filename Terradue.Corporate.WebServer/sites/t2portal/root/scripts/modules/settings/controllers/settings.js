@@ -586,6 +586,8 @@ define([
 				var newpassword = Helpers.retrieveDataFromForm('.changePasswordForm','newpassword');
 				this.accountData.attr({
 					passwordLoading: true, 
+					passwordSaveSuccess: false,
+					passwordSaveFail: false,
 				});
 				PasswordResetModel.updatePassword(oldpassword,newpassword).then(function(){
 					self.accountData.attr({
