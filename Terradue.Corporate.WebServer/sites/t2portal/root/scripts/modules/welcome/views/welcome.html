@@ -8,7 +8,7 @@
 		{{#if profileNotComplete}}
 			<div class="welcome-container row text-center" style="background-color:#ffb366; color:white;">
 				<h3><i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete!</h3>
-				<h4>Please <a href="/portal/settings/profile">fill it up!</a> It is a necessary step to start working with us.</h4>
+				<h3><a href="/portal/settings/profile">Fill it up</a> - It is a necessary step to start working with us.</h3>
 			</div>
 		{{/if}}
 		<div class="welcome-container row text-center" style="background-color:#D0D2C1;">
@@ -18,25 +18,20 @@
 			<div class="welcome-plan">
 			{{#ifEquals user.Plan "No Plan"}}
 				<h3><i class="fa fa-frown-o"></i>&nbsp; You haven't suscribed to any plan yet.</h3>
-				<h4>Discover which is the best plan for you !</h4>
 			{{/ifEquals}}
 			{{#ifEquals user.Plan "Free Trial"}}
 				<h3><i class="fa fa-smile-o"></i>&nbsp; You have a <strong>Free Trial</strong> plan.</h3>
-				<h4>Wants to upgrade ? Discover which is the best plan for you !</h4>
 			{{/ifEquals}}
 			{{#ifEquals user.Plan "Developer"}}
 				<h3><i class="fa fa-smile-o"></i>&nbsp; You have an <strong>Explorer</strong> plan.</h3>
-				<h4>Wants to upgrade ? Discover which is the best plan for you !</h4>
 			{{/ifEquals}}
 			{{#ifEquals user.Plan 'Integrator'}}
 				<h3><i class="fa fa-smile-o"></i>&nbsp; You have a <strong>Premium</strong> plan.</h3>
-				<h4>Wants to upgrade ? Discover which is the best plan for you !</h4>
 			{{/ifEquals}}
 			{{#ifEquals user.Plan "Producer"}}
 				<h3><i class="fa fa-smile-o"></i>&nbsp; You have a <strong>Scaler</strong> plan.</h3>
-				<h4>Wants to upgrade ? Discover which is the best plan for you !</h4>
 			{{/ifEquals}}
-				<h3><a href="/portal/tour#plans-pricing">Upgrade</a></h3>
+				<h3><a href="/portal/settings/plan">Upgrade</a></h3>
 			</div>
 		</div>
 		<div class="welcome-container row text-center" style="background-color:#D0D2C1;">
