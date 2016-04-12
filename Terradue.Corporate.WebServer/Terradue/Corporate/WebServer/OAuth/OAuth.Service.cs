@@ -156,7 +156,7 @@ UA -> UA : display user name
                 user.LoadLdapInfo();//TODO: should be done automatically on the previous call
                 user.Store();
                 if(!user.HasGithubProfile()) user.CreateGithubProfile();
-                redirect = context.BaseUrl + "/portal/settings/profile";
+                redirect = context.GetConfigValue("t2portal-welcomeEndpoint");
 
                 context.Close();
             } catch (Exception e) {
