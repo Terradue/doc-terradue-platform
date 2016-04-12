@@ -55,7 +55,14 @@ define([
 				}).fail(function(){
 					self.accessDenied();
 				});
+			},
+			
+			// overwrite accessDenied default function
+			accessDenied: function(){
+				document.location = '/t2api/oauth'
 			}
+
+			
 		}
 	);
 		

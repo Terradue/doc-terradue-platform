@@ -15,6 +15,7 @@ define([
 	var baseScriptsUrl = '~/'; //TODO: MANUALLY SPECIFY SCRIPTS ROOT FOLDER
 	var baseUrl = require.toUrl('./').toLowerCase()
 		.replace(baseScriptsUrl.substring(1) + '/./', '/');
+	baseUrl = baseUrl.split('?')[0];
 	
 	return {
 

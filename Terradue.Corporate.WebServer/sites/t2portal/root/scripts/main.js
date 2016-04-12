@@ -24,7 +24,7 @@ require.config({
 		droppableTextarea: 'libs/jquery.droppableTextarea/js/jquery.droppableTextarea',
 		zeroClipboard: 'libs/zeroClipboard/ZeroClipboard',
 		jqueryCopyableInput: 'libs/jquery.copyableInput/js/jquery.copyableInput',
-		summernote: 'http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote',
+		summernote: '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote',
 		latinise: 'libs/latinise/latinise.min',
 		datePicker: 'libs/datePicker/js/bootstrap-datepicker'
 	},

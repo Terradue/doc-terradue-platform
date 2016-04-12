@@ -13,64 +13,35 @@
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Free Trial</strong> plan.
 					</div>
-					<div>It allows you to: ...</div>
 				{{/ifEquals}}
 				{{#ifEquals user.Plan "Developer"}}
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Explorer</strong> plan.
-					</div>
-					<div>
-						It allows you to:
-						<ul>
-							<li>Do this</li>
-							<li>And that</li>
-							<li>...</li>
-						</ul>
 					</div>
 				{{/ifEquals}}
 				{{#ifEquals user.Plan 'Integrator'}}
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Premium</strong> plan.
 					</div>
-					<div>
-						It allows you to:
-						<ul>
-							<li>Do this</li>
-							<li>And that</li>
-							<li>...</li>
-						</ul>
-					</div>
 				{{/ifEquals}}
 				{{#ifEquals user.Plan "Producer"}}
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Scaler</strong> plan.
 					</div>
-					<div>
-						It allows you to:
-						<ul>
-							<li>Do this</li>
-							<li>And that</li>
-							<li>...</li>
-						</ul>
-					</div>
 				{{/ifEquals}}
 				<div>
 					{{#ifEquals user.Plan "No Plan"}}
 						<b>Want to get a plan ?</b>
-						<br/>
-						Discover which is the best plan for you !
 					{{/ifEquals}}
 
 					{{#ifNotEquals user.Plan "No Plan"}}
 						<br/>
 						<b>Want to change your plan ?</b>
-						<br/>
-						Discover which is the best plan for you !
 					{{/ifNotEquals}}
 
 					<br/>
 					<br/>
-					<a class="btn btn-small btn-warning" href="/portal/tour#plans-pricing">Upgrade</a>
+					<a class="btn btn-small btn-warning" href="mailto:support@terradue.com?Subject=Terradue%20Cloud%20Platform%20-%20Upgrade%20plan" target="_blank">Contact us</a>
 					</div>
 			</div>
 		</div>

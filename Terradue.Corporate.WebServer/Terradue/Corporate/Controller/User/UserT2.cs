@@ -585,6 +585,25 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Close();
         }
 
+        public void PublicLoadSshPubKey(string username) {
+            Json2Ldap.Connect();
+            try {
+                var dn = LdapFactory.CreateLdapDN(username);
+                var ldapusr = this.Json2Ldap.GetEntry(dn);
+                if(ldapusr != null){
+                    if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
+                }
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+
+
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
