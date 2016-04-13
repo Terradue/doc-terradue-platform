@@ -208,9 +208,11 @@ namespace Terradue.Corporate.WebServer {
 
                 //request was done just to get the oauthsession (and the list of scopes to consent)
                 if(request.username == null && request.password == null && request.scope == null){
+
                     OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                         query = query
                     };
+                    if(!string.IsNullOrEmpty(client.SUB_SID)) oauthrequest1.sub_sid = client.SUB_SID;
                     return new HttpResult(client.AuthzSession(oauthrequest1), System.Net.HttpStatusCode.OK);
                 }
 
