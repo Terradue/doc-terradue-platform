@@ -71,11 +71,15 @@ var SigninControl = BaseControl(
 	    	isSubmitEnabled: false
 	    });
 		
-		// Get the query string with the encoded OpenID Connect authentication
-		// request
-		var urlParams = Helpers.getUrlParameters();
-		var query = urlParams.query;
-		var type = urlParams.type;
+		// Get the query string with the encoded OpenID Connect authentication request
+	    var query = can.route.attr('query');
+	    var type = can.route.attr('type');
+	    if (query.indexOf('?query=')==0)
+	    	query = query.split('?query=')[1];
+
+//		var urlParams = Helpers.getUrlParameters();
+//		var query = urlParams.query;
+//		var type = urlParams.type;
 
 		this.log('query: ' + (query ? query : 'none'));
 		this.log('type: ' + (type ? type : 'none'));
@@ -264,9 +268,10 @@ var SigninControl = BaseControl(
 	redirectToCallback: function(jqXHR){
 		if (jqXHR.status==204){
 			var location = jqXHR.getResponseHeader('Location');
+			var hash = can.route.attr('hash');
 			if (location){
-				this.log("Received redirection URI: " + location);
-				window.location.replace(location); // redirect
+				this.log("Received redirection URI: " + location + (hash ? '#'+hash : ''));
+				window.location.replace(location + (hash ? ('#'+hash) : '')); // redirect
 			} else{
 				this.log("Missing Location response header");
 				this.displayErrorMessage('Something went wrong.', 'Missing Location response header.');

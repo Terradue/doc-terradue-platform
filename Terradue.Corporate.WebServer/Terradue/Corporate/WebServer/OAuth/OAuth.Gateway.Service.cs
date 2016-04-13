@@ -141,7 +141,7 @@ namespace Terradue.Corporate.WebServer {
                     query = query
                 };
 
-                if(client.SUB_SID != null) oauthrequest.sub_sid = client.SUB_SID; 
+                if(!string.IsNullOrEmpty(client.SUB_SID)) oauthrequest.sub_sid = client.SUB_SID; 
 
                 var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
                 if(!string.IsNullOrEmpty(oauthsession.redirect)) return DoRedirect(context, oauthsession.redirect, request.ajax);
@@ -208,9 +208,11 @@ namespace Terradue.Corporate.WebServer {
 
                 //request was done just to get the oauthsession (and the list of scopes to consent)
                 if(request.username == null && request.password == null && request.scope == null){
+
                     OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                         query = query
                     };
+                    if(!string.IsNullOrEmpty(client.SUB_SID)) oauthrequest1.sub_sid = client.SUB_SID;
                     return new HttpResult(client.AuthzSession(oauthrequest1), System.Net.HttpStatusCode.OK);
                 }
 
