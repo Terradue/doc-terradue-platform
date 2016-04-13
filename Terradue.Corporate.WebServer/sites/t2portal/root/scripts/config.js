@@ -18,6 +18,10 @@ define({
 		tour: '/static/tour.html',
 		resources: '/static/resources.html',
 		media: '/static/media.html',
+		terms_of_service: '/static/terms_of_service.html',
+		terms_of_use: '/static/terms_of_use.html',
+		privacy: '/static/privacy.html',
+		security: '/static/security.html'
 	},
 	
 	recaptchaPublicKey: '6Lc1ZgMTAAAAAFB21z0ElV23MU1friFPmkBXTtNc',
