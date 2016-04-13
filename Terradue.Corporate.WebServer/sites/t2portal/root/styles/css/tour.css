@@ -113,7 +113,10 @@
   font-weight: 400;
   letter-spacing: 1px;
   line-height: normal;
-  padding: 25px 20px;
+  padding-top: 15px;
+  padding-bottom: 25px;
+  padding-left: 20px;
+  padding-right: 20px;
   text-transform: uppercase;
   display: block;
 }

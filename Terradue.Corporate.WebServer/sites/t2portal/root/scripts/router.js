@@ -25,6 +25,11 @@ define([
 		'pages/:id&:selector route': 'pages',
 		'pages/:id route': 'pages',
 		
+		'signin:query&type=:type#:hash route': function(data){
+			data.controller = 'signin';
+			this.dispatch(data);
+		},
+
 		':controller/:action/:id route': function(data){
 			this.dispatch(data)
 		},
@@ -162,10 +167,6 @@ define([
 					}
 				});
 				
-				can.route.hashChange = function(hash){
-					//Helpers.scrollToHash(data.hash, true);
-				};
-
 				// activate routing
 				can.route.ready();
 			});
