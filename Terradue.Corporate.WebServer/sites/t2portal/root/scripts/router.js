@@ -33,10 +33,18 @@ define([
 		':controller/:action/:id route': function(data){
 			this.dispatch(data)
 		},
+		
+		':controller/:action/ route': function(data){
+			this.dispatch(data)
+		},
 		':controller/:action route': function(data){
 			this.dispatch(data)
 		},
+		
 		':controller#:hash route': function(data){
+			this.dispatch(data);
+		},
+		':controller/ route': function(data){
 			this.dispatch(data);
 		},
 		':controller route': function(data){

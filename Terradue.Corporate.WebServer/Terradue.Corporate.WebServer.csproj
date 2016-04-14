@@ -226,6 +226,8 @@
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Gateway.Service.cs" />
     <Compile Include="Terradue\Corporate\Controller\LDAP\Json2LdapFactory.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Zendesk.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Discourse.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
