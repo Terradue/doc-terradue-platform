@@ -116,9 +116,13 @@ var NewsControl = BaseControl({}, {
 	
 	addDataToNews: function(news){
 		// get image TODO:improve with a property for image
-		if (news.properties.content.startsWith('<img src="')){
-			var imgUrl = news.properties.content.substring(10, 10+news.properties.content.substring(10).indexOf('"'));
-			news.properties.imageUrl = imgUrl;
+		
+		if (news.properties.content.startsWith('<img class="preview" src="')){
+			var imgTag = news.properties.content.substring(0, news.properties.content.indexOf('/>')+2);
+			var $img = $(imgTag);
+			var imgUrl = $img.attr('src');
+			news.properties.imageUrl = $img.attr('src');
+			news.properties.content = news.properties.content.substring(imgTag.length);
 		}
 		
 		news.properties.tags = [];

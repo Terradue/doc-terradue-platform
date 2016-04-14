@@ -37,3 +37,25 @@
     width: 300px;
     display: inline-block;
 }
+
+#newsAdminPage .entity img.image{
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+#newsAdminPage img.imageUrl-preview {
+    max-height: 200px;
+    margin-top: 10px;
+    border: 1px solid gray;
+}
+
+#newsAdminPage div.no-img {
+    width: 100%;
+    background: #eee;
+    height: 100px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: gray;
+    padding: 38px;
+    border: 1px solid #ddd;
+}

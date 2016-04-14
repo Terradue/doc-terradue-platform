@@ -18,23 +18,59 @@ define([
 			var self = this;
 		},
 		
+		onEntitiesLoaded: function(newses){
+			$.each(newses, function(i, news){
+				// set simpleContent
+				if (news.Content.startsWith('<img class="preview" src="')){
+					if (!news.imageUrl){
+						var imgTag = news.Content.substring(0, news.Content.indexOf('/>')+2);
+						var $img = $(imgTag);
+						news.attr('imageUrl', $img.attr('src'));
+						news.attr('simpleContent', news.Content.substring(imgTag.length));
+					} 
+				} else
+					news.attr('simpleContent', news.Content);
+			});
+		},
+		
 		onEntitySelected: function(news){
+			var self = this;
 			Helpers.scrollTop();
 			
 			// destroy eventual previous summernote
-			this.element.find('textarea[name="Content"]').summernote('destroy');
+			this.element.find('textarea[name="simpleContent"]').summernote('destroy');
 			
 			// init summernote
-			this.element.find('textarea[name="Content"]').summernote();
+			this.element.find('textarea[name="simpleContent"]').summernote();
 			
 			this.element.find('input[name="Date"]').datepicker({
 				format: "yyyy-mm-dd"
+			});
+			
+			var keyTimer = null;
+			this.element.find('input[name="imageUrl"]').keyup(function(){
+				var imageUrl = $(this).val();
+				
+				clearTimeout(keyTimer);
+				keyTimer = setTimeout(function(){
+					if (imageUrl)
+						self.element.find('img.imageUrl-preview').show().attr('src', imageUrl);
+					else
+						self.element.find('img.imageUrl-preview').hide();
+				}, 500);
+
 			});
 		},
 		
 		onCreateClick: function(){
 			Helpers.scrollTop();
-			this.element.find('textarea[name="Content"]').summernote('reset');
+			this.element.find('textarea[name="simpleContent"]').summernote('reset');
+		},
+		
+		onBeforeSave: function(entity){
+			if (entity.imageUrl && entity.simpleContent){
+				entity.attr('Content', '<img class="preview" src="' + entity.imageUrl + '" />' + entity.simpleContent);
+			}
 		},
 		
 		'.setDateNow click': function(){

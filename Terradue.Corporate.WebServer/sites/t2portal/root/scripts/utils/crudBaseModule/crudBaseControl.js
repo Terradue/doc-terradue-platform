@@ -63,6 +63,7 @@ define([
 			
 			var callback = function(){
 				self.entities = new self.options.Model.List({});
+				
 				self.state = new can.Observe({
 					entityName: self.options.entityName,
 					entities: self.entities,
@@ -74,6 +75,11 @@ define([
 
 				if (self.onIndex)
 					self.onIndex(self.element, self.options);
+				
+				if (self.onEntitiesLoaded)
+					self.entities.then(function(entities){
+						self.onEntitiesLoaded(entities)
+					});
 			};
 			
 			if (this.options.loginDeferred)
@@ -242,7 +248,10 @@ define([
 				// create
 				var entity = new Model(formData);
 			
-			if (entity)
+			if (entity){
+				if (this.onBeforeSave)
+					this.onBeforeSave(entity);
+				
 				entity.save().then(function(){
 					self.log('saved!');
 					self.state.attr('showForm', false);
@@ -252,11 +261,12 @@ define([
 						else
 							self.entities.push(entity);
 					}
-						
+					
 					self.successMessage(id ? 'UPDATE' : 'CREATE');
 				}).fail(function(xhr){
 					self.failMessage(id ? 'UPDATE' : 'CREATE', xhr);
 				});				
+			}
 			
 			return false;
 		},
