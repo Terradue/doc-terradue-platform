@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.terradue</groupId>
 		<artifactId>t2-parent</artifactId>
-		<version>15</version>
+		<version>16</version>
 	</parent>
 
 	<groupId>com.terradue.t2portal</groupId>
@@ -36,11 +36,11 @@
 
 	<build>
 		<plugins>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.nuiton.jredmine</groupId>
 				<artifactId>jredmine-maven-plugin</artifactId>
 				<inherited>false</inherited>
-			</plugin>
+			</plugin> -->
 			<plugin>
 		        <groupId>org.codehaus.mojo</groupId>
 		        <artifactId>exec-maven-plugin</artifactId>
