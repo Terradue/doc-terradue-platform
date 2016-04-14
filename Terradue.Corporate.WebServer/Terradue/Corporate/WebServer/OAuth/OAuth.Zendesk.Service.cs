@@ -151,7 +151,7 @@ namespace Terradue.Corporate.WebServer {
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
 
                 if(!string.IsNullOrEmpty(request.kind) && request.kind.Equals("error")){
-                    redirect = context.BaseUrl + "/portal/error?msg=" + request.message;
+                    redirect = context.BaseUrl + "/portal/error?msg=Error%20from%20Zendesk&longmsg=" + request.message;
                 } else {
                     redirect = context.BaseUrl;
                 }
