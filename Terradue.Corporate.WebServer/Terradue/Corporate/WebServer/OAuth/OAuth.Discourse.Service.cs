@@ -24,9 +24,6 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name="error", Description = "error", ParameterType = "path", DataType = "string", IsRequired = true)]
         public string error { get; set; }
-
-        [ApiMember(Name="nonce", Description = "error", ParameterType = "path", DataType = "string", IsRequired = true)]
-        public string nonce { get; set; }
     }
 
     [Route("/discourse/sso", "GET")]
@@ -58,10 +55,14 @@ namespace Terradue.Corporate.WebServer {
 
                 var base64Payload = System.Convert.FromBase64String(request.sso);
                 var payload = encoding.GetString(base64Payload);
+                var querystring = HttpUtility.ParseQueryString(payload);
+                var nonce = querystring["nonce"];
 
                 //validate the payload
                 var sig = HashHMAC(context.GetConfigValue("discourse-sso-secret"), request.sso);
                 if(!sig.Equals(request.sig)) throw new Exception("Invalid payload");
+
+                HttpContext.Current.Session["discourse-nonce"] = nonce;
                     
                 //redirect to t2 portal SSO
                 using (var service = base.ResolveService<OAuthGatewayService>()) { 
@@ -69,7 +70,7 @@ namespace Terradue.Corporate.WebServer {
                         client_id = context.GetConfigValue
                             ("sso-clientId"),
                         response_type = "code",
-                        nonce = payload.Substring(payload.IndexOf("=") + 1),
+                        nonce = nonce,
                         state = Guid.NewGuid().ToString(),
                         redirect_uri = HttpUtility.UrlEncode(context.BaseUrl + "/t2api/discourse/cb"),
                         ajax = false
@@ -121,9 +122,11 @@ namespace Terradue.Corporate.WebServer {
                 user.LoadLdapInfo();//TODO: should be done automatically on the previous call
                 user.Store();
 
+                var nonce = HttpContext.Current.Session["discourse-nonce"];
+
                 //build payload
                 var payload = string.Format("nonce={0}&email={1}&external_id={2}&username={3}&name={4}&require_activation=true",
-                                         request.nonce,
+                                         nonce,
                                          user.Email,
                                          user.Identifier,
                                          user.Username,
