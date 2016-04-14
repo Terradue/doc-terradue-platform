@@ -9,7 +9,7 @@ INSERT INTO config (name, id_section, pos, internal, type, caption, hint, value,
 
 -- Adding zendesk SSO ... \
 INSERT INTO config (name, id_section, pos, internal, type, caption, hint, value, optional) VALUES ('zendesk-sso-secret', NULL, NULL, '0', 'string', 'zendesk sso secret', 'zendesk sso secret', '5Gjz1rGjFlPRcqrFXUAOfCA9kRJamuoK0xvu745eNuIl9ItJ', '1');
-INSERT INTO `t2portal`.`config` (`name`, `id_section`, `pos`, `internal`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('zendesk-sso-callback', NULL, NULL, '0', 'string', 'zendesk sso callback', 'zendesk sso callback', 'https://terradue.zendesk.com/access/jwt', '1');
+INSERT INTO config (name, id_section, pos, internal, type, caption, hint, value, optional) VALUES ('zendesk-sso-callback', NULL, NULL, '0', 'string', 'zendesk sso callback', 'zendesk sso callback', 'https://terradue.zendesk.com/access/jwt', '1');
 -- RESULT
 
 /*****************************************************************************/
