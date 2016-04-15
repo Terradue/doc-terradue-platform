@@ -15,12 +15,12 @@
 				{{#each entities}}
 					<tr class="entity" data-id="{{ Id }}">
 						<td>{{ Id }}</td>
-						<td>{{ Username }}</td>
+						<td><a href="/portal/users_admin/details/{{ Id }}" title="Details/Manage plan">{{ Username }}</a></td>
 						<td>{{ FirstName }} {{ LastName }}</td>
 						<td>{{ Email }}</td>
 						<td>{{ Plan }}</td>
 						<td>
-							<a href="/portal/users_admin/details/{{ Id }}" class="btn btn-info plans" title="Manage plan"><i class="fa fa-star"></i></a>
+							<a href="/portal/users_admin/details/{{ Id }}" class="btn btn-info plans" title="Details/Manage plan"><i class="fa fa-star"></i></a>
 							<a href="javascript://" class="btn btn-info delete" title="Delete"><i class="fa fa-trash-o"></i></a>
 						</td>
 					</tr>

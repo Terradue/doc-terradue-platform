@@ -17,9 +17,6 @@ define([
 		
 		onIndex: function(element, options){
 			var self = this;
-			PlansModel.findAll().then(function(plans){
-				self.plans = plans;
-			});
 		},
 		
 		onEntitySelected: function(users){
@@ -34,26 +31,35 @@ define([
 			console.log(data);
 			var self = this;
 			var id = data.id;
-			var search = this.entities.filter(function(entity){return entity.Id==id});
+			
+			this.userData = new can.Observe({});
+			
+			// get user info
+			UsersAdminModel.findOne({id:id}).then(function(user){
+				self.userData.attr('user', user);
+			}).fail(function(){
+				this.errorView({}, 'Unable to get user info', 'The user doesn\'t exist or you can\'t access this page.', true);
+			});
+			
+			// get plans
+			PlansModel.findAll().then(function(plans){
+				self.userData.attr('plans', plans);
+			}).fail(function(){
+				this.errorView({}, 'Unable to get plans info', null, true);
+			});
 
-			if (search.length){
-				var user = search[0];
-				self.planData = new can.Observe({});
-				self.planData.attr({
-					user: user,
-					plans: self.plans
-				});
-				self.view({
-						url: 'modules/users_admin/views/plans.html',
-						data: this.planData
-				});
-			}
+			// load view
+			this.view({
+				url: 'modules/users_admin/views/details.html',
+				data: this.userData
+			});
 		},
 
 		'.upgradePlanBtn click': function(data){
 			var self = this,
 				selectedPlanId = this.element.find('input[name="planRadio"]:checked').val(),
-				planSearch = $.grep(this.plans, function(plan){
+				plans = this.userData.plans,
+				planSearch = $.grep(plans, function(plan){
 					return (plan.Value==selectedPlanId);
 				}),
 				plan = (planSearch.length ? planSearch[0] : null),
@@ -61,7 +67,7 @@ define([
 			
 			if (plan && userid){
 				// save plan
-				this.planData.attr({
+				this.userData.attr({
 					planUpgradedLoading: true, planUpgradedSuccessName:null, planUpgradedFailMessage:null
 				});
 				
@@ -69,10 +75,10 @@ define([
  					Id: userid,
  					Plan: plan.Key,
  				}).then(function(){
-					self.planData.attr('planUpgradedSuccessName', plan.Key);
+					self.userData.attr('planUpgradedSuccessName', plan.Key);
  				}).fail(function(xhr){
  					errXhr=xhr; // for debug
- 					self.planData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+ 					self.userData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
  				});
 			}
 		}
