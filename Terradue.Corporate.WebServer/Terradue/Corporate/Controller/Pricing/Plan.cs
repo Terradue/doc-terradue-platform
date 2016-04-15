@@ -64,28 +64,24 @@ using System.Data;
 
 
 namespace Terradue.Corporate.Controller {
-
-    public enum PlanType{
-        NONE,
-        TRIAL,
-        DEVELOPER,
-        INTEGRATOR,
-        PRODUCER
-    }
-
+    
     /// <summary>
     /// Plan.
     /// </summary>
     public class Plan {
 
+        public const string NONE = "No Plan";
+        public const string TRIAL = "Free Trial";
+        public const string EXPLORER = "Explorer";
+        public const string SCALER = "Scaler";
+        public const string PREMIUM = "Premium";
+
         public int Id { get; set; }
         public string Name { get; set; }
 
-        private const string DEFAULT_NAME = "No Plan";
-
         public Plan(){
             Id = 0;
-            Name = DEFAULT_NAME;
+            Name = Plan.NONE;
         }
 
         public static Plan FromId(IfyContext context, int id){
@@ -99,7 +95,7 @@ namespace Terradue.Corporate.Controller {
 
         public static Plan FromName(IfyContext context, string name){
             Plan plan = new Plan();
-            if (!name.Equals(DEFAULT_NAME)) {
+            if (!name.Equals(Plan.NONE)) {
                 var pid = context.GetQueryIntegerValue(String.Format("SELECT role.id FROM role WHERE role.name={0};",StringUtils.EscapeSql(name)));
                 if (pid == 0) throw new Exception("Invalid plan name");
                 plan.Name = name;
