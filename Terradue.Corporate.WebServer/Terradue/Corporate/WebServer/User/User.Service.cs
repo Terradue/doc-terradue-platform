@@ -92,6 +92,7 @@ T2 -> LP : <b>Update User</b>\nuid=username\nname=firstname\ngiven_name=lastname
  */
 using System.Linq;
 using System.Web;
+using Terradue.Github;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]
@@ -171,7 +172,7 @@ namespace Terradue.Corporate.WebServer {
 
                 EntityList<UserT2> users = new EntityList<UserT2>(context);
                 users.Load();
-                foreach(UserT2 u in users) result.Add(new WebUserT2(u));
+                foreach(UserT2 u in users) result.Add(new WebUserT2(u, true));
 
                 context.Close();
             } catch (Exception e) {
@@ -574,6 +575,8 @@ namespace Terradue.Corporate.WebServer {
                     user = new UserT2(context);
                 }
 
+                GithubProfile githubProfile = null;
+
                 switch(request.request){
                     case "sshPublicKey":
                         user.PublicLoadSshPubKey(request.username);
@@ -581,9 +584,17 @@ namespace Terradue.Corporate.WebServer {
                         break;
                     case "s3":
                         break;
+                    case "githubUsername":
+                        githubProfile = GithubProfile.FromId(context, user.Id);
+                        return new HttpResult(githubProfile.Name);
+                        break;
                     case "githubToken":
-                        var githubProfile = Terradue.Github.GithubProfile.FromId(context, user.Id);
+                        githubProfile = GithubProfile.FromId(context, user.Id);
                         return new HttpResult(githubProfile.Token);
+                        break;
+                    case "githubEmail":
+                        githubProfile = GithubProfile.FromId(context, user.Id);
+                        return new HttpResult(githubProfile.Email);
                         break;
                     case "redmineApiKey":
                         /*
