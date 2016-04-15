@@ -228,12 +228,12 @@ namespace Terradue.Corporate.WebServer {
         public WebUserT2(UserT2 entity, bool basicInfo = false) : base(entity) {
 
             this.DomainId = entity.DomainId;
+            this.Plan = entity.Plan.Name;
 
             if (!basicInfo) {
                 if (entity.PublicKey == null) entity.LoadLdapInfo();
                 this.OnePassword = entity.OnePassword;
                 this.PublicKey = entity.PublicKey;
-                this.Plan = entity.Plan.Name;
             }
         }
 
