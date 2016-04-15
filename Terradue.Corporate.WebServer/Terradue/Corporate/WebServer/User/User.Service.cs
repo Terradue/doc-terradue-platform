@@ -172,7 +172,7 @@ namespace Terradue.Corporate.WebServer {
 
                 EntityList<UserT2> users = new EntityList<UserT2>(context);
                 users.Load();
-                foreach(UserT2 u in users) result.Add(new WebUserT2(u));
+                foreach(UserT2 u in users) result.Add(new WebUserT2(u, true));
 
                 context.Close();
             } catch (Exception e) {
