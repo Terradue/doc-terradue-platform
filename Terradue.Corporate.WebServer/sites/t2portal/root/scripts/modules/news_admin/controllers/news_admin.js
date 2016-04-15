@@ -46,20 +46,6 @@ define([
 			this.element.find('input[name="Date"]').datepicker({
 				format: "yyyy-mm-dd"
 			});
-			
-			var keyTimer = null;
-			this.element.find('input[name="imageUrl"]').keyup(function(){
-				var imageUrl = $(this).val();
-				
-				clearTimeout(keyTimer);
-				keyTimer = setTimeout(function(){
-					if (imageUrl)
-						self.element.find('img.imageUrl-preview').show().attr('src', imageUrl);
-					else
-						self.element.find('img.imageUrl-preview').hide();
-				}, 500);
-
-			});
 		},
 		
 		onCreateClick: function(){
@@ -68,13 +54,25 @@ define([
 		},
 		
 		onBeforeSave: function(entity){
-			if (entity.imageUrl && entity.simpleContent){
-				entity.attr('Content', '<img class="preview" src="' + entity.imageUrl + '" />' + entity.simpleContent);
-			}
+			entity.attr('Content', (entity.imageUrl ? '<img class="preview" src="' + entity.imageUrl + '" />' : '')
+					+ entity.simpleContent);
 		},
 		
 		'.setDateNow click': function(){
 			this.element.find('input[name="Date"]').val((new Date()).toISOString());
+		},
+		
+		'input[name="imageUrl"] keyup': function(el){
+			var self = this;
+			var imageUrl = el.val();
+			
+			clearTimeout(this.keyTimer);
+			this.keyTimer = setTimeout(function(){
+				if (imageUrl)
+					self.element.find('img.imageUrl-preview').show().attr('src', imageUrl);
+				else
+					self.element.find('img.imageUrl-preview').hide();
+			}, 500);
 		}
 		
 	});
