@@ -188,8 +188,8 @@
 }
 #newsPage .blogImg {
 	display: block;
-	max-width: 100%;
-	max-height: 186px;
+    width: 100%;
+    max-height: 186px;
 	margin: auto;
 }
 #newsPage .blog-post {
@@ -207,4 +207,9 @@
 }
 #newsPage .blog-tag::before {
 	content: none;
+}
+
+#newsPage .newsLoader {
+	text-align: center;
+	color: #aaa;
 }

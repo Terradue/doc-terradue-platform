@@ -3,7 +3,7 @@
 	<!-- TODO: temporary banner, replace -->
 	<div style="
 	    background-image: url(../../../../styles/img/newsroom/newsroom-banner.jpg);
-	    height: 100px;
+	    height: 200px;
 	    background-size: cover;
 	    background-position-y: 69%;
 	"></div>
@@ -17,7 +17,7 @@
 	{{#if loading}}
 		<br/>
 		<br/>
-		<h3 style="text-align:center"><i class="fa fa-spin fa-spinner"></i>Loading news...</h3>
+		<h4 class="newsLoader"><i class="fa fa-spin fa-spinner"></i> Loading news...</h4>
 	{{/if}}
 	{{#if newses}}
 		{{#if q}}
@@ -110,56 +110,9 @@
 								<li><a href="/portal/newsroom/tag/{{Key}}" class="blog-tag" data-tag="{{Key}}">{{ Key }} <span>{{ Value }}</span></a></li>
 							{{/each}}
 						</ul>
-					{{else}}
-						Loading tags...					
 					{{/if}}
 				</div>
 				<!-- End Blog Tags -->
-				
-				<!-- Recent Posts -->
-	<!-- 			<div class="recent-posts">
-					<h3>Recent Posts</h3>
-					<ul class="posts-list margin-top-10">
-						<li>
-							<div class="recent-post">
-								<a href=""> <img class="pull-left"
-									src="assets/img/blog/thumbs/thumb1.jpg" alt="thumb1">
-								</a> <a href="#" class="posts-list-title">Sidebar post example</a> <br>
-								<span class="recent-post-date"> July 30, 2013 </span>
-							</div>
-							<div class="clearfix"></div>
-						</li>
-						<li>
-							<div class="recent-post">
-								<a href=""> <img class="pull-left"
-									src="assets/img/blog/thumbs/thumb2.jpg" alt="thumb2">
-								</a> <a href="#" class="posts-list-title">Sidebar post example</a> <br>
-								<span class="recent-post-date"> July 30, 2013 </span>
-							</div>
-							<div class="clearfix"></div>
-						</li>
-						<li>
-							<div class="recent-post">
-								<a href=""> <img class="pull-left"
-									src="assets/img/blog/thumbs/thumb3.jpg" alt="thumb3">
-								</a> <a href="#" class="posts-list-title">Sidebar post example</a> <br>
-								<span class="recent-post-date"> July 30, 2013 </span>
-							</div>
-							<div class="clearfix"></div>
-						</li>
-						<li>
-							<div class="recent-post">
-								<a href=""> <img class="pull-left"
-									src="assets/img/blog/thumbs/thumb4.jpg" alt="thumb4">
-								</a> <a href="#" class="posts-list-title">Sidebar post example</a> <br>
-								<span class="recent-post-date"> July 30, 2013 </span>
-							</div>
-							<div class="clearfix"></div>
-						</li>
-					</ul>
-				</div>
-	 -->			<!-- End Recent Posts -->
-	 
 			</div>
 			<!-- End Side Column -->
 		</div>

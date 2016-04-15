@@ -102,7 +102,7 @@ namespace Terradue.Corporate.WebServer {
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
-                client.RedirectUri = context.GetConfigValue("sso-callback");
+                client.RedirectUri = context.BaseUrl + "/t2api/zendesk/cb";
                 client.AccessToken(request.Code);
 
                 OAuth2AuthenticationType auth = new OAuth2AuthenticationType(context);

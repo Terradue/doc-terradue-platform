@@ -1,0 +1,78 @@
+<div class="container">
+{{#if user}}
+	<h2>Control Panel - User management of <b>{{user.Username}}</h2>
+	<a href="/portal/users_admin"><small><i class="fa fa-caret-left"></i>
+		 Go back to all users admin</small>
+	</a>
+	<br/><br/>
+	<div class="row">
+		<div class="col-md-6">
+		
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">User Info</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					{{#user}}
+						<dl class="dl-horizontal">
+							<dt>Id</dt><dd>&nbsp;{{Id}}</dd>
+							<dt>Identifier</dt><dd>&nbsp;{{Identifier}}</dd>
+							<dt>Username</dt><dd>&nbsp;{{Username}}</dd>
+							<dt>FirstName</dt><dd>&nbsp;{{FirstName}}</dd>
+							<dt>LastName</dt><dd>&nbsp;{{LastName}}</dd>
+							<dt>Email</dt><dd>&nbsp;{{Email}}</dd>
+							<dt>Affiliation</dt><dd>&nbsp;{{Affiliation}}</dd>
+							<dt>Country</dt><dd>&nbsp;{{Country}}</dd>
+							<dt>Plan</dt><dd>&nbsp;{{Plan}}</dd>
+							<dt>AccountStatus</dt><dd>&nbsp;{{AccountStatus}}</dd>
+							<dt>Level</dt><dd>&nbsp;{{Level}}</dd>
+							<dt>DomainId</dt><dd>&nbsp;{{DomainId}}</dd>
+							<dt>EmailNotification</dt><dd>&nbsp;{{EmailNotification}}</dd>
+							<dt>PublicKey</dt><dd>&nbsp;{{PublicKey}}</dd>
+						</dl>
+					{{/user}}
+				</div>
+			</div>
+			
+		</div>
+		<div class="col-md-6">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Change plan</h3>
+				</div>
+				<div class="panel-body">
+					{{#if plans}}
+						{{#each plans}}
+							<div class="radio">
+								<label>
+									<input type="radio" name="planRadio" value="{{Value}}" {{#ifEquals Key ../user.Plan}}checked="checked"{{/ifEquals}}>
+									{{Key}}
+								</label>
+							</div>
+						{{/each}}
+						<button class="btn btn-warning upgradePlanBtn" data-user="{{user.Id}}">Upgrade</button>&nbsp;&nbsp;
+						{{#if planUpgradedSuccessName}}
+							<span class="text-success">The user <strong>{{user.Username}}</strong> account is upgraded to <strong>{{planUpgradedSuccessName}}</strong></span>
+						{{else}}
+							{{#if planUpgradedFailMessage}}
+								<span class="text-danger">Error while upgrade user <strong>{{user.Username}}</strong> account: <strong>{{planUpgradedFailMessage}}</strong></span>
+							{{else}}
+								{{#if planUpgradedLoading}}
+									&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Upgrading...
+								{{/if}}
+							{{/if}}
+						{{/if}}
+					{{else}}
+						<p><i class="fa fa-spin fa-spinner"></i> Loading plans...</p>
+					{{/if}}
+				</div>
+			</div>
+			
+		</div>
+	</div>
+{{else}}
+	<br/><br/>
+	<p><i class="fa fa-spin fa-spinner"></i> Loading user...</p>
+{{/if}}
+</div>
