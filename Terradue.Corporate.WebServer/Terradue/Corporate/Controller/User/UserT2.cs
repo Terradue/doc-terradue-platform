@@ -302,15 +302,13 @@ namespace Terradue.Corporate.Controller {
                 context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Username)));
             }
 
-            int provId = context.GetConfigIntegerValue("One-default-provider");
-            OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, provId);
 
             //create user (using email as password)
-            int id = oneCloud.XmlRpc.UserAllocate(this.Username, this.Email, "x509");
-            USER oneuser = oneCloud.XmlRpc.UserGetInfo(id);
+            int id = oneClient.UserAllocate(this.Username, this.Email, "x509");
+            USER oneuser = oneClient.UserGetInfo(id);
 
             //update user template and group
-            UpdateOneUser(oneCloud, oneuser, plan);
+            UpdateOneUser(oneuser, plan);
         }
 
         public void UpdateCloudAccount(Plan plan){
@@ -321,14 +319,14 @@ namespace Terradue.Corporate.Controller {
             foreach (object user in users.Items) {
                 if (user.GetType() == typeof(USER_POOLUSER)) {
                     if (((USER_POOLUSER)user).NAME.Equals(this.Username)) {
-                        UpdateOneUser(oneCloud, user, plan);
+                        UpdateOneUser(user, plan);
                         return;
                     }
                 }
             }
         }
 
-        private void UpdateOneUser(OneCloudProvider oneCloud, object user, Plan plan){
+        private void UpdateOneUser(object user, Plan plan){
             var views = "";
             var defaultview = "";
             switch (plan.Name) {
@@ -367,21 +365,19 @@ namespace Terradue.Corporate.Controller {
             if (template != null && id != 0) {
                 //update user template
                 string templateUser = CreateTemplate(template, templatePairs);
-                if (!oneCloud.XmlRpc.UserUpdate(id, templateUser)) throw new Exception("Error during update of user");
+                if (!oneClient.UserUpdate(id, templateUser)) throw new Exception("Error during update of user");
             }
         }
 
         public void UpdateOneGroup(int grpId){
-            int provId = context.GetConfigIntegerValue("One-default-provider");
-            OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, provId);
 
             //get user from username
-            USER_POOL users = oneCloud.XmlRpc.UserGetPoolInfo();
+            USER_POOL users = oneClient.UserGetPoolInfo();
             foreach (object user in users.Items) {
                 if (user.GetType() == typeof(USER_POOLUSER)) {
                     if (((USER_POOLUSER)user).NAME.Equals(this.Username)) {
                         //update user group
-                        oneCloud.XmlRpc.UserUpdateGroup(Int32.Parse(((USER_POOLUSER)user).ID), grpId);
+                        oneClient.UserUpdateGroup(Int32.Parse(((USER_POOLUSER)user).ID), grpId);
                         return;
                     }
                 }
