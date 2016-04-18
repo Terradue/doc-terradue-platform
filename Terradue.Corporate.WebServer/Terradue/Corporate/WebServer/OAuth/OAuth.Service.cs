@@ -202,7 +202,7 @@ UA -> UA : display user name
             try {
                 context.Open();
 
-                if(string.IsNullOrEmpty(request.Token) || !request.Token.Equals(context.GetConfigValue("t2-usrsso-token"))){
+                if(string.IsNullOrEmpty(request.Token) || !request.Token.Equals(context.GetConfigValue("t2portal-token-usrsso"))){
                     return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid token parameter"));
                 }
 
