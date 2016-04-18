@@ -8,6 +8,7 @@ using ServiceStack.Common.Web;
 using System.Web;
 using System.Collections.Generic;
 using Terradue.Authentication.OAuth;
+using System.Net;
 
 namespace Terradue.Corporate.WebServer {
 
@@ -112,6 +113,9 @@ UA -> UA : display user name
 
         [ApiMember(Name = "email", Description = "email", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Email { get; set; }
+
+        [ApiMember(Name = "token", Description = "token", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Token { get; set; }
     }
 
     [Route("/logout", "GET", Summary = "logout", Notes = "Logout from the platform")]
@@ -198,14 +202,18 @@ UA -> UA : display user name
             try {
                 context.Open();
 
+                if(string.IsNullOrEmpty(request.Token) || !request.Token.Equals(context.GetConfigValue("t2-usrsso-token"))){
+                    return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid token parameter"));
+                }
+
                 var json2Ldap = new Json2LdapFactory(context);
                 var usr = json2Ldap.GetUserFromEOSSO(request.EoSSO);
                 if(usr != null){
                     if(usr.Email != request.Email){
                         UserT2 user = UserT2.FromEmail(context, usr.Email);
+                        user.Email = request.Email;
                         //update on ldap
                         user.UpdateLdapAccount();
-
                         //update on db
                         user.Store();
                     }
