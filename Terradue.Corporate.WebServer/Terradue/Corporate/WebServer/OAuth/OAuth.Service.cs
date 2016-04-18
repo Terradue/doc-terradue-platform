@@ -209,7 +209,7 @@ UA -> UA : display user name
                 var json2Ldap = new Json2LdapFactory(context);
                 var usr = json2Ldap.GetUserFromEOSSO(request.EoSSO);
                 if(usr != null){
-                    if(usr.Email != request.Email){
+                    if(!string.IsNullOrEmpty(request.Email) && !request.Email.Equals(usr.Email)){
                         UserT2 user = UserT2.FromEmail(context, usr.Email);
                         user.Email = request.Email;
                         //update on ldap
@@ -221,9 +221,9 @@ UA -> UA : display user name
                 }
                 usr = json2Ldap.GetUserFromEmail(request.Email);
                 if(usr != null){
-                    if(string.IsNullOrEmpty(usr.EoSSO)){
+                    if(!string.IsNullOrEmpty(request.EoSSO) && !request.EoSSO.Equals(usr.EoSSO)){
                         UserT2 user = UserT2.FromEmail(context, usr.Email);
-                        usr.EoSSO = request.EoSSO;
+                        user.EoSSO = request.EoSSO;
                         //update on ldap
                         user.UpdateLdapAccount();
                     }
@@ -233,7 +233,7 @@ UA -> UA : display user name
                 context.Close();
             } catch (Exception e) {
                 context.Close();
-                throw e;
+                return null;
             }
             return null;
         }

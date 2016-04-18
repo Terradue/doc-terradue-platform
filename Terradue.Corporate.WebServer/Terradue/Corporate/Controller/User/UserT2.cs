@@ -65,6 +65,8 @@ namespace Terradue.Corporate.Controller {
         /// <value>The private key.</value>
         public string PrivateKey { get; set; }
 
+        public string EoSSO { get; set; }
+
         private string onepwd { get; set; }
 
         private int oneId { get; set; }
@@ -345,6 +347,7 @@ namespace Terradue.Corporate.Controller {
             user.LastName = this.LastName;
             user.Name = string.Format("{0} {1}", this.FirstName, this.LastName);
             user.PublicKey = this.PublicKey;
+            user.EoSSO = this.EoSSO;
             return user;
         }
 
