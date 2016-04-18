@@ -324,7 +324,7 @@ namespace Terradue.Corporate.Controller {
             Safe safe = new Safe(context);
             safe.GenerateKeys();
             this.PublicKey = safe.GetBase64SSHPublicKey();
-            this.PrivateKey = safe.GetBase64SSHPrivateKey();
+            this.PrivateKey = safe.GetBase64SSHPrivateKeyOpenSSL();
         }
 
         #endregion
