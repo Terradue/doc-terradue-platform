@@ -405,11 +405,11 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
             try {
                 context.Open();
+                Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
 
                 UserT2 user = UserT2.FromId(context, request.Id);
-                user.DeleteCloudAccount();
-                Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
-                if(ldapfactory.UserExists(user.Username)) user.DeleteLdapAccount();//otherwise it means that this user does not exists in LDAP anymore (should not be the case)
+                if(user.GetCloudUser() != null) user.DeleteCloudAccount();
+                if(ldapfactory.UserExists(user.Username)) user.DeleteLdapAccount();
                 user.Delete();
 
                 context.Close();

@@ -316,7 +316,11 @@ namespace Terradue.Corporate.Controller {
             if(usercloud != null) UpdateOneUser(usercloud, plan);
         }
 
-        private USER_POOLUSER GetCloudUser(){
+        /// <summary>
+        /// Gets the cloud user.
+        /// </summary>
+        /// <returns>The cloud user.</returns>
+        public USER_POOLUSER GetCloudUser(){
             //get user from username
             USER_POOL users = oneClient.UserGetPoolInfo();
             foreach (object user in users.Items) {
