@@ -207,29 +207,56 @@ UA -> UA : display user name
                 }
 
                 var json2Ldap = new Json2LdapFactory(context);
-                var usr = json2Ldap.GetUserFromEOSSO(request.EoSSO);
-                if(usr != null){
-                    if(!string.IsNullOrEmpty(request.Email) && !request.Email.Equals(usr.Email)){
-                        UserT2 user = UserT2.FromEmail(context, usr.Email);
-                        user.Email = request.Email;
-                        //update on ldap
-                        user.UpdateLdapAccount();
-                        //update on db
-                        user.Store();
+                LdapUser usr = null;
+                if(!string.IsNullOrEmpty(request.EoSSO)){
+                    
+                    //check user with eosso attribute = eosso
+                    usr = json2Ldap.GetUserFromEOSSO(request.EoSSO);
+                    if(usr != null){
+                        //if email is different on LDAP, we take the one from the request as reference
+                        if(!string.IsNullOrEmpty(request.Email) && !request.Email.Equals(usr.Email)){
+                            UserT2 user = UserT2.FromUsername(context, usr.Username);
+                            user.Email = request.Email;
+                            //update email on ldap
+                            user.UpdateLdapAccount();
+                            //update email on db
+                            user.Store();
+                        }
+                        return usr.Username;
                     }
-                    return usr.Username;
-                }
-                usr = json2Ldap.GetUserFromEmail(request.Email);
-                if(usr != null){
-                    if(!string.IsNullOrEmpty(request.EoSSO) && !request.EoSSO.Equals(usr.EoSSO)){
-                        UserT2 user = UserT2.FromEmail(context, usr.Email);
+
+                    //check user with uid attribute = eosso
+                    usr = json2Ldap.GetUserFromUid(request.EoSSO);
+                    if(usr != null){
+                        UserT2 user = UserT2.FromUsername(context, usr.Username);
                         user.EoSSO = request.EoSSO;
-                        //update on ldap
+                        //if emails is different on LDAP, we take the one from the request as reference
+                        if(!string.IsNullOrEmpty(request.Email) && !request.Email.Equals(usr.Email)){
+                            user.Email = request.Email;
+                            //update on db
+                            user.Store();
+                        }
+                        //update eosso/email on ldap
                         user.UpdateLdapAccount();
+                        
+                        return usr.Username;
                     }
-                    return usr.Username;
                 }
 
+                if(!string.IsNullOrEmpty(request.Email)){
+                    //check user with email attribute = eosso
+                    usr = json2Ldap.GetUserFromEmail(request.Email);
+                    if(usr != null){
+                        //if eosso is null on LDAP or different, we take the one from the request as reference
+                        if(!string.IsNullOrEmpty(request.EoSSO) && (string.IsNullOrEmpty(usr.EoSSO) || !request.EoSSO.Equals(usr.EoSSO))){
+                            UserT2 user = UserT2.FromUsername(context, usr.Username);
+                            user.EoSSO = request.EoSSO;
+                            //update eosso on ldap
+                            user.UpdateLdapAccount();
+                        }
+                        return usr.Username;
+                    }
+                }
                 context.Close();
             } catch (Exception e) {
                 context.Close();
