@@ -10,6 +10,7 @@ using System.Net.Mail;
 using System.Net;
 using Terradue.Ldap;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
@@ -232,13 +233,17 @@ namespace Terradue.Corporate.Controller {
         public void Upgrade(Plan plan) {
             context.StartTransaction();
 
-            if (!HasGithubProfile())
-                CreateGithubProfile();
-            if (!HasCloudAccount())
-                CreateCloudAccount(); //TODO: linked to safe ?
-            if (this.DomainId == 0)
-                CreateDomain();
+            //sanity check
+            if (!HasGithubProfile()) CreateGithubProfile();
+            if (this.DomainId == 0) CreateDomain();
 
+            if (plan.Name != Plan.NONE) {
+                if (!HasCloudAccount()) {
+                    CreateCloudAccount(plan);
+                } else {
+//                    UpdateCloudAccount(plan);
+                }
+            }
             this.PlanFactory.UpgradeUserPlan(this.Id, plan);
 
             context.Commit();
@@ -289,16 +294,122 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
+        #region ONE
+
         /// <summary>
         /// Creates the cloud profile.
         /// </summary>
-        public void CreateCloudAccount() {
+        public void CreateCloudAccount(Plan plan) {
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
-                context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Email)));
+                context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Username)));
+            }
+
+            //create user (using email as password)
+            int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
+            USER oneuser = oneClient.UserGetInfo(id);
+        }
+
+        public void UpdateCloudAccount(Plan plan){
+            var usercloud = GetCloudUser();
+            if(usercloud != null) UpdateOneUser(usercloud, plan);
+        }
+
+        private USER_POOLUSER GetCloudUser(){
+            //get user from username
+            USER_POOL users = oneClient.UserGetPoolInfo();
+            foreach (object user in users.Items) {
+                if (user.GetType() == typeof(USER_POOLUSER)) {
+                    if (((USER_POOLUSER)user).NAME.Equals(this.Username)) {
+                        return (USER_POOLUSER)user;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void UpdateOneUser(object user, Plan plan){
+            var views = "";
+            var defaultview = "";
+            switch (plan.Name) {
+                case Plan.EXPLORER:
+                    views = Plan.EXPLORER;
+                    defaultview = Plan.EXPLORER;
+                    break;
+                case Plan.SCALER:
+                    views = Plan.SCALER;
+                    defaultview = Plan.SCALER;
+                    break;
+                case Plan.PREMIUM:
+                    views = Plan.SCALER + "," + Plan.PREMIUM;
+                    defaultview = Plan.PREMIUM;
+                    break;
+                default:
+                    break;
+            }
+
+            List<KeyValuePair<string, string>> templatePairs = new List<KeyValuePair<string, string>>();
+            templatePairs.Add(new KeyValuePair<string, string>("USERNAME", this.Username));
+            templatePairs.Add(new KeyValuePair<string, string>("SUNSTONE_VIEWS", views));
+            templatePairs.Add(new KeyValuePair<string, string>("DEFAULT_VIEW", defaultview));
+
+            XmlNode[] template = null;
+            int id = 0;
+
+            if (user is USER) {
+                template = (XmlNode[])((user as USER).TEMPLATE);
+                id = Int32.Parse((user as USER).ID);
+            } else if (user is USER_POOLUSER) {
+                template = (XmlNode[])((user as USER_POOLUSER).TEMPLATE);
+                id = Int32.Parse((user as USER_POOLUSER).ID);
+            }
+
+            if (template != null && id != 0) {
+                //update user template
+                string templateUser = CreateTemplate(template, templatePairs);
+                if (!oneClient.UserUpdate(id, templateUser)) throw new Exception("Error during update of user");
             }
         }
+
+        public void UpdateOneGroup(int grpId){
+            var usercloud = GetCloudUser();
+            if(usercloud != null) oneClient.UserUpdateGroup(Int32.Parse(usercloud.ID), grpId);
+        }
+
+        private string CreateTemplate(XmlNode[] template, List<KeyValuePair<string, string>> pairs){
+            List<KeyValuePair<string, string>> originalTemplate = new List<KeyValuePair<string, string>>();
+            List<KeyValuePair<string, string>> resultTemplate = new List<KeyValuePair<string, string>>();
+            for (int i = 0; i < template.Length; i++) {
+                originalTemplate.Add(new KeyValuePair<string, string>(template[i].Name, template[i].InnerText));
+            }
+
+            foreach (KeyValuePair<string, string> original in originalTemplate) {
+                bool exists = false;
+                foreach (KeyValuePair<string, string> pair in pairs) {
+                    if (original.Key.Equals(pair.Key)) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) pairs.Add(original);
+            }
+
+            string templateUser = "<TEMPLATE>";
+            foreach(KeyValuePair<string, string> pair in pairs){
+                templateUser += "<" + pair.Key + ">" + pair.Value + "</" + pair.Key + ">";
+            }
+            templateUser += "</TEMPLATE>";
+            return templateUser;
+        }
+
+        public void DeleteCloudAccount(){
+            var usercloud = GetCloudUser();
+            if(usercloud != null) oneClient.UserDelete(Int32.Parse(usercloud.ID));
+            context.Execute(String.Format("DELETE FROM usr_cloud WHERE id={0} AND id_provider={1};", this.Id, context.GetConfigIntegerValue("One-default-provider")));
+        }
+
+        #endregion
 
         //--------------------------------------------------------------------------------------------------------------
 
