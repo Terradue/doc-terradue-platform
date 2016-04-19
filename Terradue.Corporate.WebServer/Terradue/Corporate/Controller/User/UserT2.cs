@@ -239,7 +239,7 @@ namespace Terradue.Corporate.Controller {
                 if (!HasCloudAccount()) {
                     CreateCloudAccount(plan);
                 } else {
-                    UpdateCloudAccount(plan);
+//                    UpdateCloudAccount(plan);
                 }
             }
             this.PlanFactory.UpgradeUserPlan(this.Id, plan);
@@ -292,6 +292,8 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
+        #region ONE
+
         /// <summary>
         /// Creates the cloud profile.
         /// </summary>
@@ -302,28 +304,27 @@ namespace Terradue.Corporate.Controller {
                 context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Username)));
             }
 
-
             //create user (using email as password)
-            int id = oneClient.UserAllocate(this.Username, this.Email, "x509");
+            int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
             USER oneuser = oneClient.UserGetInfo(id);
-
-            //update user template and group
-            UpdateOneUser(oneuser, plan);
         }
 
         public void UpdateCloudAccount(Plan plan){
-            int provId = context.GetConfigIntegerValue("One-default-provider");
-            OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, provId);
+            var usercloud = GetCloudUser();
+            if(usercloud != null) UpdateOneUser(usercloud, plan);
+        }
+
+        private USER_POOLUSER GetCloudUser(){
             //get user from username
-            USER_POOL users = oneCloud.XmlRpc.UserGetPoolInfo();
+            USER_POOL users = oneClient.UserGetPoolInfo();
             foreach (object user in users.Items) {
                 if (user.GetType() == typeof(USER_POOLUSER)) {
                     if (((USER_POOLUSER)user).NAME.Equals(this.Username)) {
-                        UpdateOneUser(user, plan);
-                        return;
+                        return (USER_POOLUSER)user;
                     }
                 }
             }
+            return null;
         }
 
         private void UpdateOneUser(object user, Plan plan){
@@ -370,18 +371,8 @@ namespace Terradue.Corporate.Controller {
         }
 
         public void UpdateOneGroup(int grpId){
-
-            //get user from username
-            USER_POOL users = oneClient.UserGetPoolInfo();
-            foreach (object user in users.Items) {
-                if (user.GetType() == typeof(USER_POOLUSER)) {
-                    if (((USER_POOLUSER)user).NAME.Equals(this.Username)) {
-                        //update user group
-                        oneClient.UserUpdateGroup(Int32.Parse(((USER_POOLUSER)user).ID), grpId);
-                        return;
-                    }
-                }
-            }
+            var usercloud = GetCloudUser();
+            if(usercloud != null) oneClient.UserUpdateGroup(Int32.Parse(usercloud.ID), grpId);
         }
 
         private string CreateTemplate(XmlNode[] template, List<KeyValuePair<string, string>> pairs){
@@ -409,6 +400,14 @@ namespace Terradue.Corporate.Controller {
             templateUser += "</TEMPLATE>";
             return templateUser;
         }
+
+        public void DeleteCloudAccount(){
+            var usercloud = GetCloudUser();
+            if(usercloud != null) oneClient.UserDelete(Int32.Parse(usercloud.ID));
+            context.Execute(String.Format("DELETE FROM usr_cloud WHERE id={0} AND id_provider={1};", this.Id, context.GetConfigIntegerValue("One-default-provider")));
+        }
+
+        #endregion
 
         //--------------------------------------------------------------------------------------------------------------
 
