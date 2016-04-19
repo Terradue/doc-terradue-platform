@@ -407,7 +407,8 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 UserT2 user = UserT2.FromId(context, request.Id);
-                user.DeleteLdapAccount();
+                Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
+                if(ldapfactory.UserExists(user.Username)) user.DeleteLdapAccount();//otherwise it means that this user does not exists in LDAP anymore (should not be the case)
                 user.Delete();
 
                 context.Close();
