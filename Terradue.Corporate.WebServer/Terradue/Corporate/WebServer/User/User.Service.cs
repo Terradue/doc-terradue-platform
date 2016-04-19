@@ -406,6 +406,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 UserT2 user = UserT2.FromId(context, request.Id);
+                user.DeleteCloudAccount();
                 user.DeleteLdapAccount();
                 user.Delete();
 
