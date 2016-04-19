@@ -85,7 +85,8 @@ define([
 		view: '/scripts/modules/users_admin/views/users_admin.html',
 		insertAtBeginning: true,
 		loginDeferred: App.Login.isLoggedDeferred,
-		adminAccess: true
+		adminAccess: true,
+		msgDelete: 'Are you sure you want to delete this user?<br/>The user will be removed from LDAP and from the Cloud Controller.'
 	});
 	
 });
