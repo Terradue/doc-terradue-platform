@@ -535,7 +535,7 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
-        public object Get(GetExistsLdapUsernameT2 request){
+        public object Get(GetAvailableLdapUsernameT2 request){
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             bool result = true;
             try {
@@ -543,14 +543,14 @@ namespace Terradue.Corporate.WebServer {
 
                 if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
-                result = ldapfactory.IsUsernameFree(request.username);
+                result = !ldapfactory.UserExists(request.username);
 
                 context.Close();
             } catch (Exception e) {
                 context.Close();
                 throw e;
             }
-			return result;//new WebResponseBool(result);
+			return result;
         }
 
         public object Get(GetPrivateUserInfoT2 request){

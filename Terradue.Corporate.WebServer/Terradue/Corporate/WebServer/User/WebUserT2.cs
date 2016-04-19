@@ -110,7 +110,7 @@ namespace Terradue.Corporate.WebServer {
     }
 
     [Route("/user/ldap/available", "GET", Summary = "GET if the username is free or not", Notes = "")]
-    public class GetExistsLdapUsernameT2 : IReturn<WebUserT2> {
+    public class GetAvailableLdapUsernameT2 : IReturn<WebUserT2> {
         [ApiMember(Name = "username", Description = "username", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string username { get; set; }
     }
