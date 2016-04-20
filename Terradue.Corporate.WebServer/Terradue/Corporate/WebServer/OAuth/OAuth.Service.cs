@@ -244,7 +244,7 @@ UA -> UA : display user name
                 }
 
                 if(!string.IsNullOrEmpty(request.Email)){
-                    //check user with email attribute = eosso
+                    //check user with email attribute = email
                     usr = json2Ldap.GetUserFromEmail(request.Email);
                     if(usr != null){
                         //if eosso is null on LDAP or different, we take the one from the request as reference

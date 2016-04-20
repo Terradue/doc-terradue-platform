@@ -464,11 +464,21 @@ namespace Terradue.Corporate.WebServer {
 
                 if(string.IsNullOrEmpty(request.Password)) throw new Exception("Password is empty");
 
-                UserT2 user = UserT2.FromUsername(context, request.Username);
+                UserT2 user = null;
+                try {
+                    user = UserT2.FromUsername(context, request.Username);
+                }catch(Exception){
+                    try {
+                        user = UserT2.FromEmail(context, request.Username);
+                    }catch(Exception e){
+                        throw new Exception("User not found");
+                    }
+                }
+
                 user.ValidateActivationToken(request.Token);
 
                 try{
-                    user.ChangeLdapPassword(request.Password);
+                    user.ChangeLdapPassword(request.Password, null, true);
                 }catch(Exception e){
                     throw new Exception("Unable to change password", e);    
                 }

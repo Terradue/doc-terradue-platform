@@ -16,6 +16,9 @@ namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
     public class UserT2 : User {
 
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger
+            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private Json2LdapFactory LdapFactory { get; set; }
         private PlanFactory PlanFactory { get; set; }
         
@@ -231,6 +234,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="plan">Plan.</param>
         public void Upgrade(Plan plan) {
+            log.Info(String.Format("Upgrade user {0} with plan {1}", this.Username, plan.Name));
             context.StartTransaction();
 
             //sanity check
@@ -300,6 +304,7 @@ namespace Terradue.Corporate.Controller {
         /// Creates the cloud profile.
         /// </summary>
         public void CreateCloudAccount(Plan plan) {
+            log.Info(String.Format("Creatign Cloud account for {0}", this.Username));
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
@@ -508,7 +513,7 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Creates the LDAP account.
         /// </summary>
-        public void ChangeLdapPassword(string newpassword, string oldpassword = null) {
+        public void ChangeLdapPassword(string newpassword, string oldpassword = null, bool admin = false) {
 
             //open the connection
             Json2Ldap.Connect();
@@ -516,7 +521,8 @@ namespace Terradue.Corporate.Controller {
 
                 string dn = CreateLdapDN();
 
-                Json2Ldap.SimpleBind(dn, oldpassword);
+                if (admin) Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                else Json2Ldap.SimpleBind(dn, oldpassword);
                 Json2Ldap.ModifyPassword(dn, newpassword, oldpassword);
             } catch (Exception e) {
                 Json2Ldap.Close();
