@@ -207,7 +207,7 @@ define([
 			
 			if (entity){
 				console.log(entity);
-				Bootbox.confirm('Are you sure you want to remove the item?', function(confirm){
+				Bootbox.confirm(this.options.msgDelete ? this.options.msgDelete : 'Are you sure you want to remove the item?', function(confirm){
 					if (confirm){
 						entity.destroy().then(function(res){
 							self.successMessage('DELETE');

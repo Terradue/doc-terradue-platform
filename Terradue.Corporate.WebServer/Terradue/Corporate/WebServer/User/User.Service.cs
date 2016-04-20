@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ServiceStack.ServiceHost;
 using Terradue.WebService.Model;
 using Terradue.Portal;
@@ -405,9 +405,11 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
             try {
                 context.Open();
+                Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
 
                 UserT2 user = UserT2.FromId(context, request.Id);
-                user.DeleteLdapAccount();
+                if(user.GetCloudUser() != null) user.DeleteCloudAccount();
+                if(ldapfactory.UserExists(user.Username)) user.DeleteLdapAccount();
                 user.Delete();
 
                 context.Close();
@@ -462,11 +464,21 @@ namespace Terradue.Corporate.WebServer {
 
                 if(string.IsNullOrEmpty(request.Password)) throw new Exception("Password is empty");
 
-                UserT2 user = UserT2.FromUsername(context, request.Username);
+                UserT2 user = null;
+                try {
+                    user = UserT2.FromUsername(context, request.Username);
+                }catch(Exception){
+                    try {
+                        user = UserT2.FromEmail(context, request.Username);
+                    }catch(Exception e){
+                        throw new Exception("User not found");
+                    }
+                }
+
                 user.ValidateActivationToken(request.Token);
 
                 try{
-                    user.ChangeLdapPassword(request.Password);
+                    user.ChangeLdapPassword(request.Password, null, true);
                 }catch(Exception e){
                     throw new Exception("Unable to change password", e);    
                 }
@@ -535,7 +547,7 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
-        public object Get(GetExistsLdapUsernameT2 request){
+        public object Get(GetAvailableLdapUsernameT2 request){
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             bool result = true;
             try {
@@ -543,14 +555,14 @@ namespace Terradue.Corporate.WebServer {
 
                 if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
-                result = ldapfactory.IsUsernameFree(request.username);
+                result = !ldapfactory.UserExists(request.username);
 
                 context.Close();
             } catch (Exception e) {
                 context.Close();
                 throw e;
             }
-			return result;//new WebResponseBool(result);
+			return result;
         }
 
         public object Get(GetPrivateUserInfoT2 request){

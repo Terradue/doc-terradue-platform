@@ -30,11 +30,11 @@ namespace Terradue.Corporate.Controller {
         }
 
         /// <summary>
-        /// Determines whether this instance is unix username is free on ldap
+        /// Test if Users exists.
         /// </summary>
-        /// <returns><c>true</c> if this unix username is free; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c>, if exists was usered, <c>false</c> otherwise.</returns>
         /// <param name="username">Username.</param>
-        public bool IsUsernameFree(string username) {
+        public bool UserExists(string username) {
             bool result = false;
 
             //open the connection
@@ -43,8 +43,7 @@ namespace Terradue.Corporate.Controller {
                 var dn = CreateLdapDN(username);
 
                 var response = Json2Ldap.GetEntry(dn);
-                if (response == null)
-                    result = true;
+                if (response != null) result = true;
             } catch (Exception e) {
                 Json2Ldap.Close();
                 throw e;
@@ -69,6 +68,15 @@ namespace Terradue.Corporate.Controller {
         /// <param name="eosso">Eosso.</param>
         public LdapUser GetUserFromEOSSO(string eosso){
             return GetUserFromFilter("eossoUserid", eosso);
+        }
+
+        /// <summary>
+        /// Gets the user from uid.
+        /// </summary>
+        /// <returns>The user from uid.</returns>
+        /// <param name="uid">Uid.</param>
+        public LdapUser GetUserFromUid(string uid){
+            return GetUserFromFilter("uid", uid);
         }
 
         /// <summary>
