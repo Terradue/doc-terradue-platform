@@ -626,8 +626,10 @@ namespace Terradue.Corporate.Controller {
                         if (e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")) {
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
                             Json2Ldap.ModifyUserInformation(ldapusr);
-                        } else
-                            throw e;
+                        } else if(e.Message.Contains("eossoUserid")){
+                            Json2Ldap.AddNewAttributeString(dn, "objectClass", "eossoAccount");
+                            Json2Ldap.ModifyUserInformation(ldapusr);
+                        } else throw e;
                     } catch (Exception e2) {
                         throw e2;
                     }
