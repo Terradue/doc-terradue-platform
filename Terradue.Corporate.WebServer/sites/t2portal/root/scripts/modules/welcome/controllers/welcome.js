@@ -40,12 +40,12 @@ define([
 				this.isLoginPromise.then(function(user){
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					var profilecomplete = user.FirstName && user.LastName && user.Affiliation && user.Country;//default profile set ?
-					profilecomplete = profilecomplete && !usernameDefault;//username set ?
 					profilecomplete = profilecomplete && (user.AccountStatus == 4);//email validated ?
 					profilecomplete = profilecomplete && user.PublicKey;//ssh key added ?
 					self.profileData = new can.Observe({
 						user: user,
 						loading: false,
+						usernameNotSet: usernameDefault,
 						profileNotComplete: !profilecomplete
 					});
 					self.view({

@@ -10,10 +10,14 @@ using System.Net.Mail;
 using System.Net;
 using Terradue.Ldap;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
     public class UserT2 : User {
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger
+            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private Json2LdapFactory LdapFactory { get; set; }
         private PlanFactory PlanFactory { get; set; }
@@ -64,6 +68,8 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <value>The private key.</value>
         public string PrivateKey { get; set; }
+
+        public string EoSSO { get; set; }
 
         private string onepwd { get; set; }
 
@@ -228,15 +234,20 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="plan">Plan.</param>
         public void Upgrade(Plan plan) {
+            log.Info(String.Format("Upgrade user {0} with plan {1}", this.Username, plan.Name));
             context.StartTransaction();
 
-            if (!HasGithubProfile())
-                CreateGithubProfile();
-            if (!HasCloudAccount())
-                CreateCloudAccount(); //TODO: linked to safe ?
-            if (this.DomainId == 0)
-                CreateDomain();
+            //sanity check
+            if (!HasGithubProfile()) CreateGithubProfile();
+            if (this.DomainId == 0) CreateDomain();
 
+            if (plan.Name != Plan.NONE) {
+                if (!HasCloudAccount()) {
+                    CreateCloudAccount(plan);
+                } else {
+//                    UpdateCloudAccount(plan);
+                }
+            }
             this.PlanFactory.UpgradeUserPlan(this.Id, plan);
 
             context.Commit();
@@ -287,16 +298,127 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
+        #region ONE
+
         /// <summary>
         /// Creates the cloud profile.
         /// </summary>
-        public void CreateCloudAccount() {
+        public void CreateCloudAccount(Plan plan) {
+            log.Info(String.Format("Creatign Cloud account for {0}", this.Username));
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
-                context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Email)));
+                context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Username)));
+            }
+
+            //create user (using email as password)
+            int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
+            USER oneuser = oneClient.UserGetInfo(id);
+        }
+
+        public void UpdateCloudAccount(Plan plan){
+            var usercloud = GetCloudUser();
+            if(usercloud != null) UpdateOneUser(usercloud, plan);
+        }
+
+        /// <summary>
+        /// Gets the cloud user.
+        /// </summary>
+        /// <returns>The cloud user.</returns>
+        public USER_POOLUSER GetCloudUser(){
+            //get user from username
+            USER_POOL users = oneClient.UserGetPoolInfo();
+            foreach (object user in users.Items) {
+                if (user.GetType() == typeof(USER_POOLUSER)) {
+                    if (((USER_POOLUSER)user).NAME.Equals(this.Username)) {
+                        return (USER_POOLUSER)user;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void UpdateOneUser(object user, Plan plan){
+            var views = "";
+            var defaultview = "";
+            switch (plan.Name) {
+                case Plan.EXPLORER:
+                    views = Plan.EXPLORER;
+                    defaultview = Plan.EXPLORER;
+                    break;
+                case Plan.SCALER:
+                    views = Plan.SCALER;
+                    defaultview = Plan.SCALER;
+                    break;
+                case Plan.PREMIUM:
+                    views = Plan.SCALER + "," + Plan.PREMIUM;
+                    defaultview = Plan.PREMIUM;
+                    break;
+                default:
+                    break;
+            }
+
+            List<KeyValuePair<string, string>> templatePairs = new List<KeyValuePair<string, string>>();
+            templatePairs.Add(new KeyValuePair<string, string>("USERNAME", this.Username));
+            templatePairs.Add(new KeyValuePair<string, string>("SUNSTONE_VIEWS", views));
+            templatePairs.Add(new KeyValuePair<string, string>("DEFAULT_VIEW", defaultview));
+
+            XmlNode[] template = null;
+            int id = 0;
+
+            if (user is USER) {
+                template = (XmlNode[])((user as USER).TEMPLATE);
+                id = Int32.Parse((user as USER).ID);
+            } else if (user is USER_POOLUSER) {
+                template = (XmlNode[])((user as USER_POOLUSER).TEMPLATE);
+                id = Int32.Parse((user as USER_POOLUSER).ID);
+            }
+
+            if (template != null && id != 0) {
+                //update user template
+                string templateUser = CreateTemplate(template, templatePairs);
+                if (!oneClient.UserUpdate(id, templateUser)) throw new Exception("Error during update of user");
             }
         }
+
+        public void UpdateOneGroup(int grpId){
+            var usercloud = GetCloudUser();
+            if(usercloud != null) oneClient.UserUpdateGroup(Int32.Parse(usercloud.ID), grpId);
+        }
+
+        private string CreateTemplate(XmlNode[] template, List<KeyValuePair<string, string>> pairs){
+            List<KeyValuePair<string, string>> originalTemplate = new List<KeyValuePair<string, string>>();
+            List<KeyValuePair<string, string>> resultTemplate = new List<KeyValuePair<string, string>>();
+            for (int i = 0; i < template.Length; i++) {
+                originalTemplate.Add(new KeyValuePair<string, string>(template[i].Name, template[i].InnerText));
+            }
+
+            foreach (KeyValuePair<string, string> original in originalTemplate) {
+                bool exists = false;
+                foreach (KeyValuePair<string, string> pair in pairs) {
+                    if (original.Key.Equals(pair.Key)) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) pairs.Add(original);
+            }
+
+            string templateUser = "<TEMPLATE>";
+            foreach(KeyValuePair<string, string> pair in pairs){
+                templateUser += "<" + pair.Key + ">" + pair.Value + "</" + pair.Key + ">";
+            }
+            templateUser += "</TEMPLATE>";
+            return templateUser;
+        }
+
+        public void DeleteCloudAccount(){
+            var usercloud = GetCloudUser();
+            if(usercloud != null) oneClient.UserDelete(Int32.Parse(usercloud.ID));
+            context.Execute(String.Format("DELETE FROM usr_cloud WHERE id={0} AND id_provider={1};", this.Id, context.GetConfigIntegerValue("One-default-provider")));
+        }
+
+        #endregion
 
         //--------------------------------------------------------------------------------------------------------------
 
@@ -324,7 +446,7 @@ namespace Terradue.Corporate.Controller {
             Safe safe = new Safe(context);
             safe.GenerateKeys();
             this.PublicKey = safe.GetBase64SSHPublicKey();
-            this.PrivateKey = safe.GetBase64SSHPrivateKey();
+            this.PrivateKey = safe.GetBase64SSHPrivateKeyOpenSSL();
         }
 
         #endregion
@@ -345,6 +467,7 @@ namespace Terradue.Corporate.Controller {
             user.LastName = this.LastName;
             user.Name = string.Format("{0} {1}", this.FirstName, this.LastName);
             user.PublicKey = this.PublicKey;
+            user.EoSSO = this.EoSSO;
             return user;
         }
 
@@ -390,7 +513,7 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Creates the LDAP account.
         /// </summary>
-        public void ChangeLdapPassword(string newpassword, string oldpassword = null) {
+        public void ChangeLdapPassword(string newpassword, string oldpassword = null, bool admin = false) {
 
             //open the connection
             Json2Ldap.Connect();
@@ -398,7 +521,8 @@ namespace Terradue.Corporate.Controller {
 
                 string dn = CreateLdapDN();
 
-                Json2Ldap.SimpleBind(dn, oldpassword);
+                if (admin) Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                else Json2Ldap.SimpleBind(dn, oldpassword);
                 Json2Ldap.ModifyPassword(dn, newpassword, oldpassword);
             } catch (Exception e) {
                 Json2Ldap.Close();
@@ -502,8 +626,10 @@ namespace Terradue.Corporate.Controller {
                         if (e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")) {
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
                             Json2Ldap.ModifyUserInformation(ldapusr);
-                        } else
-                            throw e;
+                        } else if(e.Message.Contains("eossoUserid")){
+                            Json2Ldap.AddNewAttributeString(dn, "objectClass", "eossoAccount");
+                            Json2Ldap.ModifyUserInformation(ldapusr);
+                        } else throw e;
                     } catch (Exception e2) {
                         throw e2;
                     }

@@ -110,7 +110,7 @@ namespace Terradue.Corporate.WebServer {
     }
 
     [Route("/user/ldap/available", "GET", Summary = "GET if the username is free or not", Notes = "")]
-    public class GetExistsLdapUsernameT2 : IReturn<WebUserT2> {
+    public class GetAvailableLdapUsernameT2 : IReturn<WebUserT2> {
         [ApiMember(Name = "username", Description = "username", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string username { get; set; }
     }
@@ -225,15 +225,16 @@ namespace Terradue.Corporate.WebServer {
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
         /// </summary>
         /// <param name="entity">Entity.</param>
-        public WebUserT2(UserT2 entity) : base(entity) {
+        public WebUserT2(UserT2 entity, bool basicInfo = false) : base(entity) {
 
-            if (entity.PublicKey == null)
-                entity.LoadLdapInfo();
-
-            this.OnePassword = entity.OnePassword;
             this.DomainId = entity.DomainId;
-            this.PublicKey = entity.PublicKey;
             this.Plan = entity.Plan.Name;
+
+            if (!basicInfo) {
+                if (entity.PublicKey == null) entity.LoadLdapInfo();
+                this.OnePassword = entity.OnePassword;
+                this.PublicKey = entity.PublicKey;
+            }
         }
 
         /// <summary>

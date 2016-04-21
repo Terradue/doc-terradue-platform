@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ServiceStack.ServiceHost;
 using Terradue.WebService.Model;
 using Terradue.Portal;
@@ -92,6 +92,7 @@ T2 -> LP : <b>Update User</b>\nuid=username\nname=firstname\ngiven_name=lastname
  */
 using System.Linq;
 using System.Web;
+using Terradue.Github;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]
@@ -171,7 +172,7 @@ namespace Terradue.Corporate.WebServer {
 
                 EntityList<UserT2> users = new EntityList<UserT2>(context);
                 users.Load();
-                foreach(UserT2 u in users) result.Add(new WebUserT2(u));
+                foreach(UserT2 u in users) result.Add(new WebUserT2(u, true));
 
                 context.Close();
             } catch (Exception e) {
@@ -404,9 +405,11 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
             try {
                 context.Open();
+                Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
 
                 UserT2 user = UserT2.FromId(context, request.Id);
-                user.DeleteLdapAccount();
+                if(user.GetCloudUser() != null) user.DeleteCloudAccount();
+                if(ldapfactory.UserExists(user.Username)) user.DeleteLdapAccount();
                 user.Delete();
 
                 context.Close();
@@ -461,11 +464,21 @@ namespace Terradue.Corporate.WebServer {
 
                 if(string.IsNullOrEmpty(request.Password)) throw new Exception("Password is empty");
 
-                UserT2 user = UserT2.FromUsername(context, request.Username);
+                UserT2 user = null;
+                try {
+                    user = UserT2.FromUsername(context, request.Username);
+                }catch(Exception){
+                    try {
+                        user = UserT2.FromEmail(context, request.Username);
+                    }catch(Exception e){
+                        throw new Exception("User not found");
+                    }
+                }
+
                 user.ValidateActivationToken(request.Token);
 
                 try{
-                    user.ChangeLdapPassword(request.Password);
+                    user.ChangeLdapPassword(request.Password, null, true);
                 }catch(Exception e){
                     throw new Exception("Unable to change password", e);    
                 }
@@ -534,7 +547,7 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
-        public object Get(GetExistsLdapUsernameT2 request){
+        public object Get(GetAvailableLdapUsernameT2 request){
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             bool result = true;
             try {
@@ -542,14 +555,14 @@ namespace Terradue.Corporate.WebServer {
 
                 if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
-                result = ldapfactory.IsUsernameFree(request.username);
+                result = !ldapfactory.UserExists(request.username);
 
                 context.Close();
             } catch (Exception e) {
                 context.Close();
                 throw e;
             }
-			return result;//new WebResponseBool(result);
+			return result;
         }
 
         public object Get(GetPrivateUserInfoT2 request){
@@ -574,6 +587,8 @@ namespace Terradue.Corporate.WebServer {
                     user = new UserT2(context);
                 }
 
+                GithubProfile githubProfile = null;
+
                 switch(request.request){
                     case "sshPublicKey":
                         user.PublicLoadSshPubKey(request.username);
@@ -581,9 +596,17 @@ namespace Terradue.Corporate.WebServer {
                         break;
                     case "s3":
                         break;
+                    case "githubUsername":
+                        githubProfile = GithubProfile.FromId(context, user.Id);
+                        return new HttpResult(githubProfile.Name);
+                        break;
                     case "githubToken":
-                        var githubProfile = Terradue.Github.GithubProfile.FromId(context, user.Id);
+                        githubProfile = GithubProfile.FromId(context, user.Id);
                         return new HttpResult(githubProfile.Token);
+                        break;
+                    case "githubEmail":
+                        githubProfile = GithubProfile.FromId(context, user.Id);
+                        return new HttpResult(githubProfile.Email);
                         break;
                     case "redmineApiKey":
                         /*
