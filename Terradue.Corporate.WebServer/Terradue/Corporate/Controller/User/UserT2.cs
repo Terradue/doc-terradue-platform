@@ -304,16 +304,19 @@ namespace Terradue.Corporate.Controller {
         /// Creates the cloud profile.
         /// </summary>
         public void CreateCloudAccount(Plan plan) {
-            log.Info(String.Format("Creatign Cloud account for {0}", this.Username));
+            log.Info(String.Format("Creating Cloud account for {0}", this.Username));
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
                 context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Username)));
             }
 
-            //create user (using email as password)
-            int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
-            USER oneuser = oneClient.UserGetInfo(id);
+            if (GetCloudUser() == null) {
+
+                //create user (using email as password)
+                int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
+//                USER oneuser = oneClient.UserGetInfo(id);
+            }
         }
 
         public void UpdateCloudAccount(Plan plan){
@@ -615,8 +618,6 @@ namespace Terradue.Corporate.Controller {
                 } else {
                     Json2Ldap.SimpleBind(dn, password);
                 }
-                
-                
 
                 try {
                     Json2Ldap.ModifyUserInformation(ldapusr);
