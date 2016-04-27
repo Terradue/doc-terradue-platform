@@ -282,7 +282,6 @@ namespace Terradue.Corporate.WebServer {
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));
                 user.Username = user.Email;
-                user.Email = user.Email;
                 user.NeedsEmailConfirmation = false;
                 user.AccountStatus = AccountStatusType.PendingActivation;
                 user.Level = UserLevel.User;
