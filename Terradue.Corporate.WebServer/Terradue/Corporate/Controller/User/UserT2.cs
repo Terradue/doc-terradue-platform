@@ -11,6 +11,7 @@ using System.Net;
 using Terradue.Ldap;
 using System.Collections.Generic;
 using System.Xml;
+using System.Text;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
@@ -271,7 +272,7 @@ namespace Terradue.Corporate.Controller {
         /// Validates the password.
         /// </summary>
         /// <param name="pwd">Pwd.</param>
-        public void ValidatePassword(string pwd) {
+        public static void ValidatePassword(string pwd) {
             if (pwd.Length < 8)
                 throw new Exception("Invalid password: You must use at least 8 characters");
             if (!Regex.Match(pwd, @"[A-Z]").Success)
@@ -304,16 +305,19 @@ namespace Terradue.Corporate.Controller {
         /// Creates the cloud profile.
         /// </summary>
         public void CreateCloudAccount(Plan plan) {
-            log.Info(String.Format("Creatign Cloud account for {0}", this.Username));
+            log.Info(String.Format("Creating Cloud account for {0}", this.Username));
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
                 context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Username)));
             }
 
-            //create user (using email as password)
-            int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
-            USER oneuser = oneClient.UserGetInfo(id);
+            if (GetCloudUser() == null) {
+
+                //create user (using email as password)
+                int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
+//                USER oneuser = oneClient.UserGetInfo(id);
+            }
         }
 
         public void UpdateCloudAccount(Plan plan){
@@ -495,11 +499,12 @@ namespace Terradue.Corporate.Controller {
                 string dn = CreateLdapDN();
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
-                ldapusr.Password = password;
+                ldapusr.Password = GenerateSaltedSHA1(password);
 
                 //login as ldap admin to have creation rights
                 Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
                 Json2Ldap.AddEntry(ldapusr);
+//                Json2Ldap.ModifyPassword(dn, password, password);
 
             } catch (Exception e) {
                 Json2Ldap.Close();
@@ -615,8 +620,6 @@ namespace Terradue.Corporate.Controller {
                 } else {
                     Json2Ldap.SimpleBind(dn, password);
                 }
-                
-                
 
                 try {
                     Json2Ldap.ModifyUserInformation(ldapusr);
@@ -626,8 +629,10 @@ namespace Terradue.Corporate.Controller {
                         if (e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")) {
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
                             Json2Ldap.ModifyUserInformation(ldapusr);
-                        } else
-                            throw e;
+                        } else if(e.Message.Contains("eossoUserid")){
+                            Json2Ldap.AddNewAttributeString(dn, "objectClass", "eossoAccount");
+                            Json2Ldap.ModifyUserInformation(ldapusr);
+                        } else throw e;
                     } catch (Exception e2) {
                         throw e2;
                     }
@@ -744,6 +749,41 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+        }
+
+        public static string GenerateSaltedSHA1(string plainTextString)
+        {
+            HashAlgorithm algorithm = new SHA1Managed();
+            var saltBytes = GenerateSalt(4);
+            var plainTextBytes = Encoding.ASCII.GetBytes(plainTextString);
+
+            var plainTextWithSaltBytes = AppendByteArray(plainTextBytes, saltBytes);
+            var saltedSHA1Bytes = algorithm.ComputeHash(plainTextWithSaltBytes);
+            var saltedSHA1WithAppendedSaltBytes = AppendByteArray(saltedSHA1Bytes, saltBytes);
+
+            return "{SSHA}" + Convert.ToBase64String(saltedSHA1WithAppendedSaltBytes);
+        } 
+
+
+        private static byte[] GenerateSalt(int saltSize)
+        {
+            var rng = new RNGCryptoServiceProvider();
+            var buff = new byte[saltSize];
+            rng.GetBytes(buff);
+            return buff; 
+        }
+
+        private static byte[] AppendByteArray(byte[] byteArray1, byte[] byteArray2)
+        {
+            var byteArrayResult =
+                new byte[byteArray1.Length + byteArray2.Length];
+
+            for (var i = 0; i < byteArray1.Length; i++)
+                byteArrayResult[i] = byteArray1[i];
+            for (var i = 0; i < byteArray2.Length; i++)
+                byteArrayResult[byteArray1.Length + i] = byteArray2[i];
+
+            return byteArrayResult;
         }
        
         #endregion

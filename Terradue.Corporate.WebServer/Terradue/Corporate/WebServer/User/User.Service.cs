@@ -282,7 +282,6 @@ namespace Terradue.Corporate.WebServer {
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));
                 user.Username = user.Email;
-                user.Email = user.Email;
                 user.NeedsEmailConfirmation = false;
                 user.AccountStatus = AccountStatusType.PendingActivation;
                 user.Level = UserLevel.User;
@@ -491,7 +490,7 @@ namespace Terradue.Corporate.WebServer {
         }
 
         public object Put(UserUpdatePassword request) {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
 
