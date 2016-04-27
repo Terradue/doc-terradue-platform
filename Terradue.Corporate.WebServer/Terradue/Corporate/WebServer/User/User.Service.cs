@@ -490,7 +490,7 @@ namespace Terradue.Corporate.WebServer {
         }
 
         public object Put(UserUpdatePassword request) {
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
 
