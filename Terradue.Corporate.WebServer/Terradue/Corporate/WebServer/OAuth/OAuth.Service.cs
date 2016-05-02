@@ -337,7 +337,7 @@ UA -> UA : display user name
                 user.CreateLdapAccount(request.Password);
 
                 user.EoSSO = request.EoSSO;
-                user.UpdateLdapAccount(request.Password);
+                user.UpdateLdapAccount();
 
                 user.Store();
 
@@ -347,12 +347,14 @@ UA -> UA : display user name
                     user.SendMail(UserMailType.Registration, true);
                 }catch(Exception){}
 
+                //TODO: log user created from TEP
+
                 result = new WebUserT2(user, true);
 
                 context.Close();
             } catch (Exception e) {
                 context.Close();
-                return null;
+                throw e;
             }
             return result;
         }

@@ -176,7 +176,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="Terradue.Ldap">
-      <HintPath>..\packages\Terradue.Ldap.1.0.13\lib\net40\Terradue.Ldap.dll</HintPath>
+      <HintPath>..\packages\Terradue.Ldap.1.0.14\lib\net40\Terradue.Ldap.dll</HintPath>
     </Reference>
     <Reference Include="Terradue.Authentication.OpenId">
       <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.11\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
