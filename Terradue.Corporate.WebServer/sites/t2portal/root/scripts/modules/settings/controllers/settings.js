@@ -741,7 +741,7 @@ define([
                     
                     self.keyData.attr("loading",true);
                     SafeModel.create(password).then(createSafeCallback).fail(function(){
-						bootbox.alert("<i class='fa fa-warning'></i> Error during safe creation.");
+						bootbox.alert("<i class='fa fa-warning'></i> Error during ssh keys creation.");
 					}).always(function(){
 						self.keyData.attr("loading",false);
 					});
@@ -784,7 +784,7 @@ define([
 				if(self.keyData.PublicKey)
 					title += "<br/><small><i>Please note that this will delete your current SSH key pair from your VMs.</i></small>";
 				var message = "<div class='container-fluid'>"
-							+ "<form class='createSafeForm'>"
+							+ "<form class='deleteSafeForm'>"
 							+ "<div class='form-group'>" 
 							+ "<label for='password'>Password</label>"
 							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
@@ -805,7 +805,7 @@ define([
 	                            	return false;
 	                            };
 	                            self.keyData.attr("loading",true);
-	                            SafeModel.delete(password).then(function(safe){
+	                            SafeModel.delete(encodeURIComponent(password)).then(function(safe){
 	                            	self.data.attr({
 										sshKeyNotComplete: true,
 										githubNotComplete: true//we just deleted the keys so it cannot be on github
