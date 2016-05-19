@@ -324,11 +324,20 @@ namespace Terradue.Corporate.WebServer {
                     throw e;
                 }
 
-                //we dont want to send an error if mail was not sent
-                //user can still have it resent from the portal
                 try{
                     user.SendMail(UserMailType.Registration, true);
-                }catch(Exception){}
+                }catch(Exception){
+                    //we dont want to send an error if mail was not sent
+                    //user can still have it resent from the portal
+                }
+
+                try{
+                    var subject = "[T2 Portal] - User registration on Terradue Portal";
+                    var body = string.Format("This is an automatic email to notify that the user {0} registered on Terradue Portal.", user.Username);
+                    context.SendMail(context.GetConfigValue("SmtpUsername"),context.GetConfigValue("SmtpUsername"),subject,body);
+                }catch(Exception){
+                    //we dont want to send an error if mail was not sent
+                }
 
                 try{
                     using (var service = base.ResolveService<OAuthGatewayService>()) { 

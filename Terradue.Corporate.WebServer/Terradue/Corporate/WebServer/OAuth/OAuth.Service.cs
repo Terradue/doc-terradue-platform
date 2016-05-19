@@ -347,6 +347,14 @@ UA -> UA : display user name
                     user.SendMail(UserMailType.Registration, true);
                 }catch(Exception){}
 
+                try{
+                    var subject = "[T2 Portal] - User registration on Terradue Portal";
+                    var body = string.Format("This is an automatic email to notify that the user {0} registered on Terradue Portal (account created from TEP).", user.Username);
+                    context.SendMail(context.GetConfigValue("SmtpUsername"),context.GetConfigValue("SmtpUsername"),subject,body);
+                }catch(Exception){
+                    //we dont want to send an error if mail was not sent
+                }
+
                 //TODO: log user created from TEP
 
                 result = new WebUserT2(user, true);
