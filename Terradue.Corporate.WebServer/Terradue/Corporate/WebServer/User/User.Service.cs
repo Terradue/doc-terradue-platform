@@ -288,7 +288,6 @@ namespace Terradue.Corporate.WebServer {
                 user.PasswordAuthenticationAllowed = true;
 
                 try{
-                    //first we delete the current cookie
                     Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                     client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                     client.SSOApiClient = context.GetConfigValue("sso-clientId");
@@ -562,6 +561,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
+                UserT2.ValidateUsername(request.username);
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
                 result = !ldapfactory.UserExists(request.username);
 

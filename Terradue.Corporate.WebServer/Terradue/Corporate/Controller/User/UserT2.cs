@@ -661,6 +661,18 @@ namespace Terradue.Corporate.Controller {
                 throw new Exception("Invalid Cloud username: It must begin with a lower case letter or an underscore");
             throw new Exception("Invalid Cloud username: You must use only lower case letters, digits, underscores, or dashes");
         }
+
+        /// <summary>
+        /// Makes the username valid.
+        /// </summary>
+        /// <returns>The username valid.</returns>
+        /// <param name="username">Username.</param>
+        public static string MakeUsernameValid(string username){
+            if (string.IsNullOrEmpty(username)) throw new Exception("empty username"); 
+
+            var result = username.ToLower().Replace(" ", "").Replace(".","").Replace("-","").Replace("_","");
+            ValidateUsername(result);
+            return result;
         }
 
         //--------------------------------------------------------------------------------------------------------------

@@ -308,17 +308,19 @@ UA -> UA : display user name
                     throw new Exception("Sorry, this email is already used.");
                 }catch(Exception){}
 
+                var validusername = UserT2.MakeUsernameValid(request.Username);
+
                 var json2Ldap = new Json2LdapFactory(context);
                 if (json2Ldap.GetUserFromEmail(request.Email) != null) throw new Exception("Sorry, this email is already used.");
-                if (json2Ldap.GetUserFromEOSSO(request.Username) != null) throw new Exception("Sorry, this username is already used.");
-                if (json2Ldap.GetUserFromUid(request.Username) != null){
+                if (json2Ldap.GetUserFromEOSSO(validusername) != null) throw new Exception("Sorry, this username is already used.");
+                if (json2Ldap.GetUserFromUid(validusername) != null){
                     var exists = true;
                     int i = 1;
                     while(exists && i < 100){
-                        var uname = string.Format("{0}{1}",request.Username,i);
+                        var uname = string.Format("{0}{1}",validusername,i);
                         if (json2Ldap.GetUserFromUid(uname) == null){
                             exists = false;
-                            request.Username = uname;
+                            request.Username = uname;//set request because we then create the user entity from request
                         } else {
                             i++;
                         }
