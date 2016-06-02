@@ -306,9 +306,14 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public void CreateCloudAccount(Plan plan) {
             log.Info(String.Format("Creating Cloud account for {0}", this.Username));
+            if (this.Username.Equals(this.Email)) {
+                log.Error(String.Format("Username not set (equal to email)"));
+                throw new Exception("Please set a valid username before creating the Cloud account");
+            }
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
+                context.Execute(String.Format("DELETE FROM usr_cloud WHERE id={0} AND id_provider={1};", this.Id, prov.Id));
                 context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Username)));
             }
 
@@ -316,7 +321,6 @@ namespace Terradue.Corporate.Controller {
 
                 //create user (using email as password)
                 int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
-//                USER oneuser = oneClient.UserGetInfo(id);
             }
         }
 
