@@ -364,7 +364,7 @@ define([
 						LastName: 'required',
 						Username: {
 							required: true,
-							regExpr: '^[a-zA-Z][0-9a-zA-Z]{1,31}$',
+							regExpr: '^[a-z_][a-z0-9_-]{1,30}[$]?$',
 							remote: {
 						        url: "/t2api/user/ldap/available?format=json",
 						        type: "GET",
@@ -418,10 +418,10 @@ define([
 				placement: 'left',
 				title: 'Username',
 				html: true,
-				content: 'It must have:<ul>'
-					+'<li>a maximum of 32 characters</li>'
-					+'<li>only alphanumeric characters</li>'
-					+'<li>starts with a letter</li>'
+				content: 'It must:<ul>'
+					+'<li>begin with a lower case letter or an underscore</li>'
+					+'<li>followed by lower case letters, digits, underscores, or dashes</li>'
+					+'<li>have a maximum of 32 characters</li>'
 					+'</ul>',
 			});
 			},
