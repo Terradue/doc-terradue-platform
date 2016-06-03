@@ -10,7 +10,8 @@ define([
 	'modules/users_admin/models/plans',
 	'messenger',
 	'summernote',
-	'datePicker'
+	'datePicker',
+	'dataTables'
 ], function($, can, bootbox, CrudBaseControl, Config, Helpers, UsersAdminModel, PlansModel){
 	
 	var UsersAdminControl = CrudBaseControl({}, {
@@ -93,6 +94,7 @@ define([
 		loginDeferred: App.Login.isLoggedDeferred,
 		adminAccess: true,
 		msgDelete: 'Are you sure you want to delete this user?<br/>The user will be removed from LDAP and from the Cloud Controller.'
+		dataTable: true
 	});
 	
 });

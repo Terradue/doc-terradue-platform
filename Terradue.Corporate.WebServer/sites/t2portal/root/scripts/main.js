@@ -26,7 +26,8 @@ require.config({
 		jqueryCopyableInput: 'libs/jquery.copyableInput/js/jquery.copyableInput',
 		summernote: 'libs/summernote/summernote',
 		latinise: 'libs/latinise/latinise.min',
-		datePicker: 'libs/datePicker/js/bootstrap-datepicker'
+		datePicker: 'libs/datePicker/js/bootstrap-datepicker',
+		dataTables: 'libs/jquery.dataTables/js/jquery.dataTables.min'
 	},
 	shim: {
 		underscore: {
@@ -54,7 +55,8 @@ require.config({
 			exports: 'ZeroClipboard'
 		},
 		jqueryCopyableInput: ['zeroClipboard', 'jquery'],
-		summernote: ['jquery', 'bootstrap']
+		summernote: ['jquery', 'bootstrap'],
+		dataTables: ['jquery']
 	}
 });
 

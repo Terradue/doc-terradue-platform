@@ -34,6 +34,8 @@ define([
 			msgDeleteFail: 'Error during item removing.',
 			
 			permissionCheck: null, // deferred
+
+			dataTable: false
 		}
 	},{
 		
@@ -79,6 +81,16 @@ define([
 				if (self.onEntitiesLoaded)
 					self.entities.then(function(entities){
 						self.onEntitiesLoaded(entities)
+					});
+
+				if (self.options.dataTable)
+					require(['dataTables'], function(){
+						self.entities.then(function(){
+													
+							// DataTable
+						    self.element.find('.data-table').DataTable();
+						 
+						});
 					});
 			};
 			
