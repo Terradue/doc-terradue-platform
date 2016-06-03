@@ -192,6 +192,7 @@ namespace Terradue.Corporate.WebServer {
             WebUserT2 result;
             try {
                 context.Open();
+                if(request.Id==0) throw new Exception("Id = 0");
 				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
                 bool newusername = (user.Username == user.Email);
                 user = request.ToEntity(context, user);
