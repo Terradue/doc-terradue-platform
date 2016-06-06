@@ -200,8 +200,8 @@ namespace Terradue.Corporate.WebServer {
     /// </summary>
     public class WebUserT2 : WebUser{
 
-        [ApiMember(Name = "onepassword", Description = "User password on OpenNebula", ParameterType = "query", DataType = "String", IsRequired = false)]
-        public String OnePassword { get; set; }
+        [ApiMember(Name = "hasoneaccount", Description = "Says if user has an account on OpenNebula", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool HasOneAccount { get; set; }
 
         [ApiMember(Name = "DomainId", Description = "User domain id", ParameterType = "query", DataType = "int", IsRequired = false)]
         public int DomainId { get; set; }
@@ -232,7 +232,9 @@ namespace Terradue.Corporate.WebServer {
 
             if (!basicInfo) {
                 if (entity.PublicKey == null) entity.LoadLdapInfo();
-                this.OnePassword = entity.OnePassword;
+                if (entity.OneUser != null) {
+                    this.HasOneAccount = true;
+                }
                 this.PublicKey = entity.PublicKey;
             }
         }

@@ -110,7 +110,7 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, request.Id);
-                result = new WebUserT2(user);
+                result = new WebUserT2(user, false);
 
                 context.Close();
             } catch (Exception e) {

@@ -22,23 +22,20 @@ namespace Terradue.Corporate.Controller {
 
         private Json2LdapFactory LdapFactory { get; set; }
         private PlanFactory PlanFactory { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the one password.
-        /// </summary>
-        /// <value>The one password.</value>
-        public string OnePassword { 
+
+        private IUSER oneuser { get; set; }
+        public IUSER OneUser { 
             get { 
-                if (onepwd == null && this.IsPaying()) {
+                if (oneuser == null) {
                     if (oneId == 0) {
                         try {
                             USER_POOL oneUsers = oneClient.UserGetPoolInfo();
                             foreach (object item in oneUsers.Items) {
                                 if (item is USER_POOLUSER) {
                                     USER_POOLUSER oneUser = item as USER_POOLUSER;
-                                    if (oneUser.NAME == this.Email) {
+                                    if (oneUser.NAME == this.Username) {
                                         oneId = Int32.Parse(oneUser.ID);
-                                        onepwd = oneUser.PASSWORD;
+                                        oneuser = oneUser;
                                         break;
                                     }
                                 }
@@ -48,14 +45,43 @@ namespace Terradue.Corporate.Controller {
                         }
                     } else {
                         USER oneUser = oneClient.UserGetInfo(oneId);
-                        onepwd = oneUser.PASSWORD;
+                        oneuser = oneUser;
                     }
                 }
-                return onepwd;
+                return oneuser;
+            }
+            set {
+                
+            }
+        }
+        
+        /// <summary>
+        /// Gets or sets the one password.
+        /// </summary>
+        /// <value>The one password.</value>
+        public string OnePassword { 
+            get { 
+                if (this.IsPaying()) {
+                    return OneUser.PASSWORD;
+                }
+                return null;
             } 
             set {
                 onepwd = value;
             } 
+        }
+
+        private List<String> onegroups { get; set; }
+        public List<String> OneGroups {
+            get{ 
+                if (onegroups == null) {
+                    onegroups = new List<string>();
+                    foreach (var group in OneUser.GROUPS) {
+                        onegroups.Add(oneClient.GroupGetInfo(Int32.Parse(group)).NAME);
+                    }
+                }
+                return onegroups;
+            }
         }
 
         /// <summary>
