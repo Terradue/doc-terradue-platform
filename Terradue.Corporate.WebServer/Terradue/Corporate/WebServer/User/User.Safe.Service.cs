@@ -20,6 +20,9 @@ namespace Terradue.Corporate.WebServer {
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class UserSafeService : ServiceStack.ServiceInterface.Service {
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger
+            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
        
         /// <summary>
         /// Post the specified request.
@@ -40,16 +43,21 @@ namespace Terradue.Corporate.WebServer {
 
                 UserT2 user = UserT2.FromId(context, context.UserId);
 
+                log.InfoFormat("Create safe for user {0}", user.Username);
+
                 //authenticate user
                 try{
                     var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
                     var usr = j2ldapclient.Authenticate(user.Identifier, request.password, context.GetConfigValue("ldap-apikey"));
                 }catch(Exception e){
+                    log.ErrorFormat("Error during safe creation - {0} - {1}", e.Message, e.StackTrace);
                     throw new Exception("Invalid password");
                 }
 
                 user.CreateSafe();
-                user.UpdateLdapAccount();    
+                log.InfoFormat("Safe created locally");
+                user.UpdateLdapAccount();
+                log.InfoFormat("Safe saved on ldap");
 
                 result = new WebSafe();
                 result.PublicKey = user.PublicKey;
@@ -57,6 +65,7 @@ namespace Terradue.Corporate.WebServer {
 
                 context.Close ();
             }catch(Exception e) {
+                log.ErrorFormat("Error during safe creation - {0} - {1}", e.Message, e.StackTrace);
                 context.Close ();
                 throw e;
             }
@@ -69,16 +78,20 @@ namespace Terradue.Corporate.WebServer {
             try{
                 context.Open();
                 UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Delete safe for user {0}", user.Username);
                 //authenticate user
                 try{
                     var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
                     var usr = j2ldapclient.Authenticate(user.Identifier, request.password, context.GetConfigValue("ldap-apikey"));
                 }catch(Exception e){
+                    log.ErrorFormat("Error during safe delete - {0} - {1}", e.Message, e.StackTrace);
                     throw new Exception("Invalid password");
                 }
                 user.DeletePublicKey(request.password);
+                log.InfoFormat("Safe deleted successfully");
                 context.Close ();
             }catch(Exception e) {
+                log.ErrorFormat("Error during safe delete - {0} - {1}", e.Message, e.StackTrace);
                 context.Close ();
                 throw e;
             }

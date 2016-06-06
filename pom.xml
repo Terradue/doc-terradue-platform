@@ -143,19 +143,22 @@
 							</sources>
 						</mapping>
 						<mapping>
-							<directory>${deploy.dir}/sites/t2portal/root</directory>
-							<configuration>noreplace</configuration>
-							<sources>
-								<source>
-									<location>${project.build.directory}/staged/sites/${deploy.site}/config/web.config</location>
-								</source>
-							</sources>
-						</mapping>
-						<mapping>
 							<directory>${deploy.dir}/modules</directory>
 							<sources>
 								<source>
 									<location>${project.build.directory}/staged/modules</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>${deploy.dir}/sites/${deploy.site}/root</directory>
+							<configuration>noreplace</configuration>
+							<sources>
+								<source>
+									<location>${basedir}/src/main/web-resources/config/web.config</location>
+								</source>
+								<source>
+									<location>${basedir}/src/main/web-resources/config/Log4Net.config</location>
 								</source>
 							</sources>
 						</mapping>

@@ -60,7 +60,7 @@ var NewsControl = BaseControl({}, {
 		this.doSearch();
 	},
 	
-	details: function(routeData){
+	stories: function(routeData){
 		var self = this;
 		var id = routeData.id;
 		
