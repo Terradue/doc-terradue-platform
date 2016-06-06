@@ -5,9 +5,11 @@
 		 Go back to all users admin</small>
 	</a>
 	<br/><br/>
+	
 	<div class="row">
 		<div class="col-md-6">
 		
+			<!--  USER INFO  -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">User Info</h3>
@@ -39,9 +41,25 @@
 				</div>
 			</div>
 			
-		</div>
+			{{#ifEquals user.AccountStatus 1}}
+			<!-- USER VALIDATION -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">User validation</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					<span>User account is currently pending for validation. You can activate the account on the behalh of the user</span>
+					<br/><br/>
+					<button class="btn btn-small btn-warning validateEmail">Validate</button>
+				</div>
+			</div>
+			{{/ifEquals}}
 
+		</div>
+		
 		<div class="col-md-6">
+		
+			<!-- CHANGE USER LEVEL -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Change user level</h3>
@@ -55,11 +73,8 @@
 					{{/ifNotEquals}}
 				</div>
 			</div>
-		</div>
-
-
-		<div class="col-md-6">
-
+			
+			<!-- CHANGE USER PLAN -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Change plan</h3>
@@ -88,25 +103,11 @@
 					{{/if}}
 				</div>
 			</div>
+
 		</div>
+		
+	</div><!-- end row -->
 
-
-		{{#ifEquals user.AccountStatus 1}}
-		<div class="col-md-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">User validation</h3>
-				</div>
-				<div class="panel-body" style="overflow: scroll">
-					<span>User account is currently pending for validation. You can activate the account on the behalh of the user</span>
-					<br/><br/>
-					<button class="btn btn-small btn-warning validateEmail">Validate</button>
-				</div>
-			</div>
-		</div>
-		{{/ifEquals}}
-
-	</div>
 {{else}}
 	<br/><br/>
 	<p><i class="fa fa-spin fa-spinner"></i> Loading user...</p>
