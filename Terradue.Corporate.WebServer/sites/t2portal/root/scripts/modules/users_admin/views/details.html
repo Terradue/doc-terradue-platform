@@ -14,6 +14,10 @@
 				</div>
 				<div class="panel-body" style="overflow: scroll">
 					{{#user}}
+						{{#ifEquals Level 4}}<span class="label label-default">Administrator</span>{{/ifEquals}}
+						{{#ifEquals Level 3}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
+						{{#ifEquals Level 2}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
+						{{#ifEquals Level 1}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
 						<dl class="dl-horizontal">
 							<dt>Id</dt><dd>&nbsp;{{Id}}</dd>
 							<dt>Identifier</dt><dd>&nbsp;{{Identifier}}</dd>
@@ -23,9 +27,10 @@
 							<dt>Email</dt><dd>&nbsp;{{Email}}</dd>
 							<dt>Affiliation</dt><dd>&nbsp;{{Affiliation}}</dd>
 							<dt>Country</dt><dd>&nbsp;{{Country}}</dd>
-							<dt>Plan</dt><dd>&nbsp;{{Plan}}</dd>
-							<dt>AccountStatus</dt><dd>&nbsp;{{AccountStatus}}</dd>
-							<dt>Level</dt><dd>&nbsp;{{Level}}</dd>
+							<dt>AccountStatus</dt><dd>&nbsp;
+								{{#ifEquals AccountStatus 4}}<span class="label label-success">Validated</span>{{/ifEquals}}
+								{{#ifEquals AccountStatus 1}}<span class="label label-warning">Pending</span>{{/ifEquals}}
+							</dd>
 							<dt>DomainId</dt><dd>&nbsp;{{DomainId}}</dd>
 							<dt>EmailNotification</dt><dd>&nbsp;{{EmailNotification}}</dd>
 							<dt>PublicKey</dt><dd>&nbsp;{{PublicKey}}</dd>
@@ -35,6 +40,24 @@
 			</div>
 			
 		</div>
+
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Change user level</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					{{#ifEquals user.Level 4}}
+					<button class="btn btn-small btn-warning removeAdminRights">Set as normal user</button>
+					{{/ifEquals}}
+					{{#ifNotEquals user.Level 4}}
+					<button class="btn btn-small btn-warning giveAdminRights">Set as administrator</button>
+					{{/ifNotEquals}}
+				</div>
+			</div>
+		</div>
+
+
 		<div class="col-md-6">
 
 			<div class="panel panel-default">
@@ -67,29 +90,21 @@
 			</div>
 		</div>
 
+
+		{{#ifEquals user.AccountStatus 1}}
 		<div class="col-md-6">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Other Actions</h3>
+					<h3 class="panel-title">User validation</h3>
 				</div>
 				<div class="panel-body" style="overflow: scroll">
-					{{#user}}
-					{{#ifEquals AccountStatus 1}}
-						<i class="fa fa-arrow-right"/> Account pending for validation&nbsp;&nbsp;
-						<button class="btn btn-small btn-warning validateEmail">Validate user account</button>
-					{{/ifEquals}}
-					{{#if validateAccountFailMessage}}
-						<span class="text-danger">Error while validating user <strong>{{Username}}</strong> account: <strong>{{validateAccountFailMessage}}</strong></span>
-					{{else}}
-						{{#if validateAccountLoading}}
-							&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Validating...
-						{{/if}}
-					{{/if}}
-					{{/user}}
+					<span>User account is currently pending for validation. You can activate the account on the behalh of the user</span>
+					<br/><br/>
+					<button class="btn btn-small btn-warning validateEmail">Validate</button>
 				</div>
 			</div>
 		</div>
-
+		{{/ifEquals}}
 
 	</div>
 {{else}}

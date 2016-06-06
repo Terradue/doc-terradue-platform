@@ -26,6 +26,7 @@
 					<tr class="entity" data-id="{{ Id }}">
 						<td>{{ Id }}</td>
 						<td>
+							<span class="hidden">{{Level}}{{AccountStatus}}</span>
 							{{#ifEquals Level 4}}<i class="fa fa-star"/>{{/ifEquals}}
 							{{#ifEquals AccountStatus 1}}<i class="fa fa-warning text-warning"/>{{/ifEquals}}
 						</td>
