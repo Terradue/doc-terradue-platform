@@ -99,6 +99,10 @@ namespace Terradue.Corporate.WebServer {
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class UserService : ServiceStack.ServiceInterface.Service {
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger
+            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         /// <summary>
         /// Get the specified request.
         /// </summary>
@@ -150,6 +154,8 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, context.UserId);
+                user=null;
+                log.InfoFormat("Get current user {0}",user.Username);
                 result = new WebUserT2(user);
                 context.Close();
             } catch (Exception e) {
