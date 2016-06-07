@@ -85,6 +85,7 @@ define([
 		 					Plan: plan.Key,
 		 				}).then(function(){
 							self.userData.attr('planUpgradedSuccessName', plan.Key);
+							self.userData.user.attr('HasOneAccount', true);
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug
 		 					self.userData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
