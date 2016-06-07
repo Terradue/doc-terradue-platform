@@ -47,6 +47,20 @@
 		        <version>1.2.1</version>
 		        <executions>
 		          <execution>
+		          	<id>submodules</id>
+					<phase>process-resources</phase>
+		            <goals>
+		              <goal>exec</goal>
+		            </goals>
+		            <configuration>
+			          <executable>${basedir}/src/main/scripts/submodules-install.sh</executable>
+			          <arguments>
+			          	<argument>${basedir}/${ProjectDir}/sites/${deploy.site}</argument>
+			          	<argument>${submBranch}</argument>
+			          </arguments>
+			        </configuration>
+		          </execution>
+		          <execution>
 		          	<id>nuget</id>
 					<phase>process-resources</phase>
 		            <goals>
@@ -114,6 +128,21 @@
 							<sources>
 								<source>
 									<location>${project.build.directory}/staged</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>${deploy.dir}/sites/${deploy.site}</directory>
+							<sources>
+								<source>
+									<location>${basedir}/submodules</location>
+									<includes>
+										<include>**</include>
+									</includes>
+									<excludes>
+										<exclude>submodules.txt</exclude>
+										<exclude>update-subs.sh</exclude>
+									</excludes>
 								</source>
 							</sources>
 						</mapping>
