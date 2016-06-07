@@ -29,6 +29,7 @@
 		<rpmOSArch>noarch</rpmOSArch>
 		<redmine.projectID>t2-portal</redmine.projectID>
 		<monoConfig>DEBUG</monoConfig>
+		<submBranch>develop</submBranch>
 	</properties>
 	
 	<dependencies>
