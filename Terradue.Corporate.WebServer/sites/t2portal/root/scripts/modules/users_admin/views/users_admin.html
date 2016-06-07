@@ -3,8 +3,6 @@
 	<h2>Users</h2>
 	{{#if entities.isResolved}}
 		<small>
-				<i class="fa fa-star"></i> Administrator
-				<br/>
 				<i class="text-warning fa fa-warning"></i> Account not validated (pending activation)
 				<br/><br/>
 			</small>
@@ -12,7 +10,6 @@
 			<thead>
 				<tr>
 					<th>Id</th>
-					<th>Level</th>
 					<th>Status</th>
 					<th>Username</th>
 					<th>Name</th>
@@ -26,8 +23,7 @@
 				{{#each entities}}
 					<tr class="entity" data-id="{{ Id }}">
 						<td>{{ Id }}</td>
-						<td>{{#ifEquals Level 4}} <i class="fa fa-star"/>{{/ifEquals}}</td>
-						<td>
+						<td align="center">
 							{{#ifEquals AccountStatus 1}}<i class="fa fa-warning text-warning"/>{{/ifEquals}}
 						</td>
 						<td>{{ Username }}</td>
