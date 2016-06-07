@@ -10,7 +10,7 @@
 
 	<groupId>com.terradue.t2portal</groupId>
 	<artifactId>webserver-t2portal</artifactId>
-	<version>2.1.5</version>
+	<version>2.1.6</version>
 	<packaging>rpm</packaging>
 
 	<name>Web Server for T2 Corporate portal</name>
@@ -29,6 +29,7 @@
 		<rpmOSArch>noarch</rpmOSArch>
 		<redmine.projectID>t2-portal</redmine.projectID>
 		<monoConfig>DEBUG</monoConfig>
+		<submBranch>develop</submBranch>
 	</properties>
 	
 	<dependencies>
@@ -46,6 +47,20 @@
 		        <artifactId>exec-maven-plugin</artifactId>
 		        <version>1.2.1</version>
 		        <executions>
+		          <execution>
+		          	<id>submodules</id>
+					<phase>process-resources</phase>
+		            <goals>
+		              <goal>exec</goal>
+		            </goals>
+		            <configuration>
+			          <executable>${basedir}/src/main/scripts/submodules-install.sh</executable>
+			          <arguments>
+			          	<argument>${basedir}/${ProjectDir}/sites/${deploy.site}</argument>
+			          	<argument>${submBranch}</argument>
+			          </arguments>
+			        </configuration>
+		          </execution>
 		          <execution>
 		          	<id>nuget</id>
 					<phase>process-resources</phase>
@@ -118,6 +133,21 @@
 							</sources>
 						</mapping>
 						<mapping>
+							<directory>${deploy.dir}/sites/${deploy.site}</directory>
+							<sources>
+								<source>
+									<location>${basedir}/submodules</location>
+									<includes>
+										<include>**</include>
+									</includes>
+									<excludes>
+										<exclude>submodules.txt</exclude>
+										<exclude>update-subs.sh</exclude>
+									</excludes>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
 							<filemode>644</filemode>
 							<configuration>noreplace</configuration>
 							<directoryIncluded>false</directoryIncluded>
@@ -143,19 +173,22 @@
 							</sources>
 						</mapping>
 						<mapping>
-							<directory>${deploy.dir}/sites/t2portal/root</directory>
-							<configuration>noreplace</configuration>
-							<sources>
-								<source>
-									<location>${project.build.directory}/staged/sites/${deploy.site}/config/web.config</location>
-								</source>
-							</sources>
-						</mapping>
-						<mapping>
 							<directory>${deploy.dir}/modules</directory>
 							<sources>
 								<source>
 									<location>${project.build.directory}/staged/modules</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>${deploy.dir}/sites/${deploy.site}/root</directory>
+							<configuration>noreplace</configuration>
+							<sources>
+								<source>
+									<location>${basedir}/src/main/web-resources/config/web.config</location>
+								</source>
+								<source>
+									<location>${basedir}/src/main/web-resources/config/Log4Net.config</location>
 								</source>
 							</sources>
 						</mapping>

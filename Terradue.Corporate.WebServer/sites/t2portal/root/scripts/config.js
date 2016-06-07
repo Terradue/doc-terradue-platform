@@ -9,7 +9,6 @@ define({
 	
 	firstPage: '/static/home.html',
 
-	page404: 'modules/pages/views/404.html',
 	pageError: 'modules/pages/views/error.html',
 	
 	staticPages: {
@@ -27,4 +26,10 @@ define({
 	recaptchaPublicKey: '6Lc1ZgMTAAAAAFB21z0ElV23MU1friFPmkBXTtNc',
 		//'6LeXcwMTAAAAAFoiZaGEqfI2WwzSDcXQVfm64H0J', // ciccio test
 	
+	baseControl: {
+		siteName: 'Terradue',
+		contactUsUrl: 'mailto:info@terradue.com',
+		//errorImageUrl: '/styles/img/earthDeflated.jpg'
+	}	
+
 });

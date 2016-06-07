@@ -99,6 +99,10 @@ namespace Terradue.Corporate.WebServer {
     [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     public class UserService : ServiceStack.ServiceInterface.Service {
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger
+            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         /// <summary>
         /// Get the specified request.
         /// </summary>
@@ -110,7 +114,7 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, request.Id);
-                result = new WebUserT2(user);
+                result = new WebUserT2(user, false);
 
                 context.Close();
             } catch (Exception e) {
@@ -150,6 +154,7 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Get current user {0}",user.Username);
                 result = new WebUserT2(user);
                 context.Close();
             } catch (Exception e) {
@@ -192,6 +197,7 @@ namespace Terradue.Corporate.WebServer {
             WebUserT2 result;
             try {
                 context.Open();
+                if(request.Id==0) throw new Exception("Id = 0");
 				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
                 bool newusername = (user.Username == user.Email);
                 user = request.ToEntity(context, user);
@@ -288,7 +294,6 @@ namespace Terradue.Corporate.WebServer {
                 user.PasswordAuthenticationAllowed = true;
 
                 try{
-                    //first we delete the current cookie
                     Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                     client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                     client.SSOApiClient = context.GetConfigValue("sso-clientId");
@@ -324,11 +329,20 @@ namespace Terradue.Corporate.WebServer {
                     throw e;
                 }
 
-                //we dont want to send an error if mail was not sent
-                //user can still have it resent from the portal
                 try{
                     user.SendMail(UserMailType.Registration, true);
-                }catch(Exception){}
+                }catch(Exception){
+                    //we dont want to send an error if mail was not sent
+                    //user can still have it resent from the portal
+                }
+
+                try{
+                    var subject = "[T2 Portal] - User registration on Terradue Portal";
+                    var body = string.Format("This is an automatic email to notify that the user {0} registered on Terradue Portal.", user.Username);
+                    context.SendMail(context.GetConfigValue("SmtpUsername"),context.GetConfigValue("SmtpUsername"),subject,body);
+                }catch(Exception){
+                    //we dont want to send an error if mail was not sent
+                }
 
                 try{
                     using (var service = base.ResolveService<OAuthGatewayService>()) { 
@@ -553,6 +567,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
 
                 if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
+                UserT2.ValidateUsername(request.username);
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
                 result = !ldapfactory.UserExists(request.username);
 

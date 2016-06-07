@@ -5,15 +5,21 @@
 		 Go back to all users admin</small>
 	</a>
 	<br/><br/>
+	
 	<div class="row">
 		<div class="col-md-6">
 		
+			<!--  USER INFO  -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">User Info</h3>
 				</div>
 				<div class="panel-body" style="overflow: scroll">
 					{{#user}}
+						{{#ifEquals Level 4}}<span class="label label-default">Administrator</span>{{/ifEquals}}
+						{{#ifEquals Level 3}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
+						{{#ifEquals Level 2}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
+						{{#ifEquals Level 1}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
 						<dl class="dl-horizontal">
 							<dt>Id</dt><dd>&nbsp;{{Id}}</dd>
 							<dt>Identifier</dt><dd>&nbsp;{{Identifier}}</dd>
@@ -23,40 +29,70 @@
 							<dt>Email</dt><dd>&nbsp;{{Email}}</dd>
 							<dt>Affiliation</dt><dd>&nbsp;{{Affiliation}}</dd>
 							<dt>Country</dt><dd>&nbsp;{{Country}}</dd>
-							<dt>Plan</dt><dd>&nbsp;{{Plan}}</dd>
-							<dt>AccountStatus</dt><dd>&nbsp;{{AccountStatus}}</dd>
-							<dt>Level</dt><dd>&nbsp;{{Level}}</dd>
+							<dt>AccountStatus</dt><dd>&nbsp;
+								{{#ifEquals AccountStatus 4}}<span class="label label-success">Validated</span>{{/ifEquals}}
+								{{#ifEquals AccountStatus 1}}<span class="label label-warning">Pending</span>{{/ifEquals}}
+							</dd>
 							<dt>DomainId</dt><dd>&nbsp;{{DomainId}}</dd>
 							<dt>EmailNotification</dt><dd>&nbsp;{{EmailNotification}}</dd>
 							<dt>PublicKey</dt><dd>&nbsp;{{PublicKey}}</dd>
+							<dt>One Account</dt><dd>&nbsp;{{#if HasOneAccount}}<span class="label label-success">OK</span>{{else}}<span class="label label-danger">Not created</span>{{/if}}</dd>
 						</dl>
 					{{/user}}
 				</div>
 			</div>
 			
-		</div>
-		<div class="col-md-6">
+			{{#ifEquals user.AccountStatus 1}}
+			<!-- USER VALIDATION -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">User validation</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					<span>User account is currently pending for validation. You can activate the account on the behalf of the user</span>
+					<br/><br/>
+					<button class="btn btn-small btn-warning validateEmail">Validate</button>
+				</div>
+			</div>
+			{{/ifEquals}}
 
+		</div>
+		
+		<div class="col-md-6">
+		
+			<!-- CHANGE USER LEVEL -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Change user level</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					{{#ifEquals user.Level 4}}
+					<button class="btn btn-small btn-warning removeAdminRights">Set as normal user</button>
+					{{/ifEquals}}
+					{{#ifNotEquals user.Level 4}}
+					<button class="btn btn-small btn-warning giveAdminRights">Set as administrator</button>
+					{{/ifNotEquals}}
+				</div>
+			</div>
+			
+			<!-- CHANGE USER PLAN -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Change plan</h3>
 				</div>
 				<div class="panel-body">
 					{{#if plans}}
+						<div class="list-group">
 						{{#each plans}}
-							<div class="radio">
-								<label>
-									<input type="radio" name="planRadio" value="{{Value}}" {{#ifEquals Key ../user.Plan}}checked="checked"{{/ifEquals}}>
-									{{Key}}
-								</label>
-							</div>
+							<a class="user-plan list-group-item {{#ifEquals Key ../user.Plan}}active{{/ifEquals}}" data-plan="{{Value}}">{{Key}}</a>
 						{{/each}}
+						</div>
 						<button class="btn btn-warning upgradePlanBtn" data-user="{{user.Id}}">Upgrade</button>&nbsp;&nbsp;
 						{{#if planUpgradedSuccessName}}
 							<span class="text-success">The user <strong>{{user.Username}}</strong> account is upgraded to <strong>{{planUpgradedSuccessName}}</strong></span>
 						{{else}}
 							{{#if planUpgradedFailMessage}}
-								<span class="text-danger">Error while upgrade user <strong>{{user.Username}}</strong> account: <strong>{{planUpgradedFailMessage}}</strong></span>
+								<span class="text-danger">Error while upgrading user <strong>{{user.Username}}</strong> account: <strong>{{planUpgradedFailMessage}}</strong></span>
 							{{else}}
 								{{#if planUpgradedLoading}}
 									&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Upgrading...
@@ -68,9 +104,11 @@
 					{{/if}}
 				</div>
 			</div>
-			
+
 		</div>
-	</div>
+		
+	</div><!-- end row -->
+
 {{else}}
 	<br/><br/>
 	<p><i class="fa fa-spin fa-spinner"></i> Loading user...</p>

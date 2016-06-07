@@ -35,6 +35,7 @@ namespace Terradue.Corporate.WebServer {
             JsConfig.IncludePublicFields = false;
             JsConfig<DateTime>.SerializeFn = time => time.ToString("O");
 
+            log4net.Config.XmlConfigurator.Configure();
 
             //Permit modern browsers (e.g. Firefox) to allow sending of any REST HTTP Method
             base.SetConfig(new EndpointHostConfig {

@@ -1,16 +1,16 @@
 <div id="settingsPage" class="container">
 	<br/>
 	<div class="submenu col-md-3">
-		<div class="settings settings-title">Personal settings</div>
+		<div class="settings settings-title">Settings</div>
 		<div class="settings settings-container row fluid">
 			<ul class="nav nav-pills nav-stacked">
 				<li class="profile menu-item"><a href="/portal/settings/profile"> 
 					{{#if profileNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
-					Profile</a>
+					About you</a>
 				</li>
 				<li class="account menu-item"><a href="/portal/settings/account"> 
 					{{#if emailNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
-					Account settings</a>
+					Account</a>
 				</li>
 				<li class="key menu-item"><a href="/portal/settings/key"> 
 					{{#if sshKeyNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
@@ -20,7 +20,7 @@
 					{{#if githubNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/unless}}
 					Github</a>
 				</li>
-				<li class="plan menu-item"><a href="/portal/settings/plan">Plan</a>
+				<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
 				</li>
 			</ul>
 		</div>

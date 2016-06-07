@@ -1,26 +1,60 @@
+<style>
+#usersAdminPage .buttonsColumn{
+	white-space: nowrap;
+}
+#usersAdminPage table.data-table > tfoot > tr > th > input {
+	width: 100%;
+	font-size: 10px;
+	font-weight: normal;
+}
+</style>
 <div class="container banners" id="usersAdminPage">
+	<a href="/portal/cpanel"><small><i class="fa fa-caret-left"></i> Back to Administration panel</small></a>
 	<h2>Users</h2>
 	{{#if entities.isResolved}}
-		<table class="table">
+		<small>
+				<i class="text-warning fa fa-warning"></i> Account not validated (pending activation)
+				<br/><br/>
+			</small>
+		<table class="data-table table table-striped table-bordered" align="center">
 			<thead>
 				<tr>
 					<th>Id</th>
+					<th>Status</th>
 					<th>Username</th>
 					<th>Name</th>
 					<th>Email</th>
+					<th>Affiliation</th>
 					<th>Plan</th>
+					<th/>
 				</tr>
 			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th>Username</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Affiliation</th>
+					<th>Plan</th>
+					<th/>
+				</tr>
+			</tfoot>
 			<tbody>
 				{{#each entities}}
 					<tr class="entity" data-id="{{ Id }}">
 						<td>{{ Id }}</td>
-						<td><a href="/portal/users_admin/details/{{ Id }}" title="Details/Manage plan">{{ Username }}</a></td>
+						<td align="center">
+							{{#ifEquals AccountStatus 1}}<i class="fa fa-warning text-warning"/>{{/ifEquals}}
+						</td>
+						<td>{{ Username }}</td>
 						<td>{{ FirstName }} {{ LastName }}</td>
 						<td>{{ Email }}</td>
+						<td>{{ Affiliation }}</td>
 						<td>{{ Plan }}</td>
-						<td>
-							<a href="/portal/users_admin/details/{{ Id }}" class="btn btn-info plans" title="Details/Manage plan"><i class="fa fa-star"></i></a>
+						<td class="buttonsColumn">
+							<a href="/portal/users_admin/details/{{ Id }}" class="btn btn-info plans" title="Details/Manage plan"><i class="fa fa-eye"></i></a>
 							<a href="javascript://" class="btn btn-info delete" title="Delete"><i class="fa fa-trash-o"></i></a>
 						</td>
 					</tr>

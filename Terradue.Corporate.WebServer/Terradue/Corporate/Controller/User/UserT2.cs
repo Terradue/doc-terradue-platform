@@ -22,23 +22,20 @@ namespace Terradue.Corporate.Controller {
 
         private Json2LdapFactory LdapFactory { get; set; }
         private PlanFactory PlanFactory { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the one password.
-        /// </summary>
-        /// <value>The one password.</value>
-        public string OnePassword { 
+
+        private IUSER oneuser { get; set; }
+        public IUSER OneUser { 
             get { 
-                if (onepwd == null && this.IsPaying()) {
+                if (oneuser == null) {
                     if (oneId == 0) {
                         try {
                             USER_POOL oneUsers = oneClient.UserGetPoolInfo();
                             foreach (object item in oneUsers.Items) {
                                 if (item is USER_POOLUSER) {
                                     USER_POOLUSER oneUser = item as USER_POOLUSER;
-                                    if (oneUser.NAME == this.Email) {
+                                    if (oneUser.NAME == this.Username) {
                                         oneId = Int32.Parse(oneUser.ID);
-                                        onepwd = oneUser.PASSWORD;
+                                        oneuser = oneUser;
                                         break;
                                     }
                                 }
@@ -48,14 +45,43 @@ namespace Terradue.Corporate.Controller {
                         }
                     } else {
                         USER oneUser = oneClient.UserGetInfo(oneId);
-                        onepwd = oneUser.PASSWORD;
+                        oneuser = oneUser;
                     }
                 }
-                return onepwd;
+                return oneuser;
+            }
+            set {
+                
+            }
+        }
+        
+        /// <summary>
+        /// Gets or sets the one password.
+        /// </summary>
+        /// <value>The one password.</value>
+        public string OnePassword { 
+            get { 
+                if (this.IsPaying()) {
+                    return OneUser.PASSWORD;
+                }
+                return null;
             } 
             set {
                 onepwd = value;
             } 
+        }
+
+        private List<String> onegroups { get; set; }
+        public List<String> OneGroups {
+            get{ 
+                if (onegroups == null) {
+                    onegroups = new List<string>();
+                    foreach (var group in OneUser.GROUPS) {
+                        onegroups.Add(oneClient.GroupGetInfo(Int32.Parse(group)).NAME);
+                    }
+                }
+                return onegroups;
+            }
         }
 
         /// <summary>
@@ -306,9 +332,14 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public void CreateCloudAccount(Plan plan) {
             log.Info(String.Format("Creating Cloud account for {0}", this.Username));
+            if (this.Username.Equals(this.Email)) {
+                log.Error(String.Format("Username not set (equal to email)"));
+                throw new Exception("Please set a valid username before creating the Cloud account");
+            }
             EntityList<CloudProvider> provs = new EntityList<CloudProvider>(context);
             provs.Load();
             foreach (CloudProvider prov in provs) {
+                context.Execute(String.Format("DELETE FROM usr_cloud WHERE id={0} AND id_provider={1};", this.Id, prov.Id));
                 context.Execute(String.Format("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql(this.Username)));
             }
 
@@ -316,7 +347,6 @@ namespace Terradue.Corporate.Controller {
 
                 //create user (using email as password)
                 int id = oneClient.UserAllocate(this.Username, this.Email, "SSO");
-//                USER oneuser = oneClient.UserGetInfo(id);
             }
         }
 
@@ -651,18 +681,28 @@ namespace Terradue.Corporate.Controller {
         /// Validates the username.
         /// </summary>
         /// <param name="username">Username.</param>
-        public void ValidateUsername(string username) {
-            Regex r = new Regex("^[a-zA-Z][0-9a-zA-Z]{1,31}$");
-            if (r.IsMatch(username))
+        public static void ValidateUsername(string username) {
+            if (Regex.IsMatch(username,"^[a-z_][a-z0-9_-]{1,30}[$]?$"))
                 return;
 
             if (username.Length > 32)
-                throw new Exception("Invalid Cloud username: You must use at max 32 characters");
-            if (!Regex.Match(username, @"^[0-9a-zA-Z]").Success)
-                throw new Exception("Invalid Cloud username: You must use only alphanumeric values");
-            if (!Regex.Match(username, "^[a-zA-Z][0-9a-zA-Z]{1,31}$").Success)
-                throw new Exception("Invalid Cloud username: You must start with a letter");
-            throw new Exception("Invalid Cloud username");
+                throw new Exception("Invalid Cloud username: It must have a maximum of 32 characters");
+            if (!Regex.IsMatch(username, "^[a-z_]"))
+                throw new Exception("Invalid Cloud username: It must begin with a lower case letter or an underscore");
+            throw new Exception("Invalid Cloud username: You must use only lower case letters, digits, underscores, or dashes");
+        }
+
+        /// <summary>
+        /// Makes the username valid.
+        /// </summary>
+        /// <returns>The username valid.</returns>
+        /// <param name="username">Username.</param>
+        public static string MakeUsernameValid(string username){
+            if (string.IsNullOrEmpty(username)) throw new Exception("empty username"); 
+
+            var result = username.ToLower().Replace(" ", "").Replace(".","").Replace("-","").Replace("_","");
+            ValidateUsername(result);
+            return result;
         }
 
         //--------------------------------------------------------------------------------------------------------------
