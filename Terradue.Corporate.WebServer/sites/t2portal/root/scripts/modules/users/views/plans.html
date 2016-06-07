@@ -16,7 +16,7 @@
 			<span class="text-success">The user <strong>{{user.Username}}</strong> account is upgraded to <strong>{{planUpgradedSuccessName}}</strong></span>
 		{{else}}
 			{{#if planUpgradedFailMessage}}
-				<span class="text-danger">Error while upgrade user <strong>{{user.Username}}</strong> account: <strong>{{planUpgradedFailMessage}}</strong></span>
+				<span class="text-danger">Error while upgrading user <strong>{{user.Username}}</strong> account: <strong>{{planUpgradedFailMessage}}</strong></span>
 			{{else}}
 				{{#if planUpgradedLoading}}
 					&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Upgrading...
