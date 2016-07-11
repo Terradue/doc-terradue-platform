@@ -126,6 +126,9 @@ UA -> UA : display user name
 
         [ApiMember(Name = "token", Description = "token", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Token { get; set; }
+
+        [ApiMember(Name = "originator", Description = "system making the request", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string Originator { get; set; }
     }
 
     [Route("/logout", "GET", Summary = "logout", Notes = "Logout from the platform")]
@@ -352,7 +355,8 @@ UA -> UA : display user name
 
                 try{
                     var subject = "[T2 Portal] - User registration on Terradue Portal";
-                    var body = string.Format("This is an automatic email to notify that the user {0} registered on Terradue Portal (account created from TEP).", user.Username);
+                    var originator = request.Originator != null ? "\nThe request was performed from " + request.Originator : "";
+                    var body = string.Format("This is an automatic email to notify that an account has been automatically created on Terradue Corporate Portal for the user {0} ({1}).{2}", user.Username, user.Email, originator);
                     context.SendMail(context.GetConfigValue("SmtpUsername"),context.GetConfigValue("SmtpUsername"),subject,body);
                 }catch(Exception){
                     //we dont want to send an error if mail was not sent
