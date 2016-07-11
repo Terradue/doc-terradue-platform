@@ -332,7 +332,8 @@ UA -> UA : display user name
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));
                 user.NeedsEmailConfirmation = false;
-                user.AccountStatus = AccountStatusType.PendingActivation;
+                //we assume email was already validated on the system making the request, so user is automatically enabled
+                user.AccountStatus = AccountStatusType.Enabled;
                 user.Level = UserLevel.User;
                 user.PasswordAuthenticationAllowed = true;
 
