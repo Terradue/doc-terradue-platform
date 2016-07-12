@@ -1,0 +1,60 @@
+<style>
+#usersLdapPage .buttonsColumn{
+	white-space: nowrap;
+}
+#usersLdapPage table.data-table > tfoot > tr > th > input {
+	width: 100%;
+	font-size: 10px;
+	font-weight: normal;
+}
+</style>
+<div class="container banners" id="usersLdapPage">
+	<a href="/portal/cpanel"><small><i class="fa fa-caret-left"></i> Back to Administration panel</small></a>
+	<br/>
+	<a href="/portal/users_admin"><small><i class="fa fa-caret-left"></i> Go back to all users admin</small></a>
+	<h2>LDAP Users</h2>
+	{{#if entities.isResolved}}
+		<table class="data-table table table-striped table-bordered" align="center">
+			<thead>
+				<tr>
+					<th>Username</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Has T2 account?</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th>Username</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Has T2 account?</th>
+				</tr>
+			</tfoot>
+			<tbody>
+				{{#each entities}}
+					<tr class="entity" data-id="{{ Id }}">
+						<td class="hidden">{{ Id }}</td>
+						<td>{{ Username }}</td>
+						<td>{{ FirstName }} {{ LastName }}</td>
+						<td>{{ Email }}</td>
+						<td>
+							{{#ifEquals Id 0 }}no{{/ifEquals}}
+							{{#ifNotEquals Id 0 }}yes{{/ifNotEquals}}
+						</td>
+					</tr>
+				{{/each}}
+			</tbody>
+		</table>
+	{{else}}
+		{{#if entities.isPending}}
+			<h3><center><i class="fa fa-spin fa-spinner"></i> Loading Users...</center></h3>
+		{{else}}
+			<div class="alert alert-error">
+			  <button type="button" class="close" data-dismiss="alert">&times;</button>
+			  <strong>Error!</strong> Unable to load Users.
+			</div>
+		{{/if}}
+	{{/if}}
+	
+</div>
