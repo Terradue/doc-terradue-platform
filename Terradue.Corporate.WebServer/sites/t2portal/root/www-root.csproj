@@ -569,6 +569,9 @@
     <Content Include="scripts\modules\welcome\controllers\welcome.js" />
     <Content Include="scripts\modules\welcome\views\welcome.html" />
     <Content Include="scripts\modules\welcome\css\welcome.css" />
+    <Content Include="scripts\modules\users_ldap\controllers\users_ldap.js" />
+    <Content Include="scripts\modules\users_ldap\models\users_ldap.js" />
+    <Content Include="scripts\modules\users_ldap\views\users_ldap.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\" />

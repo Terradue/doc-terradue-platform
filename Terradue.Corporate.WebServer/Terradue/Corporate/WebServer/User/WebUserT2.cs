@@ -17,6 +17,10 @@ namespace Terradue.Corporate.WebServer {
         public int Id { get; set; }
     }
 
+    [Route("/user/ldap", "GET", Summary = "GET the users", Notes = "User is found on ldap")]
+    public class GetLdapUsers : IReturn<WebUserT2> {
+    }
+
     [Route("/user/{username}", "GET", Summary = "GET the user", Notes = "User is found from username")]
     public class GetUserNameT2 : IReturn<WebUserT2> {
         [ApiMember(Name = "username", Description = "User identifier", ParameterType = "query", DataType = "string", IsRequired = true)]
@@ -228,7 +232,7 @@ namespace Terradue.Corporate.WebServer {
         public WebUserT2(UserT2 entity, bool basicInfo = false) : base(entity) {
 
             this.DomainId = entity.DomainId;
-            this.Plan = entity.Plan.Name;
+            this.Plan = entity.Plan != null ? entity.Plan.Name : "";
 
             if (!basicInfo) {
                 if (entity.PublicKey == null) entity.LoadLdapInfo();

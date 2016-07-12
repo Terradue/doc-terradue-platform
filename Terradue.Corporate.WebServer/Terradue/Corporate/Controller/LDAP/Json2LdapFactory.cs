@@ -4,6 +4,7 @@ using Terradue.Portal;
 using System.IO;
 using ServiceStack.Text;
 using Terradue.Ldap;
+using System.Collections.Generic;
 
 namespace Terradue.Corporate.Controller {
     public class Json2LdapFactory {
@@ -110,6 +111,32 @@ namespace Terradue.Corporate.Controller {
             }
             Json2Ldap.Close();
             return usr;
+        }
+
+        public List<LdapUser> GetUsersFromLdap(){
+            List<LdapUser> usrs = new List<LdapUser>();
+            //open the connection
+            Json2Ldap.Connect();
+            try{
+                string basedn = "ou=people, dc=terradue, dc=com";
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(Context.GetConfigValue("ldap-admin-dn"), Context.GetConfigValue("ldap-admin-pwd"));
+
+                var response = Json2Ldap.SearchEntries(basedn, Json2LdapSearchScopes.SUB, "(objectClass=*)");
+
+                if (response.matches == null || response.matches.Count == 0) 
+                    usrs=null;
+                else {
+                    foreach(var entry in response.matches)
+                        if(entry.uid != null) usrs.Add(new LdapUser(entry));
+                }
+            }catch(Exception e){
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+            return usrs;
         }
 
     }

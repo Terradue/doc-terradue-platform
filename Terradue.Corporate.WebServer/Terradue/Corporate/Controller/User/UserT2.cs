@@ -77,7 +77,8 @@ namespace Terradue.Corporate.Controller {
                 if (onegroups == null) {
                     onegroups = new List<string>();
                     foreach (var group in OneUser.GROUPS) {
-                        onegroups.Add(oneClient.GroupGetInfo(Int32.Parse(group)).NAME);
+                        var gId = Int32.Parse(group);
+                        if(gId > 0) onegroups.Add(oneClient.GroupGetInfo(gId).NAME);
                     }
                 }
                 return onegroups;
@@ -157,11 +158,24 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
+        public UserT2(IfyContext context, LdapUser user) : this(context) {
+            this.Username = user.Username;
+            this.Load();
+
+            this.FirstName = user.FirstName;
+            this.LastName = user.LastName;
+            this.Email = user.Email;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
         public override string AlternativeIdentifyingCondition {
             get { 
-                if (!string.IsNullOrEmpty(Email))
+                if (!string.IsNullOrEmpty(Username))
+                    return String.Format("t.username='{0}'", Username);
+                else if (!string.IsNullOrEmpty(Email))
                     return String.Format("t.email='{0}'", Email); 
-                return null;
+                else return null;
             }
         }
 

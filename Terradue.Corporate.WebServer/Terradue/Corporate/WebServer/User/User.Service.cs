@@ -649,6 +649,36 @@ namespace Terradue.Corporate.WebServer {
                 return new HttpResult();
         }
 
+        public object Get(GetLdapUsers request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
+            List<WebUserT2> users = new List<WebUserT2>();
+            try {
+                context.Open();
+
+                Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
+                var ldapusers = ldapfactory.GetUsersFromLdap();
+
+                foreach(var ldapuser in ldapusers){
+                    try{
+                        users.Add(new WebUserT2(new UserT2(context, ldapuser), true));
+                    }catch(Exception e){
+                        var ldapu = new UserT2(context);
+                        ldapu.Username = ldapuser.Username;
+                        ldapu.Email = ldapuser.Email;
+                        ldapu.FirstName = ldapuser.FirstName;
+                        ldapu.LastName = ldapuser.LastName;
+                        users.Add(new WebUserT2(ldapu, true));
+                    }
+                }
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return users;
+        }
+
         public void ValidateCaptcha(string secret, string response){
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
             request.Method = "POST";
