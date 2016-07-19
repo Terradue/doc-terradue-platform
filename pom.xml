@@ -188,7 +188,7 @@
 									<location>${basedir}/src/main/web-resources/config/web.config</location>
 								</source>
 								<source>
-									<location>${basedir}/src/main/web-resources/config/Log4Net.config</location>
+									<location>${basedir}/src/main/web-resources/config/log4net.config</location>
 								</source>
 							</sources>
 						</mapping>
