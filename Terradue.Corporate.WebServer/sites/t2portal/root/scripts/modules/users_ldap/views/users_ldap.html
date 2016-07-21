@@ -14,9 +14,10 @@
 	<a href="/portal/users_admin"><small><i class="fa fa-caret-left"></i> Go back to all users admin</small></a>
 	<h2>LDAP Users</h2>
 	{{#if entities.isResolved}}
-		<table class="data-table table table-striped table-bordered" align="center">
+		<table class="table data-table table-striped table-bordered" align="center">
 			<thead>
 				<tr>
+					<th class="hidden"/>
 					<th>Username</th>
 					<th>Name</th>
 					<th>Email</th>
@@ -25,6 +26,7 @@
 			</thead>
 			<tfoot>
 				<tr>
+					<th class="hidden"/>
 					<th>Username</th>
 					<th>Name</th>
 					<th>Email</th>
