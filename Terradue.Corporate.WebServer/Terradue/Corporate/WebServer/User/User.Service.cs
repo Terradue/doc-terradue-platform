@@ -679,6 +679,93 @@ namespace Terradue.Corporate.WebServer {
             return users;
         }
 
+        public object Put(ReGenerateApiKeyUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            string result;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Generate API Key for user {0}", user.Username);
+
+                //authenticate user
+                try{
+                    var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
+                    var usr = j2ldapclient.Authenticate(user.Identifier, request.password, context.GetConfigValue("ldap-apikey"));
+                }catch(Exception e){
+                    log.ErrorFormat("Error during API Key creation - {0} - {1}", e.Message, e.StackTrace);
+                    throw new Exception("Invalid password");
+                }
+
+                user.GenerateApiKey();
+                log.InfoFormat("API Key created locally");
+                user.UpdateLdapAccount();
+                log.InfoFormat("API Key saved on ldap");
+
+                result = user.ApiKey;
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during api key creation - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Delete(DeleteApiKeyUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Revoke API Key for user {0}", user.Username);
+
+                //authenticate user
+                try{
+                    var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
+                    var usr = j2ldapclient.Authenticate(user.Identifier, request.password, context.GetConfigValue("ldap-apikey"));
+                }catch(Exception e){
+                    log.ErrorFormat("Error during API Key removal - {0} - {1}", e.Message, e.StackTrace);
+                    throw new Exception("Invalid password");
+                }
+
+                user.RevokeApiKey(request.password);
+                log.InfoFormat("API Key deleted");
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during api key removal - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return new WebResponseBool(true);
+        }
+
+        public object Get(ValidateApiKeyUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
+            bool result;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromUsername(context, request.username);
+                log.InfoFormat("Validate API Key for user {0}", user.Username);
+
+                user.LoadLdapInfo();
+                if(user.ApiKey != null && user.ApiKey.Equals(request.key)){
+                    result = true;
+                    log.InfoFormat("API key is valid");
+                } else {
+                    result = false;
+                    log.InfoFormat("API key is not valid");
+                }
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during api key validation - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return new WebResponseBool(result);
+        }
+
         public void ValidateCaptcha(string secret, string response){
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
             request.Method = "POST";

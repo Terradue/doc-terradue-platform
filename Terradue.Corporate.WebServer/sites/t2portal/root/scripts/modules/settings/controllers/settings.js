@@ -64,6 +64,7 @@ define([
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey),
+						apiKeyNotComplete: !(user.ApiKey),
 						githubNotComplete: false
 					});
 					self.githubPromise.then(function(githubData){
@@ -127,7 +128,8 @@ define([
 						nameMissing: !(user.FirstName && user.LastName),
 						usernameNotSet: usernameDefault,
 						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey)
+						sshKeyNotComplete: !(user.PublicKey),
+						apiKeyNotComplete: !(user.ApiKey)
 					});
 					self.view({
 						url: 'modules/settings/views/profile.html',
@@ -222,7 +224,8 @@ define([
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						nameMissing: !(user.FirstName && user.LastName),
 						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey)
+						sshKeyNotComplete: !(user.PublicKey),
+						apiKeyNotComplete: !(user.ApiKey)
 					});
 					if (self.params.token && self.profileData.user.AccountStatus==1)
 						self.manageEmailConfirm(self.params.token);
@@ -300,7 +303,8 @@ define([
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						nameMissing: !(user.FirstName && user.LastName),
 						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey)
+						sshKeyNotComplete: !(user.PublicKey),
+						apiKeyNotComplete: !(user.ApiKey)
 					});
 					
 				}).fail(function(){
@@ -337,6 +341,51 @@ define([
 					self.element.find('.deletePublicKeyBtn').tooltip({
 						trigger: 'hover',
 						title: 'Delete',
+						placement:'bottom'
+					});
+				});
+			},
+
+			apikey: function(options) {
+				var self = this;
+				this.profileData = new can.Observe({});
+				console.log("App.controllers.Settings.ApiKey");
+				
+				self.view({
+					url: 'modules/settings/views/apikey.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: self.profileData,
+					fnLoad: function(){
+						self.initSubmenu('apikey');
+					}
+				});
+
+				self.isLoginPromise.then(function(user){
+					self.profileData.attr({
+						user: user,
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						nameMissing: !(user.FirstName && user.LastName),
+						emailNotComplete: (user.AccountStatus==1),
+						sshKeyNotComplete: !(user.PublicKey),
+						apiKeyNotComplete: !(user.ApiKey)
+					});
+					self.element.find('.copyApiKeyBtn').copyableInput(user.ApiKey, {
+						isButton: true,
+					});
+					self.element.find('.showApiKeyBtn').tooltip({
+						trigger: 'hover',
+						title: 'Show API Key',
+						placement:'bottom'
+					});
+					self.element.find('.hideApiKeyBtn').tooltip({
+						trigger: 'hover',
+						title: 'Hide API Key',
+						placement:'bottom'
+					});
+					self.element.find('.revokeApiKeyBtn').tooltip({
+						trigger: 'hover',
+						title: 'Revoke API Key',
 						placement:'bottom'
 					});
 				});
@@ -826,6 +875,110 @@ define([
 									bootbox.alert("<i class='fa fa-warning'></i> Error during ssh keys delete.");
 								}).always(function(){
 									self.keyData.attr("loading",false);
+								});
+                        	}
+                    	}
+                    }
+				});
+			},
+
+			'.settings-apikey .showApiKeyBtn click': function(){
+				var self = this;
+				self.element.find('.apiKeyHidden').addClass('hidden');
+				self.element.find('.apiKeyVisible').removeClass('hidden');
+			},
+
+			'.settings-apikey .hideApiKeyBtn click': function(){
+				var self = this;
+				self.element.find('.apiKeyVisible').addClass('hidden');
+				self.element.find('.apiKeyHidden').removeClass('hidden');
+			},
+
+			'.settings-apikey .generateApiKey click': function(){
+				var self = this;
+				var title = "This action requires your password.";
+				if(self.profileData.ApiKey)
+					title += "<br/>";
+				var message = "<div class='container-fluid'>"
+							+ "<form class='generateAPIkeyForm'>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "</form>"
+							+ "</div>";
+				bootbox.dialog({
+					title: title,
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function (a,b,c) {
+	                            var password = $('#safePassword').val();
+	                            if (password==''){
+	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+	                            	return false;
+	                            };
+	                            self.profileData.attr("loading",true);
+	                            ProfileModel.generateApiKey(password).then(function(apikey){
+	                            	self.data.attr({
+										apiKeyNotComplete: false
+									});
+
+									if(self.profileData){
+							    		self.profileData.attr("ApiKey",apikey);
+							    	}
+								}).fail(function(){
+									bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
+								}).always(function(){
+									self.profileData.attr("loading",false);
+								});
+                        	}
+                    	}
+                    }
+				});
+			},
+
+			'.settings-apikey .revokeApiKeyBtn click': function(){
+				var self = this;
+				var title = "This action requires your password.";
+				if(self.profileData.ApiKey)
+					title += "<br/>";
+				var message = "<div class='container-fluid'>"
+							+ "<form class='deleteAPIkeyForm'>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "</form>"
+							+ "</div>";
+				bootbox.dialog({
+					title: title,
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function (a,b,c) {
+	                            var password = $('#safePassword').val();
+	                            if (password==''){
+	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+	                            	return false;
+	                            };
+	                            self.profileData.attr("loading",true);
+	                            ProfileModel.revokeApiKey(encodeURIComponent(password)).then(function(apikey){
+	                            	self.data.attr({
+										apiKeyNotComplete: true
+									});
+
+									if(self.profileData){
+							    		self.profileData.attr("ApiKey",null);
+							    	}
+								}).fail(function(){
+									bootbox.alert("<i class='fa fa-warning'></i> Error during API key removal.");
+								}).always(function(){
+									self.profileData.attr("loading",false);
 								});
                         	}
                     	}

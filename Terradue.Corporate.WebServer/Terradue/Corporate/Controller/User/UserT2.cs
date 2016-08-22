@@ -97,6 +97,16 @@ namespace Terradue.Corporate.Controller {
         /// <value>The private key.</value>
         public string PrivateKey { get; set; }
 
+        /// <summary>
+        /// Gets or sets the API key.
+        /// </summary>
+        /// <value>The API key.</value>
+        public string ApiKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the eosso username.
+        /// </summary>
+        /// <value>The eo SS.</value>
         public string EoSSO { get; set; }
 
         private string onepwd { get; set; }
@@ -516,6 +526,7 @@ namespace Terradue.Corporate.Controller {
             user.Name = string.Format("{0} {1}", this.FirstName, this.LastName);
             user.PublicKey = this.PublicKey;
             user.EoSSO = this.EoSSO;
+            user.ApiKey = this.ApiKey;
             return user;
         }
 
@@ -669,14 +680,17 @@ namespace Terradue.Corporate.Controller {
                     Json2Ldap.ModifyUserInformation(ldapusr);
                 } catch (Exception e) {
                     try {
-                        //user may not have sshPublicKey
+                        //user may not have sshPublicKey | eossoUserid | apiKey
                         if (e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")) {
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
                             Json2Ldap.ModifyUserInformation(ldapusr);
                         } else if(e.Message.Contains("eossoUserid")){
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "eossoAccount");
                             Json2Ldap.ModifyUserInformation(ldapusr);
-                        } else throw e;
+                        } else if(e.Message.Contains("telexNumber")){
+                            Json2Ldap.AddNewAttributeString(dn, "objectClass", "telexNumber");
+                            Json2Ldap.ModifyUserInformation(ldapusr);
+                        } throw e;
                     } catch (Exception e2) {
                         throw e2;
                     }
@@ -760,6 +774,7 @@ namespace Terradue.Corporate.Controller {
                     if(!string.IsNullOrEmpty(ldapusr.FirstName)) this.FirstName = ldapusr.FirstName;
                     if(!string.IsNullOrEmpty(ldapusr.LastName)) this.LastName = ldapusr.LastName;
                     if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
+                    if(!string.IsNullOrEmpty(ldapusr.ApiKey)) this.ApiKey = ldapusr.ApiKey;
                 }
             } catch (Exception e) {
                 Json2Ldap.Close();
@@ -785,7 +800,35 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
+        /// <summary>
+        /// Generates the API key.
+        /// </summary>
+        public void GenerateApiKey(){
+            this.ApiKey = Guid.NewGuid().ToString();
+        }
 
+        /// <summary>
+        /// Revokes the API key.
+        /// </summary>
+        public void RevokeApiKey(string password) {
+
+            //open the connection
+            Json2Ldap.Connect();
+            try {
+
+                string dn = CreateLdapDN();
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                Json2Ldap.DeleteAttributeString(dn, "telexNumber", null);
+                this.ApiKey = null;
+
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+        }
 
         //--------------------------------------------------------------------------------------------------------------
 
