@@ -781,6 +781,86 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(result);
         }
 
+        public object Get(GetCurrentUserCatalogueIndexes request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Get catalogue indexes for user {0}", user.Username);
+
+                result = user.GetUserCatalogueIndexes();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during get catalogue indexes - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        } 
+
+        public object Post(CreateCurrentUserCatalogueIndex request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                if(request.index == null) request.index = user.Username;
+                log.InfoFormat("Create catalogue index '{1}' for user {0}", user.Username, request.index);
+
+                user.CreateCatalogueIndex();
+                result = user.GetUserCatalogueIndexes();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during catalogue index cretion - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Get(GetCurrentUserRepositories request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Get repositories for user {0}", user.Username);
+
+                result = user.GetUserRepositories();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during get repositories - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        } 
+
+        public object Post(CreateCurrentUserRepository request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                if(request.repo == null) request.repo = user.Username;
+                log.InfoFormat("Create repository '{1}' for user {0}", user.Username, request.repo);
+
+                user.CreateRepository(request.repo);
+                result = user.GetUserRepositories();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during api key removal - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
         public void ValidateCaptcha(string secret, string response){
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
             request.Method = "POST";

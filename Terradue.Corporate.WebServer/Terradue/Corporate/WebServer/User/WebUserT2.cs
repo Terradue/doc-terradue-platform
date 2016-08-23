@@ -124,6 +124,26 @@ namespace Terradue.Corporate.WebServer {
         public string password { get; set; }
     }
 
+    [Route("/user/catalogue/index", "GET", Summary = "get current user catalogue indexes", Notes = "")]
+    public class GetCurrentUserCatalogueIndexes : IReturn<List<string>> {
+    }
+
+    [Route("/user/catalogue/index", "POST", Summary = "create catalogue index for current user", Notes = "")]
+    public class CreateCurrentUserCatalogueIndex : IReturn<List<string>> {
+        [ApiMember(Name = "index", Description = "User index", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string index { get; set; }
+    }
+
+    [Route("/user/repository", "GET", Summary = "get current user repositories", Notes = "")]
+    public class GetCurrentUserRepositories : IReturn<List<string>> {
+    }
+
+    [Route("/user/repository", "POST", Summary = "create repository for current user", Notes = "")]
+    public class CreateCurrentUserRepository : IReturn<List<string>> {
+        [ApiMember(Name = "repo", Description = "User repo", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string repo { get; set; }
+    }
+
     [Route("/user/email", "PUT", Summary = "update email for user", Notes = "")]
     public class UpdateEmailUserT2 : WebUserT2, IReturn<WebUserT2> {
     }

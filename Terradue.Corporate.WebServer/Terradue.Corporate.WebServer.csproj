@@ -243,6 +243,8 @@
     <Compile Include="Terradue\Corporate\Controller\LDAP\Json2LdapFactory.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Zendesk.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Discourse.Service.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Catalogue\CatalogueFactory.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Storage\ArtifactoryFactory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -253,6 +255,7 @@
     <Folder Include="Terradue\Corporate\WebServer\Pricing\" />
     <Folder Include="Terradue\Corporate\Controller\Pricing\" />
     <Folder Include="Terradue\Corporate\WebServer\OAuth\" />
+    <Folder Include="Terradue\Corporate\Controller\Storage\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -22,6 +22,8 @@ namespace Terradue.Corporate.Controller {
 
         private Json2LdapFactory LdapFactory { get; set; }
         private PlanFactory PlanFactory { get; set; }
+        private CatalogueFactory CatFactory { get; set; }
+        private ArtifactoryFactory RepoFactory { get; set; }
 
         private IUSER oneuser { get; set; }
         public IUSER OneUser { 
@@ -145,6 +147,7 @@ namespace Terradue.Corporate.Controller {
             this.LdapFactory = new Json2LdapFactory(context);
             this.Json2Ldap = LdapFactory.Json2Ldap;
             this.PlanFactory = new PlanFactory(context);
+            this.CatFactory = new CatalogueFactory(context);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -306,8 +309,14 @@ namespace Terradue.Corporate.Controller {
                 case Plan.EXPLORER:
                 case Plan.SCALER:
                 case Plan.PREMIUM:
-                    if (!HasCloudAccount()) CreateCloudAccount(plan);
-                    if (!HasLdapDomain()) CreateLdapDomain();
+                    if (!HasCloudAccount())
+                        CreateCloudAccount(plan);
+                    if (!HasLdapDomain())
+                        CreateLdapDomain();
+                    if (!HasCatalogueIndex())
+                        CreateCatalogueIndex();
+                    if (!HasRepository())
+                        CreateRepository();
                     break;
                 default:
                     break;
@@ -966,6 +975,52 @@ namespace Terradue.Corporate.Controller {
             return byteArrayResult;
         }
        
+        #endregion
+
+        #region Catalogue
+
+        public bool HasCatalogueIndex(){
+            return this.CatFactory.IndexExists(this.Username);
+        }
+
+        public void CreateCatalogueIndex(){
+            this.CatFactory.IndexCreate(this.Username);
+        }
+
+        public void CreateCatalogueIndex(string index){
+            this.CatFactory.IndexCreate(index);
+        }
+
+        public List<string> GetUserCatalogueIndexes(){
+            if (this.HasCatalogueIndex())
+                return new List<string>{ this.Username };
+            else 
+                return null;
+        }
+
+        #endregion
+
+        #region Artifactory
+
+        public bool HasRepository(){
+            return this.RepoFactory.RepositoryExists(this.Username);
+        }
+
+        public void CreateRepository(){
+            this.RepoFactory.RepositoryCreate(this.Username);
+        }
+
+        public void CreateRepository(string repo){
+            this.RepoFactory.RepositoryCreate(repo);
+        }
+
+        public List<string> GetUserRepositories(){
+            if (this.HasRepository())
+                return new List<string>{ this.Username };
+            else 
+                return null;
+        }
+
         #endregion
 
         //--------------------------------------------------------------------------------------------------------------
