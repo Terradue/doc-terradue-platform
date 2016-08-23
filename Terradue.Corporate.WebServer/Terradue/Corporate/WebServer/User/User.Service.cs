@@ -709,7 +709,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close ();
                 throw e;
             }
-            return result;
+            return new WebResponseString(result);
         }
 
         public object Delete(DeleteApiKeyUserT2 request){
