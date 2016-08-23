@@ -329,7 +329,7 @@ define([
 
 				self.isLoginPromise.then(function(userData){
 					self.keyData.attr(userData.attr());
-					self.keyData.attr('PublicKeyBase64', btoa(userData.PublicKey))
+					self.keyData.attr('PublicKeyBase64', btoa(userData.PublicKey));
 					self.element.find('.copyPublicKeyBtn').copyableInput(userData.PublicKey, {
 						isButton: true,
 					});
@@ -897,8 +897,6 @@ define([
 			'.settings-apikey .generateApiKey click': function(){
 				var self = this;
 				var title = "This action requires your password.";
-				if(self.profileData.ApiKey)
-					title += "<br/>";
 				var message = "<div class='container-fluid'>"
 							+ "<form class='generateAPIkeyForm'>"
 							+ "<div class='form-group'>" 
@@ -926,9 +924,10 @@ define([
 										apiKeyNotComplete: false
 									});
 
-									if(self.profileData){
-							    		self.profileData.attr("ApiKey",apikey);
-							    	}
+									self.element.find('.apiKeyVisible').addClass('hidden');
+									self.element.find('.apiKeyHidden').removeClass('hidden');
+									self.profileData.user.attr("ApiKey",apikey.Response);
+
 								}).fail(function(){
 									bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
 								}).always(function(){
@@ -943,8 +942,6 @@ define([
 			'.settings-apikey .revokeApiKeyBtn click': function(){
 				var self = this;
 				var title = "This action requires your password.";
-				if(self.profileData.ApiKey)
-					title += "<br/>";
 				var message = "<div class='container-fluid'>"
 							+ "<form class='deleteAPIkeyForm'>"
 							+ "<div class='form-group'>" 
@@ -967,14 +964,17 @@ define([
 	                            	return false;
 	                            };
 	                            self.profileData.attr("loading",true);
-	                            ProfileModel.revokeApiKey(encodeURIComponent(password)).then(function(apikey){
+	                            ProfileModel.revokeApiKey(encodeURIComponent(password)).then(function(){
 	                            	self.data.attr({
 										apiKeyNotComplete: true
 									});
 
-									if(self.profileData){
-							    		self.profileData.attr("ApiKey",null);
-							    	}
+//									var user = self.profileData.attr("user");
+//									user.ApiKey = null;
+//									self.profileData.attr("user",user);
+
+									self.profileData.user.attr("ApiKey",null);
+							    	
 								}).fail(function(){
 									bootbox.alert("<i class='fa fa-warning'></i> Error during API key removal.");
 								}).always(function(){

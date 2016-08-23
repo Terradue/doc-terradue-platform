@@ -16,12 +16,15 @@ define(['can', 'config'], function(can, Config){
 			return $.ajax('/'+Config.api+'/user/apikey', {
 				type : "PUT",
 				dataType : "json",
-				data : {Password:password}
+				format : "json",
+				data : {
+					Password:password
+				}
 			});
 		},
 
 		revokeApiKey: function(password){
-			return $.ajax('/'+Config.api+'/user/apikey?password='+password, {
+			return $.ajax('/'+Config.api+'/user/apikey?format=json&password='+password, {
 				type : "DELETE",
 				dataType : "json"
 			});
