@@ -291,6 +291,11 @@ namespace Terradue.Corporate.Controller {
             //sanity check
             if (!HasGithubProfile()) CreateGithubProfile();
             if (this.DomainId == 0) CreateDomain();
+            if (this.ApiKey == null){
+                //if no API Key, create it
+                this.GenerateApiKey();
+                this.UpdateLdapAccount();
+            }
 
             switch (plan.Name) {
                 case Plan.NONE:
@@ -851,6 +856,63 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Close();
         }
 
+        /// <summary>
+        /// Determines whether this instance has LDAP domain.
+        /// </summary>
+        /// <returns><c>true</c> if this instance has LDAP domain; otherwise, <c>false</c>.</returns>
+        public bool HasLdapDomain(){
+            Json2Ldap.Connect();
+            bool result = false;
+            try {
+                var dn = CreateLdapDNforDomain();
+                result = this.Json2Ldap.GetEntry(dn) != null;
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Creates the LDAP domain.
+        /// </summary>
+        public void CreateLdapDomain(){
+
+            //open the connection
+            Json2Ldap.Connect();
+            try {
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+
+                //create first level entry
+                string dn = string.Format("ou={0}, ou=domains, dc=terradue, dc=com", this.Username);
+                dn = LdapFactory.NormalizeLdapDN(dn);
+                ParamsAttributes attributes = new ParamsAttributes();
+                attributes.objectClass = new List<string>{ "organizationalUnit", "top"};
+                attributes.ou = this.Username;
+
+                Json2Ldap.AddEntry(dn, attributes);
+
+                //create second level entry
+                dn = CreateLdapDNforDomain();
+
+                attributes = new ParamsAttributes();
+                attributes.objectClass = new List<string>{ "groupOfUniqueNames"};
+                attributes.cn = this.Username + ".owner";
+                attributes.uniqueMember = CreateLdapDNforPeople();
+                attributes.description = "Owner of user domain " + this.Username;
+
+                Json2Ldap.AddEntry(dn, attributes);
+
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+        }
+
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
@@ -902,62 +964,6 @@ namespace Terradue.Corporate.Controller {
                 byteArrayResult[byteArray1.Length + i] = byteArray2[i];
 
             return byteArrayResult;
-        }
-
-        private bool HasLdapDomain(){
-            Json2Ldap.Connect();
-            bool result = false;
-            try {
-                var dn = CreateLdapDNforDomain();
-                result = this.Json2Ldap.GetEntry(dn) != null;
-            } catch (Exception e) {
-                Json2Ldap.Close();
-                throw e;
-            }
-            Json2Ldap.Close();
-            return result;
-        }
-
-        private void CreateLdapDomain(){
-
-            //if no API Key, create it
-            if(this.ApiKey == null){
-                this.GenerateApiKey();
-                this.UpdateLdapAccount();
-            }
-
-            //open the connection
-            Json2Ldap.Connect();
-            try {
-
-                //login as ldap admin to have creation rights
-                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
-
-                //create first level entry
-                string dn = string.Format("ou={0}, ou=domains, dc=terradue, dc=com", this.Username);
-                dn = LdapFactory.NormalizeLdapDN(dn);
-                ParamsAttributes attributes = new ParamsAttributes();
-                attributes.objectClass = new List<string>{ "organizationalUnit", "top"};
-                attributes.ou = this.Username;
-
-                Json2Ldap.AddEntry(dn, attributes);
-
-                //create second level entry
-                dn = CreateLdapDNforDomain();
-
-                attributes = new ParamsAttributes();
-                attributes.objectClass = new List<string>{ "groupOfUniqueNames"};
-                attributes.cn = this.Username + ".owner";
-                attributes.uniqueMember = CreateLdapDNforPeople();
-                attributes.description = "Owner of user domain " + this.Username;
-
-                Json2Ldap.AddEntry(dn, attributes);
-
-            } catch (Exception e) {
-                Json2Ldap.Close();
-                throw e;
-            }
-            Json2Ldap.Close();
         }
        
         #endregion

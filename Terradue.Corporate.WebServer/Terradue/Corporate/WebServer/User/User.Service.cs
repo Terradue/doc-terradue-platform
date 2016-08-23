@@ -701,6 +701,21 @@ namespace Terradue.Corporate.WebServer {
                 user.UpdateLdapAccount();
                 log.InfoFormat("API Key saved on ldap");
 
+                //sanity check on the domain
+                switch (user.Plan.Name) {
+                    case Plan.NONE:
+                        break;
+                    case Plan.TRIAL:
+                        break;
+                    case Plan.EXPLORER:
+                    case Plan.SCALER:
+                    case Plan.PREMIUM:
+                        if (!user.HasLdapDomain()) user.CreateLdapDomain();
+                        break;
+                    default:
+                        break;
+                }
+
                 result = user.ApiKey;
 
                 context.Close ();
