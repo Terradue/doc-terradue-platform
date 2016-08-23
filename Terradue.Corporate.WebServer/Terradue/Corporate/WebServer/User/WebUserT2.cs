@@ -103,6 +103,27 @@ namespace Terradue.Corporate.WebServer {
         public string password { get; set; }
     }
 
+    [Route("/user/apikey", "GET", Summary = "validate api key for user", Notes = "")]
+    public class ValidateApiKeyUserT2 : IReturn<WebSafe> {
+        [ApiMember(Name = "username", Description = "user identifier", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string username { get; set; }
+
+        [ApiMember(Name = "key", Description = "api key", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string key { get; set; }
+    }
+
+    [Route("/user/apikey", "PUT", Summary = "recreate an API Key for user", Notes = "")]
+    public class ReGenerateApiKeyUserT2 : IReturn<string> {
+        [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string password { get; set; }
+    }
+
+    [Route("/user/apikey", "DELETE", Summary = "delete an API Key for user", Notes = "")]
+    public class DeleteApiKeyUserT2 {
+        [ApiMember(Name = "password", Description = "User id", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string password { get; set; }
+    }
+
     [Route("/user/email", "PUT", Summary = "update email for user", Notes = "")]
     public class UpdateEmailUserT2 : WebUserT2, IReturn<WebUserT2> {
     }
@@ -216,6 +237,9 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "PublicKey", Description = "User PublicKey", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String PublicKey { get; set; }
 
+        [ApiMember(Name = "ApiKey", Description = "User ApiKey", ParameterType = "query", DataType = "String", IsRequired = false)]
+        public String ApiKey { get; set; }
+
         [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String Plan { get; set; }
 
@@ -235,11 +259,12 @@ namespace Terradue.Corporate.WebServer {
             this.Plan = entity.Plan != null ? entity.Plan.Name : "";
 
             if (!basicInfo) {
-                if (entity.PublicKey == null) entity.LoadLdapInfo();
+                if (entity.PublicKey == null && entity.ApiKey == null) entity.LoadLdapInfo();
                 if (entity.OneUser != null) {
                     this.HasOneAccount = true;
                 }
                 this.PublicKey = entity.PublicKey;
+                this.ApiKey = entity.ApiKey;
             }
         }
 

@@ -97,6 +97,16 @@ namespace Terradue.Corporate.Controller {
         /// <value>The private key.</value>
         public string PrivateKey { get; set; }
 
+        /// <summary>
+        /// Gets or sets the API key.
+        /// </summary>
+        /// <value>The API key.</value>
+        public string ApiKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the eosso username.
+        /// </summary>
+        /// <value>The eo SS.</value>
         public string EoSSO { get; set; }
 
         private string onepwd { get; set; }
@@ -282,13 +292,22 @@ namespace Terradue.Corporate.Controller {
             if (!HasGithubProfile()) CreateGithubProfile();
             if (this.DomainId == 0) CreateDomain();
 
-            if (plan.Name != Plan.NONE) {
-                if (!HasCloudAccount()) {
-                    CreateCloudAccount(plan);
-                } else {
-//                    UpdateCloudAccount(plan);
-                }
+            switch (plan.Name) {
+                case Plan.NONE:
+                    break;
+                case Plan.TRIAL:
+                    
+                    break;
+                case Plan.EXPLORER:
+                case Plan.SCALER:
+                case Plan.PREMIUM:
+                    if (!HasCloudAccount()) CreateCloudAccount(plan);
+                    if (!HasLdapDomain()) CreateLdapDomain();
+                    break;
+                default:
+                    break;
             }
+
             this.PlanFactory.UpgradeUserPlan(this.Id, plan);
 
             context.Commit();
@@ -516,17 +535,28 @@ namespace Terradue.Corporate.Controller {
             user.Name = string.Format("{0} {1}", this.FirstName, this.LastName);
             user.PublicKey = this.PublicKey;
             user.EoSSO = this.EoSSO;
+            user.ApiKey = this.ApiKey;
             return user;
         }
 
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Creates the LDAP Distinguished Name
+        /// Creates the LDAP Distinguished Name for people
         /// </summary>
         /// <returns>The LDAP DN.</returns>
-        private string CreateLdapDN() {
-            return LdapFactory.CreateLdapDN(this.Username);
+        private string CreateLdapDNforPeople() {
+            return LdapFactory.CreateLdapPeopleDN(this.Username);
+        }
+
+        /// <summary>
+        /// Creates the LDAP Distinguished Name for domain.
+        /// </summary>
+        /// <returns>The LDAP D nfor domain.</returns>
+        private string CreateLdapDNforDomain(){
+            string dn = string.Format("cn={0}.owner, ou={0}, ou=domains, dc=terradue, dc=com", this.Username);
+            dn = LdapFactory.NormalizeLdapDN(dn);
+            return dn;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -540,7 +570,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
                 ldapusr.Password = GenerateSaltedSHA1(password);
@@ -568,7 +598,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
 
                 if (admin) Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
                 else Json2Ldap.SimpleBind(dn, oldpassword);
@@ -590,7 +620,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
 
                 //login as ldap admin to have creation rights
                 Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
@@ -612,7 +642,7 @@ namespace Terradue.Corporate.Controller {
             ValidateUsername(this.Username);
 
             //change username on LDAP
-            var dn = LdapFactory.CreateLdapDN(this.Email);
+            var dn = LdapFactory.CreateLdapPeopleDN(this.Email);
 
             //open the connection
             Json2Ldap.Connect();
@@ -653,7 +683,7 @@ namespace Terradue.Corporate.Controller {
 
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
 
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
@@ -669,14 +699,17 @@ namespace Terradue.Corporate.Controller {
                     Json2Ldap.ModifyUserInformation(ldapusr);
                 } catch (Exception e) {
                     try {
-                        //user may not have sshPublicKey
+                        //user may not have sshPublicKey | eossoUserid | apiKey
                         if (e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")) {
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
                             Json2Ldap.ModifyUserInformation(ldapusr);
                         } else if(e.Message.Contains("eossoUserid")){
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "eossoAccount");
                             Json2Ldap.ModifyUserInformation(ldapusr);
-                        } else throw e;
+                        } else if(e.Message.Contains("telexNumber")){
+                            Json2Ldap.AddNewAttributeString(dn, "objectClass", "telexNumber");
+                            Json2Ldap.ModifyUserInformation(ldapusr);
+                        } throw e;
                     } catch (Exception e2) {
                         throw e2;
                     }
@@ -730,7 +763,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
 
                 //login as ldap admin to have creation rights
                 Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
@@ -753,13 +786,14 @@ namespace Terradue.Corporate.Controller {
         public void LoadLdapInfo() {
             Json2Ldap.Connect();
             try {
-                var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
+                var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDNforPeople());
                 if(ldapusr != null){
                     if(!string.IsNullOrEmpty(ldapusr.Username)) this.Username = ldapusr.Username;
                     if(!string.IsNullOrEmpty(ldapusr.Email)) this.Email = ldapusr.Email;
                     if(!string.IsNullOrEmpty(ldapusr.FirstName)) this.FirstName = ldapusr.FirstName;
                     if(!string.IsNullOrEmpty(ldapusr.LastName)) this.LastName = ldapusr.LastName;
                     if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
+                    if(!string.IsNullOrEmpty(ldapusr.ApiKey)) this.ApiKey = ldapusr.ApiKey;
                 }
             } catch (Exception e) {
                 Json2Ldap.Close();
@@ -771,7 +805,7 @@ namespace Terradue.Corporate.Controller {
         public void PublicLoadSshPubKey(string username) {
             Json2Ldap.Connect();
             try {
-                var dn = LdapFactory.CreateLdapDN(username);
+                var dn = LdapFactory.CreateLdapPeopleDN(username);
                 var ldapusr = this.Json2Ldap.GetEntry(dn);
                 if(ldapusr != null){
                     if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
@@ -785,7 +819,35 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
+        /// <summary>
+        /// Generates the API key.
+        /// </summary>
+        public void GenerateApiKey(){
+            this.ApiKey = Guid.NewGuid().ToString();
+        }
 
+        /// <summary>
+        /// Revokes the API key.
+        /// </summary>
+        public void RevokeApiKey(string password) {
+
+            //open the connection
+            Json2Ldap.Connect();
+            try {
+
+                string dn = CreateLdapDNforPeople();
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                Json2Ldap.DeleteAttributeString(dn, "telexNumber", null);
+                this.ApiKey = null;
+
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+        }
 
         //--------------------------------------------------------------------------------------------------------------
 
@@ -796,7 +858,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                Json2Ldap.AddNewAttributeString(CreateLdapDN(), "objectClass", "ldapPublicKey");
+                Json2Ldap.AddNewAttributeString(CreateLdapDNforPeople(), "objectClass", "ldapPublicKey");
 
             } catch (Exception e) {
                 Json2Ldap.Close();
@@ -838,6 +900,57 @@ namespace Terradue.Corporate.Controller {
                 byteArrayResult[byteArray1.Length + i] = byteArray2[i];
 
             return byteArrayResult;
+        }
+
+        private bool HasLdapDomain(){
+            Json2Ldap.Connect();
+            bool result = false;
+            try {
+                var dn = CreateLdapDNforDomain();
+                result = this.Json2Ldap.GetEntry(dn) != null;
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+            return result;
+        }
+
+        private void CreateLdapDomain(){
+
+            //open the connection
+            Json2Ldap.Connect();
+            try {
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+
+                //create first level entry
+                string dn = string.Format("ou={0}, ou=domains, dc=terradue, dc=com", this.Username);
+                dn = LdapFactory.NormalizeLdapDN(dn);
+                ParamsAttributes attributes = new ParamsAttributes();
+                attributes.objectClass = new List<string>{ "organizationalUnit", "top"};
+                attributes.ou = this.Username;
+
+                Json2Ldap.AddEntry(dn, attributes);
+
+                //create second level entry
+                dn = CreateLdapDNforDomain();
+
+                attributes = new ParamsAttributes();
+                attributes.objectClass = new List<string>{ "groupOfUniqueNames"};
+                attributes.cn = this.Username + ".owner";
+                attributes.uniqueMember = CreateLdapDNforPeople();
+                attributes.description = "Owner of user domain " + this.Username;
+
+
+                Json2Ldap.AddEntry(dn, attributes);
+
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
         }
        
         #endregion
