@@ -920,6 +920,12 @@ namespace Terradue.Corporate.Controller {
 
         private void CreateLdapDomain(){
 
+            //if no API Key, create it
+            if(this.ApiKey == null){
+                this.GenerateApiKey();
+                this.UpdateLdapAccount();
+            }
+
             //open the connection
             Json2Ldap.Connect();
             try {
@@ -944,7 +950,6 @@ namespace Terradue.Corporate.Controller {
                 attributes.cn = this.Username + ".owner";
                 attributes.uniqueMember = CreateLdapDNforPeople();
                 attributes.description = "Owner of user domain " + this.Username;
-
 
                 Json2Ldap.AddEntry(dn, attributes);
 
