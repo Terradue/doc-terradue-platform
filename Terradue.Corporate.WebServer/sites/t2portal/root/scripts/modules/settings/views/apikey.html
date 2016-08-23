@@ -1,0 +1,29 @@
+<div class='settings-apikey container col-md-9'>
+	<div>
+		<div class='settings settings-title'>API key</div>
+		<div class='settings settings-description'>Your <b>API key</b> is used to access the API of the Terradue Cloud Platform.</div>
+		<div class='settings settings-container'>
+			{{#if user.ApiKey}}
+				<div class="apiKeyPanel">
+					<input class="apiKeyHidden" type="password" value="{{ user.ApiKey }}" size="50" readonly>
+					<input class="apiKeyVisible hidden" type="text" value="{{ user.ApiKey }}" size="50" readonly>
+					<br/><br/>
+					<button class="btn btn-small btn-primary showApiKeyBtn apiKeyHidden" title="Show API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye"></i></button>
+					<button class="btn btn-small btn-primary hideApiKeyBtn apiKeyVisible hidden" title="Hide API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye-slash"></i></button>
+					&nbsp;&nbsp;<button class="btn btn-small btn-primary copyApiKeyBtn" title="Copy on clipboard" data-public-key="{{ user.ApiKey }}"><i class="fa fa-clipboard"></i></button>
+					&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn"><i class="fa fa-trash"></i></button>
+				</div>
+				<br/>
+			{{/if}}
+			<div>
+				{{#if loading}}
+					&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
+				{{else}}
+					<button class="btn btn-warning generateApiKey">Generate a new API key</button>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</div>
+
+
