@@ -574,6 +574,8 @@ namespace Terradue.Corporate.Controller {
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
                 ldapusr.Password = GenerateSaltedSHA1(password);
+                this.GenerateApiKey();
+                ldapusr.ApiKey = this.ApiKey;
 
                 //login as ldap admin to have creation rights
                 Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
