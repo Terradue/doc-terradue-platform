@@ -755,30 +755,24 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Get(ValidateApiKeyUserT2 request){
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
-            bool result;
+        public object Get(GetApiKeyUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            WebResponseString result;
             try{
                 context.Open();
-                UserT2 user = UserT2.FromUsername(context, request.username);
-                log.InfoFormat("Validate API Key for user {0}", user.Username);
 
-                user.LoadLdapInfo();
-                if(user.ApiKey != null && user.ApiKey.Equals(request.key)){
-                    result = true;
-                    log.InfoFormat("API key is valid");
-                } else {
-                    result = false;
-                    log.InfoFormat("API key is not valid");
-                }
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Get API key for user {0}", user.Username);
+                user.LoadLdapInfo(request.password);
+                result = new WebResponseString(user.ApiKey);
 
                 context.Close ();
             }catch(Exception e) {
                 log.ErrorFormat("Error during api key validation - {0} - {1}", e.Message, e.StackTrace);
                 context.Close ();
-                throw e;
+                return null;
             }
-            return new WebResponseBool(result);
+            return null;
         }
 
         public object Get(GetCurrentUserCatalogueIndexes request){

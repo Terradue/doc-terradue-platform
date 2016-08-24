@@ -103,13 +103,10 @@ namespace Terradue.Corporate.WebServer {
         public string password { get; set; }
     }
 
-    [Route("/user/apikey", "GET", Summary = "validate api key for user", Notes = "")]
-    public class ValidateApiKeyUserT2 : IReturn<WebSafe> {
-        [ApiMember(Name = "username", Description = "user identifier", ParameterType = "query", DataType = "string", IsRequired = true)]
-        public string username { get; set; }
-
-        [ApiMember(Name = "key", Description = "api key", ParameterType = "query", DataType = "string", IsRequired = true)]
-        public string key { get; set; }
+    [Route("/user/apikey", "GET", Summary = "get api key for user", Notes = "")]
+    public class GetApiKeyUserT2 : IReturn<string> {
+        [ApiMember(Name = "password", Description = "user password", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string password { get; set; }
     }
 
     [Route("/user/apikey", "PUT", Summary = "recreate an API Key for user", Notes = "")]

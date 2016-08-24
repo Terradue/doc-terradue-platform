@@ -799,10 +799,12 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Loads the LDAP info.
         /// </summary>
-        public void LoadLdapInfo() {
+        public void LoadLdapInfo(string password = null) {
             Json2Ldap.Connect();
             try {
-                var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDNforPeople());
+                var dn = CreateLdapDNforPeople();
+                if(password != null) Json2Ldap.SimpleBind(dn,password);
+                var ldapusr = this.Json2Ldap.GetEntry(dn);
                 if(ldapusr != null){
                     if(!string.IsNullOrEmpty(ldapusr.Username)) this.Username = ldapusr.Username;
                     if(!string.IsNullOrEmpty(ldapusr.Email)) this.Email = ldapusr.Email;
