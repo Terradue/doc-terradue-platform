@@ -141,6 +141,16 @@ namespace Terradue.Corporate.WebServer {
         public string repo { get; set; }
     }
 
+    [Route("/user/features", "GET", Summary = "get current user features", Notes = "")]
+    public class GetCurrentUserFeatures : IReturn<List<string>> {
+    }
+
+    [Route("/user/features/geoserver", "POST", Summary = "create geoserver feature for current user", Notes = "")]
+    public class CreateCurrentUserFeatureGeoserver : IReturn<List<string>> {
+        [ApiMember(Name = "repo", Description = "User repo", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string repo { get; set; }
+    }
+
     [Route("/user/email", "PUT", Summary = "update email for user", Notes = "")]
     public class UpdateEmailUserT2 : WebUserT2, IReturn<WebUserT2> {
     }

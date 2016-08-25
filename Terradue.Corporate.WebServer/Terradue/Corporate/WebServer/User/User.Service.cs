@@ -696,7 +696,7 @@ namespace Terradue.Corporate.WebServer {
                     throw new Exception("Invalid password");
                 }
 
-                user.GenerateApiKey();
+                user.GenerateApiKey(request.password);
                 log.InfoFormat("API Key created locally");
                 user.UpdateLdapAccount();
                 log.InfoFormat("API Key saved on ldap");

@@ -23,7 +23,7 @@ namespace Terradue.Corporate.Controller {
         private Json2LdapFactory LdapFactory { get; set; }
         private PlanFactory PlanFactory { get; set; }
         private CatalogueFactory CatFactory { get; set; }
-        private ArtifactoryFactory RepoFactory { get; set; }
+        private ArtifactoryFactory JFrogFactory { get; set; }
 
         private IUSER oneuser { get; set; }
         public IUSER OneUser { 
@@ -294,11 +294,6 @@ namespace Terradue.Corporate.Controller {
             //sanity check
             if (!HasGithubProfile()) CreateGithubProfile();
             if (this.DomainId == 0) CreateDomain();
-            if (this.ApiKey == null){
-                //if no API Key, create it
-                this.GenerateApiKey();
-                this.UpdateLdapAccount();
-            }
 
             switch (plan.Name) {
                 case Plan.NONE:
@@ -309,14 +304,10 @@ namespace Terradue.Corporate.Controller {
                 case Plan.EXPLORER:
                 case Plan.SCALER:
                 case Plan.PREMIUM:
-                    if (!HasCloudAccount())
-                        CreateCloudAccount(plan);
-                    if (!HasLdapDomain())
-                        CreateLdapDomain();
-                    if (!HasCatalogueIndex())
-                        CreateCatalogueIndex();
-                    if (!HasRepository())
-                        CreateRepository();
+                    if (!HasCloudAccount()) CreateCloudAccount(plan);
+                    if (!HasLdapDomain()) CreateLdapDomain();
+                    if (!HasCatalogueIndex()) CreateCatalogueIndex();
+                    if (!HasRepository()) CreateRepository();
                     break;
                 default:
                     break;
@@ -588,7 +579,7 @@ namespace Terradue.Corporate.Controller {
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
                 ldapusr.Password = GenerateSaltedSHA1(password);
-                this.GenerateApiKey();
+                this.GenerateApiKey(password);
                 ldapusr.ApiKey = this.ApiKey;
 
                 //login as ldap admin to have creation rights
@@ -840,8 +831,12 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Generates the API key.
         /// </summary>
-        public void GenerateApiKey(){
+        /// <param name="password">Password.</param>
+        public void GenerateApiKey(string password){
             this.ApiKey = Guid.NewGuid().ToString();
+
+            //Api Key is saved also on Artifactory
+            this.JFrogFactory.AddApiKey(this.ApiKey, this.Username, password);
         }
 
         /// <summary>
@@ -865,6 +860,9 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+
+            //revoke api key also from Artifactory
+            JFrogFactory.RevokeApiKey(this.Username, password);
         }
 
         /// <summary>
@@ -890,6 +888,8 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public void CreateLdapDomain(){
 
+            var owner = this.Username + ".owner";
+
             //open the connection
             Json2Ldap.Connect();
             try {
@@ -901,7 +901,7 @@ namespace Terradue.Corporate.Controller {
                 string dn = string.Format("ou={0}, ou=domains, dc=terradue, dc=com", this.Username);
                 dn = LdapFactory.NormalizeLdapDN(dn);
                 ParamsAttributes attributes = new ParamsAttributes();
-                attributes.objectClass = new List<string>{ "organizationalUnit", "top"};
+                attributes.objectClass = new List<string>{ "organizationalUnit", "top" };
                 attributes.ou = this.Username;
 
                 Json2Ldap.AddEntry(dn, attributes);
@@ -911,7 +911,7 @@ namespace Terradue.Corporate.Controller {
 
                 attributes = new ParamsAttributes();
                 attributes.objectClass = new List<string>{ "groupOfUniqueNames"};
-                attributes.cn = this.Username + ".owner";
+                attributes.cn = owner;
                 attributes.uniqueMember = CreateLdapDNforPeople();
                 attributes.description = "Owner of user domain " + this.Username;
 
@@ -922,6 +922,9 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+
+            //Add group on Artifactory
+            JFrogFactory.CreateGroup(owner);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -986,11 +989,11 @@ namespace Terradue.Corporate.Controller {
         }
 
         public void CreateCatalogueIndex(){
-            this.CatFactory.IndexCreate(this.Username);
+            this.CatFactory.CreateIndex(this.Username);
         }
 
         public void CreateCatalogueIndex(string index){
-            this.CatFactory.IndexCreate(index);
+            this.CatFactory.CreateIndex(index);
         }
 
         public List<string> GetUserCatalogueIndexes(){
@@ -1005,15 +1008,22 @@ namespace Terradue.Corporate.Controller {
         #region Artifactory
 
         public bool HasRepository(){
-            return this.RepoFactory.RepositoryExists(this.Username);
+            return this.JFrogFactory.RepositoryExists(this.Username);
         }
 
         public void CreateRepository(){
-            this.RepoFactory.RepositoryCreate(this.Username);
+            this.CreateRepository(this.Username);
         }
 
         public void CreateRepository(string repo){
-            this.RepoFactory.RepositoryCreate(repo);
+            this.JFrogFactory.CreateLocalRepository(repo);
+
+            //sanity check: does user has domain on ldap ?
+            if (!HasLdapDomain()) CreateLdapDomain();
+
+            //Create permission for groups on new repo
+            var group = this.Username + ".owner";
+            this.JFrogFactory.CreatePermissionForGroupOnRepo(group, repo);
         }
 
         public List<string> GetUserRepositories(){

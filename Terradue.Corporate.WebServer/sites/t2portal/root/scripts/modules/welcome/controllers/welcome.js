@@ -42,11 +42,14 @@ define([
 					var profilecomplete = user.FirstName && user.LastName && user.Affiliation && user.Country;//default profile set ?
 					profilecomplete = profilecomplete && (user.AccountStatus == 4);//email validated ?
 					profilecomplete = profilecomplete && user.PublicKey;//ssh key added ?
+					var userPlanGtExplorer = (user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
+					var apikeyNull = user.ApiKey == null;
 					self.profileData = new can.Observe({
 						user: user,
 						loading: false,
 						usernameNotSet: usernameDefault,
-						profileNotComplete: !profilecomplete
+						profileNotComplete: !profilecomplete,
+						apikeyNotComplete: userPlanGtExplorer && apikeyNull
 					});
 					self.view({
 						url: 'modules/welcome/views/welcome.html',

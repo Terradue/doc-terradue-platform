@@ -574,6 +574,7 @@
     <Content Include="scripts\modules\users_ldap\views\users_ldap.html" />
     <Content Include="scripts\modules\settings\views\apikey.html" />
     <Content Include="scripts\modules\settings\views\catalogue.html" />
+    <Content Include="scripts\modules\settings\views\storage.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\" />

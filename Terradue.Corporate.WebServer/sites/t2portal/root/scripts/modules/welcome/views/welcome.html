@@ -12,6 +12,13 @@
 				<h3><a href="/portal/settings/profile">Fill it up</a></h3>
 			</div>
 		{{else}}
+			{{#if apikeyNotComplete}}
+				<div class="welcome-container row text-center" style="background-color:#ff6666; color:white;">
+					<h3><i class="fa fa-warning"></i>&nbsp;API Key ismissing!</h3>
+					<h3>It is a <b>MANDATORY</b> step to access your storages and repositories.</h3>
+				<h3><a href="/portal/settings/apikey">Generate it</a></h3>
+				</div>
+			{{/if}}
 			{{#if profileNotComplete}}
 				<div class="welcome-container row text-center" style="background-color:#ffb366; color:white;">
 					<h3><i class="fa fa-warning"></i>&nbsp;Profile not complete!</h3>

@@ -10,9 +10,14 @@ namespace Terradue.Corporate.Controller {
 
         public CatalogueFactory(IfyContext context) {
             this.Context = context;
-            Host = context.GetConfigValue("catalogue-host");
+            Host = context.GetConfigValue("catalogue-BaseUrl");
         }
 
+        /// <summary>
+        /// Indexs the exists.
+        /// </summary>
+        /// <returns><c>true</c>, if exists was indexed, <c>false</c> otherwise.</returns>
+        /// <param name="index">Index.</param>
         public bool IndexExists(string index){
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(this.Host + "/" + index);
             request.Method = "HEAD";
@@ -31,9 +36,17 @@ namespace Terradue.Corporate.Controller {
             return true;
         }
 
-        public void IndexCreate(string index){
+        /// <summary>
+        /// Creates the index.
+        /// </summary>
+        /// <param name="index">Index.</param>
+        public void CreateIndex(string index){
             if(!IndexExists(index)){
-                
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(this.Host + "/" + index);
+                request.Method = "PUT";
+                //TODO: Add Credentials
+
+//                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             }
         }
     }
