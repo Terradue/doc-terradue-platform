@@ -28,7 +28,29 @@ define(['can', 'config'], function(can, Config){
 				type : "DELETE",
 				dataType : "json"
 			});
+		},
+		
+		getCatalogueIndex: function(){
+			return $.getJSON('/'+Config.api+'/user/catalogue/index');
+		},
+		createCatalogueIndex: function(){
+			return $.post('/'+Config.api+'/user/catalogue/index?format=json', {});
+		},
+		
+		getRepository: function(){
+			return $.getJSON('/'+Config.api+'/user/repository');
+		},
+		createRepository: function(){
+			return $.post('/'+Config.api+'/user/repository?format=json', {});
+		},
+		
+		getFeatures: function(){
+			return $.getJSON('/'+Config.api+'/user/features');
+		},
+		createFeatures: function(){
+			return $.post('/'+Config.api+'/user/features/geoserver?format=json', {});
 		}
+		
 	}, {});
 	
 });
