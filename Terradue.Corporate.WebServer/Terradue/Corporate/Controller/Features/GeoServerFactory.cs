@@ -27,15 +27,15 @@ namespace Terradue.Corporate.Controller {
         /// <returns><c>true</c>, if the worspace exists, <c>false</c> otherwise.</returns>
         /// <param name="workspace">Workspace.</param>
         public bool WorkspaceExists(string workspace){
-            var request = (HttpWebRequest)WebRequest.Create(this.Host + "/workspaces/" + workspace + ".json");
+            var request = (HttpWebRequest)WebRequest.Create(this.Host + "/workspaces/" + workspace);
             request.Method = "GET";
             request.ContentType = "application/json";
             request.Accept = "application/json";
             request.Credentials = Credentials;
 
             try{
-                var httpResponse = (HttpWebResponse)request.GetResponse();
-                if(httpResponse.StatusCode == HttpStatusCode.NotFound) return false;
+//                var httpResponse = (HttpWebResponse)request.GetResponse();
+//                if(httpResponse.StatusCode == HttpStatusCode.NotFound) return false;
                 return true;
             }catch(Exception){
                 return false;
@@ -47,7 +47,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="name">Name.</param>
         public void CreateWorkspace(string name){
-            var request = (HttpWebRequest)WebRequest.Create(this.Host + "/workspaces/" + ".json");
+            var request = (HttpWebRequest)WebRequest.Create(this.Host + "/workspaces");
             request.Method = "POST";
             request.ContentType = "application/json";
             request.Accept = "application/json";
@@ -65,7 +65,7 @@ namespace Terradue.Corporate.Controller {
                 streamWriter.Close();
 
                 try{
-                    var httpResponse = (HttpWebResponse)request.GetResponse();
+//                    var httpResponse = (HttpWebResponse)request.GetResponse();
                 }catch(Exception e){
                     throw e;
                 }

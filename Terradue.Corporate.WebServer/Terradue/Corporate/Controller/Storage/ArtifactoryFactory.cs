@@ -8,16 +8,47 @@ using Terradue.JFrog.Artifactory;
 
 namespace Terradue.Corporate.Controller {
     public class ArtifactoryFactory {
-        
+
+        private string AdminApiKey { get; set; }
+
         public IfyContext Context { get; set; }
         public JFrogArtifactoryClient JFrogClient { get; set; }
 
         public ArtifactoryFactory(IfyContext context) {
             this.Context = context;
-            JFrogClient = new JFrogArtifactoryClient(context.GetConfigValue("artifactory-APIurl"), context.GetConfigValue("artifactory-APIkey"));
+            this.AdminApiKey = this.Context.GetConfigValue("artifactory-APIkey");
+            JFrogClient = new JFrogArtifactoryClient(context.GetConfigValue("artifactory-APIurl"), AdminApiKey);
+            JFrogClient.SyncUrl = context.GetConfigValue("artifactory-SyncUrl");;
         }
 
         /***************************************************************************************************************************************/
+
+        #region User
+
+        /// <summary>
+        /// Sync the specified username and password.
+        /// </summary>
+        /// <param name="username">Username.</param>
+        /// <param name="password">Password.</param>
+        public void Sync(string username, string password){
+            //log in as the user
+            JFrogClient.SetUserAuthentication(username, password);
+            JFrogClient.Sync();
+
+            //put admin config back
+            JFrogClient.SetApiKeyAuthentication();
+        }
+
+        /// <summary>
+        /// Gets the user info.
+        /// </summary>
+        /// <returns>The user info.</returns>
+        /// <param name="username">Username.</param>
+        public ArtifactoryUser GetUserInfo(string username){
+            return JFrogClient.GetUser(username);
+        }
+
+        #endregion
 
         #region Repository
 
@@ -32,6 +63,10 @@ namespace Terradue.Corporate.Controller {
                 config.rclass = JFrogArtifactoryClient.REPOSITORY_LOCAL;
                 config.key = repo;
                 config.packageType = "generic";
+                config.handleReleases = true;
+                config.handleSnapshots = true;
+                config.snapshotVersionBehavior = "non-unique";
+                config.dockerApiVersion = "V2";
 
                 JFrogClient.CreateRepository<ArtifactoryRepositoryLocalConfiguration>(config, repo);
             }
@@ -61,12 +96,36 @@ namespace Terradue.Corporate.Controller {
         /// Creates the group.
         /// </summary>
         /// <param name="group">Group.</param>
-        public void CreateGroup(string group){
+        public void CreateGroup(string group, string dn){
             ArtifactoryGroup config = new ArtifactoryGroup();
             config.name = group;
-            config.realm = "ARTIFACTORY";
+            config.description = "Group synchronized from LDAP";
+            config.realm = "ldap";
+            config.autojoin = false;
+            config.realmAttributes = string.Format("ldapGroupName={0};groupsStrategy=STATIC;groupDn={1}", group, dn);
 
             JFrogClient.CreateGroup(config);
+        }
+
+        /// <summary>
+        /// Gets the groups for user.
+        /// </summary>
+        /// <returns>The groups for user.</returns>
+        /// <param name="username">Username.</param>
+        public List<string> GetGroupsForUser(string username){
+            ArtifactoryUser userinfo = GetUserInfo(username);
+            return userinfo.groups;
+        }
+
+        /// <summary>
+        /// Gets the groups.
+        /// </summary>
+        /// <returns>The groups.</returns>
+        public List<string> GetGroups(){
+            List<string> groups = new List<string>();
+            foreach (var g in JFrogClient.ListGroups())
+                groups.Add(g.name);
+            return groups;
         }
 
         #endregion
@@ -108,28 +167,30 @@ namespace Terradue.Corporate.Controller {
         /// <param name="username">Username.</param>
         /// <param name="password">Password.</param>
         public string GetApiKey(string username, string password){
-            JFrogClient = new JFrogArtifactoryClient(Context.GetConfigValue("artifactory-APIurl"), username, password);
+            JFrogClient.SetUserAuthentication(username, password);
             var apikey = JFrogClient.GetApiKey();
 
             //put admin config back
-            JFrogClient = new JFrogArtifactoryClient(Context.GetConfigValue("artifactory-APIurl"), Context.GetConfigValue("artifactory-APIkey"));
+            JFrogClient.SetApiKeyAuthentication();
 
             return apikey.apiKey;
         }
 
         /// <summary>
-        /// Adds the API key.
+        /// Creates the API key.
         /// </summary>
-        /// <param name="apikey">Apikey.</param>
+        /// <returns>The API key.</returns>
         /// <param name="username">Username.</param>
         /// <param name="password">Password.</param>
-        public void AddApiKey(string apikey, string username, string password){
+        public string CreateApiKey(string username, string password){
             //log in as the user
-            JFrogClient = new JFrogArtifactoryClient(Context.GetConfigValue("artifactory-APIurl"), username, password);
-            JFrogClient.CreateApiKey(apikey);
+            JFrogClient.SetUserAuthentication(username, password);
+            var key = JFrogClient.CreateApiKey();
 
             //put admin config back
-            JFrogClient = new JFrogArtifactoryClient(Context.GetConfigValue("artifactory-APIurl"), Context.GetConfigValue("artifactory-APIkey"));
+            JFrogClient.SetApiKeyAuthentication();
+
+            return key.apiKey;
         }
 
         /// <summary>
@@ -139,11 +200,11 @@ namespace Terradue.Corporate.Controller {
         /// <param name="password">Password.</param>
         public void RevokeApiKey(string username, string password){
             //log in as the user
-            JFrogClient = new JFrogArtifactoryClient(Context.GetConfigValue("artifactory-APIurl"), username, password);
+            JFrogClient.SetUserAuthentication(username, password);
             JFrogClient.RevokeApiKey();
 
             //put admin config back
-            JFrogClient = new JFrogArtifactoryClient(Context.GetConfigValue("artifactory-APIurl"), Context.GetConfigValue("artifactory-APIkey"));
+            JFrogClient.SetApiKeyAuthentication();
         }
 
         #endregion

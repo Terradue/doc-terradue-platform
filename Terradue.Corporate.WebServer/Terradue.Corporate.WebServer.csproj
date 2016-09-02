@@ -91,33 +91,6 @@
     <Reference Include="Terradue.Portal">
       <HintPath>..\packages\Terradue.Portal.2.6.61\lib\net40\Terradue.Portal.dll</HintPath>
     </Reference>
-    <Reference Include="TweetSharp">
-      <HintPath>..\packages\TweetSharp.2.3.1\lib\4.0\TweetSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue">
-      <HintPath>..\packages\Terradue.Certification.1.4.7\lib\net40\Terradue.Certification.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue">
-      <HintPath>..\packages\Terradue.Util.1.4.0\lib\net40\Terradue.Util.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue">
-      <HintPath>..\packages\Terradue.Hadoop.1.3.2\lib\net40\Terradue.Hadoop.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue">
-      <HintPath>..\packages\Terradue.Cloud.1.2.15\lib\net40\Terradue.Cloud.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue">
-      <HintPath>..\packages\Terradue.Github.1.0.5\lib\net40\Terradue.Github.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue">
-      <HintPath>..\packages\Terradue.OpenNebula.1.0.2\lib\net40\Terradue.OpenNebula.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue.JFrog.Artifactory">
-      <HintPath>..\packages\Terradue.JFrog.Artifactory.1.0.0\lib\net40\Terradue.JFrog.Artifactory.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="ServiceStack.ServiceInterface">
       <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
     </Reference>
@@ -217,9 +190,6 @@
     <Reference Include="Terradue.Portal.AdminTool">
       <HintPath>..\packages\Terradue.Portal.2.6.61\lib\net40\Terradue.Portal.AdminTool.exe</HintPath>
     </Reference>
-    <Reference Include="Hammock.ClientProfile">
-      <HintPath>..\packages\TweetSharp.2.3.1\lib\4.0\Hammock.ClientProfile.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.OpenSearch.Twitter">
       <HintPath>..\packages\Terradue.OpenSearch.Twitter.1.0.10\lib\net40\Terradue.OpenSearch.Twitter.dll</HintPath>
     </Reference>
@@ -229,8 +199,8 @@
     <Reference Include="Terradue.News">
       <HintPath>..\packages\Terradue.News.1.0.13\lib\net40\Terradue.News.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Ldap">
-      <HintPath>..\packages\Terradue.Ldap.1.0.15\lib\net40\Terradue.Ldap.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -267,6 +237,7 @@
     <Compile Include="Terradue\Corporate\Controller\Catalogue\CatalogueFactory.cs" />
     <Compile Include="Terradue\Corporate\Controller\Storage\ArtifactoryFactory.cs" />
     <Compile Include="Terradue\Corporate\Controller\Features\GeoServerFactory.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Activity\Logs.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -279,6 +250,7 @@
     <Folder Include="Terradue\Corporate\WebServer\OAuth\" />
     <Folder Include="Terradue\Corporate\Controller\Storage\" />
     <Folder Include="Terradue\Corporate\Controller\Features\" />
+    <Folder Include="Terradue\Corporate\WebServer\Activity\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -299,5 +271,15 @@
     <None Include="modules\openid\db\db-0.2#.sql" />
     <None Include="modules\openid\db\db-create.sql" />
     <None Include="modules\github\db\db-create.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\components\sugar\DotNetJFrogArtifactory\Terradue.JFrog.Artifactory\Terradue.JFrog.Artifactory.csproj">
+      <Project>{D72373BC-A70F-4600-A155-C6A44A949711}</Project>
+      <Name>Terradue.JFrog.Artifactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\components\sugar\DotNetJson2Ldap\Terradue.Ldap\Terradue.Ldap.csproj">
+      <Project>{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}</Project>
+      <Name>Terradue.Ldap</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

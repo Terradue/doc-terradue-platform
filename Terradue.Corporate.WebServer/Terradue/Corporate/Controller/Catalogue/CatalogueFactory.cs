@@ -24,7 +24,7 @@ namespace Terradue.Corporate.Controller {
 
             HttpWebResponse response = null;
             try {
-                response = (HttpWebResponse)request.GetResponse();
+//                response = (HttpWebResponse)request.GetResponse();
             } catch (WebException e) {
                 if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Found) {
                     return true;

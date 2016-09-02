@@ -17,6 +17,12 @@ namespace Terradue.Corporate.WebServer {
         public int Id { get; set; }
     }
 
+    [Route("/user/{id}/admin", "GET", Summary = "GET the user", Notes = "User is found from id")]
+    public class GetUserT2ForAdmin : IReturn<WebUserT2> {
+        [ApiMember(Name = "id", Description = "User id", ParameterType = "query", DataType = "int", IsRequired = true)]
+        public int Id { get; set; }
+    }
+
     [Route("/user/ldap", "GET", Summary = "GET the users", Notes = "User is found on ldap")]
     public class GetLdapUsers : IReturn<WebUserT2> {
     }
@@ -131,14 +137,31 @@ namespace Terradue.Corporate.WebServer {
         public string index { get; set; }
     }
 
-    [Route("/user/repository", "GET", Summary = "get current user repositories", Notes = "")]
-    public class GetCurrentUserRepositories : IReturn<List<string>> {
+    [Route("/user/repository", "GET", Summary = "get user repositories", Notes = "")]
+    public class GetUserRepositories : IReturn<List<string>> {
+        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = false)]
+        public int Id { get; set; }
     }
 
-    [Route("/user/repository", "POST", Summary = "create repository for current user", Notes = "")]
-    public class CreateCurrentUserRepository : IReturn<List<string>> {
+    [Route("/user/repository", "POST", Summary = "create repository for user", Notes = "")]
+    public class CreateUserRepository : IReturn<List<string>> {
         [ApiMember(Name = "repo", Description = "User repo", ParameterType = "query", DataType = "string", IsRequired = false)]
         public string repo { get; set; }
+
+        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = false)]
+        public int Id { get; set; }
+    }
+
+    [Route("/user/repository/group", "GET", Summary = "get user repositories group", Notes = "")]
+    public class GetUserRepositoriesGroup : IReturn<List<string>> {
+        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = false)]
+        public int Id { get; set; }
+    }
+
+    [Route("/user/repository/group", "POST", Summary = "create repository group for user", Notes = "")]
+    public class CreateUserRepositoryGroup : IReturn<List<string>> {
+        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = true)]
+        public int Id { get; set; }
     }
 
     [Route("/user/features", "GET", Summary = "get current user features", Notes = "")]
@@ -165,6 +188,12 @@ namespace Terradue.Corporate.WebServer {
     public class GetAvailableLdapUsernameT2 : IReturn<WebUserT2> {
         [ApiMember(Name = "username", Description = "username", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string username { get; set; }
+    }
+
+    [Route("/user/ldap/domains", "GET", Summary = "GET list all domains of the user", Notes = "")]
+    public class GetLdapDomains : IReturn<WebUserT2> {
+        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = true)]
+        public int Id { get; set; }
     }
 
     //-------------------------------------------------------------------------------------------------------------------------
@@ -270,6 +299,14 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String Plan { get; set; }
 
+        [ApiMember(Name = "HasLdapDomain", Description = "Check if user has ldap domain", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool HasLdapDomain { get; set; }
+
+        [ApiMember(Name = "ArtifactoryDomainSynced", Description = "Check if user has Artifactory domain", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool ArtifactoryDomainSynced { get; set; }
+
+        [ApiMember(Name = "ArtifactoryDomainExists", Description = "Check if user has Artifactory domain", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool ArtifactoryDomainExists { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
@@ -280,7 +317,7 @@ namespace Terradue.Corporate.WebServer {
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
         /// </summary>
         /// <param name="entity">Entity.</param>
-        public WebUserT2(UserT2 entity, bool basicInfo = false) : base(entity) {
+        public WebUserT2(UserT2 entity, bool basicInfo = true) : base(entity) {
 
             this.DomainId = entity.DomainId;
             this.Plan = entity.Plan != null ? entity.Plan.Name : "";
@@ -292,6 +329,9 @@ namespace Terradue.Corporate.WebServer {
                 }
                 this.PublicKey = entity.PublicKey;
                 this.ApiKey = entity.ApiKey;
+                this.HasLdapDomain = entity.HasLdapDomain();
+                this.ArtifactoryDomainSynced = entity.HasOwnerGroup();
+                this.ArtifactoryDomainExists = entity.OwnerGroupExists();
             }
         }
 

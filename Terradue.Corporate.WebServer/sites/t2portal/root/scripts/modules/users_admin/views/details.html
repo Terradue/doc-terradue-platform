@@ -41,7 +41,7 @@
 					{{/user}}
 				</div>
 			</div>
-			
+
 			{{#ifEquals user.AccountStatus 1}}
 			<!-- USER VALIDATION -->
 			<div class="panel panel-default">
@@ -55,6 +55,66 @@
 				</div>
 			</div>
 			{{/ifEquals}}
+
+			<!-- USER DOMAIN -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">User Storage</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">Domain <small>({{user.Username}}.owner)</small></h4>
+						</div>
+						<div class="panel-body" style="overflow: scroll">
+							{{#if domainLoading}}
+								&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Creating...
+							{{else}}
+								{{#if user.HasLdapDomain}}
+									<i class="fa fa-check-square text-success"></i> LDAP
+								{{else}}
+									<i class="fa fa-square-o"></i> LDAP
+								{{/if}}
+								<br/>
+								{{#if user.ArtifactoryDomainExists}}
+									{{#if user.ArtifactoryDomainSynced}}
+										<i class="fa fa-check-square text-success"></i> Storage
+									{{else}}
+										<i class="fa fa-check-square text-warning"></i> Storage <small>(user need to login to sync his account)</small>
+									{{/if}}
+								{{else}}
+									<i class="fa fa-square-o"></i> Storage
+								{{/if}}
+								{{#if user.HasLdapDomain}}
+									{{#unless user.ArtifactoryDomainExists}}
+										<br/><br/>
+										<button class="btn btn-small btn-warning createArtifactoryDomain" data-user="{{user.Id}}">Create domain on Storage</button>	
+									{{/unless}}
+								{{else}}
+									<br/><br/>
+									<button class="btn btn-small btn-warning createLdapDomain" data-user="{{user.Id}}">Create LDAP domain</button>
+								{{/if}}
+							{{/if}}
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">Repositories</h4>
+						</div>
+						<div class="panel-body" style="overflow: scroll">
+							{{#ifEquals user.repositories.length 0}}
+								<button class="btn btn-small btn-warning createRepository" data-user="{{user.Id}}">Create repository</button>
+							{{else}}
+								<ul>
+								{{#each user.repositories}}
+									<li>{{this}}</li>
+								{{/each}}
+								</ul>
+							{{/if}}
+						</div>
+					</div>
+				</div>
+			</div>
 
 		</div>
 		
