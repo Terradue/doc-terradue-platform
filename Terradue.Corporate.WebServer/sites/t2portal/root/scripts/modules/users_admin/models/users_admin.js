@@ -17,8 +17,8 @@ define(['can', 'config'], function(can, Config){
 //			});
 		},
 
-		getRepositories: function(data){
-			return $.get('/'+Config.api+'/user/repository?format=json');
+		getRepositories: function(id){
+			return $.get('/'+Config.api+'/user/repository?format=json' + (id != 0 ? "&id="+id : ""));
 		},
 
 		createRepository: function(data){

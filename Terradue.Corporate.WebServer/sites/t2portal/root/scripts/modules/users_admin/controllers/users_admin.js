@@ -31,14 +31,14 @@ define([
 		details: function(data){
 			console.log(data);
 			var self = this;
-			var id = data.id;
+			self.id = data.id;
 			
 			this.userData = new can.Observe({});
 			
 			// get user info
-			UsersAdminModel.findOne({id:id}).then(function(user){
+			UsersAdminModel.findOne({id:self.id}).then(function(user){
 				self.userData.attr('user', user);
-				UsersAdminModel.getRepositories({id:id}).then(function(repositories){
+				UsersAdminModel.getRepositories(self.id).then(function(repositories){
 					self.userData.user.attr('repositories', repositories);	
 				}).fail(function(){
 					this.errorView({}, 'Unable to get user repositories', 'The user doesn\'t exist or you can\'t access this page.', true);

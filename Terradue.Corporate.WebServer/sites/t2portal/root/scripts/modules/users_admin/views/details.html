@@ -102,14 +102,14 @@
 							<h4 class="panel-title">Repositories</h4>
 						</div>
 						<div class="panel-body" style="overflow: scroll">
-							{{#ifEquals user.repositories.length 0}}
-								<button class="btn btn-small btn-warning createRepository" data-user="{{user.Id}}">Create repository</button>
-							{{else}}
+							{{#if user.repositories.length}}
 								<ul>
-								{{#each user.repositories}}
-									<li>{{this}}</li>
-								{{/each}}
-								</ul>
+                               {{#each user.repositories}}
+                                   <li>{{.}}</li>
+                               {{/each}}
+                               </ul>
+							{{else}}
+                               <button class="btn btn-small btn-warning createRepository" data-user="{{user.Id}}">Create repository</button>
 							{{/if}}
 						</div>
 					</div>
