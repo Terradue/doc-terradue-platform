@@ -148,7 +148,7 @@ namespace Terradue.Corporate.Controller {
             config.name = group;
             config.repositories = new List<string>{ repo };
             config.principals = new ArtifactoryPermissionPrincipal { 
-                groups = new List<Dictionary<string, List<string>>>{ dico }
+                groups = dico
             };
 
             JFrogClient.CreatePermission(config);

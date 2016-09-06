@@ -202,6 +202,12 @@
     <Reference Include="Terradue.OpenSearch">
       <HintPath>..\packages\Terradue.OpenSearch.1.12.12\lib\net40\Terradue.OpenSearch.dll</HintPath>
     </Reference>
+    <Reference Include="Terradue.Ldap">
+      <HintPath>..\packages\Terradue.Ldap.1.0.16\lib\net40\Terradue.Ldap.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.JFrog.Artifactory">
+      <HintPath>..\packages\Terradue.JFrog.Artifactory.1.0.1\lib\net40\Terradue.JFrog.Artifactory.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -271,15 +277,5 @@
     <None Include="modules\openid\db\db-0.2#.sql" />
     <None Include="modules\openid\db\db-create.sql" />
     <None Include="modules\github\db\db-create.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\components\sugar\DotNetJFrogArtifactory\Terradue.JFrog.Artifactory\Terradue.JFrog.Artifactory.csproj">
-      <Project>{D72373BC-A70F-4600-A155-C6A44A949711}</Project>
-      <Name>Terradue.JFrog.Artifactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\components\sugar\DotNetJson2Ldap\Terradue.Ldap\Terradue.Ldap.csproj">
-      <Project>{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}</Project>
-      <Name>Terradue.Ldap</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
