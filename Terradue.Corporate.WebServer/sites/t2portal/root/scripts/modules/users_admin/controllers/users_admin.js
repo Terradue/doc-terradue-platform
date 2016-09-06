@@ -119,6 +119,60 @@ define([
 				}
 			});
 
+		},
+
+		'.giveAdminRights click': function(data){
+			var self = this;
+			var userid = data.data('user');
+			var currentUser = self.userData.attr('user');
+
+			bootbox.confirm('Set user <b>'+currentUser.Username+'</b> as Administrator.<br/>Are you sure?', function(confirmed){
+				if (confirmed){
+					currentUser.attr('Level',4);
+					self.userData.attr({
+						userAdminLoading: true, userAdminFailMessage:null
+					});
+					currentUser.save().then(function(user){
+						self.userData.attr({
+							userAdminLoading: false, userAdminFailMessage:null
+						});
+						self.userData.attr('user', user);
+					}).fail(function(xhr){
+						currentUser.attr('Level',3);
+						self.userData.attr({
+							userAdminLoading: false, userAdminFailMessage: Helpers.getErrMsg(xhr, 'Generic Error')
+						});
+					});
+				}
+			});
+
+		},
+
+		'.removeAdminRights click': function(data){
+			var self = this;
+			var userid = data.data('user');
+			var currentUser = self.userData.attr('user');
+
+			bootbox.confirm('Set user <b>'+currentUser.Username+'</b> as normal user.<br/>Are you sure?', function(confirmed){
+				if (confirmed){
+					currentUser.attr('Level',3);
+					self.userData.attr({
+						userAdminLoading: true, userAdminFailMessage:null
+					});
+					currentUser.save().then(function(user){
+						self.userData.attr({
+							userAdminLoading: false, userAdminFailMessage:null
+						});
+						self.userData.attr('user', user);
+					}).fail(function(xhr){
+						currentUser.attr('Level',4);
+						self.userData.attr({
+							userAdminLoading: false, userAdminFailMessage: Helpers.getErrMsg(xhr, 'Generic Error')
+						});
+					});
+				}
+			});
+
 		}
 		
 	});

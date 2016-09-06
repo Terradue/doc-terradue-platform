@@ -53,6 +53,12 @@
 					<br/><br/>
 					<button class="btn btn-small btn-warning validateEmail">Validate</button>
 				</div>
+				{{#if validateAccountLoading}}
+					<i class="fa fa-spin fa-spinner"></i> Saving...
+				{{/if}}
+				{{#if validateAccountFailMessage}}
+					<span class="text-danger">Error while saving user: <strong>{{validateAccountFailMessage}}</strong></span>
+				{{/if}}
 			</div>
 			{{/ifEquals}}
 
@@ -66,12 +72,20 @@
 					<h3 class="panel-title">Change user level</h3>
 				</div>
 				<div class="panel-body" style="overflow: scroll">
+					
 					{{#ifEquals user.Level 4}}
 					<button class="btn btn-small btn-warning removeAdminRights">Set as normal user</button>
 					{{/ifEquals}}
 					{{#ifNotEquals user.Level 4}}
 					<button class="btn btn-small btn-warning giveAdminRights">Set as administrator</button>
 					{{/ifNotEquals}}
+
+					{{#if userAdminLoading}}
+						<i class="fa fa-spin fa-spinner"></i> Saving...
+					{{/if}}
+					{{#if userAdminFailMessage}}
+						<span class="text-danger">Error while saving user: <strong>{{userAdminFailMessage}}</strong></span>
+					{{/if}}
 				</div>
 			</div>
 			
