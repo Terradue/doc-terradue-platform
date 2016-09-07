@@ -65,7 +65,10 @@ define([
 						emailNotComplete: (user.AccountStatus==1),
 						sshKeyNotComplete: !(user.PublicKey),
 						apiKeyNotComplete: !(user.ApiKey),
-						githubNotComplete: false
+						githubNotComplete: false,
+						userHasCatalogue: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						userHasStorage: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						userHasFeatures: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium"
 					});
 					self.githubPromise.then(function(githubData){
 						self.githubData = githubData;
@@ -388,9 +391,63 @@ define([
 						title: 'Revoke API Key',
 						placement:'bottom'
 					});
+					self.element.find('.generateApiKeyBtn').tooltip({
+						trigger: 'hover',
+						title: 'Regenerate API Key',
+						placement:'bottom'
+					});
 				});
 			},
 
+			catalogue: function(options) {
+				var self = this;
+				this.catalogueData = new can.Observe({loading: true});
+				console.log("App.controllers.Settings.catalogue");
+				
+				this.view({
+					url: 'modules/settings/views/catalogue.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.catalogueData,
+					fnLoad: function(){
+						self.initSubmenu('catalogue');
+					}
+				});
+				this.loadCatalogueIndex();
+			},
+			storage: function(options) {
+				var self = this;
+				this.storageData = new can.Observe({loading: true});
+				console.log("App.controllers.Settings.storage");
+				
+				this.view({
+					url: 'modules/settings/views/storage.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.storageData,
+					fnLoad: function(){
+						self.initSubmenu('storage');
+					}
+				});
+				this.loadStorage();
+			},
+			features: function(options) {
+				var self = this;
+				this.featuresData = new can.Observe({loading: true});
+				console.log("App.controllers.Settings.features");
+				
+				this.view({
+					url: 'modules/settings/views/features.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.featuresData,
+					fnLoad: function(){
+						self.initSubmenu('features');
+					}
+				});
+				this.loadFeatures();
+			},
+			
 			// profile	
 			manageEmailConfirm: function(token){
 				var self=this;
@@ -939,6 +996,52 @@ define([
 				});
 			},
 
+			'.settings-apikey .getApiKey click': function(){
+				var self = this;
+				var title = "This action requires your password.";
+				var message = "<div class='container-fluid'>"
+							+ "<form class='generateAPIkeyForm'>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+ "<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "</form>"
+							+ "</div>";
+				bootbox.dialog({
+					title: title,
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function (a,b,c) {
+	                            var password = $('#safePassword').val();
+	                            if (password==''){
+	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+	                            	return false;
+	                            };
+	                            self.profileData.attr("loading",true);
+	                            ProfileModel.getApiKey(password).then(function(apikey){
+	                            	self.data.attr({
+										apiKeyNotComplete: false
+									});
+
+									self.element.find('.apiKeyVisible').addClass('hidden');
+									self.element.find('.apiKeyHidden').removeClass('hidden');
+									self.profileData.user.attr("ApiKey",apikey.Response);
+
+								}).fail(function(){
+									bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
+								}).always(function(){
+									self.profileData.attr("loading",false);
+								});
+                        	}
+                    	}
+                    }
+				});
+			},
+			
+
 			'.settings-apikey .revokeApiKeyBtn click': function(){
 				var self = this;
 				var title = "This action requires your password.";
@@ -984,7 +1087,112 @@ define([
                     	}
                     }
 				});
-			}
+			},
+			
+			/* catalogue */
+			loadCatalogueIndex: function(){
+				var self = this;
+				var catalogueData = this.catalogueData;
+
+				this.isLoginPromise.then(function(user){
+					catalogueData.attr('loading', true);
+					ProfileModel.getCatalogueIndex().then(function(list){
+						if (list && list.length)
+							catalogueData.attr('list', list);
+						catalogueData.attr('loading', false);
+					}).fail(function(xhr){
+						self.catalogueData.attr({
+							loading: false,
+							errorMessage: Helpers.getErrMsg(xhr, 'Error to load the catalogue index.')
+						})
+					});
+				});
+
+			},
+			
+			'.settings-catalogue .createCatalogueIndex click': function(){
+				var self = this;
+				
+				this.catalogueData.attr('loading', true);
+				ProfileModel.createCatalogueIndex().then(function(){
+					self.loadCatalogueIndex();
+				}).fail(function(xhr){
+					self.catalogueData.attr({
+						loading: false,
+						errorMessage: Helpers.getErrMsg(xhr, 'Error to create the catalogue index.')
+					})
+				});
+			},
+
+			/* storage */
+			loadStorage: function(){
+				var self = this;
+				var storageData = this.storageData;
+
+				this.isLoginPromise.then(function(user){
+					storageData.attr('loading', true);
+					ProfileModel.getRepository().then(function(list){
+						if (list && list.length)
+							storageData.attr('list', list);
+						storageData.attr('loading', false);
+					}).fail(function(xhr){
+						self.storageData.attr({
+							loading: false,
+							errorMessage: Helpers.getErrMsg(xhr, 'Error to load the Storage.')
+						})
+					});
+				});
+
+			},
+			
+			'.settings-storage .createStorage click': function(){
+				var self = this;
+				
+				this.storageData.attr('loading', true);
+				ProfileModel.createRepository().then(function(){
+					self.loadStorage();
+				}).fail(function(xhr){
+					self.storageData.attr({
+						loading: false,
+						errorMessage: Helpers.getErrMsg(xhr, 'Error to create the Storage.')
+					})
+				});
+			},
+
+			/* features */
+			loadFeatures: function(){
+				var self = this;
+				var featuresData = this.featuresData;
+
+				this.isLoginPromise.then(function(user){
+					featuresData.attr('loading', true);
+					ProfileModel.getFeatures().then(function(list){
+						if (list && list.length)
+							featuresData.attr('list', list);
+						featuresData.attr('loading', false);
+					}).fail(function(xhr){
+						self.featuresData.attr({
+							loading: false,
+							errorMessage: Helpers.getErrMsg(xhr, 'Error to load the user features.')
+						})
+					});;
+				});
+
+			},
+			
+			'.settings-features .createFeatures click': function(){
+				var self = this;
+				
+				this.featuresData.attr('loading', true);
+				ProfileModel.createFeatures().then(function(){
+					self.loadFeatures();
+				}).fail(function(xhr){
+					self.featuresData.attr({
+						loading: false,
+						errorMessage: Helpers.getErrMsg(xhr, 'Error to create the user features.')
+					})
+				});
+			},
 
 		}
 	);

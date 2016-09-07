@@ -114,6 +114,23 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, request.Id);
+                result = new WebUserT2(user);
+
+                context.Close();
+            } catch (Exception e) {
+                context.Close();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Get(GetUserT2ForAdmin request) {
+            WebUserT2 result;
+
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
+            try {
+                context.Open();
+                UserT2 user = UserT2.FromId(context, request.Id);
                 result = new WebUserT2(user, false);
 
                 context.Close();
@@ -155,7 +172,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, context.UserId);
                 log.InfoFormat("Get current user {0}",user.Username);
-                result = new WebUserT2(user);
+                result = new WebUserT2(user, false);
                 context.Close();
             } catch (Exception e) {
                 context.Close();
@@ -438,16 +455,8 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
-                UserT2 user;
-                try{
-                    user = UserT2.FromUsername(context, request.Username);
-                }catch(Exception){
-                    try{
-                        user = UserT2.FromEmail(context, request.Username);
-                    }catch(Exception){
-                            return new WebResponseBool(true);
-                        }
-                }
+                UserT2 user = UserT2.FromUsernameOrEmail(context, request.Username);
+                if (user == null) return new WebResponseBool(true);
 
                 //send email to user with new token
                 var token = user.GetToken();
@@ -477,16 +486,8 @@ namespace Terradue.Corporate.WebServer {
 
                 if(string.IsNullOrEmpty(request.Password)) throw new Exception("Password is empty");
 
-                UserT2 user = null;
-                try {
-                    user = UserT2.FromUsername(context, request.Username);
-                }catch(Exception){
-                    try {
-                        user = UserT2.FromEmail(context, request.Username);
-                    }catch(Exception e){
-                        throw new Exception("User not found");
-                    }
-                }
+                UserT2 user = UserT2.FromUsernameOrEmail(context, request.Username);
+                if (user == null) throw new Exception("User not found");
 
                 user.ValidateActivationToken(request.Token);
 
@@ -696,10 +697,25 @@ namespace Terradue.Corporate.WebServer {
                     throw new Exception("Invalid password");
                 }
 
-                user.GenerateApiKey();
+                user.GenerateApiKey(request.password);
                 log.InfoFormat("API Key created locally");
-                user.UpdateLdapAccount();
+                user.UpdateLdapAccount(request.password);
                 log.InfoFormat("API Key saved on ldap");
+
+                //sanity check on the domain
+                switch (user.Plan.Name) {
+                    case Plan.NONE:
+                        break;
+                    case Plan.TRIAL:
+                        break;
+                    case Plan.EXPLORER:
+                    case Plan.SCALER:
+                    case Plan.PREMIUM:
+                        if (!user.HasLdapDomain()) user.CreateLdapDomain();
+                        break;
+                    default:
+                        break;
+                }
 
                 result = user.ApiKey;
 
@@ -740,30 +756,155 @@ namespace Terradue.Corporate.WebServer {
             return new WebResponseBool(true);
         }
 
-        public object Get(ValidateApiKeyUserT2 request){
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
-            bool result;
+        public object Get(GetApiKeyUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            WebResponseString result;
             try{
                 context.Open();
-                UserT2 user = UserT2.FromUsername(context, request.username);
-                log.InfoFormat("Validate API Key for user {0}", user.Username);
 
-                user.LoadLdapInfo();
-                if(user.ApiKey != null && user.ApiKey.Equals(request.key)){
-                    result = true;
-                    log.InfoFormat("API key is valid");
-                } else {
-                    result = false;
-                    log.InfoFormat("API key is not valid");
+                return new WebResponseString ("blablabliblablablou");
+
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Get API key for user {0}", user.Username);
+                user.LoadLdapInfo(request.password);
+
+                //if key does not exist, we create it
+                if (string.IsNullOrEmpty (user.ApiKey)){
+                    user.GenerateApiKey (request.password);
+                    log.InfoFormat ("API Key created locally");
+                    user.UpdateLdapAccount (request.password);
+                    log.InfoFormat ("API Key saved on ldap");
                 }
+
+                result = new WebResponseString(user.ApiKey);
 
                 context.Close ();
             }catch(Exception e) {
                 log.ErrorFormat("Error during api key validation - {0} - {1}", e.Message, e.StackTrace);
                 context.Close ();
+                return null;
+            }
+            return null;
+        }
+
+        public object Get(GetCurrentUserCatalogueIndexes request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                log.InfoFormat("Get catalogue indexes for user {0}", user.Username);
+
+                result = user.GetUserCatalogueIndexes();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during get catalogue indexes - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
                 throw e;
             }
-            return new WebResponseBool(result);
+            return result;
+        } 
+
+        public object Post(CreateCurrentUserCatalogueIndex request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, context.UserId);
+                if(request.index == null) request.index = user.Username;
+                log.InfoFormat("Create catalogue index '{1}' for user {0}", user.Username, request.index);
+
+                user.CreateCatalogueIndex();
+                result = user.GetUserCatalogueIndexes();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during catalogue index cretion - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Get(GetUserRepositories request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, request.Id != 0 ? request.Id : context.UserId);
+                log.InfoFormat("Get repositories for user {0}", user.Username);
+
+                result = user.GetUserRepositories();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during get repositories - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Post(CreateUserRepository request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, request.Id != 0 ? request.Id : context.UserId);
+                log.InfoFormat("Create repository '{1}' for user {0}", user.Username, request.repo ?? user.Username);
+
+                user.CreateRepository(request.repo);
+                result = user.GetUserRepositories();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during repository create - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Get(GetUserRepositoriesGroup request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, request.Id != 0 ? request.Id : context.UserId);
+
+                log.InfoFormat("Get repository group list for user {0}", user.Username);
+
+                result = user.GetUserArtifactoryGroups();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during repository group get - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
+        }
+
+        public object Post(CreateUserRepositoryGroup request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
+            List<string> result = null;
+            try{
+                context.Open();
+                UserT2 user = UserT2.FromId(context, request.Id);
+
+                log.InfoFormat("Create repository group '{1}' for user {0}", user.Username, user.Username + ".owner");
+
+                user.CreateArtifactoryGroup();
+                result = user.GetUserArtifactoryGroups();
+
+                context.Close ();
+            }catch(Exception e) {
+                log.ErrorFormat("Error during create repository group - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return result;
         }
 
         public void ValidateCaptcha(string secret, string response){

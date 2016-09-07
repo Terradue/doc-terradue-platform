@@ -6,7 +6,7 @@ using ServiceStack.Common.Web;
 using System.Web;
 using Terradue.Corporate.WebServer.Common;
 
-namespace Terradue.TepQW.WebServer {
+namespace Terradue.Corporate.WebServer {
 
     /// <summary>
     /// Email confirmation service

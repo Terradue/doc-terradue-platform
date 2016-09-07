@@ -11,17 +11,18 @@
 					<button class="btn btn-small btn-primary showApiKeyBtn apiKeyHidden" title="Show API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye"></i></button>
 					<button class="btn btn-small btn-primary hideApiKeyBtn apiKeyVisible hidden" title="Hide API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye-slash"></i></button>
 					&nbsp;&nbsp;<button class="btn btn-small btn-primary copyApiKeyBtn" title="Copy on clipboard" data-public-key="{{ user.ApiKey }}"><i class="fa fa-clipboard"></i></button>
-					&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn"><i class="fa fa-trash"></i></button>
+					&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn" title="Revoke API Key"><i class="fa fa-trash"></i></button>
+					&nbsp;&nbsp;<button class="btn btn-small btn-warning generateApiKey" title="Regenerate API Key"><i class="fa fa-recycle"></i></button>
 				</div>
 				<br/>
+			{{else}}
+				<div>
+					<button class="btn btn-warning getApiKey">Get your API key</button>
+				</div>
 			{{/if}}
-			<div>
-				{{#if loading}}
-					&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
-				{{else}}
-					<button class="btn btn-warning generateApiKey">Generate a new API key</button>
-				{{/if}}
-			</div>
+			{{#if loading}}
+				&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
+			{{/if}}
 		</div>
 	</div>
 </div>

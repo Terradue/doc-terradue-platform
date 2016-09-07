@@ -10,7 +10,7 @@ if [ ! -f $file ]
 	exit 1;
 fi
 
-cat $file | while read dir	git	location; 
+cat $file | while read dir	git	location branch; 
 do 
 	echo "Checkout $git into $subdir/root/$location/$dir ($2)";
 	rm -rf $subdir/root/$location/$dir

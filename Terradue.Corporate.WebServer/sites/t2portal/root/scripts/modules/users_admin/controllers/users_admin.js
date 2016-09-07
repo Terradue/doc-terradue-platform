@@ -31,13 +31,18 @@ define([
 		details: function(data){
 			console.log(data);
 			var self = this;
-			var id = data.id;
+			self.id = data.id;
 			
 			this.userData = new can.Observe({});
 			
 			// get user info
-			UsersAdminModel.findOne({id:id}).then(function(user){
+			UsersAdminModel.findOne({id:self.id}).then(function(user){
 				self.userData.attr('user', user);
+				UsersAdminModel.getRepositories(self.id).then(function(repositories){
+					self.userData.user.attr('repositories', repositories);	
+				}).fail(function(){
+					this.errorView({}, 'Unable to get user repositories', 'The user doesn\'t exist or you can\'t access this page.', true);
+				});	
 			}).fail(function(){
 				this.errorView({}, 'Unable to get user info', 'The user doesn\'t exist or you can\'t access this page.', true);
 			});
@@ -89,6 +94,58 @@ define([
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug
 		 					self.userData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+		 				});
+		 		});
+			}
+		},
+
+		'.createArtifactoryDomain click': function(data){
+			var self = this,
+				userid = data.data('user');
+			
+			if (userid){
+
+				this.userData.attr({
+					domainLoading: true
+				});
+				
+				bootbox.confirm('Create Storage domain for user <b>'+self.userData.attr('user').Username+'</b>.<br/>Are you sure?', function(confirmed){
+					if (confirmed)
+						UsersAdminModel.createArtifactoryDomain({
+		 					Id: userid
+		 				}).then(function(){
+							self.userData.user.attr('HasArtifactoryDomain', true);
+							self.userData.user.attr('domainLoading', false);
+		 				}).fail(function(xhr){
+		 					errXhr=xhr; // for debug
+		 					self.userData.user.attr('domainLoading', false);
+		 					self.userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+		 				});
+		 		});
+			}
+		},
+
+		'.createRepository click': function(data){
+			var self = this,
+				userid = data.data('user');
+			
+			if (userid){
+
+				this.userData.attr({
+					repositoryLoading: true
+				});
+				
+				bootbox.confirm('Create Storage repository for user <b>'+self.userData.attr('user').Username+'</b>.<br/>Are you sure?', function(confirmed){
+					if (confirmed)
+						UsersAdminModel.createRepository({
+		 					id: userid
+		 				}).then(function(repositories){
+							self.userData.user.attr('repositories', repositories);
+							self.userData.user.attr('repositoryLoading', false);
+		 				}).fail(function(xhr){
+		 					errXhr=xhr; // for debug
+		 					self.userData.user.attr('repositoryLoading', false);
+		 					self.userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
 		 				});
 		 		});
 			}

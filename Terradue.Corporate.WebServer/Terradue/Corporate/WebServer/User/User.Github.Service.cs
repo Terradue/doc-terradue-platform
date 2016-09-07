@@ -95,7 +95,11 @@ namespace Terradue.Corporate.WebServer {
 
             try {
                 context.Open();
-                GithubProfile user = GithubProfile.FromId(context, request.Id);
+
+                var id = context.UserId;
+                if(context.UserLevel == UserLevel.Administrator) id = request.Id;
+
+                GithubProfile user = GithubProfile.FromId(context, id);
                 user = request.ToEntity(context, user);
                 user.Store();
                 user.Load(); //to get information from Github

@@ -14,19 +14,19 @@
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Free Trial</strong> plan.
 					</div>
 				{{/ifEquals}}
-				{{#ifEquals user.Plan "Developer"}}
+				{{#ifEquals user.Plan "Explorer"}}
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Explorer</strong> plan.
 					</div>
 				{{/ifEquals}}
-				{{#ifEquals user.Plan 'Integrator'}}
-					<div class="alert alert-success">
-						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Premium</strong> plan.
-					</div>
-				{{/ifEquals}}
-				{{#ifEquals user.Plan "Producer"}}
+				{{#ifEquals user.Plan "Scaler"}}
 					<div class="alert alert-success">
 						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Scaler</strong> plan.
+					</div>
+				{{/ifEquals}}
+				{{#ifEquals user.Plan 'Premium'}}
+					<div class="alert alert-success">
+						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Premium</strong> plan.
 					</div>
 				{{/ifEquals}}
 				<div>

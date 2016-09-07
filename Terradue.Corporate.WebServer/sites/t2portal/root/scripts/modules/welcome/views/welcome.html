@@ -12,6 +12,13 @@
 				<h3><a href="/portal/settings/profile">Fill it up</a></h3>
 			</div>
 		{{else}}
+			{{#if apikeyNotComplete}}
+				<div class="welcome-container row text-center" style="background-color:#ff6666; color:white;">
+					<h3><i class="fa fa-warning"></i>&nbsp;API Key is missing!</h3>
+					<h3>It is a <b>MANDATORY</b> step to access your storages and repositories.</h3>
+				<h3><a href="/portal/settings/apikey">Generate it</a></h3>
+				</div>
+			{{/if}}
 			{{#if profileNotComplete}}
 				<div class="welcome-container row text-center" style="background-color:#ffb366; color:white;">
 					<h3><i class="fa fa-warning"></i>&nbsp;Profile not complete!</h3>
@@ -21,12 +28,12 @@
 			{{/if}}
 		{{/if}}
 		<div class="welcome-container row text-center" style="background-color:#D0D2C1;">
-				<h3><i class="fa fa-hand-o-right"></i>&nbsp; Take a tour and discover the <a href="/portal/tour#platform">Terradue Cloud Platform</a !</h3>
+				<h3><i class="fa fa-hand-o-right"></i>&nbsp; Take a tour and discover <a href="/portal/tour#platform">Terradue Cloud Platform</a !</h3>
 	    </div>
 		<div class="welcome-container row text-center">
 			<div class="welcome-plan">
 			{{#ifEquals user.Plan "No Plan"}}
-				<h3><i class="fa fa-frown-o"></i>&nbsp; You haven't suscribed to any plan yet.</h3>
+				<h3><i class="fa fa-frown-o"></i>&nbsp; You haven't subscribed to any plan yet.</h3>
 			{{/ifEquals}}
 			{{#ifEquals user.Plan "Free Trial"}}
 				<h3><i class="fa fa-smile-o"></i>&nbsp; You have a <strong>Free Trial</strong> plan.</h3>

@@ -246,6 +246,13 @@ namespace Terradue.Corporate.WebServer {
                     var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
                     user = j2ldapclient.Authenticate(request.username, request.password, context.GetConfigValue("ldap-apikey"));
                     log.DebugFormat("User {0} is authenticated succesfully", request.username);
+
+                    //if user exists, sync Artifactory
+                    try{
+                        var usert2 = Terradue.Corporate.Controller.UserT2.FromUsernameOrEmail(context, request.username);
+                        if (usert2 != null) usert2.SyncArtifactory(request.username, request.password);
+                    }catch(Exception){}
+
                 }catch(Exception e){
                     log.ErrorFormat("User {0} is not authenticated: {1}", request.username, e.Message);
                     return new HttpError(System.Net.HttpStatusCode.Forbidden, "Wrong username or password");

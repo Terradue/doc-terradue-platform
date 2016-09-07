@@ -43,7 +43,7 @@ namespace Terradue.Corporate.Controller {
         public string NormalizeLdapDN(string dn) {
             string dnn = Json2Ldap.NormalizeDN(dn);
             if (!Json2Ldap.IsValidDN(dnn))
-                throw new Exception(string.Format("Unvalid DN: {0}", dnn));
+                throw new Exception(string.Format("Invalid DN: {0}", dnn));
             return dnn;
         }
 

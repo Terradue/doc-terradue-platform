@@ -12,6 +12,14 @@ define(['can', 'config'], function(can, Config){
 			});
 		},
 
+		getApiKey: function(password){
+			return $.ajax('/'+Config.api+'/user/apikey?password='+password, {
+				type : "GET",
+				dataType : "json",
+				format : "json"
+			});
+		},
+
 		generateApiKey: function(password){
 			return $.ajax('/'+Config.api+'/user/apikey', {
 				type : "PUT",
@@ -28,7 +36,29 @@ define(['can', 'config'], function(can, Config){
 				type : "DELETE",
 				dataType : "json"
 			});
+		},
+		
+		getCatalogueIndex: function(){
+			return $.getJSON('/'+Config.api+'/user/catalogue/index');
+		},
+		createCatalogueIndex: function(){
+			return $.post('/'+Config.api+'/user/catalogue/index?format=json', {});
+		},
+		
+		getRepository: function(){
+			return $.getJSON('/'+Config.api+'/user/repository');
+		},
+		createRepository: function(){
+			return $.post('/'+Config.api+'/user/repository?format=json', {});
+		},
+		
+		getFeatures: function(){
+			return $.getJSON('/'+Config.api+'/user/features');
+		},
+		createFeatures: function(){
+			return $.post('/'+Config.api+'/user/features/geoserver?format=json', {});
 		}
+		
 	}, {});
 	
 });
