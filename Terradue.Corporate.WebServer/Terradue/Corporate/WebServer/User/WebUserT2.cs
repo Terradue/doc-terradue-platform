@@ -62,7 +62,10 @@ namespace Terradue.Corporate.WebServer {
     }
 
     [Route("/user/current", "GET", Summary = "GET the current user", Notes = "User is the current user")]
-    public class GetCurrentUserT2 : IReturn<WebUserT2> {}
+    public class GetCurrentUserT2 : IReturn<WebUserT2> {
+        [ApiMember (Name = "ldap", Description = "get also ldap info", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool ldap { get; set; }
+    }
 
     [Route("/user", "PUT", Summary = "Update user", Notes = "User is contained in the PUT data. Only non UMSSO data can be updated, e.g redmineApiKey or certField")]
     public class UpdateUserT2 : WebUserT2, IReturn<WebUserT2> {}
@@ -314,24 +317,28 @@ namespace Terradue.Corporate.WebServer {
         public WebUserT2() {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
+        /// Initializes a new instance of the <see cref="T:Terradue.Corporate.WebServer.WebUserT2"/> class.
         /// </summary>
         /// <param name="entity">Entity.</param>
-        public WebUserT2(UserT2 entity, bool basicInfo = true) : base(entity) {
+        /// <param name="ldap">If set to <c>true</c> get also info from LDAP.</param>
+        /// <param name="admin">If set to <c>true</c> get all info for admin.</param>
+        public WebUserT2(UserT2 entity, bool ldap = false, bool admin = false) : base(entity) {
 
             this.DomainId = entity.DomainId;
             this.Plan = entity.Plan != null ? entity.Plan.Name : "";
 
-            if (!basicInfo) {
-                if (entity.PublicKey == null && entity.ApiKey == null) entity.LoadLdapInfo();
+            if (ldap || admin) {
+                if (entity.PublicKey == null || entity.ApiKey == null) entity.LoadLdapInfo();
                 if (entity.OneUser != null) {
                     this.HasOneAccount = true;
                 }
                 this.PublicKey = entity.PublicKey;
                 this.ApiKey = entity.ApiKey;
-                this.HasLdapDomain = entity.HasLdapDomain();
-                this.ArtifactoryDomainSynced = entity.HasOwnerGroup();
-                this.ArtifactoryDomainExists = entity.OwnerGroupExists();
+            }
+            if (admin) { 
+                this.HasLdapDomain = entity.HasLdapDomain ();
+                this.ArtifactoryDomainSynced = entity.HasOwnerGroup ();
+                this.ArtifactoryDomainExists = entity.OwnerGroupExists ();
             }
         }
 

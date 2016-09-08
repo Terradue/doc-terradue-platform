@@ -561,7 +561,6 @@
     <Content Include="scripts\modules\news_admin\models\news_admin.js" />
     <Content Include="scripts\modules\news_admin\views\news_admin.html" />
     <Content Include="scripts\modules\users_admin\models\plans.js" />
-    <Content Include="scripts\modules\users_admin\views\plans.html" />
     <Content Include="scripts\modules\users_admin\views\users_admin.html" />
     <Content Include="scripts\modules\users_admin\controllers\users_admin.js" />
     <Content Include="scripts\modules\users_admin\models\users_admin.js" />

@@ -131,7 +131,7 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, request.Id);
-                result = new WebUserT2(user, false);
+                result = new WebUserT2(user, true, true);
 
                 context.Close();
             } catch (Exception e) {
@@ -171,8 +171,9 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, context.UserId);
+                user.LoadApiKey ();
                 log.InfoFormat("Get current user {0}",user.Username);
-                result = new WebUserT2(user, false);
+                result = new WebUserT2(user, request.ldap);
                 context.Close();
             } catch (Exception e) {
                 context.Close();
@@ -194,7 +195,7 @@ namespace Terradue.Corporate.WebServer {
 
                 EntityList<UserT2> users = new EntityList<UserT2>(context);
                 users.Load();
-                foreach(UserT2 u in users) result.Add(new WebUserT2(u, true));
+                foreach(UserT2 u in users) result.Add(new WebUserT2(u));
 
                 context.Close();
             } catch (Exception e) {
@@ -661,14 +662,14 @@ namespace Terradue.Corporate.WebServer {
 
                 foreach(var ldapuser in ldapusers){
                     try{
-                        users.Add(new WebUserT2(new UserT2(context, ldapuser), true));
+                        users.Add(new WebUserT2(new UserT2(context, ldapuser)));
                     }catch(Exception e){
                         var ldapu = new UserT2(context);
                         ldapu.Username = ldapuser.Username;
                         ldapu.Email = ldapuser.Email;
                         ldapu.FirstName = ldapuser.FirstName;
                         ldapu.LastName = ldapuser.LastName;
-                        users.Add(new WebUserT2(ldapu, true));
+                        users.Add(new WebUserT2(ldapu));
                     }
                 }
 
@@ -698,8 +699,6 @@ namespace Terradue.Corporate.WebServer {
                 }
 
                 user.GenerateApiKey(request.password);
-                log.InfoFormat("API Key created locally");
-                user.UpdateLdapAccount(request.password);
                 log.InfoFormat("API Key saved on ldap");
 
                 //sanity check on the domain
@@ -762,17 +761,13 @@ namespace Terradue.Corporate.WebServer {
             try{
                 context.Open();
 
-                return new WebResponseString ("blablabliblablablou");
-
                 UserT2 user = UserT2.FromId(context, context.UserId);
                 log.InfoFormat("Get API key for user {0}", user.Username);
-                user.LoadLdapInfo(request.password);
+                user.LoadApiKey(request.password);
 
                 //if key does not exist, we create it
                 if (string.IsNullOrEmpty (user.ApiKey)){
                     user.GenerateApiKey (request.password);
-                    log.InfoFormat ("API Key created locally");
-                    user.UpdateLdapAccount (request.password);
                     log.InfoFormat ("API Key saved on ldap");
                 }
 
@@ -784,7 +779,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close ();
                 return null;
             }
-            return null;
+            return result;
         }
 
         public object Get(GetCurrentUserCatalogueIndexes request){

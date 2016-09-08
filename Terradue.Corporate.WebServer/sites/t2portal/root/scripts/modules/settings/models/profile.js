@@ -4,6 +4,14 @@ define(['can', 'config'], function(can, Config){
 	return can.Model({
 		update: 'PUT /'+Config.api+'/user',
 
+		getFullUser: function(ldap){
+			return $.ajax('/'+Config.api+'/user/current?ldap='+ldap, {
+				type : "GET",
+				dataType : "json",
+				format : "json"
+			});
+		},
+
 		changeEmail: function(email){
 			return $.ajax('/'+Config.api+'/user/email', {
 				type : "PUT",
@@ -13,7 +21,7 @@ define(['can', 'config'], function(can, Config){
 		},
 
 		getApiKey: function(password){
-			return $.ajax('/'+Config.api+'/user/apikey?password='+password, {
+			return $.ajax('/'+Config.api+'/user/apikey?format=json&password='+password, {
 				type : "GET",
 				dataType : "json",
 				format : "json"

@@ -842,13 +842,34 @@ namespace Terradue.Corporate.Controller {
                     if(!string.IsNullOrEmpty(ldapusr.FirstName)) this.FirstName = ldapusr.FirstName;
                     if(!string.IsNullOrEmpty(ldapusr.LastName)) this.LastName = ldapusr.LastName;
                     if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
-                    if(!string.IsNullOrEmpty(ldapusr.ApiKey)) this.ApiKey = ldapusr.ApiKey;
+                    if (!string.IsNullOrEmpty (ldapusr.ApiKey)) this.ApiKey = ldapusr.ApiKey;
                 }
             } catch (Exception e) {
                 Json2Ldap.Close();
                 throw e;
             }
             Json2Ldap.Close();
+        }
+
+        /// <summary>
+        /// Loads the API key.
+        /// </summary>
+        /// <param name="password">Password.</param>
+        public void LoadApiKey (string password = null) {
+            Json2Ldap.Connect ();
+            try {
+                var dn = CreateLdapDNforPeople ();
+                if (password != null) Json2Ldap.SimpleBind (dn, password);
+                else Json2Ldap.SimpleBind (context.GetConfigValue ("ldap-admin-dn"), context.GetConfigValue ("ldap-admin-pwd"));
+                var ldapusr = this.Json2Ldap.GetEntryAttribute (dn, "apiKey");
+                if (ldapusr != null) {
+                    this.ApiKey = ldapusr.ApiKey;
+                }
+            } catch (Exception e) {
+                Json2Ldap.Close ();
+                throw e;
+            }
+            Json2Ldap.Close ();
         }
 
         public void PublicLoadSshPubKey(string username) {
@@ -866,6 +887,33 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Close();
         }
 
+        public void SaveApiKey (string password) { 
+           Json2Ldap.Connect ();
+            try {
+                var dn = CreateLdapDNforPeople ();
+                Json2Ldap.SimpleBind (dn, password);
+
+                try {
+                    Json2Ldap.ModifyUserAttribute (dn, "apiKey", this.ApiKey);
+                } catch (Exception e) {
+                    try {
+                        //user may not have sshPublicKey | eossoUserid | apiKey
+                        if (e.Message.Contains ("sshPublicKey") || e.Message.Contains ("sshUsername") || e.Message.Contains ("apiKey")) {
+                            Json2Ldap.AddNewAttributeString (dn, "objectClass", "ldapPublicKey");
+                            Json2Ldap.ModifyUserAttribute (dn, "apiKey", this.ApiKey);
+                        } else throw e;
+                    } catch (Exception e2) {
+                        throw e2;
+                    }
+                }
+
+            } catch (Exception e) {
+                Json2Ldap.Close ();
+                throw e;
+            }
+            Json2Ldap.Close ();
+        }
+
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
@@ -876,6 +924,9 @@ namespace Terradue.Corporate.Controller {
             
             //Api Key is saved also on Artifactory
             this.ApiKey = this.JFrogFactory.CreateApiKey(this.Username, password);
+
+            //save on LDAP
+            this.SaveApiKey (password);
         }
 
         /// <summary>

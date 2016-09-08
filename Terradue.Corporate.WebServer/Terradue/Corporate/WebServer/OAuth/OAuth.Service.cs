@@ -171,6 +171,7 @@ UA -> UA : display user name
 
                 user = (UserT2)auth.GetUserProfile(context);
                 user.LoadLdapInfo();//TODO: should be done automatically on the previous call
+                user.LoadApiKey ();
                 user.Store();
                 if(!user.HasGithubProfile()) user.CreateGithubProfile();
                 redirect = context.GetConfigValue("t2portal-welcomeEndpoint");
@@ -364,7 +365,7 @@ UA -> UA : display user name
 
                 //TODO: log user created from TEP
 
-                result = new WebUserT2(user, true);
+                result = new WebUserT2(user);
 
                 context.Close();
             } catch (Exception e) {

@@ -54,25 +54,35 @@ define([
 				this.githubPromise = GithubModel.findOne();
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
-				self.isLoginPromise.then(function(user){
-					self.data.attr({
-						user: user,
-						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
-						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
-						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey),
-						apiKeyNotComplete: !(user.ApiKey),
-						githubNotComplete: false,
-						userHasCatalogue: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-						userHasStorage: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-						userHasFeatures: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium"
-					});
-					self.githubPromise.then(function(githubData){
-						self.githubData = githubData;
-						self.data.attr('githubNotComplete', !githubData.HasSSHKey);
+				self.data.attr({loadingLdap: true});
+
+				self.isLoginPromise.then(function(u){
+					ProfileModel.getFullUser(true).then(function(user){
+						self.data.attr({
+							user: user,
+							emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+							showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
+							showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
+							showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
+							profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+							emailNotComplete: (user.AccountStatus==1),
+							sshKeyNotComplete: !(user.PublicKey),
+							apiKeyNotComplete: !(user.ApiKey),
+							githubNotComplete: false,
+							userHasCatalogue: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+							userHasStorage: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+							userHasFeatures: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+							loadingLdap: false
+						});
+						self.githubPromise.then(function(githubData){
+							self.githubData = githubData;
+							self.data.attr('githubNotComplete', !githubData.HasSSHKey);
+						});
+					}).fail(function(){
+						self.data.attr('hideMenu', true);
+						// access denied only if you haven't a token
+						if (!self.params.token)
+							self.accessDenied();
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -1000,14 +1010,38 @@ define([
 				var self = this;
 				var title = "This action requires your password.";
 				var message = "<div class='container-fluid'>"
-							+ "<form class='generateAPIkeyForm'>"
+							//+ "<form class='generateAPIkeyForm'>"
 							+ "<div class='form-group'>" 
 							+ "<label for='password'>Password</label>"
 							+ "<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
 							+ "</div>"
-							+ "</form>"
+							//+ "</form>"
 							+ "</div>";
-				bootbox.dialog({
+
+				var submitCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    self.profileData.attr("loading",true);
+                    ProfileModel.getApiKey(encodeURIComponent(password)).then(function(apikey){
+                    	self.data.attr({
+							apiKeyNotComplete: false
+						});
+
+						self.element.find('.apiKeyVisible').addClass('hidden');
+						self.element.find('.apiKeyHidden').removeClass('hidden');
+						self.profileData.user.attr("ApiKey",apikey.Response);
+
+					}).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
+					}).always(function(){
+						self.profileData.attr("loading",false);
+					});
+				};
+
+				var dialog=bootbox.dialog({
 					title: title,
 					message: message,
 					buttons: {
@@ -1015,29 +1049,15 @@ define([
 	                        label: "OK",
 	                        className: "btn-default",
 	                        callback: function (a,b,c) {
-	                            var password = $('#safePassword').val();
-	                            if (password==''){
-	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
-	                            	return false;
-	                            };
-	                            self.profileData.attr("loading",true);
-	                            ProfileModel.getApiKey(password).then(function(apikey){
-	                            	self.data.attr({
-										apiKeyNotComplete: false
-									});
-
-									self.element.find('.apiKeyVisible').addClass('hidden');
-									self.element.find('.apiKeyHidden').removeClass('hidden');
-									self.profileData.user.attr("ApiKey",apikey.Response);
-
-								}).fail(function(){
-									bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
-								}).always(function(){
-									self.profileData.attr("loading",false);
-								});
+	                        	submitCallback();
                         	}
                     	}
                     }
+				});
+
+				dialog.find('.generateAPIkeyForm').unbind('submit').bind('submit', function(){
+					submitCallback();
+					return false;
 				});
 			},
 			
