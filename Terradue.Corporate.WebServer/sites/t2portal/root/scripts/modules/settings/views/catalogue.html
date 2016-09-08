@@ -1,7 +1,7 @@
 <div class='settings-catalogue container col-md-9'>
 	<div>
-		<div class='settings settings-title'>Catalogue list</div>
-		<div class='settings settings-description'>This is your Catalogue Index</div>
+		<div class='settings settings-title'>Catalogue</div>
+		<div class='settings settings-description'>Access your private index on the Data Agency</div>
 		<div class='settings settings-container'>
 			{{#if loading}}
 				&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Loading...
@@ -11,12 +11,9 @@
 				{{else}}
 					{{#if list}}
 						<div class="cataloguePanel">
-							<p><i class="fa fa-info-circle"></i> You have the following <b>Indexes</b> available</p>
-							<ul>
-								{{#each list}}
-									<li><a href="{{.}}" target="_blank">{{.}}</a></li>
-								{{/each}}
-							</ul>
+							{{#each list}}
+								<i class="fa fa-check-square text-success"></i> Your index is available on <a href="{{.}}/description" target="_blank">{{.}}</a>
+							{{/each}}
 						</div>
 						<br/>
 					{{else}}

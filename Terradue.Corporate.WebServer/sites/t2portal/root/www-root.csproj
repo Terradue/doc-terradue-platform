@@ -554,7 +554,6 @@
     <Content Include="styles\img\resources\earth-background-2.png" />
     <Content Include="styles\img\separators\shapes.jpg" />
     <Content Include="scripts\modules\settings\views\key.html" />
-    <Content Include="scripts\modules\settings\views\email.html" />
     <Content Include="scripts\modules\settings\views\account.html" />
     <Content Include="scripts\modules\news_admin\controllers\news_admin.js" />
     <Content Include="scripts\modules\news_admin\css\news_admin.css" />
@@ -574,6 +573,7 @@
     <Content Include="scripts\modules\settings\views\apikey.html" />
     <Content Include="scripts\modules\settings\views\catalogue.html" />
     <Content Include="scripts\modules\settings\views\storage.html" />
+    <Content Include="scripts\modules\users_admin\views\details.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="files\" />

@@ -1070,22 +1070,26 @@ namespace Terradue.Corporate.Controller {
         #region Catalogue
 
         public bool HasCatalogueIndex(){
-            return this.CatFactory.IndexExists(this.Username);
+            if (this.ApiKey == null) LoadApiKey ();
+            return this.CatFactory.IndexExists(this.Username, this.Username, this.ApiKey);
         }
 
         public void CreateCatalogueIndex(){
-            this.CatFactory.CreateIndex(this.Username);
+            CreateCatalogueIndex (this.Username);
         }
 
-        public void CreateCatalogueIndex(string index){
-            this.CatFactory.CreateIndex(index);
+        public void CreateCatalogueIndex (string index) {
+            if (this.ApiKey == null) LoadApiKey ();
+            this.CatFactory.CreateIndex (index, this.Username, this.ApiKey);
         }
 
         public List<string> GetUserCatalogueIndexes(){
+            var result = new List<string> ();
+
             if (this.HasCatalogueIndex())
-                return new List<string>{ this.Username };
-            else 
-                return null;
+                result.Add(this.CatFactory.GetUserIndexUrl(this.Username));
+
+            return result;
         }
 
         #endregion

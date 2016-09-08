@@ -3,25 +3,29 @@
 		<div class='settings settings-title'>API key</div>
 		<div class='settings settings-description'>Your <b>API key</b> is used to access the API of the Terradue Cloud Platform.</div>
 		<div class='settings settings-container'>
-			{{#if user.ApiKey}}
-				<div class="apiKeyPanel">
-					<input class="apiKeyHidden" type="password" value="{{ user.ApiKey }}" size="50" readonly>
-					<input class="apiKeyVisible hidden" type="text" value="{{ user.ApiKey }}" size="50" readonly>
-					<br/><br/>
-					<button class="btn btn-small btn-primary showApiKeyBtn apiKeyHidden" title="Show API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye"></i></button>
-					<button class="btn btn-small btn-primary hideApiKeyBtn apiKeyVisible hidden" title="Hide API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye-slash"></i></button>
-					&nbsp;&nbsp;<button class="btn btn-small btn-primary copyApiKeyBtn" title="Copy on clipboard" data-public-key="{{ user.ApiKey }}"><i class="fa fa-clipboard"></i></button>
-					&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn" title="Revoke API Key"><i class="fa fa-trash"></i></button>
-					&nbsp;&nbsp;<button class="btn btn-small btn-warning generateApiKey" title="Regenerate API Key"><i class="fa fa-recycle"></i></button>
-				</div>
-				<br/>
+			{{#if loaded}}
+				{{#if user.ApiKey}}
+					<div class="apiKeyPanel">
+						<input class="apiKeyHidden" type="password" value="{{ user.ApiKey }}" size="50" readonly>
+						<input class="apiKeyVisible hidden" type="text" value="{{ user.ApiKey }}" size="50" readonly>
+						<br/><br/>
+						<button class="btn btn-small btn-primary showApiKeyBtn apiKeyHidden" title="Show API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye"></i></button>
+						<button class="btn btn-small btn-primary hideApiKeyBtn apiKeyVisible hidden" title="Hide API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye-slash"></i></button>
+						&nbsp;&nbsp;<button class="btn btn-small btn-primary copyApiKeyBtn" title="Copy on clipboard" data-public-key="{{ user.ApiKey }}"><i class="fa fa-clipboard"></i></button>
+						&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn" title="Revoke API Key"><i class="fa fa-trash"></i></button>
+						&nbsp;&nbsp;<button class="btn btn-small btn-warning generateApiKey" title="Regenerate API Key"><i class="fa fa-recycle"></i></button>
+					</div>
+					<br/>
+				{{else}}
+					<div>
+						<button class="btn btn-warning getApiKey">Get your API key</button>
+					</div>
+				{{/if}}
+				{{#if loading}}
+					<br/><i class="fa fa-spin fa-spinner"></i> Wait...
+				{{/if}}
 			{{else}}
-				<div>
-					<button class="btn btn-warning getApiKey">Get your API key</button>
-				</div>
-			{{/if}}
-			{{#if loading}}
-				<br/><i class="fa fa-spin fa-spinner"></i> Wait...
+				<br/><i class="fa fa-spin fa-spinner"></i> Loading...
 			{{/if}}
 		</div>
 	</div>

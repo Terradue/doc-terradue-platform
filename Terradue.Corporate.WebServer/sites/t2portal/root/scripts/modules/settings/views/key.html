@@ -3,35 +3,39 @@
 		<div class='settings settings-title'>SSH keys</div>
 		<div class='settings settings-description'>Your <b>SSH keys</b> are the way for you to access your Terradue Cloud Platform development environment.</div>
 		<div class='settings settings-container'>
-			{{#if PrivateKey}}
-				<div class="safePanel privKey">
-					<div class="key-title">Private SSH key</div>
-					<pre class="privKey">{{ PrivateKey }}</pre>
-					<div class="alert alert-danger">
-						<b><i class="fa fa-warning"></i> We don't store your private key. You must save it on your computer.</b>
+			{{#if loaded}}
+				{{#if user.PrivateKey}}
+					<div class="safePanel privKey">
+						<div class="key-title">Private SSH key</div>
+						<pre class="privKey">{{ user.PrivateKey }}</pre>
+						<div class="alert alert-danger">
+							<b><i class="fa fa-warning"></i> We don't store your private key. You must save it on your computer.</b>
+						</div>
+						<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard" data-public-key="{{ user.PrivateKey }}"><i class="fa fa-clipboard"></i></button>
+					&nbsp;&nbsp;<a class="btn btn-small btn-primary downloadKey" download="id_rsa" href="data:application/octet-stream;charset=utf-8;base64,{{ user.PrivateKeyBase64 }}"><i class="fa fa-download"></i></a>
 					</div>
-					<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard" data-public-key="{{ PrivateKey }}"><i class="fa fa-clipboard"></i></button>
-				&nbsp;&nbsp;<a class="btn btn-small btn-primary downloadKey" download="id_rsa" href="data:application/octet-stream;charset=utf-8;base64,{{ PrivateKeyBase64 }}"><i class="fa fa-download"></i></a>
-				</div>
-				<hr/>
-			{{/if}}
-			{{#if PublicKey }}
-				<div class="safePanel pubKey">
-					<div class="key-title">Public SSH key</div>
-					<pre class="pubKey">{{ PublicKey }}</pre>
-					<button class="btn btn-small btn-primary copyPublicKeyBtn"><i class="fa fa-clipboard"></i></button>
-					&nbsp;&nbsp;<a class="btn btn-small btn-primary downloadKey" download="id_rsa.pub" href="data:application/octet-stream;charset=utf-8;base64,{{ PublicKeyBase64 }}"><i class="fa fa-download"></i></a>
-					&nbsp;&nbsp;<button class="btn btn-small btn-danger deletePublicKeyBtn"><i class="fa fa-trash"></i></button>
-				</div>
-				<hr/>
-			{{/if}}
-			<div>
-				{{#if loading}}
-					&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
-				{{else}}
-					<button class="btn btn-warning generateSafe">Generate a new SSH keys pair</button>
+					<hr/>
 				{{/if}}
-			</div>
+				{{#if user.PublicKey }}
+					<div class="safePanel pubKey">
+						<div class="key-title">Public SSH key</div>
+						<pre class="pubKey">{{ user.PublicKey }}</pre>
+						<button class="btn btn-small btn-primary copyPublicKeyBtn"><i class="fa fa-clipboard"></i></button>
+						&nbsp;&nbsp;<a class="btn btn-small btn-primary downloadKey" download="id_rsa.pub" href="data:application/octet-stream;charset=utf-8;base64,{{ user.PublicKeyBase64 }}"><i class="fa fa-download"></i></a>
+						&nbsp;&nbsp;<button class="btn btn-small btn-danger deletePublicKeyBtn"><i class="fa fa-trash"></i></button>
+					</div>
+					<hr/>
+				{{/if}}
+				<div>
+					{{#if loading}}
+						&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
+					{{else}}
+						<button class="btn btn-warning generateSafe">Generate a new SSH keys pair</button>
+					{{/if}}
+				</div>
+			{{else}}
+				<br/><i class="fa fa-spin fa-spinner"></i> Loading...
+			{{/if}}
 		</div>
 	</div>
 </div>

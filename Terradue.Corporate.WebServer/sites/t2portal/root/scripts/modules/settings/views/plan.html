@@ -4,44 +4,44 @@
 		<div class='settings settings-description'>Find out what you can do with your current plan or change to a new one.</div>
 		<div class='settings settings-container'>
 			<div class='plan-profile'>
-				{{#ifEquals user.Plan "No Plan"}}
-					<div class="alert alert-warning">
-						You haven't suscribed to any plan yet.
-					</div>
-				{{/ifEquals}}
-				{{#ifEquals user.Plan "Free Trial"}}
-					<div class="alert alert-success">
-						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Free Trial</strong> plan.
-					</div>
-				{{/ifEquals}}
-				{{#ifEquals user.Plan "Explorer"}}
-					<div class="alert alert-success">
-						<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Explorer</strong> plan.
-					</div>
-				{{/ifEquals}}
-				{{#ifEquals user.Plan "Scaler"}}
-					<div class="alert alert-success">
-						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Scaler</strong> plan.
-					</div>
-				{{/ifEquals}}
-				{{#ifEquals user.Plan 'Premium'}}
-					<div class="alert alert-success">
-						<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Premium</strong> plan.
-					</div>
-				{{/ifEquals}}
-				<div>
 					{{#ifEquals user.Plan "No Plan"}}
-						<b>Want to get a plan ?</b>
+						<div class="alert alert-warning">
+							You haven't suscribed to any plan yet.
+						</div>
 					{{/ifEquals}}
+					{{#ifEquals user.Plan "Free Trial"}}
+						<div class="alert alert-success">
+							<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Free Trial</strong> plan.
+						</div>
+					{{/ifEquals}}
+					{{#ifEquals user.Plan "Explorer"}}
+						<div class="alert alert-success">
+							<i class="fa fa-star fa-1x"></i>&nbsp; You have an <strong>Explorer</strong> plan.
+						</div>
+					{{/ifEquals}}
+					{{#ifEquals user.Plan "Scaler"}}
+						<div class="alert alert-success">
+							<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Scaler</strong> plan.
+						</div>
+					{{/ifEquals}}
+					{{#ifEquals user.Plan 'Premium'}}
+						<div class="alert alert-success">
+							<i class="fa fa-star fa-1x"></i>&nbsp; You have a <strong>Premium</strong> plan.
+						</div>
+					{{/ifEquals}}
+					<div>
+						{{#ifEquals user.Plan "No Plan"}}
+							<b>Want to get a plan ?</b>
+						{{/ifEquals}}
 
-					{{#ifNotEquals user.Plan "No Plan"}}
+						{{#ifNotEquals user.Plan "No Plan"}}
+							<br/>
+							<b>Want to change your plan ?</b>
+						{{/ifNotEquals}}
+
 						<br/>
-						<b>Want to change your plan ?</b>
-					{{/ifNotEquals}}
-
-					<br/>
-					<br/>
-					<a class="btn btn-small btn-warning" href="mailto:support@terradue.com?Subject=Terradue%20Cloud%20Platform%20-%20Upgrade%20plan" target="_blank">Contact us</a>
+						<br/>
+						<a class="btn btn-small btn-warning" href="mailto:support@terradue.com?Subject=Terradue%20Cloud%20Platform%20-%20Upgrade%20plan" target="_blank">Contact us</a>
 					</div>
 			</div>
 		</div>

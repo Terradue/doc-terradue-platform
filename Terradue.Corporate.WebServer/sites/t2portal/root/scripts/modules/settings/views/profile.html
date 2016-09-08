@@ -4,71 +4,70 @@
 		Some basic information about you.<br/>
 	</div>
 	<div class='settings settings-container'>
+		{{#if user}}
+			{{#if profileNotComplete}}
+				<div class="alert alert-warning">
+					<b><i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete!</b>
+					<br/>
+					<small>Please fill it up!</small>
+				</div>
+			{{/if}}
+			<form role="form" class="profileForm">
 
-	{{#if user}}
-		{{#if profileNotComplete}}
-			<div class="alert alert-warning">
-				<b><i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete!</b>
-				<br/>
-				<small>Please fill it up!</small>
-			</div>
+				{{#unless usernameNotSet}}
+					<div class="form-group">
+						<label>Cloud username</label>
+						<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.Username }}">
+					</div>
+				{{/unless}}
+
+				<div class="form-group">
+					<label>First name</label>
+					<input type="text" class="form-control" placeholder="" name="FirstName" value="{{ user.FirstName }}">
+				</div>
+				
+				<div class="form-group">
+					<label>Last name</label>
+					<input type="text" class="form-control" placeholder="" name="LastName" value="{{ user.LastName }}">
+				</div>
+
+				{{#if usernameNotSet}}
+					<div class="alert alert-info small">
+						The <b>Cloud username</b> will be used on the Terradue Cloud Platform to login on your VMs. 
+						<br>Once set, it cannot be changed. Please choose it wisely!
+					</div>
+					<div class="form-group">
+						<label>Cloud username</label>
+		 				<span class="usernameLoader{{#unless usernameLoader}} hidden{{/unless}}"><i class="fa fa-spin fa-spinner"></i> Checking username availability...</span>
+						<input type="text" class="form-control UsernameNotSet" placeholder="" name="Username">
+					</div>
+				{{/if}}
+				
+				
+				<div class="form-group">
+					<label>Affiliation</label>
+					<input type="text" class="form-control" placeholder="" name="Affiliation" value="{{ user.Affiliation }}">
+				</div>
+				
+				<div class="form-group">
+					<label>Country</label>
+					<input type="text" class="form-control" placeholder="" name="Country" value="{{ user.Country }}">
+				</div>
+
+		 		<br/>
+				{{#if saveSuccess}}
+					<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Updated!</strong> Your profile info are successful updated.</div>
+				{{/if}}
+				{{#if saveFail}}
+					<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ saveFailMessage }}</div>
+				{{/if}}
+				{{#if saveLoading}}
+					<button type="button" class="btn btn-warning submit" disabled="disabled">Submit</button> 
+					<i class="fa fa-spin fa-spinner"></i> Saving...
+				{{else}}
+					<button type="submit" class="btn btn-warning submit">Submit</button>
+				{{/if}}
+			</form>
 		{{/if}}
-		<form role="form" class="profileForm">
-
-			{{#unless usernameNotSet}}
-				<div class="form-group">
-					<label>Cloud username</label>
-					<input type="text" class="form-control" placeholder="" disabled="disabled" value="{{ user.Username }}">
-				</div>
-			{{/unless}}
-
-			<div class="form-group">
-				<label>First name</label>
-				<input type="text" class="form-control" placeholder="" name="FirstName" value="{{ user.FirstName }}">
-			</div>
-			
-			<div class="form-group">
-				<label>Last name</label>
-				<input type="text" class="form-control" placeholder="" name="LastName" value="{{ user.LastName }}">
-			</div>
-
-			{{#if usernameNotSet}}
-				<div class="alert alert-info small">
-					The <b>Cloud username</b> will be used on the Terradue Cloud Platform to login on your VMs. 
-					<br>Once set, it cannot be changed. Please choose it wisely!
-				</div>
-				<div class="form-group">
-					<label>Cloud username</label>
-	 				<span class="usernameLoader{{#unless usernameLoader}} hidden{{/unless}}"><i class="fa fa-spin fa-spinner"></i> Checking username availability...</span>
-					<input type="text" class="form-control UsernameNotSet" placeholder="" name="Username">
-				</div>
-			{{/if}}
-			
-			
-			<div class="form-group">
-				<label>Affiliation</label>
-				<input type="text" class="form-control" placeholder="" name="Affiliation" value="{{ user.Affiliation }}">
-			</div>
-			
-			<div class="form-group">
-				<label>Country</label>
-				<input type="text" class="form-control" placeholder="" name="Country" value="{{ user.Country }}">
-			</div>
-
-	 		<br/>
-			{{#if saveSuccess}}
-				<div class="alert alert-success"><i class="fa fa-warning"></i><strong> Updated!</strong> Your profile info are successful updated.</div>
-			{{/if}}
-			{{#if saveFail}}
-				<div class="alert alert-danger"><i class="fa fa-warning"></i><strong> Oops! </strong>{{ saveFailMessage }}</div>
-			{{/if}}
-			{{#if saveLoading}}
-				<button type="button" class="btn btn-warning submit" disabled="disabled">Submit</button> 
-				<i class="fa fa-spin fa-spinner"></i> Saving...
-			{{else}}
-				<button type="submit" class="btn btn-warning submit">Submit</button>
-			{{/if}}
-		</form>
-	{{/if}}
 	</div>
 </div>

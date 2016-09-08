@@ -311,6 +311,9 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "ArtifactoryDomainExists", Description = "Check if user has Artifactory domain", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool ArtifactoryDomainExists { get; set; }
 
+        [ApiMember (Name = "HasCatalogueIndex", Description = "Check if user has catalogue index", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool HasCatalogueIndex { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
         /// </summary>
@@ -339,6 +342,7 @@ namespace Terradue.Corporate.WebServer {
                 this.HasLdapDomain = entity.HasLdapDomain ();
                 this.ArtifactoryDomainSynced = entity.HasOwnerGroup ();
                 this.ArtifactoryDomainExists = entity.OwnerGroupExists ();
+                this.HasCatalogueIndex = entity.HasCatalogueIndex ();
             }
         }
 

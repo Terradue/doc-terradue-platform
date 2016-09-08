@@ -48,41 +48,25 @@ define([
 				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
-				this.keyData = new can.Observe({});
-				this.accountData = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
+				this.fullUserPromise = ProfileModel.getFullUser(true);
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
 				self.data.attr({loadingLdap: true});
 
-				self.isLoginPromise.then(function(u){
-					ProfileModel.getFullUser(true).then(function(user){
-						self.data.attr({
-							user: user,
-							emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-							showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
-							showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
-							showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-							profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-							emailNotComplete: (user.AccountStatus==1),
-							sshKeyNotComplete: !(user.PublicKey),
-							apiKeyNotComplete: !(user.ApiKey),
-							githubNotComplete: false,
-							userHasCatalogue: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-							userHasStorage: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-							userHasFeatures: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-							loadingLdap: false
-						});
-						self.githubPromise.then(function(githubData){
-							self.githubData = githubData;
-							self.data.attr('githubNotComplete', !githubData.HasSSHKey);
-						});
-					}).fail(function(){
-						self.data.attr('hideMenu', true);
-						// access denied only if you haven't a token
-						if (!self.params.token)
-							self.accessDenied();
+				self.isLoginPromise.then(function(user){
+					self.data.attr({
+						user: user,
+						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
+						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
+						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
+						showCatalogue: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						showStorage: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						showFeatures: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						emailNotComplete: (user.AccountStatus==1)
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -139,10 +123,7 @@ define([
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						nameMissing: !(user.FirstName && user.LastName),
-						usernameNotSet: usernameDefault,
-						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey),
-						apiKeyNotComplete: !(user.ApiKey)
+						usernameNotSet: usernameDefault
 					});
 					self.view({
 						url: 'modules/settings/views/profile.html',
@@ -170,6 +151,7 @@ define([
 
 			account: function(options) {
 				var self = this;
+				self.accountData = new can.Observe({});
 				self.params = Helpers.getUrlParameters();
 				
 				console.log("App.controllers.Settings.account");
@@ -216,43 +198,10 @@ define([
 						self.accessDenied();
 				});
 			},
-			
-			email: function(options) {
-				var self = this;
-				this.profileData = new can.Observe({});
-				this.view({
-					url: 'modules/settings/views/email.html',
-					selector: Config.subContainer,
-					dependency: self.indexDependency(),
-					data: this.profileData,
-					fnLoad: function(){
-						self.initSubmenu('email');
-					}
-				});
-				
-				console.log("App.controllers.Settings.email");
-				this.isLoginPromise.then(function(user){
-					self.profileData.attr({
-						user: user,
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						nameMissing: !(user.FirstName && user.LastName),
-						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey),
-						apiKeyNotComplete: !(user.ApiKey)
-					});
-					if (self.params.token && self.profileData.user.AccountStatus==1)
-						self.manageEmailConfirm(self.params.token);
-					
-				}).fail(function(){
-					if (self.params.token)
-						self.manageEmailConfirm(self.params.token);
-					else
-						self.accessDenied();
-				});
-			},
 
 			github: function(options) {
 				var self = this;
+				self.githubData = new can.Observe({});
 				console.log("App.controllers.Settings.github");
 				self.isLoginPromise.then(function(userData){
 
@@ -265,9 +214,6 @@ define([
 								GithubModel.postSshKey()
 									.then(function(){
 										self.githubData.attr('HasSSHKey', 'true');
-										self.data.attr({
-											githubNotComplete: false
-										});
 									})
 									.fail(function(){
 										bootbox.alert("<i class='fa fa-warning'></i> Cannot post the ssh key.")
@@ -279,6 +225,7 @@ define([
 					}
 
 					self.githubPromise.then(function(){
+						self.githubData.attr('loaded', true);
 						self.view({
 							url: 'modules/settings/views/github.html',
 							selector: Config.subContainer,
@@ -312,12 +259,7 @@ define([
 
 				this.isLoginPromise.then(function(user){
 					self.profileData.attr({
-						user: user,
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						nameMissing: !(user.FirstName && user.LastName),
-						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey),
-						apiKeyNotComplete: !(user.ApiKey)
+						user: user
 					});
 					
 				}).fail(function(){
@@ -327,6 +269,7 @@ define([
 
 			key: function(options) {
 				var self = this;
+				self.keyData = new can.Observe({});
 
 				console.log("App.controllers.Settings.key");
 				
@@ -340,10 +283,11 @@ define([
 					}
 				});
 
-				self.isLoginPromise.then(function(userData){
-					self.keyData.attr(userData.attr());
-					self.keyData.attr('PublicKeyBase64', btoa(userData.PublicKey));
-					self.element.find('.copyPublicKeyBtn').copyableInput(userData.PublicKey, {
+				self.fullUserPromise.then(function(user){
+					self.keyData.attr({user:user});
+					self.keyData.user.attr('PublicKeyBase64', btoa(user.PublicKey));
+					self.keyData.attr('loaded', true);
+					self.element.find('.copyPublicKeyBtn').copyableInput(user.PublicKey, {
 						isButton: true,
 					});
 					self.element.find('.downloadKey').tooltip({
@@ -361,27 +305,23 @@ define([
 
 			apikey: function(options) {
 				var self = this;
-				this.profileData = new can.Observe({});
+				self.apikeyData = new can.Observe({});
 				console.log("App.controllers.Settings.ApiKey");
 				
 				self.view({
 					url: 'modules/settings/views/apikey.html',
 					selector: Config.subContainer,
 					dependency: self.indexDependency(),
-					data: self.profileData,
+					data: self.apikeyData,
 					fnLoad: function(){
 						self.initSubmenu('apikey');
 					}
 				});
 
-				self.isLoginPromise.then(function(user){
-					self.profileData.attr({
+				self.fullUserPromise.then(function(user){
+					self.apikeyData.attr({
 						user: user,
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						nameMissing: !(user.FirstName && user.LastName),
-						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey),
-						apiKeyNotComplete: !(user.ApiKey)
+						loaded: true
 					});
 					self.element.find('.copyApiKeyBtn').copyableInput(user.ApiKey, {
 						isButton: true,
@@ -411,7 +351,7 @@ define([
 
 			catalogue: function(options) {
 				var self = this;
-				this.catalogueData = new can.Observe({loading: true});
+				self.catalogueData = new can.Observe({loading: true});
 				console.log("App.controllers.Settings.catalogue");
 				
 				this.view({
@@ -427,7 +367,7 @@ define([
 			},
 			storage: function(options) {
 				var self = this;
-				this.storageData = new can.Observe({loading: true});
+				self.storageData = new can.Observe({loading: true});
 				console.log("App.controllers.Settings.storage");
 				
 				this.view({
@@ -443,7 +383,7 @@ define([
 			},
 			features: function(options) {
 				var self = this;
-				this.featuresData = new can.Observe({loading: true});
+				self.featuresData = new can.Observe({loading: true});
 				console.log("App.controllers.Settings.features");
 				
 				this.view({

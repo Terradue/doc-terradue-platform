@@ -7,41 +7,33 @@
 		<div class="settings settings-container row fluid">
 			<ul class="nav nav-pills nav-stacked">
 				<li class="profile menu-item"><a href="/portal/settings/profile">
-					{{#if profileNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					About you</a>
 				</li>
 				<li class="account menu-item"><a href="/portal/settings/account"> 
-					{{#if emailNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					Account</a>
 				</li>
 				<li class="apikey menu-item"><a href="/portal/settings/apikey">
-					{{#if apiKeyNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					API key</a>
 				</li>
-				{{#if userHasCatalogue}}
+				{{#if showCatalogue}}
 				<li class="catalogue menu-item"><a href="/portal/settings/catalogue">
-					{{#if catalogueNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					Catalogue</a>
 				</li>
 				{{/if}}
-				{{#if userHasStorage}}
+				{{#if showStorage}}
 				<li class="storage menu-item"><a href="/portal/settings/storage"> 
-					{{#if storageNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					Storage</a>
 				</li>
 				{{/if}}
-				{{#if userHasFeatures}}
+				<!--{{#if showFeatures}}
 				<li class="features menu-item"><a href="/portal/settings/features">
-					{{#if featuresNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					Features</a>
 				</li>
-				{{/if}}
+				{{/if}}-->
 				<li class="key menu-item"><a href="/portal/settings/key">
-					{{#if sshKeyNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					SSH keys</a>
 				</li>
 				<li class="github menu-item"><a href="/portal/settings/github">
-					{{#if githubNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/unless}}
 					Github</a>
 				</li>
 				<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
