@@ -351,9 +351,14 @@ define([
 
 			catalogue: function(options) {
 				var self = this;
-				self.catalogueData = new can.Observe({loading: true});
 				console.log("App.controllers.Settings.catalogue");
 				
+				// load storage list only the first time
+				if (!this.catalogueData){
+					this.catalogueData = new can.Observe({loading: true});
+					this.loadCatalogueIndex();
+				}
+
 				this.view({
 					url: 'modules/settings/views/catalogue.html',
 					selector: Config.subContainer,
@@ -363,13 +368,18 @@ define([
 						self.initSubmenu('catalogue');
 					}
 				});
-				this.loadCatalogueIndex();
 			},
 
 			storage: function(options) {
 				var self = this;
-				self.storageData = new can.Observe({loading: true});
+				
 				console.log("App.controllers.Settings.storage");
+				
+				// load storage list only the first time
+				if (!this.storageData){
+					this.storageData = new can.Observe({loading: true});
+					this.loadStorage();
+				}
 				
 				this.view({
 					url: 'modules/settings/views/storage.html',
@@ -380,7 +390,6 @@ define([
 						self.initSubmenu('storage');
 					}
 				});
-				this.loadStorage();
 			},
 			features: function(options) {
 				var self = this;

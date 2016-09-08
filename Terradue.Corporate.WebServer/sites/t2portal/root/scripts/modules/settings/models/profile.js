@@ -19,7 +19,7 @@ define(['can', 'config'], function(can, Config){
 				data : {Email:email}
 			});
 		},
-
+		
 		getApiKey: function(password){
 			return $.ajax('/'+Config.api+'/user/apikey?format=json&password='+password, {
 				type : "GET",
@@ -27,7 +27,7 @@ define(['can', 'config'], function(can, Config){
 				format : "json"
 			});
 		},
-
+		
 		generateApiKey: function(password){
 			return $.ajax('/'+Config.api+'/user/apikey', {
 				type : "PUT",
