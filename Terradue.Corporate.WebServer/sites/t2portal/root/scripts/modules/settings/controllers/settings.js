@@ -48,6 +48,7 @@ define([
 				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
+				this.githubData = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
 				this.fullUserPromise = ProfileModel.getFullUser(true);
@@ -201,7 +202,6 @@ define([
 
 			github: function(options) {
 				var self = this;
-				self.githubData = new can.Observe({});
 				console.log("App.controllers.Settings.github");
 				self.isLoginPromise.then(function(userData){
 
@@ -365,6 +365,7 @@ define([
 				});
 				this.loadCatalogueIndex();
 			},
+
 			storage: function(options) {
 				var self = this;
 				self.storageData = new can.Observe({loading: true});
@@ -678,26 +679,25 @@ define([
 			
 			//github
 			'.settings-github .usernameForm .submit click': function(){
+				var self= this;
+				self.githubData.attr('loaded', false);
+
 				// get data
 				var githubName = Helpers.retrieveDataFromForm('.modifyGithubName',	'GithubName');
 				
 				// TODO check!
-				this.githubPromise.then(function(githubData){
-					githubData.attr('Name', githubName);
+				this.githubPromise.then(function(data){
 
 					// update
 					new GithubModel({
 							Name: githubName,
-							Id: githubData.attr('Id'),
+							Id: data.attr('Id'),
 						})
 						.save()
 						.done(function(githubDataNew){
-							githubData.attr(githubDataNew.attr(), true);
-							Messenger().post({
-								message: 'Github Username saved.',
-								type: 'success',
-								hideAfter: 4,
-							});
+							self.githubData.attr(githubDataNew.attr(), true);
+							self.githubData.attr('Name', githubName);
+							self.githubData.attr('loaded', true);
 						});
 				});
 				
@@ -862,11 +862,7 @@ define([
 	                            };
 	                            self.keyData.attr("loading",true);
 	                            SafeModel.delete(encodeURIComponent(password)).then(function(safe){
-	                            	self.data.attr({
-										sshKeyNotComplete: true,
-										githubNotComplete: true//we just deleted the keys so it cannot be on github
-									});
-
+	                            	
 									if (self.githubData){
 										self.githubData.attr('HasSSHKey',false);
 										self.githubData.attr('CertPub',null);
@@ -964,20 +960,17 @@ define([
                     	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
                     	return false;
                     };
-                    self.profileData.attr("loading",true);
+                    self.apikeyData.attr("loading",true);
                     ProfileModel.getApiKey(encodeURIComponent(password)).then(function(apikey){
-                    	self.data.attr({
-							apiKeyNotComplete: false
-						});
 
 						self.element.find('.apiKeyVisible').addClass('hidden');
 						self.element.find('.apiKeyHidden').removeClass('hidden');
-						self.profileData.user.attr("ApiKey",apikey.Response);
+						self.apikeyData.user.attr("ApiKey",apikey.Response);
 
 					}).fail(function(){
 						bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
 					}).always(function(){
-						self.profileData.attr("loading",false);
+						self.apikeyData.attr("loading",false);
 					});
 				};
 
@@ -1028,20 +1021,13 @@ define([
 	                            };
 	                            self.profileData.attr("loading",true);
 	                            ProfileModel.revokeApiKey(encodeURIComponent(password)).then(function(){
-	                            	self.data.attr({
-										apiKeyNotComplete: true
-									});
-
-//									var user = self.profileData.attr("user");
-//									user.ApiKey = null;
-//									self.profileData.attr("user",user);
-
-									self.profileData.user.attr("ApiKey",null);
+	                          
+									self.apikeyData.user.attr("ApiKey",null);
 							    	
 								}).fail(function(){
 									bootbox.alert("<i class='fa fa-warning'></i> Error during API key removal.");
 								}).always(function(){
-									self.profileData.attr("loading",false);
+									self.apikeyData.attr("loading",false);
 								});
                         	}
                     	}

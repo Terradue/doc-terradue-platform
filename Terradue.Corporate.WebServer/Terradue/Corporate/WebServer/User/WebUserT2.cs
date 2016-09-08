@@ -140,33 +140,6 @@ namespace Terradue.Corporate.WebServer {
         public string index { get; set; }
     }
 
-    [Route("/user/repository", "GET", Summary = "get user repositories", Notes = "")]
-    public class GetUserRepositories : IReturn<List<string>> {
-        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = false)]
-        public int Id { get; set; }
-    }
-
-    [Route("/user/repository", "POST", Summary = "create repository for user", Notes = "")]
-    public class CreateUserRepository : IReturn<List<string>> {
-        [ApiMember(Name = "repo", Description = "User repo", ParameterType = "query", DataType = "string", IsRequired = false)]
-        public string repo { get; set; }
-
-        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = false)]
-        public int Id { get; set; }
-    }
-
-    [Route("/user/repository/group", "GET", Summary = "get user repositories group", Notes = "")]
-    public class GetUserRepositoriesGroup : IReturn<List<string>> {
-        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = false)]
-        public int Id { get; set; }
-    }
-
-    [Route("/user/repository/group", "POST", Summary = "create repository group for user", Notes = "")]
-    public class CreateUserRepositoryGroup : IReturn<List<string>> {
-        [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = true)]
-        public int Id { get; set; }
-    }
-
     [Route("/user/features", "GET", Summary = "get current user features", Notes = "")]
     public class GetCurrentUserFeatures : IReturn<List<string>> {
     }
