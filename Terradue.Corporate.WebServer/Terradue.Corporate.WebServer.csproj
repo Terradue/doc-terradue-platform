@@ -196,9 +196,6 @@
     <Reference Include="Terradue.OpenSearch">
       <HintPath>..\packages\Terradue.OpenSearch.1.12.12\lib\net40\Terradue.OpenSearch.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.JFrog.Artifactory">
-      <HintPath>..\packages\Terradue.JFrog.Artifactory.1.0.1\lib\net40\Terradue.JFrog.Artifactory.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.Ldap">
       <HintPath>..\packages\Terradue.Ldap.1.0.17\lib\net40\Terradue.Ldap.dll</HintPath>
     </Reference>
@@ -207,6 +204,9 @@
     </Reference>
     <Reference Include="Terradue.Metadata.EarthObservation">
       <HintPath>..\packages\Terradue.Metadata.EarthObservation.1.4.11\lib\net40\Terradue.Metadata.EarthObservation.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.JFrog.Artifactory">
+      <HintPath>..\packages\Terradue.JFrog.Artifactory.1.0.2\lib\net40\Terradue.JFrog.Artifactory.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
