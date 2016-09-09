@@ -12,6 +12,7 @@ using Terradue.Ldap;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text;
+using Terradue.JFrog.Artifactory;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
@@ -1131,11 +1132,12 @@ namespace Terradue.Corporate.Controller {
         /// Gets the user repositories.
         /// </summary>
         /// <returns>The user repositories.</returns>
-        public List<string> GetUserRepositories(){
-            if (this.HasRepository())
-                return new List<string>{ this.Username };
-            else 
-                return new List<string>();
+        public List<RepositoriesSummary> GetUserRepositories(){
+            var result = new List<RepositoriesSummary> ();
+            if (this.HasRepository ())
+                result.Add(JFrogFactory.GetStorageInfo (this.Username));
+            return result;
+            
         }
 
         /// <summary>
@@ -1144,7 +1146,11 @@ namespace Terradue.Corporate.Controller {
         /// <param name="username">Username.</param>
         /// <param name="password">Password.</param>
         public void SyncArtifactory(string username, string password){
-            JFrogFactory.Sync(username, password);
+            try {
+                JFrogFactory.Sync (username, password);
+            }catch(Exception e){
+                log.ErrorFormat (e.Message + " - " + e.StackTrace);
+            }
         }
 
         /// <summary>

@@ -86,6 +86,21 @@ namespace Terradue.Corporate.Controller {
             return true;
         }
 
+        /// <summary>
+        /// Gets the storage info.
+        /// </summary>
+        /// <param name="repo">Repo.</param>
+        public RepositoriesSummary GetStorageInfo (string repo) {
+            if (string.IsNullOrEmpty (repo)) throw new Exception ("Invalid storage name : " + repo);
+            ArtifactoryStorageInfo info = JFrogClient.StorageInfo ();
+            foreach (var storage in info.repositoriesSummaryList) {
+                if (repo.Equals(storage.repoKey)) {
+                    return storage;
+                }
+            }
+            return null;
+        }
+
         #endregion
 
         /***************************************************************************************************************************************/

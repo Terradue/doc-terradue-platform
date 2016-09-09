@@ -36,15 +36,14 @@ namespace Terradue.Corporate.Controller {
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(this.Host + "/" + index + "/description");
             request.Method = "GET";
-            //request.Credentials = new NetworkCredential (username, apikey);
-            String encoded = System.Convert.ToBase64String (System.Text.Encoding.GetEncoding ("ISO-8859-1").GetBytes (username + ":" + apikey));
-            request.Headers.Add ("Authorization", "Basic " + encoded);
+            request.Credentials = new NetworkCredential (username, apikey);
+            request.PreAuthenticate = true;
 
             HttpWebResponse response = null;
             try {
                 response = (HttpWebResponse)request.GetResponse();
             } catch (WebException e) {
-                if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Found) {
+                if ((e.Response != null && ((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Found)) {
                     return true;
                 }
                 return false;

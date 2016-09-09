@@ -1,7 +1,7 @@
 <div class='settings-storage container col-md-9'>
 	<div>
 		<div class='settings settings-title'>Storage Repositories</div>
-		<div class='settings settings-description'>Find below the list of your repositories</div>
+		<div class='settings settings-description'>Your repositories are the place where your publications are stored</div>
 		<div class='settings settings-container'>
 			{{#if loading}}
 				&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Loading...
@@ -11,11 +11,19 @@
 				{{else}}
 					{{#if list}}
 						<div>
-							<ul>
-								{{#each list}}
-									<li>{{.}}</li>
-								{{/each}}
-							</ul>
+							{{#each list}}
+								<div>
+									<div class='settings settings-title'>{{Name}}</div>
+									<div class='settings settings-container'>
+										<b>Type:</b>&nbsp;{{Type}}<br/>
+										<b>Package Type:</b>&nbsp;{{Type}}<br/>
+										<b>Folders:</b>&nbsp;{{FoldersCount}}<br/>
+										<b>Files:</b>&nbsp;{{FilesCount}}<br/>
+										<b>Used Space:</b>&nbsp;{{UsedSpace}}<br/>
+										<b>Percentage:</b>&nbsp;{{Percentage}}<br/>
+									</div>
+								</div>
+							{{/each}}
 						</div>
 						<br/>
 					{{else}}
