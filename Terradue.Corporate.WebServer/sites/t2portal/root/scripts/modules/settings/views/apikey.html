@@ -9,11 +9,11 @@
 						<input class="apiKeyHidden" type="password" value="{{ user.ApiKey }}" size="50" readonly>
 						<input class="apiKeyVisible hidden" type="text" value="{{ user.ApiKey }}" size="50" readonly>
 						<br/><br/>
-						<button class="btn btn-small btn-primary showApiKeyBtn apiKeyHidden" title="Show API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye"></i></button>
-						<button class="btn btn-small btn-primary hideApiKeyBtn apiKeyVisible hidden" title="Hide API Key" data-public-key="{{ user.ApiKey }}"><i class="fa fa-eye-slash"></i></button>
-						&nbsp;&nbsp;<button class="btn btn-small btn-primary copyApiKeyBtn" title="Copy on clipboard" data-public-key="{{ user.ApiKey }}"><i class="fa fa-clipboard"></i></button>
-						&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn" title="Revoke API Key"><i class="fa fa-trash"></i></button>
-						&nbsp;&nbsp;<button class="btn btn-small btn-warning generateApiKey" title="Regenerate API Key"><i class="fa fa-recycle"></i></button>
+						<button class="btn btn-small btn-primary showApiKeyBtn apiKeyHidden" title="Show API Key" data-public-key="{{ user.ApiKey }}" t2-helpers="tooltip"><i class="fa fa-eye"></i></button>
+						<button class="btn btn-small btn-primary hideApiKeyBtn apiKeyVisible hidden" title="Hide API Key" data-public-key="{{ user.ApiKey }}" t2-helpers="tooltip"><i class="fa fa-eye-slash"></i></button>
+						&nbsp;&nbsp;<button class="btn btn-small btn-primary copyApiKeyBtn" title="Copy on clipboard" data-copyable-value="{{ user.ApiKey }}" t2-helpers="copyable-input"><i class="fa fa-clipboard"></i></button>
+						&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn" title="Revoke API Key" t2-helpers="tooltip"><i class="fa fa-trash"></i></button>
+						&nbsp;&nbsp;<button class="btn btn-small btn-warning generateApiKey" title="Regenerate API Key" t2-helpers="tooltip"><i class="fa fa-recycle"></i></button>
 					</div>
 					<br/>
 				{{else}}

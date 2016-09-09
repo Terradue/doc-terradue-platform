@@ -287,19 +287,19 @@ define([
 					self.keyData.attr({user:user});
 					self.keyData.user.attr('PublicKeyBase64', btoa(user.PublicKey));
 					self.keyData.attr('loaded', true);
-					self.element.find('.copyPublicKeyBtn').copyableInput(user.PublicKey, {
-						isButton: true,
-					});
-					self.element.find('.downloadKey').tooltip({
-						trigger: 'hover',
-						title: 'Download',
-						placement:'bottom'
-					});
-					self.element.find('.deletePublicKeyBtn').tooltip({
-						trigger: 'hover',
-						title: 'Delete',
-						placement:'bottom'
-					});
+//					self.element.find('.copyPublicKeyBtn').copyableInput(user.PublicKey, {
+//						isButton: true,
+//					});
+//					self.element.find('.downloadKey').tooltip({
+//						trigger: 'hover',
+//						title: 'Download',
+//						placement:'bottom'
+//					});
+//					self.element.find('.deletePublicKeyBtn').tooltip({
+//						trigger: 'hover',
+//						title: 'Delete',
+//						placement:'bottom'
+//					});
 				});
 			},
 
@@ -323,29 +323,29 @@ define([
 						user: user,
 						loaded: true
 					});
-					self.element.find('.copyApiKeyBtn').copyableInput(user.ApiKey, {
-						isButton: true,
-					});
-					self.element.find('.showApiKeyBtn').tooltip({
-						trigger: 'hover',
-						title: 'Show API Key',
-						placement:'bottom'
-					});
-					self.element.find('.hideApiKeyBtn').tooltip({
-						trigger: 'hover',
-						title: 'Hide API Key',
-						placement:'bottom'
-					});
-					self.element.find('.revokeApiKeyBtn').tooltip({
-						trigger: 'hover',
-						title: 'Revoke API Key',
-						placement:'bottom'
-					});
-					self.element.find('.generateApiKeyBtn').tooltip({
-						trigger: 'hover',
-						title: 'Regenerate API Key',
-						placement:'bottom'
-					});
+//					self.element.find('.copyApiKeyBtn').copyableInput(user.ApiKey, {
+//						isButton: true,
+//					});
+//					self.element.find('.showApiKeyBtn').tooltip({
+//						trigger: 'hover',
+//						title: 'Show API Key',
+//						placement:'bottom'
+//					});
+//					self.element.find('.hideApiKeyBtn').tooltip({
+//						trigger: 'hover',
+//						title: 'Hide API Key',
+//						placement:'bottom'
+//					});
+//					self.element.find('.revokeApiKeyBtn').tooltip({
+//						trigger: 'hover',
+//						title: 'Revoke API Key',
+//						placement:'bottom'
+//					});
+//					self.element.find('.generateApiKeyBtn').tooltip({
+//						trigger: 'hover',
+//						title: 'Regenerate API Key',
+//						placement:'bottom'
+//					});
 				});
 			},
 
@@ -783,18 +783,18 @@ define([
 					});
 					
 					// setup buttons
-					self.element.find('.copyPublicKeyBtn').copyableInput(safe.PublicKey, {
-						isButton: true,
-					});
-					
-					self.element.find('.copyPrivateKeyBtn').copyableInput(safe.PrivateKey, {
-						isButton: true,
-					});
-					self.element.find('.downloadKey').tooltip({
-						trigger: 'hover',
-						title: 'Download',
-						placement:'bottom'
-					});
+//					self.element.find('.copyPublicKeyBtn').copyableInput(safe.PublicKey, {
+//						isButton: true,
+//					});
+//					
+//					self.element.find('.copyPrivateKeyBtn').copyableInput(safe.PrivateKey, {
+//						isButton: true,
+//					});
+//					self.element.find('.downloadKey').tooltip({
+//						trigger: 'hover',
+//						title: 'Download',
+//						placement:'bottom'
+//					});
 				};
 				
 				var submitFormSafeCallback = function(){
