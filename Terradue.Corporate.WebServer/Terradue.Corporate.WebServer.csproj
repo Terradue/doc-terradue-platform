@@ -244,6 +244,8 @@
     <Compile Include="Terradue\Corporate\Controller\Storage\ArtifactoryFactory.cs" />
     <Compile Include="Terradue\Corporate\Controller\Features\GeoServerFactory.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Activity\Logs.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Storage\Storage.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Storage\WebStorage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -257,6 +259,7 @@
     <Folder Include="Terradue\Corporate\Controller\Storage\" />
     <Folder Include="Terradue\Corporate\Controller\Features\" />
     <Folder Include="Terradue\Corporate\WebServer\Activity\" />
+    <Folder Include="Terradue\Corporate\WebServer\Catalogue\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

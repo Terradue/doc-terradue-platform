@@ -63,9 +63,9 @@ define([
 						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
 						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
 						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-						showCatalogue: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-						showStorage: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-						showFeatures: user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						showCatalogue: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						showStorage: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						showFeatures: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						emailNotComplete: (user.AccountStatus==1)
 					});
