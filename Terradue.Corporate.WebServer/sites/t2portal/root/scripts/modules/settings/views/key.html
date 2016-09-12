@@ -11,8 +11,22 @@
 						<div class="alert alert-danger">
 							<b><i class="fa fa-warning"></i> We don't store your private key. You must save it on your computer.</b>
 						</div>
-						<button class="btn btn-small btn-primary copyPrivateKeyBtn" title="Copy on clipboard" data-public-key="{{ user.PrivateKey }}"><i class="fa fa-clipboard"></i></button>
-					&nbsp;&nbsp;<a class="btn btn-small btn-primary downloadKey" download="id_rsa" href="data:application/octet-stream;charset=utf-8;base64,{{ user.PrivateKeyBase64 }}"><i class="fa fa-download"></i></a>
+						<button 
+							class="btn btn-small btn-primary copyPrivateKeyBtn"
+							t2-helpers="copyable-input"  
+							title="Copy on clipboard" 
+							data-public-key="{{ user.PrivateKey }}">
+								<i class="fa fa-clipboard"></i>
+						</button>
+					&nbsp;&nbsp;
+					<a 
+						class="btn btn-small btn-primary downloadKey"
+						download="id_rsa" 
+						t2-helpers="tooltip" 
+						title="Download" 
+						href="data:application/octet-stream;charset=utf-8;base64,{{ user.PrivateKeyBase64 }}">
+							<i class="fa fa-download"></i>
+					</a>
 					</div>
 					<hr/>
 				{{/if}}
@@ -20,9 +34,26 @@
 					<div class="safePanel pubKey">
 						<div class="key-title">Public SSH key</div>
 						<pre class="pubKey">{{ user.PublicKey }}</pre>
-						<button class="btn btn-small btn-primary copyPublicKeyBtn"><i class="fa fa-clipboard"></i></button>
-						&nbsp;&nbsp;<a class="btn btn-small btn-primary downloadKey" download="id_rsa.pub" href="data:application/octet-stream;charset=utf-8;base64,{{ user.PublicKeyBase64 }}"><i class="fa fa-download"></i></a>
-						&nbsp;&nbsp;<button class="btn btn-small btn-danger deletePublicKeyBtn"><i class="fa fa-trash"></i></button>
+						<button 
+							class="btn btn-small btn-primary copyPublicKeyBtn"
+							t2-helpers="copyable-input">
+								<i class="fa fa-clipboard"></i>
+						</button>
+						&nbsp;&nbsp;
+						<a 
+							class="btn btn-small btn-primary downloadKey" 
+							download="id_rsa.pub" 
+							t2-helpers="tooltip" 
+							title="download" 
+							href="data:application/octet-stream;charset=utf-8;base64,{{ user.PublicKeyBase64 }}"><i class="fa fa-download"></i></a>
+						&nbsp;&nbsp;
+						<button 
+							class="btn btn-small btn-danger deletePublicKeyBtn"
+							t2-helpers="tooltip" 
+							title="delete" 
+							>
+								<i class="fa fa-trash"></i>
+						</button>
 					</div>
 					<hr/>
 				{{/if}}
