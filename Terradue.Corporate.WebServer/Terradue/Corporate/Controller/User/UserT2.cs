@@ -623,7 +623,6 @@ namespace Terradue.Corporate.Controller {
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
                 ldapusr.Password = GenerateSaltedSHA1(password);
-                this.GenerateApiKey(password);
                 ldapusr.ApiKey = this.ApiKey;
 
                 //login as ldap admin to have creation rights

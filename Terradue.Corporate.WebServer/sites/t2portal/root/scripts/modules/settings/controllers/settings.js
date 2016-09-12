@@ -57,6 +57,7 @@ define([
 				self.data.attr({loadingLdap: true});
 
 				self.isLoginPromise.then(function(user){
+					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					self.data.attr({
 						user: user,
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
@@ -67,7 +68,8 @@ define([
 						showStorage: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
 						showFeatures: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						emailNotComplete: (user.AccountStatus==1)
+						emailNotComplete: (user.AccountStatus==1),
+						usernameNotSet: usernameDefault
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -154,16 +156,18 @@ define([
 				var self = this;
 				self.accountData = new can.Observe({});
 				self.params = Helpers.getUrlParameters();
+
 				
 				console.log("App.controllers.Settings.account");
 				// first wait user is ready
 				this.isLoginPromise.then(function(user){
-
+				var usernameDefault = (user.Username == null || user.Username == user.Email);
 					self.accountData.attr({
 						user: user,
 						usernameSet: !(user.Email == user.Username),
 						emailNotComplete: (user.AccountStatus==1),
-						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok'
+						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+						usernameNotSet: usernameDefault
 					});
 
 					self.view({
@@ -544,8 +548,10 @@ define([
 							usernameNotSet: createdUser.Username == createdUser.Email,
 							nameMissing: !(createdUser.FirstName && createdUser.LastName),
 						});
+						var usernameDefault = (createdUser.Username == null || createdUser.Username == createdUser.Email);
 						self.data.attr({
-							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country)
+							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country),
+							usernameNotSet: usernameDefault
 						});
 
 					}).fail(function(xhr){
