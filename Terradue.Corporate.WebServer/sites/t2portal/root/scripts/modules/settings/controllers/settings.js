@@ -689,11 +689,11 @@ define([
 			//github
 			'.settings-github .usernameForm .submit click': function(){
 				var self= this;
-				self.githubData.attr('loaded', false);
-
+				
 				// get data
 				var githubName = Helpers.retrieveDataFromForm('.modifyGithubName',	'GithubName');
 				
+				this.githubData.attr('loaded', false);
 				// TODO check!
 				this.githubPromise.then(function(data){
 
