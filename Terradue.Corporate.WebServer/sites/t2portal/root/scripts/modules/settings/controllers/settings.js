@@ -49,6 +49,7 @@ define([
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
 				this.githubData = new can.Observe({});
+				this.keyData = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
 				this.fullUserPromise = ProfileModel.getFullUser(true);
@@ -273,7 +274,6 @@ define([
 
 			key: function(options) {
 				var self = this;
-				self.keyData = new can.Observe({});
 
 				console.log("App.controllers.Settings.key");
 				
@@ -291,19 +291,6 @@ define([
 					self.keyData.attr({user:user});
 					self.keyData.user.attr('PublicKeyBase64', btoa(user.PublicKey));
 					self.keyData.attr('loaded', true);
-//					self.element.find('.copyPublicKeyBtn').copyableInput(user.PublicKey, {
-//						isButton: true,
-//					});
-//					self.element.find('.downloadKey').tooltip({
-//						trigger: 'hover',
-//						title: 'Download',
-//						placement:'bottom'
-//					});
-//					self.element.find('.deletePublicKeyBtn').tooltip({
-//						trigger: 'hover',
-//						title: 'Delete',
-//						placement:'bottom'
-//					});
 				});
 			},
 
@@ -327,29 +314,6 @@ define([
 						user: user,
 						loaded: true
 					});
-//					self.element.find('.copyApiKeyBtn').copyableInput(user.ApiKey, {
-//						isButton: true,
-//					});
-//					self.element.find('.showApiKeyBtn').tooltip({
-//						trigger: 'hover',
-//						title: 'Show API Key',
-//						placement:'bottom'
-//					});
-//					self.element.find('.hideApiKeyBtn').tooltip({
-//						trigger: 'hover',
-//						title: 'Hide API Key',
-//						placement:'bottom'
-//					});
-//					self.element.find('.revokeApiKeyBtn').tooltip({
-//						trigger: 'hover',
-//						title: 'Revoke API Key',
-//						placement:'bottom'
-//					});
-//					self.element.find('.generateApiKeyBtn').tooltip({
-//						trigger: 'hover',
-//						title: 'Regenerate API Key',
-//						placement:'bottom'
-//					});
 				});
 			},
 
@@ -771,7 +735,7 @@ define([
 				var createSafeCallback = function(safe){
 					
 					// setup keyData
-					self.keyData.attr({
+					self.keyData.user.attr({
 						PublicKey: safe.PublicKey,
 						PrivateKey: safe.PrivateKey,
 						PublicKeyBase64: btoa(safe.PublicKey),
@@ -828,7 +792,7 @@ define([
 					+ "</div>";
 
 				var title = "This action requires your password.";
-				if (this.keyData.PublicKey)
+				if (self.keyData.user.attr('PublicKey'))
 					title += "<br/><small><i>Please note that this will overwrite your current SSH key pair.</i></small>";
 				$dialog = bootbox.dialog({
 					title: title,
@@ -862,7 +826,34 @@ define([
 							+ "</div>"
 							+ "</form>"
 							+ "</div>";
-				bootbox.dialog({
+				var submitCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    self.keyData.attr("loading",true);
+                    SafeModel.delete(encodeURIComponent(password)).then(function(safe){
+                    	
+						if (self.githubData){
+							self.githubData.attr('HasSSHKey',false);
+							self.githubData.attr('CertPub',null);
+						}
+
+						if(self.keyData){
+				    		self.keyData.attr("PublicKey",null);
+				    		self.keyData.attr("PrivateKey",null);
+				    		self.keyData.attr("PublicKeyBase64",null);
+				    		self.keyData.attr("PrivateKeyBase64",null);
+				    	}
+					}).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during ssh keys delete.");
+					}).always(function(){
+						self.keyData.attr("loading",false);
+					});
+				};
+
+				var dialog=bootbox.dialog({
 					title: title,
 					message: message,
 					buttons: {
@@ -870,30 +861,7 @@ define([
 	                        label: "OK",
 	                        className: "btn-default",
 	                        callback: function (a,b,c) {
-	                            var password = $('#safePassword').val();
-	                            if (password==''){
-	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
-	                            	return false;
-	                            };
-	                            self.keyData.attr("loading",true);
-	                            SafeModel.delete(encodeURIComponent(password)).then(function(safe){
-	                            	
-									if (self.githubData){
-										self.githubData.attr('HasSSHKey',false);
-										self.githubData.attr('CertPub',null);
-									}
-
-									if(self.keyData){
-							    		self.keyData.attr("PublicKey",null);
-							    		self.keyData.attr("PrivateKey",null);
-							    		self.keyData.attr("PublicKeyBase64",null);
-							    		self.keyData.attr("PrivateKeyBase64",null);
-							    	}
-								}).fail(function(){
-									bootbox.alert("<i class='fa fa-warning'></i> Error during ssh keys delete.");
-								}).always(function(){
-									self.keyData.attr("loading",false);
-								});
+	                        	submitCallback();
                         	}
                     	}
                     }
@@ -916,14 +884,35 @@ define([
 				var self = this;
 				var title = "This action requires your password.";
 				var message = "<div class='container-fluid'>"
-							+ "<form class='generateAPIkeyForm'>"
 							+ "<div class='form-group'>" 
 							+ "<label for='password'>Password</label>"
 							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
 							+ "</div>"
-							+ "</form>"
 							+ "</div>";
-				bootbox.dialog({
+				var submitCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    self.profileData.attr("loading",true);
+                    ProfileModel.generateApiKey(password).then(function(apikey){
+                    	self.data.attr({
+							apiKeyNotComplete: false
+						});
+
+						self.element.find('.apiKeyVisible').addClass('hidden');
+						self.element.find('.apiKeyHidden').removeClass('hidden');
+						self.profileData.user.attr("ApiKey",apikey.Response);
+
+					}).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
+					}).always(function(){
+						self.profileData.attr("loading",false);
+					});
+				};
+
+				var dialog=bootbox.dialog({
 					title: title,
 					message: message,
 					buttons: {
@@ -931,42 +920,22 @@ define([
 	                        label: "OK",
 	                        className: "btn-default",
 	                        callback: function (a,b,c) {
-	                            var password = $('#safePassword').val();
-	                            if (password==''){
-	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
-	                            	return false;
-	                            };
-	                            self.profileData.attr("loading",true);
-	                            ProfileModel.generateApiKey(password).then(function(apikey){
-	                            	self.data.attr({
-										apiKeyNotComplete: false
-									});
-
-									self.element.find('.apiKeyVisible').addClass('hidden');
-									self.element.find('.apiKeyHidden').removeClass('hidden');
-									self.profileData.user.attr("ApiKey",apikey.Response);
-
-								}).fail(function(){
-									bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
-								}).always(function(){
-									self.profileData.attr("loading",false);
-								});
+	                        	submitCallback();
                         	}
                     	}
                     }
 				});
+
 			},
 
 			'.settings-apikey .getApiKey click': function(){
 				var self = this;
 				var title = "This action requires your password.";
 				var message = "<div class='container-fluid'>"
-							//+ "<form class='generateAPIkeyForm'>"
 							+ "<div class='form-group'>" 
 							+ "<label for='password'>Password</label>"
 							+ "<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
 							+ "</div>"
-							//+ "</form>"
 							+ "</div>";
 
 				var submitCallback = function(){
@@ -1021,7 +990,26 @@ define([
 							+ "</div>"
 							+ "</form>"
 							+ "</div>";
-				bootbox.dialog({
+
+				var submitCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    self.profileData.attr("loading",true);
+                    ProfileModel.revokeApiKey(encodeURIComponent(password)).then(function(){
+                  
+						self.apikeyData.user.attr("ApiKey",null);
+				    	
+					}).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during API key removal.");
+					}).always(function(){
+						self.apikeyData.attr("loading",false);
+					});
+				};
+
+				var dialog=bootbox.dialog({
 					title: title,
 					message: message,
 					buttons: {
@@ -1029,25 +1017,12 @@ define([
 	                        label: "OK",
 	                        className: "btn-default",
 	                        callback: function (a,b,c) {
-	                            var password = $('#safePassword').val();
-	                            if (password==''){
-	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
-	                            	return false;
-	                            };
-	                            self.profileData.attr("loading",true);
-	                            ProfileModel.revokeApiKey(encodeURIComponent(password)).then(function(){
-	                          
-									self.apikeyData.user.attr("ApiKey",null);
-							    	
-								}).fail(function(){
-									bootbox.alert("<i class='fa fa-warning'></i> Error during API key removal.");
-								}).always(function(){
-									self.apikeyData.attr("loading",false);
-								});
+	                        	submitCallback();
                         	}
                     	}
                     }
 				});
+
 			},
 			
 			/* catalogue */
