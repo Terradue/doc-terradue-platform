@@ -439,8 +439,6 @@ namespace Terradue.Corporate.WebServer {
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
 
                 UserT2 user = UserT2.FromId(context, request.Id);
-                if(user.GetCloudUser() != null) user.DeleteCloudAccount();
-                if(ldapfactory.UserExists(user.Username)) user.DeleteLdapAccount();
                 user.Delete();
 
                 context.Close();
@@ -820,6 +818,26 @@ namespace Terradue.Corporate.WebServer {
                 throw e;
             }
             return result;
+        }
+
+        public object Post (CreateLdapDomain request)
+        {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext (PagePrivileges.AdminOnly);
+            string result;
+            try {
+                context.Open ();
+                UserT2 user = UserT2.FromId (context, request.Id);
+                log.InfoFormat ("Create LDAP domain for user {0}", user.Username);
+
+                if (!user.HasLdapDomain ()) user.CreateLdapDomain ();
+
+                context.Close ();
+            } catch (Exception e) {
+                log.ErrorFormat ("Error during ldap domain creation - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return new WebResponseBool (true);
         }
 
         public void ValidateCaptcha(string secret, string response){

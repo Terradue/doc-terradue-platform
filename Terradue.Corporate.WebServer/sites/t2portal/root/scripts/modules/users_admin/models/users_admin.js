@@ -8,13 +8,16 @@ define(['can', 'config'], function(can, Config){
 		update: 'PUT /'+Config.api+'/user',
 		destroy: 'DELETE /'+Config.api+'/user/{id}',
 
+		createLdapDomain: function(data){
+			return $.post('/'+Config.api+'/user/ldap/domain', data);
+		},
+
 		createArtifactoryDomain: function(data){
 			return $.post('/'+Config.api+'/user/repository/group', data);
-//			return $.ajax('/'+Config.api+'/user/repository/group', {
-//				type : "POST",
-//				dataType : "json",
-//				data : {Id:id}
-//			});
+		},
+
+		createCatalogueIndex: function(){
+			return $.post('/'+Config.api+'/user/catalogue/index?format=json', {});
 		},
 
 		getRepositories: function(id){

@@ -315,6 +315,26 @@ namespace Terradue.Corporate.Controller {
             return context.GetQueryBooleanValue(String.Format("SELECT username IS NOT NULL FROM usr_cloud WHERE id={0};", this.Id));
         }
 
+        public override void Delete (){
+            //delete user on cloud
+            if (GetCloudUser () != null) DeleteCloudAccount ();
+
+            //delete user catalogue index
+            if (HasCatalogueIndex ()) {
+                if (string.IsNullOrEmpty (ApiKey)) LoadApiKey ();
+                CatFactory.DeleteIndex (this.Username, this.Username, this.ApiKey);
+            }
+
+            //delete user on Artifactory
+            if (HasRepository ()) JFrogFactory.DeleteUser (this.Username);
+
+            //delete user on LDAP
+            if (LdapFactory.UserExists (Username)) DeleteLdapAccount ();
+
+            //delete user on DB
+            base.Delete ();
+        }
+
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
@@ -339,9 +359,9 @@ namespace Terradue.Corporate.Controller {
                 case Plan.SCALER:
                 case Plan.PREMIUM:
                     if (!HasCloudAccount()) CreateCloudAccount(plan);
-                    if (!HasLdapDomain()) CreateLdapDomain();
-                    if (!HasCatalogueIndex()) CreateCatalogueIndex();
-                    if (!HasRepository()) CreateRepository();
+                    //if (!HasLdapDomain()) CreateLdapDomain();
+                    //if (!HasCatalogueIndex()) CreateCatalogueIndex();
+                    //if (!HasRepository()) CreateRepository();
                     break;
                 default:
                     break;

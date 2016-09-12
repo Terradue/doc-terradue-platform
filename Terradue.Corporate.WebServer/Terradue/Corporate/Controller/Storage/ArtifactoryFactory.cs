@@ -48,6 +48,17 @@ namespace Terradue.Corporate.Controller {
             return JFrogClient.GetUser(username);
         }
 
+        /// <summary>
+        /// Deletes the user.
+        /// </summary>
+        /// <param name="username">Username.</param>
+        public void DeleteUser (string username) {
+            ArtifactoryUser user = new ArtifactoryUser { 
+                name = username
+            };
+            JFrogClient.DeleteUser (user);
+        }
+
         #endregion
 
         #region Repository

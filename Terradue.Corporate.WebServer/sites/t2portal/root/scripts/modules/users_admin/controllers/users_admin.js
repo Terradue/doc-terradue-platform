@@ -42,7 +42,7 @@ define([
 					self.userData.user.attr('repositories', repositories);	
 				}).fail(function(){
 					this.errorView({}, 'Unable to get user repositories', 'The user doesn\'t exist or you can\'t access this page.', true);
-				});	
+				});
 			}).fail(function(){
 				this.errorView({}, 'Unable to get user info', 'The user doesn\'t exist or you can\'t access this page.', true);
 			});
@@ -79,12 +79,12 @@ define([
 			
 			if (plan && userid){
 				// save plan
-				this.userData.attr({
-					planUpgradedLoading: true, planUpgradedSuccessName:null, planUpgradedFailMessage:null
-				});
 
 				bootbox.confirm('Upgrade user <b>'+self.userData.attr('user').Username+'</b> to plan <b>'+plan.Key+'</b>.<br/>Are you sure?', function(confirmed){
-					if (confirmed)
+					if (confirmed){
+						self.userData.attr({
+							planUpgradedLoading: true, planUpgradedSuccessName:null, planUpgradedFailMessage:null
+						});
 						PlansModel.upgrade({
 		 					Id: userid,
 		 					Plan: plan.Key,
@@ -95,6 +95,57 @@ define([
 		 					errXhr=xhr; // for debug
 		 					self.userData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
 		 				});
+		 			}
+		 		});
+			}
+		},
+
+		'.createLdapDomain click': function(data){
+			var self = this,
+				userid = data.data('user');
+			
+			if (userid){
+
+				this.userData.attr({
+					domainLoading: true
+				});
+				
+				bootbox.confirm('Create Ldap domain for user <b>'+self.userData.attr('user').Username+'</b>.<br/>Are you sure?', function(confirmed){
+					if (confirmed)
+						UsersAdminModel.createLdapDomain({
+		 					Id: userid
+		 				}).then(function(){
+							self.userData.user.attr('HasLdapDomain', true);
+							self.userData.user.attr('domainLoading', false);
+		 				}).fail(function(xhr){
+		 					errXhr=xhr; // for debug
+		 					self.userData.user.attr('domainLoading', false);
+		 					self.userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+		 				});
+		 		});
+			}
+		},
+
+		'.createCatalogueIndex click': function(data){
+			var self = this,
+				userid = data.data('user');
+			
+			if (userid){
+
+				bootbox.confirm('Create catalogue index for user <b>'+self.userData.attr('user').Username+'</b>.<br/>Are you sure?', function(confirmed){
+					if (confirmed){
+						self.userData.attr('catalogueLoading', true);
+						UsersAdminModel.createCatalogueIndex({
+		 					Id: userid
+		 				}).then(function(){
+							self.userData.user.attr('HasCatalogueIndex', true);
+							self.userData.attr('catalogueLoading', false);
+		 				}).fail(function(xhr){
+		 					errXhr=xhr; // for debug
+		 					self.userData.attr('catalogueLoading', false);
+		 					self.userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+		 				});
+		 			}
 		 		});
 			}
 		},

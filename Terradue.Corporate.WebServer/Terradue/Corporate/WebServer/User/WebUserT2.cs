@@ -166,9 +166,16 @@ namespace Terradue.Corporate.WebServer {
         public string username { get; set; }
     }
 
-    [Route("/user/ldap/domains", "GET", Summary = "GET list all domains of the user", Notes = "")]
+    [Route("/user/ldap/domain", "GET", Summary = "GET list all domains of the user", Notes = "")]
     public class GetLdapDomains : IReturn<WebUserT2> {
         [ApiMember(Name = "id", Description = "id", ParameterType = "query", DataType = "int", IsRequired = true)]
+        public int Id { get; set; }
+    }
+
+    [Route ("/user/ldap/domain", "POST", Summary = "GET list all domains of the user", Notes = "")]
+    public class CreateLdapDomain : IReturn<WebUserT2>
+    {
+        [ApiMember (Name = "id", Description = "id of the user", ParameterType = "query", DataType = "int", IsRequired = true)]
         public int Id { get; set; }
     }
 
