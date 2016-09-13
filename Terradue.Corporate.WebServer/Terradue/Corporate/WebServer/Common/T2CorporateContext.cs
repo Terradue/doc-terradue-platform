@@ -62,6 +62,28 @@ namespace Terradue.Corporate.WebServer.Common {
             return base.CheckCanStartSession(user, throwOnError);
         }
 
+        public override void LogError (object reporter, string message)
+        {
+            PrepareLogger (reporter);
+            base.LogError (reporter, message);
+        }
+
+        public override void LogDebug (object reporter, string message)
+        {
+            PrepareLogger (reporter);
+            base.LogDebug (reporter, message);
+        }
+
+        public override void LogInfo (object reporter, string message)
+        {
+            PrepareLogger (reporter);
+            base.LogInfo (reporter, message);
+        }
+
+        private void PrepareLogger (object reporter)
+        {
+            log4net.GlobalContext.Properties ["loguser"] = this.Username != null ? this.Username : "Not logged user";
+        }
     }
 }
 

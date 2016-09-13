@@ -113,6 +113,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/{{Id}} GET Id='{0}'", request.Id));
                 UserT2 user = UserT2.FromId(context, request.Id);
                 result = new WebUserT2(user);
 
@@ -130,6 +131,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/{{Id}}/admin GET Id='{0}'", request.Id));
                 UserT2 user = UserT2.FromId(context, request.Id);
                 result = new WebUserT2(user, true, true);
 
@@ -147,6 +149,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/{{Username}} GET Username='{0}'", request.Username));
                 UserT2 user = UserT2.FromUsername(context, request.Username);
                 result = new WebUserT2(user);
 
@@ -170,12 +173,13 @@ namespace Terradue.Corporate.WebServer {
             context.ConsoleDebug = true;
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/current GET"));
                 UserT2 user = UserT2.FromId(context, context.UserId);
-                user.LoadApiKey ();
-                log.InfoFormat("Get current user {0}",user.Username);
+                context.LogDebug (this, string.Format("User {0} loaded on db", user.Username));
                 result = new WebUserT2(user, request.ldap);
                 context.Close();
             } catch (Exception e) {
+                context.LogError (this, e.Message);
                 context.Close();
                 throw e;
             }
@@ -192,7 +196,7 @@ namespace Terradue.Corporate.WebServer {
             var result = new List<WebUserT2>();
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/user GET"));
                 EntityList<UserT2> users = new EntityList<UserT2>(context);
                 users.Load();
                 foreach(UserT2 u in users) result.Add(new WebUserT2(u));
@@ -215,6 +219,7 @@ namespace Terradue.Corporate.WebServer {
             WebUserT2 result;
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/{{Id}} PUT Id='{0}'", request.Id));
                 if(request.Id==0) throw new Exception("Id = 0");
 				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
                 bool newusername = (user.Username == user.Email);
@@ -243,46 +248,12 @@ namespace Terradue.Corporate.WebServer {
         /// Post the specified request.
         /// </summary>
         /// <param name="request">Request.</param>
-//        public object Post(CreateUserT2 request)
-//        {
-//            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
-//            WebUserT2 result;
-//            try{
-//                context.Open();
-//				UserT2 user = (request.Id == 0 ? null : UserT2.FromId(context, request.Id));
-//				user = request.ToEntity(context, user);
-//                if(request.Id != 0 && context.UserLevel == UserLevel.Administrator){
-//                    user.AccountStatus = AccountStatusType.Enabled;
-//                }
-//                else{
-//                    user.AccountStatus = AccountStatusType.PendingActivation;
-//                }
-//
-//                user.IsNormalAccount = true;
-//                user.Level = UserLevel.User;
-//
-//                user.Store();
-//                user.StorePassword(request.Password);
-//
-//                result = new WebUserT2(user);
-//                context.Close ();
-//            }catch(Exception e) {
-//                context.Close ();
-//                throw e;
-//            }
-//            return result;
-//        }
-
-        /// <summary>
-        /// Post the specified request.
-        /// </summary>
-        /// <param name="request">Request.</param>
         public object Post(RegisterUserT2 request)
         {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
-            WebUserT2 result;
             try{
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/registration POST Email='{0}'", request.Email));
 
                 //validate catcha
                 ValidateCaptcha(context.GetConfigValue("reCaptcha-secret"), request.captchaValue);
@@ -398,6 +369,7 @@ namespace Terradue.Corporate.WebServer {
             WebUserT2 result;
             try{
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/upgrade POST Id='{0}'", request.Id));
                 if(request.Id == 0) throw new Exception("Wrong user Id");
 
                 UserT2 user = UserT2.FromId(context, request.Id);
@@ -436,6 +408,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/{{Id}} DELETE Id='{0}'", request.Id));
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
 
                 UserT2 user = UserT2.FromId(context, request.Id);
@@ -453,7 +426,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/user/passwordreset POST Username='{0}'", request.Username));
                 UserT2 user = UserT2.FromUsernameOrEmail(context, request.Username);
                 if (user == null) return new WebResponseBool(true);
 
@@ -482,7 +455,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/user/passwordreset PUT Username='{0}', Token='{1}'", request.Username, request.Token));
                 if(string.IsNullOrEmpty(request.Password)) throw new Exception("Password is empty");
 
                 UserT2 user = UserT2.FromUsernameOrEmail(context, request.Username);
@@ -507,7 +480,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/user/password PUT"));
                 if(string.IsNullOrEmpty(request.NewPassword)) throw new Exception("Password is empty");
 
                 UserT2 user = UserT2.FromId(context, context.UserId);
@@ -530,7 +503,7 @@ namespace Terradue.Corporate.WebServer {
             WebUserT2 result = null;
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/user/email PUT Email='{0}'", request.Email));
                 UserT2 user = UserT2.FromId(context, context.UserId);
                 user.ValidateNewEmail(request.Email);
                 if(user.Email == request.Email) throw new Exception("You must choose an email different from the current one.");
@@ -565,7 +538,7 @@ namespace Terradue.Corporate.WebServer {
             bool result = true;
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/user/ldap/available GET Username='{0}'", request.username));
                 if(string.IsNullOrEmpty(request.username)) throw new Exception("username is empty");
                 UserT2.ValidateUsername(request.username);
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
@@ -583,7 +556,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try{
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/private/user/info GET Username='{0}',Token='{1}',Request='{2}'", request.username, request.token, request.request));
                 if(string.IsNullOrEmpty(request.request)){
                     return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid request parameter"));
                 }
@@ -654,7 +627,7 @@ namespace Terradue.Corporate.WebServer {
             List<WebUserT2> users = new List<WebUserT2>();
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/user/ldap GET"));
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
                 var ldapusers = ldapfactory.GetUsersFromLdap();
 
@@ -684,6 +657,7 @@ namespace Terradue.Corporate.WebServer {
             string result;
             try{
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/apikey PUT"));
                 UserT2 user = UserT2.FromId(context, context.UserId);
                 log.InfoFormat("Generate API Key for user {0}", user.Username);
 
@@ -729,6 +703,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try{
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/apikey DELETE"));
                 UserT2 user = UserT2.FromId(context, context.UserId);
                 log.InfoFormat("Revoke API Key for user {0}", user.Username);
 
@@ -758,7 +733,7 @@ namespace Terradue.Corporate.WebServer {
             WebResponseString result;
             try{
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/user/apikey GET"));
                 UserT2 user = UserT2.FromId(context, context.UserId);
                 log.InfoFormat("Get API key for user {0}", user.Username);
                 user.LoadApiKey(request.password);
@@ -785,6 +760,7 @@ namespace Terradue.Corporate.WebServer {
             List<string> result = null;
             try{
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/catalogue/index GET"));
                 UserT2 user = UserT2.FromId(context, context.UserId);
                 log.InfoFormat("Get catalogue indexes for user {0}", user.Username);
 
@@ -804,6 +780,7 @@ namespace Terradue.Corporate.WebServer {
             List<string> result = null;
             try{
                 context.Open();
+                context.LogInfo (this, string.Format ("/user/catalogue/index POST Id='{0}'", request.Id));
                 UserT2 user;
                 if(context.UserLevel == UserLevel.Administrator && request.Id != 0)
                     user = UserT2.FromId(context, request.Id);
@@ -830,6 +807,7 @@ namespace Terradue.Corporate.WebServer {
             string result;
             try {
                 context.Open ();
+                context.LogInfo (this, string.Format ("/user/ldap/domain POST Id='{0}'", request.Id));
                 UserT2 user = UserT2.FromId (context, request.Id);
                 log.InfoFormat ("Create LDAP domain for user {0}", user.Username);
 

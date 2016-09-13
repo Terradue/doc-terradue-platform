@@ -123,6 +123,7 @@ namespace Terradue.Corporate.WebServer {
 
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/oauth GET"));
 
                 var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
@@ -208,6 +209,7 @@ namespace Terradue.Corporate.WebServer {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/oauth POST Username='{0}'", request.username));
 
                 Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
@@ -352,6 +354,7 @@ namespace Terradue.Corporate.WebServer {
             string token = null;
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/oauth/JWT POST"));
                 Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
@@ -375,7 +378,7 @@ namespace Terradue.Corporate.WebServer {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/oauth DELETE"));
                 Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
