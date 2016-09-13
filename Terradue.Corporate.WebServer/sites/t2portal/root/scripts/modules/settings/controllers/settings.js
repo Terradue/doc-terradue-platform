@@ -231,8 +231,9 @@ define([
 						});
 					}
 
-					self.githubPromise.then(function(){
-						self.githubData.attr('loaded', true);
+					self.githubPromise.then(function(data){
+						self.githubData.attr(data.attr());
+						self.githubData.attr('loaded',true);
 						self.view({
 							url: 'modules/settings/views/github.html',
 							selector: Config.subContainer,
