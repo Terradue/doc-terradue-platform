@@ -99,56 +99,49 @@ define([
 			}
 		},
 
-		'.createArtifactoryDomain click': function(data){
-			var self = this,
+		'.createLdapDomain click': function(data){
+			var userData = this.userData,
 				userid = data.data('user');
 			
-			if (userid){
+			if (userid)
+				bootbox.confirm('Create Ldap domain for user <b>' + userData.attr('user').Username + '</b>.<br/>Are you sure?', function(confirmed){
+					if (confirmed){
+						userData.attr('domainLoading', true);
 
-				this.userData.attr({
-					domainLoading: true
-				});
-				
-				bootbox.confirm('Create Storage domain for user <b>'+self.userData.attr('user').Username+'</b>.<br/>Are you sure?', function(confirmed){
-					if (confirmed)
-						UsersAdminModel.createArtifactoryDomain({
+						UsersAdminModel.createLdapDomain({
 		 					Id: userid
 		 				}).then(function(){
-							self.userData.user.attr('HasArtifactoryDomain', true);
-							self.userData.user.attr('domainLoading', false);
+							userData.user.attr('HasLdapDomain', true);
+							userData.attr('domainLoading', false);
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug
-		 					self.userData.user.attr('domainLoading', false);
-		 					self.userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+		 					userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+		 					userData.attr('domainLoading', false);
 		 				});
+					}
 		 		});
-			}
 		},
 
 		'.createRepository click': function(data){
-			var self = this,
+			var userData = this.userData,
 				userid = data.data('user');
 			
-			if (userid){
-
-				this.userData.attr({
-					repositoryLoading: true
-				});
-				
-				bootbox.confirm('Create Storage repository for user <b>'+self.userData.attr('user').Username+'</b>.<br/>Are you sure?', function(confirmed){
-					if (confirmed)
+			if (userid)
+				bootbox.confirm('Create Storage repository for user <b>' + userData.attr('user').Username + '</b>.<br/>Are you sure?', function(confirmed){
+					if (confirmed){
+						userData.attr('repositoryLoading', true);
 						UsersAdminModel.createRepository({
-		 					id: userid
-		 				}).then(function(repositories){
-							self.userData.user.attr('repositories', repositories);
-							self.userData.user.attr('repositoryLoading', false);
-		 				}).fail(function(xhr){
-		 					errXhr=xhr; // for debug
-		 					self.userData.user.attr('repositoryLoading', false);
-		 					self.userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
-		 				});
+							id: userid
+						}).then(function(repositories){
+							userData.user.attr('repositories', repositories);
+							userData.attr('repositoryLoading', false);
+						}).fail(function(xhr){
+							errXhr=xhr; // for debug
+							userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+							userData.attr('repositoryLoading', false);
+						});
+					}
 		 		});
-			}
 		},
 
 		'.validateEmail click': function(data){

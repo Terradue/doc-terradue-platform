@@ -15,6 +15,7 @@
 							class="btn btn-small btn-primary copyPrivateKeyBtn"
 							t2-helpers="copyable-input"  
 							title="Copy on clipboard" 
+							data-copyable-value="{{ user.PrivateKey }}"
 							data-public-key="{{ user.PrivateKey }}">
 								<i class="fa fa-clipboard"></i>
 						</button>
@@ -36,7 +37,8 @@
 						<pre class="pubKey">{{ user.PublicKey }}</pre>
 						<button 
 							class="btn btn-small btn-primary copyPublicKeyBtn"
-							t2-helpers="copyable-input">
+							t2-helpers="copyable-input"
+							data-copyable-value="{{ user.PublicKey }}">
 								<i class="fa fa-clipboard"></i>
 						</button>
 						&nbsp;&nbsp;
