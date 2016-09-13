@@ -1090,8 +1090,10 @@ namespace Terradue.Corporate.Controller {
         #region Catalogue
 
         public bool HasCatalogueIndex(){
-            if (this.ApiKey == null) LoadApiKey ();
-            return this.CatFactory.IndexExists(this.Username, this.Username, this.ApiKey);
+            try {
+                if (this.ApiKey == null) LoadApiKey ();
+                return this.CatFactory.IndexExists (this.Username, this.Username, this.ApiKey);
+            } catch (Exception e) { return false; }
         }
 
         public void CreateCatalogueIndex(){
@@ -1165,10 +1167,12 @@ namespace Terradue.Corporate.Controller {
         /// <param name="username">Username.</param>
         /// <param name="password">Password.</param>
         public void SyncArtifactory(string username, string password){
-            try {
-                JFrogFactory.Sync (username, password);
-            }catch(Exception e){
-                log.ErrorFormat (e.Message + " - " + e.StackTrace);
+            if (this.AccountStatus == AccountStatusType.Enabled && this.Username != this.Email) {
+                try {
+                    JFrogFactory.Sync (username, password);
+                } catch (Exception e) {
+                    log.ErrorFormat (e.Message + " - " + e.StackTrace);
+                }
             }
         }
 
@@ -1193,9 +1197,11 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns><c>true</c> if this instance has owner group; otherwise, <c>false</c>.</returns>
         public bool HasOwnerGroup(){
-            foreach (string g in GetUserArtifactoryGroups()) {
-                if (g.Equals(OwnerDomainName)) return true;
-            }
+            try {
+                foreach (string g in GetUserArtifactoryGroups ()) {
+                    if (g.Equals (OwnerDomainName)) return true;
+                }
+            } catch (Exception e) { return false;}
             return false;
         }
 
@@ -1204,9 +1210,11 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns><c>true</c>, if group exists was ownered, <c>false</c> otherwise.</returns>
         public bool OwnerGroupExists(){
-            foreach (string g in JFrogFactory.GetGroups()) {
-                if (g.Equals(OwnerDomainName)) return true;
-            }
+            try {
+                foreach (string g in JFrogFactory.GetGroups()) {
+                    if (g.Equals(OwnerDomainName)) return true;
+                }
+            } catch (Exception e) { return false; }
             return false;
         }
 

@@ -13,7 +13,11 @@
 			</div>-->
 			<div class="welcome-container row text-center" style="background-color:#ffb366; color:white;">
 				<h3>Thanks for registering on Terradue</h3>
-				<h3>You must now <a href="/portal/settings/profile">set your username</a> to start working with us.</h3>
+				{{#if emailNotValidated}}
+					<h3><a href="/portal/settings/account">Validate your email</a> and <a href="/portal/settings/profile">set your username</a> to start working with us.</h3>
+				{{else}}
+					<h3><a href="/portal/settings/profile">Set your username</a> to start working with us.</h3>
+				{{/if}}
 			</div>
 		{{else}}
 			<!--{{#if apikeyNotComplete}}
@@ -23,16 +27,23 @@
 				<h3><a href="/portal/settings/apikey">Generate it</a></h3>
 				</div>
 			{{/if}}-->
-			{{#if profileNotComplete}}
+			{{#if emailNotValidated}}
 				<div class="welcome-container row text-center" style="background-color:#ffb366; color:white;">
-					<h3><i class="fa fa-warning"></i>&nbsp;Profile not complete!</h3>
+					<h3><i class="fa fa-warning"></i>&nbsp;Please <a href="/portal/settings/account">validate your email</a>.</h3>
 					<h3>It is a <b>NECESSARY</b> step to start working with us.</h3>
-				<h3><a href="/portal/settings/profile">Fill it up</a></h3>
 				</div>
 			{{else}}
-				<div class="welcome-container row text-center">
-					<h3><i class="fa fa-user"></i>&nbsp; Access your <a href="/portal/settings/profile">profile</a></h3>
-				</div>
+				{{#if profileNotComplete}}
+					<div class="welcome-container row text-center" style="background-color:#ffb366; color:white;">
+						<h3><i class="fa fa-warning"></i>&nbsp;Profile not complete!</h3>
+						<h3>It is a <b>NECESSARY</b> step to start working with us.</h3>
+					<h3><a href="/portal/settings/profile">Fill it up</a></h3>
+					</div>
+				{{else}}
+					<div class="welcome-container row text-center">
+						<h3><i class="fa fa-user"></i>&nbsp; Access your <a href="/portal/settings/profile">profile</a></h3>
+					</div>
+				{{/if}}
 			{{/if}}
 		{{/if}}
 		<div class="welcome-container row text-center" style="background-color:#D0D2C1;">

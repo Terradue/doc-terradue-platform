@@ -59,6 +59,7 @@ define([
 
 				self.isLoginPromise.then(function(user){
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
+					var accountEnabled = user.AccountStatus == 4;
 					self.data.attr({
 						user: user,
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
@@ -70,7 +71,8 @@ define([
 						showFeatures: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						emailNotComplete: (user.AccountStatus==1),
-						usernameNotSet: usernameDefault
+						usernameNotSet: usernameDefault,
+						emailNotValidated: !accountEnabled,
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);

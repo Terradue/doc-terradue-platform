@@ -12,7 +12,7 @@
 				<li class="account menu-item"><a href="/portal/settings/account"> 
 					Account</a>
 				</li>
-				{{#unless usernameNotSet}}
+				{{#unless usernameNotSet}}{{#unless emailNotValidated}}
 					<li class="apikey menu-item"><a href="/portal/settings/apikey">
 						API key</a>
 					</li>
@@ -39,7 +39,7 @@
 					</li>
 					<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
 					</li>
-				{{/if}}
+				{{/if}}{{/if}}
 			</ul>
 		</div>
 	</div>

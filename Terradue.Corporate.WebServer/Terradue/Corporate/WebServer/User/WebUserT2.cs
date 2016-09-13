@@ -135,9 +135,12 @@ namespace Terradue.Corporate.WebServer {
     }
 
     [Route("/user/catalogue/index", "POST", Summary = "create catalogue index for current user", Notes = "")]
-    public class CreateCurrentUserCatalogueIndex : IReturn<List<string>> {
+    public class CreateUserCatalogueIndex : IReturn<List<string>> {
         [ApiMember(Name = "index", Description = "User index", ParameterType = "query", DataType = "string", IsRequired = false)]
         public string index { get; set; }
+
+        [ApiMember (Name = "id", Description = "User id", ParameterType = "query", DataType = "int", IsRequired = false)]
+        public int Id { get; set; }
     }
 
     [Route("/user/features", "GET", Summary = "get current user features", Notes = "")]
@@ -311,7 +314,8 @@ namespace Terradue.Corporate.WebServer {
             this.Plan = entity.Plan != null ? entity.Plan.Name : "";
 
             if (ldap || admin) {
-                if (entity.PublicKey == null || entity.ApiKey == null) entity.LoadLdapInfo();
+                if (entity.PublicKey == null) entity.LoadLdapInfo();
+                if (entity.ApiKey == null) entity.LoadApiKey ();
                 if (entity.OneUser != null) {
                     this.HasOneAccount = true;
                 }

@@ -799,12 +799,16 @@ namespace Terradue.Corporate.WebServer {
             return result;
         } 
 
-        public object Post(CreateCurrentUserCatalogueIndex request){
+        public object Post(CreateUserCatalogueIndex request){
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             List<string> result = null;
             try{
                 context.Open();
-                UserT2 user = UserT2.FromId(context, context.UserId);
+                UserT2 user;
+                if(context.UserLevel == UserLevel.Administrator && request.Id != 0)
+                    user = UserT2.FromId(context, request.Id);
+                else
+                    user = UserT2.FromId (context, context.UserId);
                 if(request.index == null) request.index = user.Username;
                 log.InfoFormat("Create catalogue index '{1}' for user {0}", user.Username, request.index);
 

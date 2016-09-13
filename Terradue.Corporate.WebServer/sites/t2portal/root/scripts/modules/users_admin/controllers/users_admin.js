@@ -41,17 +41,17 @@ define([
 				UsersAdminModel.getRepositories(self.id).then(function(repositories){
 					self.userData.user.attr('repositories', repositories);	
 				}).fail(function(){
-					this.errorView({}, 'Unable to get user repositories', 'The user doesn\'t exist or you can\'t access this page.', true);
+					self.errorView({}, 'Unable to get user repositories', 'The user doesn\'t exist or you can\'t access this page.', true);
 				});
 			}).fail(function(){
-				this.errorView({}, 'Unable to get user info', 'The user doesn\'t exist or you can\'t access this page.', true);
+				self.errorView({}, 'Unable to get user info', 'The user doesn\'t exist or you can\'t access this page.', true);
 			});
 			
 			// get plans
 			PlansModel.findAll().then(function(plans){
 				self.userData.attr('plans', plans);
 			}).fail(function(){
-				this.errorView({}, 'Unable to get plans info', null, true);
+				self.errorView({}, 'Unable to get plans info', null, true);
 			});
 
 			// load view
@@ -135,15 +135,19 @@ define([
 				bootbox.confirm('Create catalogue index for user <b>'+self.userData.attr('user').Username+'</b>.<br/>Are you sure?', function(confirmed){
 					if (confirmed){
 						self.userData.attr('catalogueLoading', true);
+						self.userData.attr('catalogueFailMessage', null);
 						UsersAdminModel.createCatalogueIndex({
 		 					Id: userid
-		 				}).then(function(){
-							self.userData.user.attr('HasCatalogueIndex', true);
-							self.userData.attr('catalogueLoading', false);
+		 				}).then(function(data){
+		 					self.userData.attr('catalogueLoading', false);
+		 					if(data)
+								self.userData.user.attr('HasCatalogueIndex', true);
+							else
+								self.userData.attr('catalogueFailMessage', "Unable to create the index");
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug
 		 					self.userData.attr('catalogueLoading', false);
-		 					self.userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+		 					self.userData.attr('catalogueFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
 		 				});
 		 			}
 		 		});

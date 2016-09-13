@@ -16,8 +16,8 @@ define(['can', 'config'], function(can, Config){
 			return $.post('/'+Config.api+'/user/repository/group', data);
 		},
 
-		createCatalogueIndex: function(){
-			return $.post('/'+Config.api+'/user/catalogue/index?format=json', {});
+		createCatalogueIndex: function(data){
+			return $.post('/'+Config.api+'/user/catalogue/index?format=json', data);
 		},
 
 		getRepositories: function(id){
