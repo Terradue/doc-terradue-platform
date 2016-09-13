@@ -171,7 +171,6 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 UserT2 user = UserT2.FromId(context, context.UserId);
-                user.LoadApiKey ();
                 log.InfoFormat("Get current user {0}",user.Username);
                 result = new WebUserT2(user, request.ldap);
                 context.Close();
