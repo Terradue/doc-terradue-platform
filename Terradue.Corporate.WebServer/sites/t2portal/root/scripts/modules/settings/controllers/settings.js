@@ -72,7 +72,7 @@ define([
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						emailNotComplete: (user.AccountStatus==1),
 						usernameNotSet: usernameDefault,
-						emailNotValidated: !accountEnabled,
+						emailNotComplete: !accountEnabled,
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -507,6 +507,9 @@ define([
 				new ProfileModel(App.Login.User.current.attr())
 					.save()
 					.then(function(createdUser){
+						self.data.attr({
+							usernameNotSet: createdUser.Username == createdUser.Email
+						});
 						self.profileData.attr({
 							saveSuccess: true,
 							saveLoading: false, 

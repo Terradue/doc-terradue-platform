@@ -845,6 +845,13 @@ namespace Terradue.Corporate.WebServer {
         }
 
         public void ValidateCaptcha(string secret, string response){
+
+            ServicePointManager.ServerCertificateValidationCallback = delegate (
+                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
+                System.Net.Security.SslPolicyErrors errors) {
+                    return (true);
+                };
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
             request.Method = "POST";
             request.ContentType = "application/json";
