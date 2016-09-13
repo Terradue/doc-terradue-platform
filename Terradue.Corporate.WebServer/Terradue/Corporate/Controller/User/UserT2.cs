@@ -320,13 +320,13 @@ namespace Terradue.Corporate.Controller {
             if (GetCloudUser () != null) DeleteCloudAccount ();
 
             //delete user catalogue index
-            if (HasCatalogueIndex ()) {
-                if (string.IsNullOrEmpty (ApiKey)) LoadApiKey ();
-                CatFactory.DeleteIndex (this.Username, this.Username, this.ApiKey);
-            }
+            //if (HasCatalogueIndex ()) {
+            //    if (string.IsNullOrEmpty (ApiKey)) LoadApiKey ();
+            //    CatFactory.DeleteIndex (this.Username, this.Username, this.ApiKey);
+            //}
 
             //delete user on Artifactory
-            if (HasRepository ()) JFrogFactory.DeleteUser (this.Username);
+            //if (HasRepository ()) JFrogFactory.DeleteUser (this.Username);
 
             //delete user on LDAP
             if (LdapFactory.UserExists (Username)) DeleteLdapAccount ();
