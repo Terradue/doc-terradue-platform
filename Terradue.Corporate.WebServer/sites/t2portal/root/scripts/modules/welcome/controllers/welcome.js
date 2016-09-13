@@ -39,6 +39,7 @@ define([
 				// first wait user is ready
 				this.isLoginPromise.then(function(user){
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
+					var accountEnabled = user.AccountStatus == 4;
 					var profilecomplete = user.FirstName && user.LastName && user.Affiliation && user.Country;//default profile set ?
 					profilecomplete = profilecomplete && (user.AccountStatus == 4);//email validated ?
 					//profilecomplete = profilecomplete && user.PublicKey;//ssh key added ?
@@ -48,6 +49,7 @@ define([
 						user: user,
 						loading: false,
 						usernameNotSet: usernameDefault,
+						emailNotValidated: !accountEnabled,
 						profileNotComplete: !profilecomplete,
 						apikeyNotComplete: userPlanGtExplorer && apikeyNull
 					});

@@ -66,7 +66,29 @@ namespace Terradue.Corporate.Controller {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(this.Host + "/" + index);
                 request.Method = "PUT";
                 request.Credentials = new NetworkCredential (username, apikey);
+                request.PreAuthenticate = true;
                 request.GetResponse();
+
+            }
+        }
+
+        /// <summary>
+        /// Deletes the index.
+        /// </summary>
+        /// <param name="index">Index.</param>
+        /// <param name="username">Username.</param>
+        /// <param name="apikey">Apikey.</param>
+        public void DeleteIndex(string index, string username, string apikey){
+            if (string.IsNullOrEmpty (index)) throw new Exception ("Index not created, invalid index");
+            if (string.IsNullOrEmpty (username)) throw new Exception ("Index not created, invalid username");
+            if (string.IsNullOrEmpty (apikey)) throw new Exception ("Index not created, invalid API KEY");
+
+            if (!IndexExists (index, username, apikey)) {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create (this.Host + "/" + index);
+                request.Method = "DELETE";
+                request.Credentials = new NetworkCredential (username, apikey);
+                request.PreAuthenticate = true;
+                request.GetResponse ();
             }
         }
     }

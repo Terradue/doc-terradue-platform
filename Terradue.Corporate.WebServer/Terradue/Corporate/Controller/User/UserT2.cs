@@ -315,6 +315,26 @@ namespace Terradue.Corporate.Controller {
             return context.GetQueryBooleanValue(String.Format("SELECT username IS NOT NULL FROM usr_cloud WHERE id={0};", this.Id));
         }
 
+        public override void Delete (){
+            //delete user on cloud
+            if (GetCloudUser () != null) DeleteCloudAccount ();
+
+            //delete user catalogue index
+            //if (HasCatalogueIndex ()) {
+            //    if (string.IsNullOrEmpty (ApiKey)) LoadApiKey ();
+            //    CatFactory.DeleteIndex (this.Username, this.Username, this.ApiKey);
+            //}
+
+            //delete user on Artifactory
+            //if (HasRepository ()) JFrogFactory.DeleteUser (this.Username);
+
+            //delete user on LDAP
+            if (LdapFactory.UserExists (Username)) DeleteLdapAccount ();
+
+            //delete user on DB
+            base.Delete ();
+        }
+
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
@@ -339,9 +359,9 @@ namespace Terradue.Corporate.Controller {
                 case Plan.SCALER:
                 case Plan.PREMIUM:
                     if (!HasCloudAccount()) CreateCloudAccount(plan);
-                    if (!HasLdapDomain()) CreateLdapDomain();
-                    if (!HasCatalogueIndex()) CreateCatalogueIndex();
-                    if (!HasRepository()) CreateRepository();
+                    //if (!HasLdapDomain()) CreateLdapDomain();
+                    //if (!HasCatalogueIndex()) CreateCatalogueIndex();
+                    //if (!HasRepository()) CreateRepository();
                     break;
                 default:
                     break;
@@ -623,7 +643,6 @@ namespace Terradue.Corporate.Controller {
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
                 ldapusr.Password = GenerateSaltedSHA1(password);
-                this.GenerateApiKey(password);
                 ldapusr.ApiKey = this.ApiKey;
 
                 //login as ldap admin to have creation rights
@@ -1071,8 +1090,10 @@ namespace Terradue.Corporate.Controller {
         #region Catalogue
 
         public bool HasCatalogueIndex(){
-            if (this.ApiKey == null) LoadApiKey ();
-            return this.CatFactory.IndexExists(this.Username, this.Username, this.ApiKey);
+            try {
+                if (this.ApiKey == null) LoadApiKey ();
+                return this.CatFactory.IndexExists (this.Username, this.Username, this.ApiKey);
+            } catch (Exception e) { return false; }
         }
 
         public void CreateCatalogueIndex(){
@@ -1146,10 +1167,12 @@ namespace Terradue.Corporate.Controller {
         /// <param name="username">Username.</param>
         /// <param name="password">Password.</param>
         public void SyncArtifactory(string username, string password){
-            try {
-                JFrogFactory.Sync (username, password);
-            }catch(Exception e){
-                log.ErrorFormat (e.Message + " - " + e.StackTrace);
+            if (this.AccountStatus == AccountStatusType.Enabled && this.Username != this.Email) {
+                try {
+                    JFrogFactory.Sync (username, password);
+                } catch (Exception e) {
+                    log.ErrorFormat (e.Message + " - " + e.StackTrace);
+                }
             }
         }
 
@@ -1174,9 +1197,11 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns><c>true</c> if this instance has owner group; otherwise, <c>false</c>.</returns>
         public bool HasOwnerGroup(){
-            foreach (string g in GetUserArtifactoryGroups()) {
-                if (g.Equals(OwnerDomainName)) return true;
-            }
+            try {
+                foreach (string g in GetUserArtifactoryGroups ()) {
+                    if (g.Equals (OwnerDomainName)) return true;
+                }
+            } catch (Exception e) { return false;}
             return false;
         }
 
@@ -1185,9 +1210,11 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns><c>true</c>, if group exists was ownered, <c>false</c> otherwise.</returns>
         public bool OwnerGroupExists(){
-            foreach (string g in JFrogFactory.GetGroups()) {
-                if (g.Equals(OwnerDomainName)) return true;
-            }
+            try {
+                foreach (string g in JFrogFactory.GetGroups()) {
+                    if (g.Equals(OwnerDomainName)) return true;
+                }
+            } catch (Exception e) { return false; }
             return false;
         }
 

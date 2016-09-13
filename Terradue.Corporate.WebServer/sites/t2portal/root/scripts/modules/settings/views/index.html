@@ -12,32 +12,34 @@
 				<li class="account menu-item"><a href="/portal/settings/account"> 
 					Account</a>
 				</li>
-				<li class="apikey menu-item"><a href="/portal/settings/apikey">
-					API key</a>
-				</li>
-				{{#if showCatalogue}}
-				<li class="catalogue menu-item"><a href="/portal/settings/catalogue">
-					Catalogue</a>
-				</li>
-				{{/if}}
-				{{#if showStorage}}
-				<li class="storage menu-item"><a href="/portal/settings/storage"> 
-					Storage</a>
-				</li>
-				{{/if}}
-				<!--{{#if showFeatures}}
-				<li class="features menu-item"><a href="/portal/settings/features">
-					Features</a>
-				</li>
-				{{/if}}-->
-				<li class="key menu-item"><a href="/portal/settings/key">
-					SSH keys</a>
-				</li>
-				<li class="github menu-item"><a href="/portal/settings/github">
-					Github</a>
-				</li>
-				<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
-				</li>
+				{{#unless usernameNotSet}}{{#unless emailNotComplete}}
+					<li class="apikey menu-item"><a href="/portal/settings/apikey">
+						API key</a>
+					</li>
+					{{#if showCatalogue}}
+					<li class="catalogue menu-item"><a href="/portal/settings/catalogue">
+						Catalogue</a>
+					</li>
+					{{/if}}
+					{{#if showStorage}}
+					<li class="storage menu-item"><a href="/portal/settings/storage"> 
+						Storage</a>
+					</li>
+					{{/if}}
+					<!--{{#if showFeatures}}
+					<li class="features menu-item"><a href="/portal/settings/features">
+						Features</a>
+					</li>
+					{{/if}}-->
+					<li class="key menu-item"><a href="/portal/settings/key">
+						SSH keys</a>
+					</li>
+					<li class="github menu-item"><a href="/portal/settings/github">
+						Github</a>
+					</li>
+					<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
+					</li>
+				{{/if}}{{/if}}
 			</ul>
 		</div>
 	</div>

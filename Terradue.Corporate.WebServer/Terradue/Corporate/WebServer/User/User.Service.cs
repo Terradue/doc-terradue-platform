@@ -439,8 +439,6 @@ namespace Terradue.Corporate.WebServer {
                 Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
 
                 UserT2 user = UserT2.FromId(context, request.Id);
-                if(user.GetCloudUser() != null) user.DeleteCloudAccount();
-                if(ldapfactory.UserExists(user.Username)) user.DeleteLdapAccount();
                 user.Delete();
 
                 context.Close();
@@ -801,12 +799,16 @@ namespace Terradue.Corporate.WebServer {
             return result;
         } 
 
-        public object Post(CreateCurrentUserCatalogueIndex request){
+        public object Post(CreateUserCatalogueIndex request){
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             List<string> result = null;
             try{
                 context.Open();
-                UserT2 user = UserT2.FromId(context, context.UserId);
+                UserT2 user;
+                if(context.UserLevel == UserLevel.Administrator && request.Id != 0)
+                    user = UserT2.FromId(context, request.Id);
+                else
+                    user = UserT2.FromId (context, context.UserId);
                 if(request.index == null) request.index = user.Username;
                 log.InfoFormat("Create catalogue index '{1}' for user {0}", user.Username, request.index);
 
@@ -822,7 +824,34 @@ namespace Terradue.Corporate.WebServer {
             return result;
         }
 
+        public object Post (CreateLdapDomain request)
+        {
+            IfyWebContext context = T2CorporateWebContext.GetWebContext (PagePrivileges.AdminOnly);
+            string result;
+            try {
+                context.Open ();
+                UserT2 user = UserT2.FromId (context, request.Id);
+                log.InfoFormat ("Create LDAP domain for user {0}", user.Username);
+
+                if (!user.HasLdapDomain ()) user.CreateLdapDomain ();
+
+                context.Close ();
+            } catch (Exception e) {
+                log.ErrorFormat ("Error during ldap domain creation - {0} - {1}", e.Message, e.StackTrace);
+                context.Close ();
+                throw e;
+            }
+            return new WebResponseBool (true);
+        }
+
         public void ValidateCaptcha(string secret, string response){
+
+            ServicePointManager.ServerCertificateValidationCallback = delegate (
+                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
+                System.Net.Security.SslPolicyErrors errors) {
+                    return (true);
+                };
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secret, response));
             request.Method = "POST";
             request.ContentType = "application/json";
