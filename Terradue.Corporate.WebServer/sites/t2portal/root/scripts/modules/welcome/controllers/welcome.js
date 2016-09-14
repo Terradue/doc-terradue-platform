@@ -29,6 +29,10 @@ define([
 				self.profileData = new can.Observe({
 					loading: true
 				});
+				self.view({
+					url: 'modules/welcome/views/welcome.html',
+					data: self.profileData
+				});
 			},
 
 			// actions
@@ -45,7 +49,7 @@ define([
 					//profilecomplete = profilecomplete && user.PublicKey;//ssh key added ?
 					var userPlanGtExplorer = (user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
 					var apikeyNull = user.ApiKey == null;
-					self.profileData = new can.Observe({
+					self.profileData.attr({
 						user: user,
 						loading: false,
 						usernameNotSet: usernameDefault,
@@ -53,10 +57,7 @@ define([
 						profileNotComplete: !profilecomplete,
 						apikeyNotComplete: userPlanGtExplorer && apikeyNull
 					});
-					self.view({
-						url: 'modules/welcome/views/welcome.html',
-						data: self.profileData
-					});
+
 				}).fail(function(){
 					self.accessDenied();
 				});
