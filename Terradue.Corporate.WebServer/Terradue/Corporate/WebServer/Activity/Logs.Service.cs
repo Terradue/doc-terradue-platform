@@ -66,12 +66,27 @@ namespace Terradue.Corporate.WebServer {
                 List<string> lines = new List<string>();
                 using (var csv = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using (var sr = new StreamReader(csv)){
-                    while (!sr.EndOfStream) lines.Add(sr.ReadLine());
+                    while (!sr.EndOfStream) {
+                        var line = sr.ReadLine ();
+                        lines.Add (line);
+                    }
                 }
 
-                lines.Reverse ();
+                List<string> lines2 = new List<string> ();
+                for (int i = 0; i < lines.Count; i++) {
+                    if (lines [i].Contains ("ERROR")){
+                        var afterline = lines [i + 1];
+                        if (!afterline.Contains ("INFO") && !afterline.Contains ("DEBUG") && !afterline.Contains ("ERROR")){
+                            lines2.Add (lines [i] + " - " + lines [++i]);
+                            continue;
+                        }
+                    }
+                    lines2.Add (lines [i]);
+                }
+
+                lines2.Reverse ();
                 context.Close();
-                return lines.ToArray();
+                return lines2.ToArray();
             } catch (Exception e) {
                 context.LogError(this, e.Message);
                 context.Close();
