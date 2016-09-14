@@ -24,14 +24,9 @@ define([
 			// init
 			init: function (element, options) {
 				console.log("welcomeControl.init");
-				var self = this;
-				self.isLoginPromise = App.Login.isLoggedDeferred;
-				self.profileData = new can.Observe({
+				this.isLoginPromise = App.Login.isLoggedDeferred;
+				this.profileData = new can.Observe({
 					loading: true
-				});
-				self.view({
-					url: 'modules/welcome/views/welcome.html',
-					data: self.profileData
 				});
 			},
 
@@ -40,6 +35,10 @@ define([
 				var self = this;
 				console.log("App.controllers.Welcome");
 
+				this.view({
+					url: 'modules/welcome/views/welcome.html',
+					data: this.profileData
+				});
 				// first wait user is ready
 				this.isLoginPromise.then(function(user){
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
