@@ -267,6 +267,9 @@ namespace Terradue.Corporate.WebServer {
     /// </summary>
     public class WebUserT2 : WebUser{
 
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger
+            (System.Reflection.MethodBase.GetCurrentMethod ().DeclaringType);
+
         [ApiMember(Name = "hasoneaccount", Description = "Says if user has an account on OpenNebula", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool HasOneAccount { get; set; }
 
@@ -310,10 +313,13 @@ namespace Terradue.Corporate.WebServer {
         /// <param name="admin">If set to <c>true</c> get all info for admin.</param>
         public WebUserT2(UserT2 entity, bool ldap = false, bool admin = false) : base(entity) {
 
+            log.DebugFormat ("Transforms UserT2 into WebUserT2");
+
             this.DomainId = entity.DomainId;
             this.Plan = entity.Plan != null ? entity.Plan.Name : "";
 
             if (ldap || admin) {
+                log.DebugFormat ("Get LDAP info");
                 if (entity.PublicKey == null) entity.LoadLdapInfo();
                 if (entity.ApiKey == null) entity.LoadApiKey ();
                 if (entity.OneUser != null) {
@@ -323,9 +329,13 @@ namespace Terradue.Corporate.WebServer {
                 this.ApiKey = entity.ApiKey;
             }
             if (admin) { 
+                log.DebugFormat ("Get ADMIN info - HasLDAPDomain");
                 this.HasLdapDomain = entity.HasLdapDomain ();
+                log.DebugFormat ("Get ADMIN info - ArtifactoryDomainSynced");
                 this.ArtifactoryDomainSynced = entity.HasOwnerGroup ();
+                log.DebugFormat ("Get ADMIN info - ArtifactoryDomainExists");
                 this.ArtifactoryDomainExists = entity.OwnerGroupExists ();
+                log.DebugFormat ("Get ADMIN info - HasCatalogueIndex");
                 this.HasCatalogueIndex = entity.HasCatalogueIndex ();
             }
         }
