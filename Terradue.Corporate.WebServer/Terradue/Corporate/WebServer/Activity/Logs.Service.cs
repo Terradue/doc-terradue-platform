@@ -39,7 +39,7 @@ namespace Terradue.Corporate.WebServer {
                 if(!path.EndsWith("/")) path += "/";
 
                 context.LogDebug(this, path);
-                result = System.IO.Directory.GetFiles(path + "../logs","*.log*").ToList();
+                result = System.IO.Directory.GetFiles(path + "/logs","*.log*").ToList();
                 result = result.ConvertAll(f => f.Substring(f.LastIndexOf("/") + 1));
 
                 context.Close();
@@ -61,7 +61,7 @@ namespace Terradue.Corporate.WebServer {
 
                 string path = AppDomain.CurrentDomain.BaseDirectory;
                 if(!path.EndsWith("/")) path += "/";
-                var filepath = string.Format("{1}../logs/{0}",request.filename,path);
+                var filepath = string.Format("{1}logs/{0}",request.filename,path);
 
                 List<string> lines = new List<string>();
                 using (var csv = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
