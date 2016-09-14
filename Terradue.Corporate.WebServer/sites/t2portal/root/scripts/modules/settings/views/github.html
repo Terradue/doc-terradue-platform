@@ -3,65 +3,69 @@
 		<div class='settings settings-title'>Github</div>
 		<div class='settings settings-description'>Link your github account and use it as version control tool for your developments.</div>
 		<div class='settings settings-container'>
-			{{#unless github.HasSSHKey}}
-				<div class="alert alert-warning">
-					<i class="fa fa-warning"></i> Your GitHub account requires your ssh public key to authenticate your commands from the cloud.
-				</div>
-				<br/>
-			{{/unless}}
-			{{#if github.Name}}
-				<div class="panel alert-no-bottom-margin">
-					{{#github.Avatar}}<img class="githubAvatar" src="{{ github.Avatar }}">{{/github.Avatar}}
-					<p>
-						<a href="https://github.com/{{ github.Name }}" target="_blank"><i class="fa fa-github fa-2x"></i></a>
-						<strong class="githubName">
-							{{ github.Name }}
-							<a href="javascript://" class="showModifyGithubName"><i class="fa fa-pencil"></i></a>
-						</strong>
-						<span class="usernameForm modifyGithubName hide">
-							<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
-							<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
-							<button class="btn btn-link btn-mini cancel"><i class="fa fa-times"></i></button>
-						</span>
-					</p>
-					{{#unless github.Identifier}}
-						<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Unvalid account</strong><br/>Please check your github account username.</small></p>
-					{{/unless}}
-				</div>
-			{{else}}
-				<div class="panel">
-						<i class="fa fa-github fa-2x"></i> 
-						<span class="usernameForm modifyGithubName">
-							<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
-							<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
-						</span>
-					<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Account not set!</strong><br/>Please set your github account username.</small></p>
-				</div>
-			{{/if}}
-			{{#if github.Name}}{{#if github.Identifier}}
-				<br/>
-				{{#if github.HasSSHKey}}
-					<span class="text text-success"><i class="fa fa-check-square"></i> Your SSH key is associated to your Github account !</span>
-				{{else}}
-					{{#if github.CertPub}}
-						<div>
-							<div class="key-title">Public ssh key</div>
-							<pre class="certPub">{{ github.CertPub }}</pre>
-							<br/>
-		 					<button class="btn btn-warning btn-small addPublicKey">Import key on Github</button>
-		 					{{#if github.loading}}
-								&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
-							{{/if}}
-						</div>
-					{{else}}
-						<p class="alert alert-warning"><i class="icon-warning-sign"></i> 
-							You have no ssh key created for your Terradue Cloud Platform account.
-							<br/>
-							Create it fisrt <a href="key">here</a> to import it on your Github account.
+			{{#if github.loaded}}
+				{{#unless github.HasSSHKey}}
+					<div class="alert alert-warning">
+						<i class="fa fa-warning"></i> Your GitHub account requires your ssh public key to authenticate your commands from the cloud.
+					</div>
+					<br/>
+				{{/unless}}
+				{{#if github.Name}}
+					<div class="panel alert-no-bottom-margin">
+						{{#github.Avatar}}<img class="githubAvatar" src="{{ github.Avatar }}">{{/github.Avatar}}
+						<p>
+							<a href="https://github.com/{{ github.Name }}" target="_blank"><i class="fa fa-github fa-2x"></i></a>
+							<strong class="githubName">
+								{{ github.Name }}
+								<a href="javascript://" class="showModifyGithubName"><i class="fa fa-pencil"></i></a>
+							</strong>
+							<span class="usernameForm modifyGithubName hide">
+								<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
+								<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
+								<button class="btn btn-link btn-mini cancel"><i class="fa fa-times"></i></button>
+							</span>
 						</p>
-					{{/if}}
+						{{#unless github.Identifier}}
+							<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Unvalid account</strong><br/>Please check your github account username.</small></p>
+						{{/unless}}
+					</div>
+				{{else}}
+					<div class="panel">
+							<i class="fa fa-github fa-2x"></i> 
+							<span class="usernameForm modifyGithubName">
+								<input type="text" placeholder="Set github username" name="GithubName" value="{{github.Name}}">
+								<button class="btn btn-link btn-mini submit"><i class="fa fa-pencil"></i></button>
+							</span>
+						<p class="text-error"><small><i class="fa fa-warning"></i> <strong>Account not set!</strong><br/>Please set your github account username.</small></p>
+					</div>
 				{{/if}}
-			{{/if}}{{/if}}
+				{{#if github.Name}}{{#if github.Identifier}}
+					<br/>
+					{{#if github.HasSSHKey}}
+						<span class="text text-success"><i class="fa fa-check-square"></i> Your SSH key is associated to your Github account !</span>
+					{{else}}
+						{{#if github.CertPub}}
+							<div>
+								<div class="key-title">Public ssh key</div>
+								<pre class="certPub">{{ github.CertPub }}</pre>
+								<br/>
+			 					<button class="btn btn-warning btn-small addPublicKey">Import key on Github</button>
+			 					{{#if github.loading}}
+									&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Wait...
+								{{/if}}
+							</div>
+						{{else}}
+							<p class="alert alert-warning"><i class="icon-warning-sign"></i> 
+								You have no ssh key created for your Terradue Cloud Platform account.
+								<br/>
+								Create it fisrt <a href="key">here</a> to import it on your Github account.
+							</p>
+						{{/if}}
+					{{/if}}
+				{{/if}}{{/if}}
+			{{else}}
+				<br/><i class="fa fa-spin fa-spinner"></i> Loading...
+			{{/if}}
 		</div>
 	</div>
 </div>

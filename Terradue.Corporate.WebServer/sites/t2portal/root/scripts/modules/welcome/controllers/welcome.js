@@ -24,9 +24,8 @@ define([
 			// init
 			init: function (element, options) {
 				console.log("welcomeControl.init");
-				var self = this;
-				self.isLoginPromise = App.Login.isLoggedDeferred;
-				self.profileData = new can.Observe({
+				this.isLoginPromise = App.Login.isLoggedDeferred;
+				this.profileData = new can.Observe({
 					loading: true
 				});
 			},
@@ -36,22 +35,28 @@ define([
 				var self = this;
 				console.log("App.controllers.Welcome");
 
+				this.view({
+					url: 'modules/welcome/views/welcome.html',
+					data: this.profileData
+				});
 				// first wait user is ready
 				this.isLoginPromise.then(function(user){
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
+					var accountEnabled = user.AccountStatus == 4;
 					var profilecomplete = user.FirstName && user.LastName && user.Affiliation && user.Country;//default profile set ?
 					profilecomplete = profilecomplete && (user.AccountStatus == 4);//email validated ?
-					profilecomplete = profilecomplete && user.PublicKey;//ssh key added ?
-					self.profileData = new can.Observe({
+					//profilecomplete = profilecomplete && user.PublicKey;//ssh key added ?
+					var userPlanGtExplorer = (user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
+					var apikeyNull = user.ApiKey == null;
+					self.profileData.attr({
 						user: user,
 						loading: false,
 						usernameNotSet: usernameDefault,
-						profileNotComplete: !profilecomplete
+						emailNotValidated: !accountEnabled,
+						profileNotComplete: !profilecomplete,
+						apikeyNotComplete: userPlanGtExplorer && apikeyNull
 					});
-					self.view({
-						url: 'modules/welcome/views/welcome.html',
-						data: self.profileData
-					});
+
 				}).fail(function(){
 					self.accessDenied();
 				});

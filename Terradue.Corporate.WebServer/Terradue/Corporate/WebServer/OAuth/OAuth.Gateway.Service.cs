@@ -111,6 +111,9 @@ namespace Terradue.Corporate.WebServer {
     /// </summary>
     public class OAuthGatewayService : ServiceStack.ServiceInterface.Service {
 
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger
+            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// GET Oauth request. Get user session authorization 
         /// </summary>
@@ -120,6 +123,7 @@ namespace Terradue.Corporate.WebServer {
 
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/oauth GET"));
 
                 var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
@@ -141,21 +145,31 @@ namespace Terradue.Corporate.WebServer {
                     query = query
                 };
 
+                log.InfoFormat("/oauth (GET)");
+                log.DebugFormat("query = {0}",query);
                 if(!string.IsNullOrEmpty(client.SUB_SID)) oauthrequest.sub_sid = client.SUB_SID; 
 
                 var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
                 if(!string.IsNullOrEmpty(oauthsession.redirect)) return DoRedirect(context, oauthsession.redirect, request.ajax);
                 client.SID = oauthsession.sid;
+                log.DebugFormat("SID = {0}",oauthsession.sid);
+                if (oauthsession.error != null){
+                    log.ErrorFormat("{0}",oauthsession.error);
+                    log.ErrorFormat("{0}",oauthsession.error_description);
+                }
 
                 //session is not active
                 if (oauthsession.error != null || oauthsession.type == "auth"){
                     //redirect to T2 login page
                     var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query) + "&type=auth";
+                    log.DebugFormat("type = auth");
                     return DoRedirect(context, redirect, request.ajax);
                 }
 
                 else if (oauthsession.type == "consent"){
                     if(oauthsession.sub_session != null) client.SUB_SID = oauthsession.sub_session.sid;
+                    log.DebugFormat("type = consent");
+                    log.DebugFormat("{0} new claims to consent : {1}", oauthsession.scope.new_claims.Count, string.Join(",",oauthsession.scope.new_claims));
 
                     //no new scope to consent
                     if(oauthsession.scope.new_claims.Count == 0 
@@ -195,6 +209,7 @@ namespace Terradue.Corporate.WebServer {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/oauth POST Username='{0}'", request.username));
 
                 Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
@@ -206,8 +221,12 @@ namespace Terradue.Corporate.WebServer {
 
                 var query = HttpUtility.UrlDecode(request.query);
 
+                log.InfoFormat("/oauth (POST) - username={0}", request.username);
+
                 //request was done just to get the oauthsession (and the list of scopes to consent)
                 if(request.username == null && request.password == null && request.scope == null){
+
+                    log.DebugFormat("request was done just to get the oauthsession (and the list of scopes to consent)");
 
                     OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                         query = query
@@ -228,8 +247,16 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
                     user = j2ldapclient.Authenticate(request.username, request.password, context.GetConfigValue("ldap-apikey"));
+                    log.DebugFormat("User {0} is authenticated succesfully", request.username);
+
+                    //if user exists, sync Artifactory
+                    try{
+                        var usert2 = Terradue.Corporate.Controller.UserT2.FromUsernameOrEmail(context, request.username);
+                        if (usert2 != null) usert2.SyncArtifactory(request.username, request.password);
+                    }catch(Exception){}
 
                 }catch(Exception e){
+                    log.ErrorFormat("User {0} is not authenticated: {1}", request.username, e.Message);
                     return new HttpError(System.Net.HttpStatusCode.Forbidden, "Wrong username or password");
                 }
 
@@ -243,23 +270,26 @@ namespace Terradue.Corporate.WebServer {
 //                        email = user.Email
 //                    }
                 };
-
+                log.DebugFormat("test1 : {0}", client.SID);
                 var oauthputsession = client.AuthzSession(client.SID, oauthrequest2, request.ajax);
-
-                if(!string.IsNullOrEmpty(oauthputsession.redirect)){
-                    return DoRedirect(context, oauthputsession.redirect, request.ajax);
-                } else {
-//                    client.SID = null;
-                    if(oauthputsession.sub_session != null) client.SUB_SID = oauthputsession.sub_session.sid;
-                }
-
+                log.DebugFormat("test2 : {0}", client.SUB_SID);
+                if (!string.IsNullOrEmpty (oauthputsession.redirect)) {
+                    return DoRedirect (context, oauthputsession.redirect, request.ajax);
+                } 
+                //                    client.SID = null;
+                if (oauthputsession.sub_session != null) client.SUB_SID = oauthputsession.sub_session.sid;
+                log.Debug("test3");
                 //user is now authenticated and need to consent
                 if(oauthputsession.type == "consent"){
+                    log.DebugFormat("type = consent");
+                    log.DebugFormat("{0} new claims to consent : {1}", oauthputsession.scope.new_claims.Count, string.Join(",",oauthputsession.scope.new_claims));
                     OauthConsentRequest consent = null;
                     if(oauthputsession.scope.new_claims.Count == 0){
                         consent = GenerateConsent(defaultscopes);
                     } else if(request.autoconsent) consent = GenerateConsent(oauthputsession.scope.new_claims);
                     else return new HttpResult(oauthputsession, System.Net.HttpStatusCode.OK);
+
+                    log.DebugFormat("consent is now : {0}", string.Join(",",consent.scope));
                         
                     var redirect = client.ConsentSession(oauthputsession.sid, consent);
                     return DoRedirect(context, redirect, request.ajax);
@@ -306,6 +336,7 @@ namespace Terradue.Corporate.WebServer {
         }
 
         private HttpResult DoRedirect(IfyContext context, string redirect, bool ajax){
+            log.DebugFormat("redirect to {0}", redirect);
             if(ajax){
                 HttpResult redirectResponse = new HttpResult();
                 redirectResponse.Headers[HttpHeaders.Location] = redirect;
@@ -322,6 +353,7 @@ namespace Terradue.Corporate.WebServer {
             string token = null;
             try {
                 context.Open();
+                context.LogInfo (this, string.Format ("/oauth/JWT POST"));
                 Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
@@ -345,7 +377,7 @@ namespace Terradue.Corporate.WebServer {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/oauth DELETE"));
                 Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");

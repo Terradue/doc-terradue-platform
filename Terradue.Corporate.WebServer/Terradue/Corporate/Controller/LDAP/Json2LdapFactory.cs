@@ -4,6 +4,7 @@ using Terradue.Portal;
 using System.IO;
 using ServiceStack.Text;
 using Terradue.Ldap;
+using System.Collections.Generic;
 
 namespace Terradue.Corporate.Controller {
     public class Json2LdapFactory {
@@ -17,15 +18,32 @@ namespace Terradue.Corporate.Controller {
         }
 
         /// <summary>
-        /// Creates the LDAP D.
+        /// Creates the LDAP DN.
         /// </summary>
-        /// <returns>The LDAP D.</returns>
+        /// <returns>The LDAP DN.</returns>
         /// <param name="uid">Uid.</param>
-        public string CreateLdapDN(string uid) {
-            string dn = string.Format("uid={0}, ou=people, dc=terradue, dc=com", uid);
+        public string CreateLdapPeopleDN(string uid) {
+            string dn = string.Format("uid={0}, ou={1}, dc={2}, dc={3}", uid, "people", "terradue", "com");
+            return NormalizeLdapDN(dn);
+        }
+
+        public string CreateLdapT2DN(string uid, string ou) {
+            string dn = string.Format("uid={0}, ou={1}, dc={2}, dc={3}", uid, ou, "terradue", "com");
+            return NormalizeLdapDN(dn);
+        }
+
+        public string CreateLdapT2DN(string uid, List<string> ou) {
+            var ous = "";
+            foreach (var entry in ou)
+                ous += ", ou=" + entry;
+            string dn = string.Format("uid={0}{1}, dc={2}, dc={3}", uid, ous, "terradue", "com");
+            return NormalizeLdapDN(dn);
+        }
+
+        public string NormalizeLdapDN(string dn) {
             string dnn = Json2Ldap.NormalizeDN(dn);
             if (!Json2Ldap.IsValidDN(dnn))
-                throw new Exception(string.Format("Unvalid DN: {0}", dnn));
+                throw new Exception(string.Format("Invalid DN: {0}", dnn));
             return dnn;
         }
 
@@ -40,7 +58,7 @@ namespace Terradue.Corporate.Controller {
             //open the connection
             Json2Ldap.Connect();
             try {
-                var dn = CreateLdapDN(username);
+                var dn = CreateLdapPeopleDN(username);
 
                 var response = Json2Ldap.GetEntry(dn);
                 if (response != null) result = true;
@@ -110,6 +128,32 @@ namespace Terradue.Corporate.Controller {
             }
             Json2Ldap.Close();
             return usr;
+        }
+
+        public List<LdapUser> GetUsersFromLdap(){
+            List<LdapUser> usrs = new List<LdapUser>();
+            //open the connection
+            Json2Ldap.Connect();
+            try{
+                string basedn = "ou=people, dc=terradue, dc=com";
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(Context.GetConfigValue("ldap-admin-dn"), Context.GetConfigValue("ldap-admin-pwd"));
+
+                var response = Json2Ldap.SearchEntries(basedn, Json2LdapSearchScopes.SUB, "(objectClass=*)");
+
+                if (response.matches == null || response.matches.Count == 0) 
+                    usrs=null;
+                else {
+                    foreach(var entry in response.matches)
+                        if(entry.uid != null) usrs.Add(new LdapUser(entry));
+                }
+            }catch(Exception e){
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+            return usrs;
         }
 
     }

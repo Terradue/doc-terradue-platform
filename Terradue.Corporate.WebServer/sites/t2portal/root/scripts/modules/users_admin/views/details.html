@@ -22,7 +22,6 @@
 						{{#ifEquals Level 1}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
 						<dl class="dl-horizontal">
 							<dt>Id</dt><dd>&nbsp;{{Id}}</dd>
-							<dt>Identifier</dt><dd>&nbsp;{{Identifier}}</dd>
 							<dt>Username</dt><dd>&nbsp;{{Username}}</dd>
 							<dt>FirstName</dt><dd>&nbsp;{{FirstName}}</dd>
 							<dt>LastName</dt><dd>&nbsp;{{LastName}}</dd>
@@ -41,7 +40,7 @@
 					{{/user}}
 				</div>
 			</div>
-			
+
 			{{#ifEquals user.AccountStatus 1}}
 			<!-- USER VALIDATION -->
 			<div class="panel panel-default">
@@ -53,8 +52,108 @@
 					<br/><br/>
 					<button class="btn btn-small btn-warning validateEmail">Validate</button>
 				</div>
+				{{#if validateAccountLoading}}
+					<i class="fa fa-spin fa-spinner"></i> Saving...
+				{{/if}}
+				{{#if validateAccountFailMessage}}
+					<span class="text-danger">Error while saving user: <strong>{{validateAccountFailMessage}}</strong></span>
+				{{/if}}
 			</div>
 			{{/ifEquals}}
+
+			<!-- USER DOMAIN -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">User Storage</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">Domain <small>({{user.Username}}.owner)</small></h4>
+						</div>
+						<div class="panel-body" style="overflow: scroll">
+							{{#if domainLoading}}
+								&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Creating...
+							{{else}}
+								{{#if user.HasLdapDomain}}
+									<i class="fa fa-check-square text-success"></i> LDAP
+								{{else}}
+									<i class="fa fa-square-o"></i> LDAP
+								{{/if}}
+								<br/>
+								{{#if user.ArtifactoryDomainExists}}
+									{{#if user.ArtifactoryDomainSynced}}
+										<i class="fa fa-check-square text-success"></i> Storage
+									{{else}}
+										<i class="fa fa-check-square text-warning"></i> Storage <small>(user need to login to sync his account)</small>
+									{{/if}}
+								{{else}}
+									<i class="fa fa-square-o"></i> Storage
+								{{/if}}
+								{{#if user.HasLdapDomain}}
+									{{#unless user.ArtifactoryDomainExists}}
+										<br/><br/>
+										<button class="btn btn-small btn-warning createArtifactoryDomain" data-user="{{user.Id}}">Create domain on Storage</button>	
+									{{/unless}}
+								{{else}}
+									<br/><br/>
+									<button class="btn btn-small btn-warning createLdapDomain" data-user="{{user.Id}}">Create LDAP domain</button>
+								{{/if}}
+							{{/if}}
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">Repositories</h4>
+						</div>
+						<div class="panel-body" style="overflow: scroll">
+							{{#if repositoryLoading}}
+								&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Creating...
+							{{else}}
+								{{#if user.repositories.length}}
+	                               {{#each user.repositories}}
+									<div>
+										<span class='label label-default'>{{Name}}</span>
+										<br/>
+										<div>
+											<b>Type:</b>&nbsp;<small>{{Type}}</small><br/>
+											<b>Folders:</b>&nbsp;<small>{{FoldersCount}}</small><br/>
+											<b>Files:</b>&nbsp;<small>{{FilesCount}}</small><br/>
+											<b>Used Space:</b>&nbsp;<small>{{UsedSpace}}</small><br/>
+											<b>Percentage:</b>&nbsp;<small>{{Percentage}}</small><br/>
+										</div>
+									</div>
+									<br/>
+	                               {{/each}}
+								{{else}}
+	                               <button class="btn btn-small btn-warning createRepository" data-user="{{user.Id}}">Create repository</button>
+								{{/if}}
+							{{/if}}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- USER CATALOGUE -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Catalogue</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					{{#if catalogueLoading}}
+						&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Creating...
+					{{else}}
+						{{#if user.HasCatalogueIndex}}
+							<i class="fa fa-check-square text-success"></i> User index is available
+						{{else}}
+							<button class="btn btn-small btn-warning createCatalogueIndex" data-user="{{user.Id}}">Create catalogue index</button>
+						{{/if}}
+						{{#if catalogueFailMessage}}
+							<br/><span class="text-danger"><strong>{{catalogueFailMessage}}</strong></span>
+						{{/if}}
+					{{/if}}	
+				</div>
+			</div>
 
 		</div>
 		
@@ -66,12 +165,20 @@
 					<h3 class="panel-title">Change user level</h3>
 				</div>
 				<div class="panel-body" style="overflow: scroll">
+					
 					{{#ifEquals user.Level 4}}
 					<button class="btn btn-small btn-warning removeAdminRights">Set as normal user</button>
 					{{/ifEquals}}
 					{{#ifNotEquals user.Level 4}}
 					<button class="btn btn-small btn-warning giveAdminRights">Set as administrator</button>
 					{{/ifNotEquals}}
+
+					{{#if userAdminLoading}}
+						<i class="fa fa-spin fa-spinner"></i> Saving...
+					{{/if}}
+					{{#if userAdminFailMessage}}
+						<span class="text-danger">Error while saving user: <strong>{{userAdminFailMessage}}</strong></span>
+					{{/if}}
 				</div>
 			</div>
 			

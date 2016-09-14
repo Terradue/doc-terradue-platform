@@ -1,0 +1,30 @@
+<div class='settings-catalogue container col-md-9'>
+	<div>
+		<div class='settings settings-title'>Catalogue</div>
+		<div class='settings settings-description'>Access your private index on the Data Agency</div>
+		<div class='settings settings-container'>
+			{{#if loading}}
+				&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Loading...
+			{{else}}
+				{{#if errorMessage}}
+					<p class="text-error"><i class="fa fa-exclamation-circle"></i> <strong>Oops!</strong> {{errorMessage}}</p>
+				{{else}}
+					{{#if list}}
+						<div class="cataloguePanel">
+							{{#each list}}
+								<i class="fa fa-check-square text-success"></i> Your index is available on <a href="{{.}}/description" target="_blank">{{.}}</a>
+							{{/each}}
+						</div>
+						<br/>
+					{{else}}
+						<button class="btn btn-warning createCatalogueIndex">Create Catalogue Index</button>
+					{{/if}}
+				{{/if}}
+			{{/if}}
+			<div>
+			</div>
+		</div>
+	</div>
+</div>
+
+

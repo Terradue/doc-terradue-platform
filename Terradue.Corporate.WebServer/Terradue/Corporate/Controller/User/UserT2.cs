@@ -12,6 +12,7 @@ using Terradue.Ldap;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text;
+using Terradue.JFrog.Artifactory;
 
 namespace Terradue.Corporate.Controller {
     [EntityTable(null, EntityTableConfiguration.Custom, Storage = EntityTableStorage.Above)]
@@ -22,6 +23,8 @@ namespace Terradue.Corporate.Controller {
 
         private Json2LdapFactory LdapFactory { get; set; }
         private PlanFactory PlanFactory { get; set; }
+        private CatalogueFactory CatFactory { get; set; }
+        private ArtifactoryFactory JFrogFactory { get; set; }
 
         private IUSER oneuser { get; set; }
         public IUSER OneUser { 
@@ -77,10 +80,17 @@ namespace Terradue.Corporate.Controller {
                 if (onegroups == null) {
                     onegroups = new List<string>();
                     foreach (var group in OneUser.GROUPS) {
-                        onegroups.Add(oneClient.GroupGetInfo(Int32.Parse(group)).NAME);
+                        var gId = Int32.Parse(group);
+                        if(gId > 0) onegroups.Add(oneClient.GroupGetInfo(gId).NAME);
                     }
                 }
                 return onegroups;
+            }
+        }
+
+        public string OwnerDomainName {
+            get {
+                return this.Username + ".owner";
             }
         }
 
@@ -96,6 +106,16 @@ namespace Terradue.Corporate.Controller {
         /// <value>The private key.</value>
         public string PrivateKey { get; set; }
 
+        /// <summary>
+        /// Gets or sets the API key.
+        /// </summary>
+        /// <value>The API key.</value>
+        public string ApiKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the eosso username.
+        /// </summary>
+        /// <value>The eo SS.</value>
         public string EoSSO { get; set; }
 
         private string onepwd { get; set; }
@@ -134,6 +154,8 @@ namespace Terradue.Corporate.Controller {
             this.LdapFactory = new Json2LdapFactory(context);
             this.Json2Ldap = LdapFactory.Json2Ldap;
             this.PlanFactory = new PlanFactory(context);
+            this.CatFactory = new CatalogueFactory(context);
+            this.JFrogFactory = new ArtifactoryFactory(context);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -157,11 +179,24 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
+        public UserT2(IfyContext context, LdapUser user) : this(context) {
+            this.Username = user.Username;
+            this.Load();
+
+            this.FirstName = user.FirstName;
+            this.LastName = user.LastName;
+            this.Email = user.Email;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
         public override string AlternativeIdentifyingCondition {
             get { 
-                if (!string.IsNullOrEmpty(Email))
+                if (!string.IsNullOrEmpty(Username))
+                    return String.Format("t.username='{0}'", Username);
+                else if (!string.IsNullOrEmpty(Email))
                     return String.Format("t.email='{0}'", Email); 
-                return null;
+                else return null;
             }
         }
 
@@ -197,10 +232,36 @@ namespace Terradue.Corporate.Controller {
 
         //--------------------------------------------------------------------------------------------------------------
 
-        public new static UserT2 FromEmail(IfyContext context, string email) {
+        /// <summary>
+        /// Creates a new User instance representing the user with the specified email.
+        /// </summary>
+        /// <returns>The email.</returns>
+        /// <param name="context">Context.</param>
+        /// <param name="email">Email.</param>
+        public static UserT2 FromEmail(IfyContext context, string email) {
             UserT2 user = new UserT2(context);
             user.Email = email;
             user.Load();
+            return user;
+        }
+
+        /// <summary>
+        /// Creates a new User instance representing the user with the specified unique name or email.
+        /// </summary>
+        /// <returns>The username or email.</returns>
+        /// <param name="context">Context.</param>
+        /// <param name="username">Username.</param>
+        public static UserT2 FromUsernameOrEmail(IfyContext context, string username){
+            UserT2 user;
+            try{
+                user = UserT2.FromUsername(context, username);
+            }catch(Exception){
+                try{
+                    user = UserT2.FromEmail(context, username);
+                }catch(Exception){
+                    return null;
+                }
+            }
             return user;
         }
 
@@ -254,6 +315,26 @@ namespace Terradue.Corporate.Controller {
             return context.GetQueryBooleanValue(String.Format("SELECT username IS NOT NULL FROM usr_cloud WHERE id={0};", this.Id));
         }
 
+        public override void Delete (){
+            //delete user on cloud
+            if (GetCloudUser () != null) DeleteCloudAccount ();
+
+            //delete user catalogue index
+            //if (HasCatalogueIndex ()) {
+            //    if (string.IsNullOrEmpty (ApiKey)) LoadApiKey ();
+            //    CatFactory.DeleteIndex (this.Username, this.Username, this.ApiKey);
+            //}
+
+            //delete user on Artifactory
+            //if (HasRepository ()) JFrogFactory.DeleteUser (this.Username);
+
+            //delete user on LDAP
+            if (LdapFactory.UserExists (Username)) DeleteLdapAccount ();
+
+            //delete user on DB
+            base.Delete ();
+        }
+
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
@@ -268,13 +349,24 @@ namespace Terradue.Corporate.Controller {
             if (!HasGithubProfile()) CreateGithubProfile();
             if (this.DomainId == 0) CreateDomain();
 
-            if (plan.Name != Plan.NONE) {
-                if (!HasCloudAccount()) {
-                    CreateCloudAccount(plan);
-                } else {
-//                    UpdateCloudAccount(plan);
-                }
+            switch (plan.Name) {
+                case Plan.NONE:
+                    break;
+                case Plan.TRIAL:
+                    
+                    break;
+                case Plan.EXPLORER:
+                case Plan.SCALER:
+                case Plan.PREMIUM:
+                    if (!HasCloudAccount()) CreateCloudAccount(plan);
+                    //if (!HasLdapDomain()) CreateLdapDomain();
+                    //if (!HasCatalogueIndex()) CreateCatalogueIndex();
+                    //if (!HasRepository()) CreateRepository();
+                    break;
+                default:
+                    break;
             }
+
             this.PlanFactory.UpgradeUserPlan(this.Id, plan);
 
             context.Commit();
@@ -502,17 +594,38 @@ namespace Terradue.Corporate.Controller {
             user.Name = string.Format("{0} {1}", this.FirstName, this.LastName);
             user.PublicKey = this.PublicKey;
             user.EoSSO = this.EoSSO;
+            user.ApiKey = this.ApiKey;
             return user;
         }
 
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Creates the LDAP Distinguished Name
+        /// Creates the LDAP Distinguished Name for people
         /// </summary>
         /// <returns>The LDAP DN.</returns>
-        private string CreateLdapDN() {
-            return LdapFactory.CreateLdapDN(this.Username);
+        private string CreateLdapDNforPeople() {
+            return LdapFactory.CreateLdapPeopleDN(this.Username);
+        }
+
+        /// <summary>
+        /// Creates the LDAP Distinguished Name for domain.
+        /// </summary>
+        /// <returns>The LDAP D nfor domain.</returns>
+        private string CreateLdapDNforDomain(){
+            string dn = string.Format("cn={0}, ou={1}, ou=domains, dc=terradue, dc=com", OwnerDomainName, this.Username);
+            dn = LdapFactory.NormalizeLdapDN(dn);
+            return dn;
+        }
+
+        /// <summary>
+        /// Creates the LDAP D nfor domain level1.
+        /// </summary>
+        /// <returns>The LDAP D nfor domain level1.</returns>
+        private string CreateLdapDNforDomainLevel1(){
+            string dn = string.Format("ou={0}, ou=domains, dc=terradue, dc=com", this.Username);
+            dn = LdapFactory.NormalizeLdapDN(dn);
+            return dn;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -526,10 +639,11 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
                 ldapusr.Password = GenerateSaltedSHA1(password);
+                ldapusr.ApiKey = this.ApiKey;
 
                 //login as ldap admin to have creation rights
                 Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
@@ -554,7 +668,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
 
                 if (admin) Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
                 else Json2Ldap.SimpleBind(dn, oldpassword);
@@ -576,7 +690,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
 
                 //login as ldap admin to have creation rights
                 Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
@@ -598,7 +712,7 @@ namespace Terradue.Corporate.Controller {
             ValidateUsername(this.Username);
 
             //change username on LDAP
-            var dn = LdapFactory.CreateLdapDN(this.Email);
+            var dn = LdapFactory.CreateLdapPeopleDN(this.Email);
 
             //open the connection
             Json2Ldap.Connect();
@@ -639,7 +753,7 @@ namespace Terradue.Corporate.Controller {
 
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
 
                 LdapUser ldapusr = this.ToLdapUser();
                 ldapusr.DN = dn;
@@ -655,14 +769,14 @@ namespace Terradue.Corporate.Controller {
                     Json2Ldap.ModifyUserInformation(ldapusr);
                 } catch (Exception e) {
                     try {
-                        //user may not have sshPublicKey
-                        if (e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername")) {
+                        //user may not have sshPublicKey | eossoUserid | apiKey
+                        if (e.Message.Contains("sshPublicKey") || e.Message.Contains("sshUsername") || e.Message.Contains("apiKey")) {
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "ldapPublicKey");
                             Json2Ldap.ModifyUserInformation(ldapusr);
                         } else if(e.Message.Contains("eossoUserid")){
                             Json2Ldap.AddNewAttributeString(dn, "objectClass", "eossoAccount");
                             Json2Ldap.ModifyUserInformation(ldapusr);
-                        } else throw e;
+                        } throw e;
                     } catch (Exception e2) {
                         throw e2;
                     }
@@ -716,7 +830,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                string dn = CreateLdapDN();
+                string dn = CreateLdapDNforPeople();
 
                 //login as ldap admin to have creation rights
                 Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
@@ -736,16 +850,19 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Loads the LDAP info.
         /// </summary>
-        public void LoadLdapInfo() {
+        public void LoadLdapInfo(string password = null) {
             Json2Ldap.Connect();
             try {
-                var ldapusr = this.Json2Ldap.GetEntry(CreateLdapDN());
+                var dn = CreateLdapDNforPeople();
+                if(password != null) Json2Ldap.SimpleBind(dn,password);
+                var ldapusr = this.Json2Ldap.GetEntry(dn);
                 if(ldapusr != null){
                     if(!string.IsNullOrEmpty(ldapusr.Username)) this.Username = ldapusr.Username;
                     if(!string.IsNullOrEmpty(ldapusr.Email)) this.Email = ldapusr.Email;
                     if(!string.IsNullOrEmpty(ldapusr.FirstName)) this.FirstName = ldapusr.FirstName;
                     if(!string.IsNullOrEmpty(ldapusr.LastName)) this.LastName = ldapusr.LastName;
                     if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
+                    if (!string.IsNullOrEmpty (ldapusr.ApiKey)) this.ApiKey = ldapusr.ApiKey;
                 }
             } catch (Exception e) {
                 Json2Ldap.Close();
@@ -754,10 +871,31 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Close();
         }
 
+        /// <summary>
+        /// Loads the API key.
+        /// </summary>
+        /// <param name="password">Password.</param>
+        public void LoadApiKey (string password = null) {
+            Json2Ldap.Connect ();
+            try {
+                var dn = CreateLdapDNforPeople ();
+                if (password != null) Json2Ldap.SimpleBind (dn, password);
+                else Json2Ldap.SimpleBind (context.GetConfigValue ("ldap-admin-dn"), context.GetConfigValue ("ldap-admin-pwd"));
+                var ldapusr = this.Json2Ldap.GetEntryAttribute (dn, "apiKey");
+                if (ldapusr != null) {
+                    this.ApiKey = ldapusr.ApiKey;
+                }
+            } catch (Exception e) {
+                Json2Ldap.Close ();
+                throw e;
+            }
+            Json2Ldap.Close ();
+        }
+
         public void PublicLoadSshPubKey(string username) {
             Json2Ldap.Connect();
             try {
-                var dn = LdapFactory.CreateLdapDN(username);
+                var dn = LdapFactory.CreateLdapPeopleDN(username);
                 var ldapusr = this.Json2Ldap.GetEntry(dn);
                 if(ldapusr != null){
                     if(!string.IsNullOrEmpty(ldapusr.PublicKey)) this.PublicKey = ldapusr.PublicKey;
@@ -769,8 +907,129 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Close();
         }
 
+        public void SaveApiKey (string password) { 
+           Json2Ldap.Connect ();
+            try {
+                var dn = CreateLdapDNforPeople ();
+                Json2Ldap.SimpleBind (dn, password);
+
+                try {
+                    Json2Ldap.ModifyUserAttribute (dn, "apiKey", this.ApiKey);
+                } catch (Exception e) {
+                    try {
+                        //user may not have sshPublicKey | eossoUserid | apiKey
+                        if (e.Message.Contains ("sshPublicKey") || e.Message.Contains ("sshUsername") || e.Message.Contains ("apiKey")) {
+                            Json2Ldap.AddNewAttributeString (dn, "objectClass", "ldapPublicKey");
+                            Json2Ldap.ModifyUserAttribute (dn, "apiKey", this.ApiKey);
+                        } else throw e;
+                    } catch (Exception e2) {
+                        throw e2;
+                    }
+                }
+
+            } catch (Exception e) {
+                Json2Ldap.Close ();
+                throw e;
+            }
+            Json2Ldap.Close ();
+        }
+
         //--------------------------------------------------------------------------------------------------------------
 
+        /// <summary>
+        /// Generates the API key.
+        /// </summary>
+        /// <param name="password">Password.</param>
+        public void GenerateApiKey(string password){
+            
+            //Api Key is saved also on Artifactory
+            this.ApiKey = this.JFrogFactory.CreateApiKey(this.Username, password);
+
+            //save on LDAP
+            this.SaveApiKey (password);
+        }
+
+        /// <summary>
+        /// Revokes the API key.
+        /// </summary>
+        public void RevokeApiKey(string password) {
+
+            //open the connection
+            Json2Ldap.Connect();
+            try {
+
+                string dn = CreateLdapDNforPeople();
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+                Json2Ldap.DeleteAttributeString(dn, "apiKey", null);
+                this.ApiKey = null;
+
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+
+            //revoke api key also from Artifactory
+            JFrogFactory.RevokeApiKey(this.Username, password);
+        }
+
+        /// <summary>
+        /// Determines whether this instance has LDAP domain.
+        /// </summary>
+        /// <returns><c>true</c> if this instance has LDAP domain; otherwise, <c>false</c>.</returns>
+        public bool HasLdapDomain(){
+            Json2Ldap.Connect();
+            bool result = false;
+            try {
+                var dn = CreateLdapDNforDomain();
+                result = this.Json2Ldap.GetEntry(dn) != null;
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Creates the LDAP domain.
+        /// </summary>
+        public void CreateLdapDomain(){
+
+            //open the connection
+            Json2Ldap.Connect();
+            try {
+
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind(context.GetConfigValue("ldap-admin-dn"), context.GetConfigValue("ldap-admin-pwd"));
+
+                //create first level entry
+                ParamsAttributes attributes = new ParamsAttributes();
+                attributes.objectClass = new List<string>{ "organizationalUnit", "top" };
+                attributes.ou = this.Username;
+
+                Json2Ldap.AddEntry(CreateLdapDNforDomainLevel1(), attributes);
+
+                //create second level entry
+                attributes = new ParamsAttributes();
+                attributes.objectClass = new List<string>{ "groupOfUniqueNames"};
+                attributes.cn = OwnerDomainName;
+                attributes.uniqueMember = CreateLdapDNforPeople();
+                attributes.description = "Owner of user domain " + this.Username;
+
+                Json2Ldap.AddEntry(CreateLdapDNforDomain(), attributes);
+
+            } catch (Exception e) {
+                Json2Ldap.Close();
+                throw e;
+            }
+            Json2Ldap.Close();
+
+            //Add group on Artifactory
+            CreateArtifactoryGroup();
+        }
 
 
         //--------------------------------------------------------------------------------------------------------------
@@ -782,7 +1041,7 @@ namespace Terradue.Corporate.Controller {
             Json2Ldap.Connect();
             try {
 
-                Json2Ldap.AddNewAttributeString(CreateLdapDN(), "objectClass", "ldapPublicKey");
+                Json2Ldap.AddNewAttributeString(CreateLdapDNforPeople(), "objectClass", "ldapPublicKey");
 
             } catch (Exception e) {
                 Json2Ldap.Close();
@@ -826,6 +1085,139 @@ namespace Terradue.Corporate.Controller {
             return byteArrayResult;
         }
        
+        #endregion
+
+        #region Catalogue
+
+        public bool HasCatalogueIndex(){
+            try {
+                if (this.ApiKey == null) LoadApiKey ();
+                return this.CatFactory.IndexExists (this.Username, this.Username, this.ApiKey);
+            } catch (Exception e) { return false; }
+        }
+
+        public void CreateCatalogueIndex(){
+            CreateCatalogueIndex (this.Username);
+        }
+
+        public void CreateCatalogueIndex (string index) {
+            if (this.ApiKey == null) LoadApiKey ();
+            this.CatFactory.CreateIndex (index, this.Username, this.ApiKey);
+        }
+
+        public List<string> GetUserCatalogueIndexes(){
+            var result = new List<string> ();
+
+            if (this.HasCatalogueIndex())
+                result.Add(this.CatFactory.GetUserIndexUrl(this.Username));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Artifactory
+
+        /// <summary>
+        /// Determines whether this instance has repository.
+        /// </summary>
+        /// <returns><c>true</c> if this instance has repository; otherwise, <c>false</c>.</returns>
+        public bool HasRepository(){
+            return this.JFrogFactory.RepositoryExists(this.Username);
+        }
+
+        /// <summary>
+        /// Creates the repository.
+        /// </summary>
+        public void CreateRepository(){
+            this.CreateRepository(this.Username);
+        }
+
+        /// <summary>
+        /// Creates the repository.
+        /// </summary>
+        /// <param name="repo">Repo.</param>
+        public void CreateRepository(string repo){
+            if(repo == null) repo = this.Username;
+
+            this.JFrogFactory.CreateLocalRepository(repo);
+
+            //sanity check: does user has domain on ldap ?
+            if (!HasLdapDomain()) CreateLdapDomain();
+
+            //Create permission for groups on new repo
+            this.JFrogFactory.CreatePermissionForGroupOnRepo(OwnerDomainName, repo);
+        }
+
+        /// <summary>
+        /// Gets the user repositories.
+        /// </summary>
+        /// <returns>The user repositories.</returns>
+        public List<RepositoriesSummary> GetUserRepositories(){
+            var result = new List<RepositoriesSummary> ();
+            if (this.HasRepository ())
+                result.Add(JFrogFactory.GetStorageInfo (this.Username));
+            return result;
+            
+        }
+
+        /// <summary>
+        /// Syncs the artifactory.
+        /// </summary>
+        /// <param name="username">Username.</param>
+        /// <param name="password">Password.</param>
+        public void SyncArtifactory(string username, string password){
+            if (this.AccountStatus == AccountStatusType.Enabled && this.Username != this.Email) {
+                try {
+                    JFrogFactory.Sync (username, password);
+                } catch (Exception e) {
+                    log.ErrorFormat (e.Message + " - " + e.StackTrace);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates the artifactory group.
+        /// </summary>
+        public void CreateArtifactoryGroup(){
+            //Add group on Artifactory
+            JFrogFactory.CreateGroup(OwnerDomainName, CreateLdapDNforDomain());
+        }
+
+        /// <summary>
+        /// Gets the user artifactory groups.
+        /// </summary>
+        /// <returns>The user artifactory groups.</returns>
+        public List<string> GetUserArtifactoryGroups(){
+            return JFrogFactory.GetGroupsForUser(this.Username);
+        }
+
+        /// <summary>
+        /// Determines whether this instance has owner group.
+        /// </summary>
+        /// <returns><c>true</c> if this instance has owner group; otherwise, <c>false</c>.</returns>
+        public bool HasOwnerGroup(){
+            try {
+                foreach (string g in GetUserArtifactoryGroups ()) {
+                    if (g.Equals (OwnerDomainName)) return true;
+                }
+            } catch (Exception e) { return false;}
+            return false;
+        }
+
+        /// <summary>
+        /// Owners the group exists.
+        /// </summary>
+        /// <returns><c>true</c>, if group exists was ownered, <c>false</c> otherwise.</returns>
+        public bool OwnerGroupExists(){
+            try {
+                foreach (string g in JFrogFactory.GetGroups()) {
+                    if (g.Equals(OwnerDomainName)) return true;
+                }
+            } catch (Exception e) { return false; }
+            return false;
+        }
+
         #endregion
 
         //--------------------------------------------------------------------------------------------------------------

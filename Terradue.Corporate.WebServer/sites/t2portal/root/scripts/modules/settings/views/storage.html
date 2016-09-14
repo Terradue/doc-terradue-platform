@@ -1,0 +1,39 @@
+<div class='settings-storage container col-md-9'>
+	<div>
+		<div class='settings settings-title'>Storage Repositories</div>
+		<div class='settings settings-description'>Your repositories are the place where your publications are stored</div>
+		<div class='settings settings-container'>
+			{{#if loading}}
+				&nbsp;&nbsp;<i class="fa fa-spin fa-spinner"></i> Loading...
+			{{else}}
+				{{#if errorMessage}}
+					<p class="text-error"><i class="fa fa-exclamation-circle"></i> <strong>Oops!</strong> {{errorMessage}}</p>
+				{{else}}
+					{{#if list}}
+						<div>
+							{{#each list}}
+								<div>
+									<div class='settings settings-title'>{{Name}}</div>
+									<div class='settings settings-container'>
+										<b>Type:</b>&nbsp;{{Type}}<br/>
+										<b>Folders:</b>&nbsp;{{FoldersCount}}<br/>
+										<b>Files:</b>&nbsp;{{FilesCount}}<br/>
+										<b>Used Space:</b>&nbsp;{{UsedSpace}}<br/>
+										<b>Percentage:</b>&nbsp;{{Percentage}}<br/>
+									</div>
+								</div>
+							{{/each}}
+						</div>
+						<br/>
+					{{else}}
+						<button class="btn btn-warning createStorage">Create Repository</button>
+					{{/if}}
+				{{/if}}
+			{{/if}}
+			<div>
+			</div>
+		</div>
+	</div>
+</div>
+
+

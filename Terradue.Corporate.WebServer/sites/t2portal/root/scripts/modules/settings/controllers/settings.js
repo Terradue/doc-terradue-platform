@@ -48,27 +48,31 @@ define([
 				
 				this.params = Helpers.getUrlParameters();
 				this.data = new can.Observe({});
+				this.githubData = new can.Observe({});
 				this.keyData = new can.Observe({});
-				this.accountData = new can.Observe({});
 				this.isLoginPromise = App.Login.isLoggedDeferred;
 				this.githubPromise = GithubModel.findOne();
+				this.fullUserPromise = ProfileModel.getFullUser(true);
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
+				self.data.attr({loadingLdap: true});
+
 				self.isLoginPromise.then(function(user){
+					var usernameDefault = (user.Username == null || user.Username == user.Email);
+					var accountEnabled = user.AccountStatus == 4;
 					self.data.attr({
 						user: user,
 						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
 						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
 						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
 						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
+						showCatalogue: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						showStorage: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						showFeatures: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey),
-						githubNotComplete: false
-					});
-					self.githubPromise.then(function(githubData){
-						self.githubData = githubData;
-						self.data.attr('githubNotComplete', !githubData.HasSSHKey);
+						usernameNotSet: usernameDefault,
+						emailNotComplete: !accountEnabled,
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -125,9 +129,7 @@ define([
 						user: user,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						nameMissing: !(user.FirstName && user.LastName),
-						usernameNotSet: usernameDefault,
-						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey)
+						usernameNotSet: usernameDefault
 					});
 					self.view({
 						url: 'modules/settings/views/profile.html',
@@ -155,17 +157,20 @@ define([
 
 			account: function(options) {
 				var self = this;
+				self.accountData = new can.Observe({});
 				self.params = Helpers.getUrlParameters();
+
 				
 				console.log("App.controllers.Settings.account");
 				// first wait user is ready
 				this.isLoginPromise.then(function(user){
-
+				var usernameDefault = (user.Username == null || user.Username == user.Email);
 					self.accountData.attr({
 						user: user,
 						usernameSet: !(user.Email == user.Username),
 						emailNotComplete: (user.AccountStatus==1),
-						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok'
+						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
+						usernameNotSet: usernameDefault
 					});
 
 					self.view({
@@ -201,39 +206,6 @@ define([
 						self.accessDenied();
 				});
 			},
-			
-			email: function(options) {
-				var self = this;
-				this.profileData = new can.Observe({});
-				this.view({
-					url: 'modules/settings/views/email.html',
-					selector: Config.subContainer,
-					dependency: self.indexDependency(),
-					data: this.profileData,
-					fnLoad: function(){
-						self.initSubmenu('email');
-					}
-				});
-				
-				console.log("App.controllers.Settings.email");
-				this.isLoginPromise.then(function(user){
-					self.profileData.attr({
-						user: user,
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						nameMissing: !(user.FirstName && user.LastName),
-						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey)
-					});
-					if (self.params.token && self.profileData.user.AccountStatus==1)
-						self.manageEmailConfirm(self.params.token);
-					
-				}).fail(function(){
-					if (self.params.token)
-						self.manageEmailConfirm(self.params.token);
-					else
-						self.accessDenied();
-				});
-			},
 
 			github: function(options) {
 				var self = this;
@@ -249,9 +221,6 @@ define([
 								GithubModel.postSshKey()
 									.then(function(){
 										self.githubData.attr('HasSSHKey', 'true');
-										self.data.attr({
-											githubNotComplete: false
-										});
 									})
 									.fail(function(){
 										bootbox.alert("<i class='fa fa-warning'></i> Cannot post the ssh key.")
@@ -262,7 +231,9 @@ define([
 						});
 					}
 
-					self.githubPromise.then(function(){
+					self.githubPromise.then(function(data){
+						self.githubData.attr(data.attr());
+						self.githubData.attr('loaded',true);
 						self.view({
 							url: 'modules/settings/views/github.html',
 							selector: Config.subContainer,
@@ -296,11 +267,7 @@ define([
 
 				this.isLoginPromise.then(function(user){
 					self.profileData.attr({
-						user: user,
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						nameMissing: !(user.FirstName && user.LastName),
-						emailNotComplete: (user.AccountStatus==1),
-						sshKeyNotComplete: !(user.PublicKey)
+						user: user
 					});
 					
 				}).fail(function(){
@@ -323,25 +290,95 @@ define([
 					}
 				});
 
-				self.isLoginPromise.then(function(userData){
-					self.keyData.attr(userData.attr());
-					self.keyData.attr('PublicKeyBase64', btoa(userData.PublicKey))
-					self.element.find('.copyPublicKeyBtn').copyableInput(userData.PublicKey, {
-						isButton: true,
-					});
-					self.element.find('.downloadKey').tooltip({
-						trigger: 'hover',
-						title: 'Download',
-						placement:'bottom'
-					});
-					self.element.find('.deletePublicKeyBtn').tooltip({
-						trigger: 'hover',
-						title: 'Delete',
-						placement:'bottom'
+				self.fullUserPromise.then(function(user){
+					self.keyData.attr({user:user});
+					self.keyData.user.attr('PublicKeyBase64', btoa(user.PublicKey));
+					self.keyData.attr('loaded', true);
+				});
+			},
+
+			apikey: function(options) {
+				var self = this;
+				self.apikeyData = new can.Observe({});
+				console.log("App.controllers.Settings.ApiKey");
+				
+				self.view({
+					url: 'modules/settings/views/apikey.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: self.apikeyData,
+					fnLoad: function(){
+						self.initSubmenu('apikey');
+					}
+				});
+
+				self.fullUserPromise.then(function(user){
+					self.apikeyData.attr({
+						user: user,
+						loaded: true
 					});
 				});
 			},
 
+			catalogue: function(options) {
+				var self = this;
+				console.log("App.controllers.Settings.catalogue");
+				
+				// load storage list only the first time
+				if (!this.catalogueData){
+					this.catalogueData = new can.Observe({loading: true});
+					this.loadCatalogueIndex();
+				}
+
+				this.view({
+					url: 'modules/settings/views/catalogue.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.catalogueData,
+					fnLoad: function(){
+						self.initSubmenu('catalogue');
+					}
+				});
+			},
+
+			storage: function(options) {
+				var self = this;
+				
+				console.log("App.controllers.Settings.storage");
+				
+				// load storage list only the first time
+				if (!this.storageData){
+					this.storageData = new can.Observe({loading: true});
+					this.loadStorage();
+				}
+				
+				this.view({
+					url: 'modules/settings/views/storage.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.storageData,
+					fnLoad: function(){
+						self.initSubmenu('storage');
+					}
+				});
+			},
+			features: function(options) {
+				var self = this;
+				self.featuresData = new can.Observe({loading: true});
+				console.log("App.controllers.Settings.features");
+				
+				this.view({
+					url: 'modules/settings/views/features.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.featuresData,
+					fnLoad: function(){
+						self.initSubmenu('features');
+					}
+				});
+				this.loadFeatures();
+			},
+			
 			// profile	
 			manageEmailConfirm: function(token){
 				var self=this;
@@ -471,6 +508,9 @@ define([
 				new ProfileModel(App.Login.User.current.attr())
 					.save()
 					.then(function(createdUser){
+						self.data.attr({
+							usernameNotSet: createdUser.Username == createdUser.Email
+						});
 						self.profileData.attr({
 							saveSuccess: true,
 							saveLoading: false, 
@@ -478,8 +518,10 @@ define([
 							usernameNotSet: createdUser.Username == createdUser.Email,
 							nameMissing: !(createdUser.FirstName && createdUser.LastName),
 						});
+						var usernameDefault = (createdUser.Username == null || createdUser.Username == createdUser.Email);
 						self.data.attr({
-							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country)
+							profileNotComplete: !(createdUser.FirstName && createdUser.LastName && createdUser.Affiliation && createdUser.Country),
+							usernameNotSet: usernameDefault
 						});
 
 					}).fail(function(xhr){
@@ -622,26 +664,25 @@ define([
 			
 			//github
 			'.settings-github .usernameForm .submit click': function(){
+				var self= this;
+				
 				// get data
 				var githubName = Helpers.retrieveDataFromForm('.modifyGithubName',	'GithubName');
 				
+				this.githubData.attr('loaded', false);
 				// TODO check!
-				this.githubPromise.then(function(githubData){
-					githubData.attr('Name', githubName);
+				this.githubPromise.then(function(data){
 
 					// update
 					new GithubModel({
 							Name: githubName,
-							Id: githubData.attr('Id'),
+							Id: data.attr('Id'),
 						})
 						.save()
 						.done(function(githubDataNew){
-							githubData.attr(githubDataNew.attr(), true);
-							Messenger().post({
-								message: 'Github Username saved.',
-								type: 'success',
-								hideAfter: 4,
-							});
+							self.githubData.attr(githubDataNew.attr(), true);
+							self.githubData.attr('Name', githubName);
+							self.githubData.attr('loaded', true);
 						});
 				});
 				
@@ -700,7 +741,7 @@ define([
 				var createSafeCallback = function(safe){
 					
 					// setup keyData
-					self.keyData.attr({
+					self.keyData.user.attr({
 						PublicKey: safe.PublicKey,
 						PrivateKey: safe.PrivateKey,
 						PublicKeyBase64: btoa(safe.PublicKey),
@@ -718,18 +759,18 @@ define([
 					});
 					
 					// setup buttons
-					self.element.find('.copyPublicKeyBtn').copyableInput(safe.PublicKey, {
-						isButton: true,
-					});
-					
-					self.element.find('.copyPrivateKeyBtn').copyableInput(safe.PrivateKey, {
-						isButton: true,
-					});
-					self.element.find('.downloadKey').tooltip({
-						trigger: 'hover',
-						title: 'Download',
-						placement:'bottom'
-					});
+//					self.element.find('.copyPublicKeyBtn').copyableInput(safe.PublicKey, {
+//						isButton: true,
+//					});
+//					
+//					self.element.find('.copyPrivateKeyBtn').copyableInput(safe.PrivateKey, {
+//						isButton: true,
+//					});
+//					self.element.find('.downloadKey').tooltip({
+//						trigger: 'hover',
+//						title: 'Download',
+//						placement:'bottom'
+//					});
 				};
 				
 				var submitFormSafeCallback = function(){
@@ -757,7 +798,7 @@ define([
 					+ "</div>";
 
 				var title = "This action requires your password.";
-				if (this.keyData.PublicKey)
+				if (self.keyData.user.attr('PublicKey'))
 					title += "<br/><small><i>Please note that this will overwrite your current SSH key pair.</i></small>";
 				$dialog = bootbox.dialog({
 					title: title,
@@ -791,7 +832,34 @@ define([
 							+ "</div>"
 							+ "</form>"
 							+ "</div>";
-				bootbox.dialog({
+				var submitCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    self.keyData.attr("loading",true);
+                    SafeModel.delete(encodeURIComponent(password)).then(function(safe){
+                    	
+						if (self.githubData){
+							self.githubData.attr('HasSSHKey',false);
+							self.githubData.attr('CertPub',null);
+						}
+
+						if(self.keyData){
+				    		self.keyData.attr("PublicKey",null);
+				    		self.keyData.attr("PrivateKey",null);
+				    		self.keyData.attr("PublicKeyBase64",null);
+				    		self.keyData.attr("PrivateKeyBase64",null);
+				    	}
+					}).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during ssh keys delete.");
+					}).always(function(){
+						self.keyData.attr("loading",false);
+					});
+				};
+
+				var dialog=bootbox.dialog({
 					title: title,
 					message: message,
 					buttons: {
@@ -799,39 +867,274 @@ define([
 	                        label: "OK",
 	                        className: "btn-default",
 	                        callback: function (a,b,c) {
-	                            var password = $('#safePassword').val();
-	                            if (password==''){
-	                            	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
-	                            	return false;
-	                            };
-	                            self.keyData.attr("loading",true);
-	                            SafeModel.delete(encodeURIComponent(password)).then(function(safe){
-	                            	self.data.attr({
-										sshKeyNotComplete: true,
-										githubNotComplete: true//we just deleted the keys so it cannot be on github
-									});
-
-									if (self.githubData){
-										self.githubData.attr('HasSSHKey',false);
-										self.githubData.attr('CertPub',null);
-									}
-
-									if(self.keyData){
-							    		self.keyData.attr("PublicKey",null);
-							    		self.keyData.attr("PrivateKey",null);
-							    		self.keyData.attr("PublicKeyBase64",null);
-							    		self.keyData.attr("PrivateKeyBase64",null);
-							    	}
-								}).fail(function(){
-									bootbox.alert("<i class='fa fa-warning'></i> Error during ssh keys delete.");
-								}).always(function(){
-									self.keyData.attr("loading",false);
-								});
+	                        	submitCallback();
                         	}
                     	}
                     }
 				});
-			}
+			},
+
+			'.settings-apikey .showApiKeyBtn click': function(){
+				var self = this;
+				self.element.find('.apiKeyHidden').addClass('hidden');
+				self.element.find('.apiKeyVisible').removeClass('hidden');
+			},
+
+			'.settings-apikey .hideApiKeyBtn click': function(){
+				var self = this;
+				self.element.find('.apiKeyVisible').addClass('hidden');
+				self.element.find('.apiKeyHidden').removeClass('hidden');
+			},
+
+			'.settings-apikey .generateApiKey click': function(){
+				var self = this;
+				var title = "This action requires your password.";
+				var message = "<div class='container-fluid'>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "</div>";
+				var submitCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    self.profileData.attr("loading",true);
+                    ProfileModel.generateApiKey(password).then(function(apikey){
+                    	self.data.attr({
+							apiKeyNotComplete: false
+						});
+
+						self.element.find('.apiKeyVisible').addClass('hidden');
+						self.element.find('.apiKeyHidden').removeClass('hidden');
+						self.profileData.user.attr("ApiKey",apikey.Response);
+
+					}).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
+					}).always(function(){
+						self.profileData.attr("loading",false);
+					});
+				};
+
+				var dialog=bootbox.dialog({
+					title: title,
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function (a,b,c) {
+	                        	submitCallback();
+                        	}
+                    	}
+                    }
+				});
+
+			},
+
+			'.settings-apikey .getApiKey click': function(){
+				var self = this;
+				var title = "This action requires your password.";
+				var message = "<div class='container-fluid'>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+ "<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "</div>";
+
+				var submitCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    self.apikeyData.attr("loading",true);
+                    ProfileModel.getApiKey(encodeURIComponent(password)).then(function(apikey){
+
+						self.element.find('.apiKeyVisible').addClass('hidden');
+						self.element.find('.apiKeyHidden').removeClass('hidden');
+						self.apikeyData.user.attr("ApiKey",apikey.Response);
+
+					}).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during API key generation.");
+					}).always(function(){
+						self.apikeyData.attr("loading",false);
+					});
+				};
+
+				var dialog=bootbox.dialog({
+					title: title,
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function (a,b,c) {
+	                        	submitCallback();
+                        	}
+                    	}
+                    }
+				});
+
+				dialog.find('.generateAPIkeyForm').unbind('submit').bind('submit', function(){
+					submitCallback();
+					return false;
+				});
+			},
+			
+
+			'.settings-apikey .revokeApiKeyBtn click': function(){
+				var self = this;
+				var title = "This action requires your password.";
+				var message = "<div class='container-fluid'>"
+							+ "<form class='deleteAPIkeyForm'>"
+							+ "<div class='form-group'>" 
+							+ "<label for='password'>Password</label>"
+							+"<input type='password' class='form-control' name='password' id='safePassword' placeholder='Password'>"
+							+ "</div>"
+							+ "</form>"
+							+ "</div>";
+
+				var submitCallback = function(){
+                    var password = $('#safePassword').val();
+                    if (password==''){
+                    	bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+                    	return false;
+                    };
+                    self.profileData.attr("loading",true);
+                    ProfileModel.revokeApiKey(encodeURIComponent(password)).then(function(){
+                  
+						self.apikeyData.user.attr("ApiKey",null);
+				    	
+					}).fail(function(){
+						bootbox.alert("<i class='fa fa-warning'></i> Error during API key removal.");
+					}).always(function(){
+						self.apikeyData.attr("loading",false);
+					});
+				};
+
+				var dialog=bootbox.dialog({
+					title: title,
+					message: message,
+					buttons: {
+	                    success: {
+	                        label: "OK",
+	                        className: "btn-default",
+	                        callback: function (a,b,c) {
+	                        	submitCallback();
+                        	}
+                    	}
+                    }
+				});
+
+			},
+			
+			/* catalogue */
+			loadCatalogueIndex: function(){
+				var self = this;
+				var catalogueData = this.catalogueData;
+
+				this.isLoginPromise.then(function(user){
+					catalogueData.attr('loading', true);
+					ProfileModel.getCatalogueIndex().then(function(list){
+						if (list && list.length)
+							catalogueData.attr('list', list);
+						catalogueData.attr('loading', false);
+					}).fail(function(xhr){
+						self.catalogueData.attr({
+							loading: false,
+							errorMessage: Helpers.getErrMsg(xhr, 'Error to load the catalogue index.')
+						})
+					});
+				});
+
+			},
+			
+			'.settings-catalogue .createCatalogueIndex click': function(){
+				var self = this;
+				
+				this.catalogueData.attr('loading', true);
+				ProfileModel.createCatalogueIndex().then(function(){
+					self.loadCatalogueIndex();
+				}).fail(function(xhr){
+					self.catalogueData.attr({
+						loading: false,
+						errorMessage: Helpers.getErrMsg(xhr, 'Error to create the catalogue index.')
+					})
+				});
+			},
+
+			/* storage */
+			loadStorage: function(){
+				var self = this;
+				var storageData = this.storageData;
+
+				this.isLoginPromise.then(function(user){
+					storageData.attr('loading', true);
+					ProfileModel.getRepository().then(function(list){
+						if (list && list.length)
+							storageData.attr('list', list);
+						storageData.attr('loading', false);
+					}).fail(function(xhr){
+						self.storageData.attr({
+							loading: false,
+							errorMessage: Helpers.getErrMsg(xhr, 'Error to load the Storage.')
+						})
+					});
+				});
+
+			},
+			
+			'.settings-storage .createStorage click': function(){
+				var self = this;
+				
+				this.storageData.attr('loading', true);
+				ProfileModel.createRepository().then(function(){
+					self.loadStorage();
+				}).fail(function(xhr){
+					self.storageData.attr({
+						loading: false,
+						errorMessage: Helpers.getErrMsg(xhr, 'Error to create the Storage.')
+					})
+				});
+			},
+
+			/* features */
+			loadFeatures: function(){
+				var self = this;
+				var featuresData = this.featuresData;
+
+				this.isLoginPromise.then(function(user){
+					featuresData.attr('loading', true);
+					ProfileModel.getFeatures().then(function(list){
+						if (list && list.length)
+							featuresData.attr('list', list);
+						featuresData.attr('loading', false);
+					}).fail(function(xhr){
+						self.featuresData.attr({
+							loading: false,
+							errorMessage: Helpers.getErrMsg(xhr, 'Error to load the user features.')
+						})
+					});;
+				});
+
+			},
+			
+			'.settings-features .createFeatures click': function(){
+				var self = this;
+				
+				this.featuresData.attr('loading', true);
+				ProfileModel.createFeatures().then(function(){
+					self.loadFeatures();
+				}).fail(function(xhr){
+					self.featuresData.attr({
+						loading: false,
+						errorMessage: Helpers.getErrMsg(xhr, 'Error to create the user features.')
+					})
+				});
+			},
 
 		}
 	);

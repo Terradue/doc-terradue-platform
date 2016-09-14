@@ -1,56 +1,47 @@
 <div id="settingsPage" class="container">
 	<br/>
 	<div class="submenu col-md-3">
-		<div class="settings settings-title">Settings</div>
+		<div class="settings settings-title">
+			<span>Settings</span>
+		</div>
 		<div class="settings settings-container row fluid">
 			<ul class="nav nav-pills nav-stacked">
-				<li class="profile menu-item"><a href="/portal/settings/profile"> 
-					{{#if profileNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
+				<li class="profile menu-item"><a href="/portal/settings/profile">
 					About you</a>
 				</li>
 				<li class="account menu-item"><a href="/portal/settings/account"> 
-					{{#if emailNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
 					Account</a>
 				</li>
-				<li class="key menu-item"><a href="/portal/settings/key"> 
-					{{#if sshKeyNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/if}}
-					SSH keys</a>
-				</li>
-				<li class="github menu-item"><a href="/portal/settings/github">
-					{{#if githubNotComplete}}<span class="text-warning"><i class="fa fa-warning"></i></span>{{/unless}}
-					Github</a>
-				</li>
-				<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
-				</li>
+				{{#unless usernameNotSet}}{{#unless emailNotComplete}}
+					<li class="apikey menu-item"><a href="/portal/settings/apikey">
+						API key</a>
+					</li>
+					{{#if showCatalogue}}
+					<li class="catalogue menu-item"><a href="/portal/settings/catalogue">
+						Catalogue</a>
+					</li>
+					{{/if}}
+					{{#if showStorage}}
+					<li class="storage menu-item"><a href="/portal/settings/storage"> 
+						Storage</a>
+					</li>
+					{{/if}}
+					<!--{{#if showFeatures}}
+					<li class="features menu-item"><a href="/portal/settings/features">
+						Features</a>
+					</li>
+					{{/if}}-->
+					<li class="key menu-item"><a href="/portal/settings/key">
+						SSH keys</a>
+					</li>
+					<li class="github menu-item"><a href="/portal/settings/github">
+						Github</a>
+					</li>
+					<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
+					</li>
+				{{/if}}{{/if}}
 			</ul>
 		</div>
 	</div>
 	<div class="col-md-9" id="subContainer"></div>
-	<br/>
 </div>
-
-<!--
-
-<div class="container">
-	<div class="row-fluid">
-		<div class="col-md-3 {{#if hideMenu}}hidden{{/if}}">
-			<br/>
-			<div class="well submenu">
-				<h3 class="menu-heading">Personal settings</h3>
-				<ul class="nav nav-pills nav-stacked">
-					<li class="profile menu-item"><a href="/portal/settings/profile"> Profile</a></li>
-					<li class="email menu-item"><a href="/portal/settings/email"> 
-						{{#if isPending}}
-							<span class="text-warning"><i class="fa fa-exclamation-triangle"></i></span>
-						{{/if}}
-						Email</a>
-					</li>
-					<li class="key menu-item"><a href="/portal/settings/key"> SSH keys</a></li>
-					<li class="github menu-item"><a href="/portal/settings/github"> Github</a></li>
-				</ul>
-			</div>
-		</div>
-		<div class="col-md-9" id="subContainer"></div>
-		<br/>
-	</div>
-</div>-->

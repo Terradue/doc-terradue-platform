@@ -14,6 +14,9 @@ mkdir -p $portal_path/modules
 mkdir /var/www/.config
 chown apache:apache /var/www/.config
 
+mkdir $portal_path/sites/$site/root/logs
+chown apache:apache $portal_path/sites/$site/root/logs
+
 #link services
 mkdir -p $portal_path/sites/$site/root/services
 mkdir -p $portal_path/sites/$site/root/files

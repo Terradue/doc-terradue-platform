@@ -126,6 +126,9 @@ UA -> UA : display user name
 
         [ApiMember(Name = "token", Description = "token", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Token { get; set; }
+
+        [ApiMember(Name = "originator", Description = "system making the request", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string Originator { get; set; }
     }
 
     [Route("/logout", "GET", Summary = "logout", Notes = "Logout from the platform")]
@@ -149,7 +152,7 @@ UA -> UA : display user name
             UserT2 user = null;
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/cb GET"));
                 if(!string.IsNullOrEmpty(request.error)){
                     context.EndSession();
                     HttpContext.Current.Response.Redirect(context.BaseUrl, true);
@@ -167,7 +170,9 @@ UA -> UA : display user name
                 auth.SetConnect2IdCLient(client);
 
                 user = (UserT2)auth.GetUserProfile(context);
-                user.LoadLdapInfo();//TODO: should be done automatically on the previous call
+                context.LogDebug (this, string.Format("Loaded user '{0}'", user.Username));
+                user.LoadLdapInfo();
+
                 user.Store();
                 if(!user.HasGithubProfile()) user.CreateGithubProfile();
                 redirect = context.GetConfigValue("t2portal-welcomeEndpoint");
@@ -182,26 +187,28 @@ UA -> UA : display user name
         }   
 
         public object Delete(OauthLogoutRequest request) {
-            T2CorporateWebContext wsContext = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
-                wsContext.Open();
-                wsContext.EndSession();
-                wsContext.Close();
+                context.Open();
+                context.LogInfo (this, string.Format ("/auth DELETE"));
+                context.EndSession();
+                context.Close();
             } catch (Exception e) {
-                wsContext.Close();
+                context.Close();
                 throw e;
             }
             return true;
         }
 
         public object Get(OauthLogoutRequest request) {
-            T2CorporateWebContext wsContext = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
-                wsContext.Open();
-                wsContext.EndSession();
-                wsContext.Close();
+                context.Open();
+                context.LogInfo (this, string.Format ("/logout GET"));
+                context.EndSession();
+                context.Close();
             } catch (Exception e) {
-                wsContext.Close();
+                context.Close();
                 throw e;
             }
             return true;
@@ -211,7 +218,7 @@ UA -> UA : display user name
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/sso/user GET eosso='{0}',email='{1}'", request.EoSSO, request.Email));
                 if(string.IsNullOrEmpty(request.Token) || !request.Token.Equals(context.GetConfigValue("t2portal-token-usrsso"))){
                     return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid token parameter"));
                 }
@@ -280,7 +287,7 @@ UA -> UA : display user name
             WebUserT2 result = null;
             try {
                 context.Open();
-
+                context.LogInfo (this, string.Format ("/sso/user POST eosso='{0}',email='{1}',originator='{2}'", request.EoSSO, request.Email, request.Originator));
                 if(string.IsNullOrEmpty(request.Token) || !request.Token.Equals(context.GetConfigValue("t2portal-token-usrsso"))){
                     return new HttpError(HttpStatusCode.BadRequest, new Exception("Invalid token parameter"));
                 }
@@ -332,7 +339,8 @@ UA -> UA : display user name
 
                 UserT2 user = request.ToEntity(context, new UserT2(context));
                 user.NeedsEmailConfirmation = false;
-                user.AccountStatus = AccountStatusType.PendingActivation;
+                //we assume email was already validated on the system making the request, so user is automatically enabled
+                user.AccountStatus = AccountStatusType.Enabled;
                 user.Level = UserLevel.User;
                 user.PasswordAuthenticationAllowed = true;
 
@@ -351,7 +359,8 @@ UA -> UA : display user name
 
                 try{
                     var subject = "[T2 Portal] - User registration on Terradue Portal";
-                    var body = string.Format("This is an automatic email to notify that the user {0} registered on Terradue Portal (account created from TEP).", user.Username);
+                    var originator = request.Originator != null ? "\nThe request was performed from " + request.Originator : "";
+                    var body = string.Format("This is an automatic email to notify that an account has been automatically created on Terradue Corporate Portal for the user {0} ({1}).{2}", user.Username, user.Email, originator);
                     context.SendMail(context.GetConfigValue("SmtpUsername"),context.GetConfigValue("SmtpUsername"),subject,body);
                 }catch(Exception){
                     //we dont want to send an error if mail was not sent
@@ -359,7 +368,7 @@ UA -> UA : display user name
 
                 //TODO: log user created from TEP
 
-                result = new WebUserT2(user, true);
+                result = new WebUserT2(user);
 
                 context.Close();
             } catch (Exception e) {

@@ -10,7 +10,7 @@
 
 	<groupId>com.terradue.t2portal</groupId>
 	<artifactId>webserver-t2portal</artifactId>
-	<version>2.1.6</version>
+	<version>2.2</version>
 	<packaging>rpm</packaging>
 
 	<name>Web Server for T2 Corporate portal</name>
@@ -188,7 +188,7 @@
 									<location>${basedir}/src/main/web-resources/config/web.config</location>
 								</source>
 								<source>
-									<location>${basedir}/src/main/web-resources/config/Log4Net.config</location>
+									<location>${basedir}/src/main/web-resources/config/log4net.config</location>
 								</source>
 							</sources>
 						</mapping>

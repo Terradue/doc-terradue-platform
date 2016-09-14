@@ -1,4 +1,4 @@
--- VERSION 2.1.3
+-- VERSION 2.1.4
 
 USE $MAIN$;
 
@@ -118,4 +118,20 @@ INSERT INTO config (name, id_section, pos, internal, type, caption, hint, value,
 -- Adding zendesk SSO ... \
 INSERT INTO config (name, id_section, pos, internal, type, caption, hint, value, optional) VALUES ('zendesk-sso-secret', NULL, NULL, '0', 'string', 'zendesk sso secret', 'zendesk sso secret', '5Gjz1rGjFlPRcqrFXUAOfCA9kRJamuoK0xvu745eNuIl9ItJ', '1');
 INSERT INTO config (name, id_section, pos, internal, type, caption, hint, value, optional) VALUES ('zendesk-sso-callback', NULL, NULL, '0', 'string', 'zendesk sso callback', 'zendesk sso callback', 'https://terradue.zendesk.com/access/jwt', '1');
+-- RESULT
+
+-- Adding Catalogue config ...\
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('catalogue-BaseUrl', 'string', 'Catalogue Base Url', 'Enter the value of the Catalogue Base Url', 'https://data.terradue.com/catalogue', '0');
+-- RESULT
+
+-- Adding Geoserver config ...\
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('geoserver-BaseUrl', 'string', 'Geoserver Base Url', 'Enter the value of the Geoserver Base Url', 'https://geo.terradue.com/rest', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('geoserver-admin-usr', 'string', 'Geoserver Admin username', 'Enter the value of the Geoserver Admin username', '', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('geoserver-admin-pwd', 'string', 'Geoserver Admin password', 'Enter the value of the Geoserver Admin password', '', '0');
+-- RESULT
+
+-- Adding Artifactory config ...\
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-APIurl', 'string', 'Artifactory API Url', 'Enter the value of the Artifactory API Url', 'https://store.terradue.com/api', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-SyncUrl', 'string', 'Artifactory Sync Url', 'Enter the value of the Artifactory Sync Url', 'https://store.terradue.com/ldap-test/', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-APIkey', 'string', 'Artifactory API Key', 'Enter the value of the Artifactory API Key', 'AKCp2V5pLBiabTT8RoSpP6gbsZFGFGNc2PoL6LeWZf2gyDMsqD8nuqcRaeNe7Cpco2hepyxte', '0');
 -- RESULT
