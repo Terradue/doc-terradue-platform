@@ -11,17 +11,19 @@ namespace Terradue.Corporate.WebServer.Common {
     /// </summary>
     public class T2CorporateLocalContext : IfyLocalContext {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Terradue.TepQW.WebServer.Common.TepQWLocalContext"/> class.
+        /// Initializes a new instance of the
+        /// <see cref="T:Terradue.Corporate.WebServer.Common.T2CorporateLocalContext"/> class.
         /// </summary>
         /// <param name="connectionString">Connection string.</param>
         /// <param name="baseUrl">Base URL.</param>
         /// <param name="applicationName">Application name.</param>
         public T2CorporateLocalContext(string connectionString, string baseUrl, string applicationName) : base(connectionString,baseUrl,applicationName) {}
         /// <summary>
-        /// Initializes a new instance of the <see cref="Terradue.TepQW.WebServer.Common.TepQWLocalContext"/> class.
+        /// Initializes a new instance of the
+        /// <see cref="T:Terradue.Corporate.WebServer.Common.T2CorporateLocalContext"/> class.
         /// </summary>
         /// <param name="connectionString">Connection string.</param>
-        /// <param name="console">Console.</param>
+        /// <param name="console">If set to <c>true</c> console.</param>
         public T2CorporateLocalContext(string connectionString, bool console) : base(connectionString,console){}
     }
 

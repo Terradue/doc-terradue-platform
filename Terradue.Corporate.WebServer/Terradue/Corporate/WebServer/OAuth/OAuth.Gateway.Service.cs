@@ -271,12 +271,11 @@ namespace Terradue.Corporate.WebServer {
                 log.DebugFormat("test1 : {0}", client.SID);
                 var oauthputsession = client.AuthzSession(client.SID, oauthrequest2, request.ajax);
                 log.DebugFormat("test2 : {0}", client.SUB_SID);
-                if(!string.IsNullOrEmpty(oauthputsession.redirect)){
-                    return DoRedirect(context, oauthputsession.redirect, request.ajax);
-                } else {
-//                    client.SID = null;
-                    if(oauthputsession.sub_session != null) client.SUB_SID = oauthputsession.sub_session.sid;
-                }
+                if (!string.IsNullOrEmpty (oauthputsession.redirect)) {
+                    return DoRedirect (context, oauthputsession.redirect, request.ajax);
+                } 
+                //                    client.SID = null;
+                if (oauthputsession.sub_session != null) client.SUB_SID = oauthputsession.sub_session.sid;
                 log.Debug("test3");
                 //user is now authenticated and need to consent
                 if(oauthputsession.type == "consent"){
