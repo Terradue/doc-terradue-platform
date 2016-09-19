@@ -353,7 +353,7 @@ namespace Terradue.Corporate.Controller {
                 case Plan.NONE:
                     break;
                 case Plan.TRIAL:
-                    
+                    if (!HasCloudAccount ()) CreateCloudAccount (plan);
                     break;
                 case Plan.EXPLORER:
                 case Plan.SCALER:
