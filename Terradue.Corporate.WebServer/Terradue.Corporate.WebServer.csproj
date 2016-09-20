@@ -246,6 +246,7 @@
     <Compile Include="Terradue\Corporate\WebServer\Activity\Logs.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Storage\Storage.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Storage\WebStorage.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Everest.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
