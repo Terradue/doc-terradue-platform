@@ -12,7 +12,6 @@ define([
 	'jqueryValidate',
 	'ajaxFileUpload',
 	'droppableTextarea',
-	'jqueryCopyableInput',
 	'latinise'
 ], function($, can, bootbox, BaseControl, Config, Helpers){
 	
