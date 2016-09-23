@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                               http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <version>2.0.0</version>
+  <groupId>com.terradue</groupId>
+  <artifactId>doc-terradue-platform</artifactId>
+  <packaging>pom</packaging>
+  <name>doc-terradue-platform</name>
+  
+  <distributionManagement>
+    <snapshotRepository>
+      <id>repository.terradue.com</id>
+      <name>repository.terradue.com-snapshots</name>
+      <url>https://repository.terradue.com/artifactory/libs-snapshot-local</url>
+    </snapshotRepository>
+    <repository>
+      <id>repository.terradue.com</id>
+      <name>repository.terradue.com-releases</name>
+      <url>https://repository.terradue.com/artifactory/libs-release-local</url>
+    </repository>
+  </distributionManagement>
+    
+  <modules>
+    <module>data-agency</module>
+    <module>developer-sandbox</module>
+  </modules>
+
+</project>

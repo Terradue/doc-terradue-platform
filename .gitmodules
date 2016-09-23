@@ -1,0 +1,6 @@
+[submodule "data-agency"]
+	path = data-agency
+	url = git@github.com:Terradue/api.git
+[submodule "developer-sandbox"]
+	path = developer-sandbox
+	url = git@github.com:Terradue/doc-developer-sandbox.git
