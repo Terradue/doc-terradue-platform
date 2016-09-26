@@ -4,9 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
   <version>2.0.1-SNAPSHOT</version>
   <groupId>com.terradue</groupId>
-  <artifactId>doc-terradue-platform</artifactId>
-  <name>doc-terradue-platform</name>
-  <packaging>pom</packaging>
+  <artifactId>doc-terradue-platform-landing</artifactId>
+  <name>doc-terradue-platform-landing</name>
   
   <distributionManagement>
     <snapshotRepository>
@@ -21,10 +20,20 @@
     </repository>
   </distributionManagement>
     
-  <modules>
-    <module>t2-api</module>
-    <module>developer-sandbox</module>
-    <module>landing</module>
-  </modules>
+  <properties>
+    <site>dev</site>
+  </properties>
   
+  <build>
+    <filters>
+      <filter>${basedir}/src/main/filters/${site}.properties</filter>
+    </filters>
+    <resources>
+      <resource>
+        <directory>${basedir}/www-root/</directory>
+        <filtering>true</filtering>
+        <targetPath>${project.build.directory}/www-root</targetPath>
+      </resource>
+    </resources>
+  </build>
 </project>
