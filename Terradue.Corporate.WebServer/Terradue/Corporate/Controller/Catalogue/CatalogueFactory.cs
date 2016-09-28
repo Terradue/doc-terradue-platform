@@ -38,10 +38,10 @@ namespace Terradue.Corporate.Controller {
             request.Method = "GET";
             request.Credentials = new NetworkCredential (username, apikey);
             request.PreAuthenticate = true;
+            request.Proxy = null;
 
-            HttpWebResponse response = null;
             try {
-                response = (HttpWebResponse)request.GetResponse();
+                using (var response = (HttpWebResponse)request.GetResponse ()) { }
             } catch (WebException e) {
                 if ((e.Response != null && ((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Found)) {
                     return true;
@@ -67,8 +67,8 @@ namespace Terradue.Corporate.Controller {
                 request.Method = "PUT";
                 request.Credentials = new NetworkCredential (username, apikey);
                 request.PreAuthenticate = true;
-                request.GetResponse();
-
+                request.Proxy = null;
+                using (var response = request.GetResponse ()) { }
             }
         }
 
@@ -88,7 +88,7 @@ namespace Terradue.Corporate.Controller {
                 request.Method = "DELETE";
                 request.Credentials = new NetworkCredential (username, apikey);
                 request.PreAuthenticate = true;
-                request.GetResponse ();
+                using (var response = request.GetResponse ()) { }
             }
         }
     }

@@ -32,6 +32,7 @@ namespace Terradue.Corporate.Controller {
             request.ContentType = "application/json";
             request.Accept = "application/json";
             request.Credentials = Credentials;
+            request.Proxy = null;
 
             try{
 //                var httpResponse = (HttpWebResponse)request.GetResponse();
@@ -52,6 +53,7 @@ namespace Terradue.Corporate.Controller {
             request.ContentType = "application/json";
             request.Accept = "application/json";
             request.Credentials = Credentials;
+            request.Proxy = null;
 
             GeoServerWorkspace workspace = new GeoServerWorkspace();
             workspace.workspace = new GeoServerWorkspaceConfif();
