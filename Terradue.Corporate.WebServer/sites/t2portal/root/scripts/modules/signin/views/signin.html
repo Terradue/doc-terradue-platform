@@ -27,12 +27,17 @@
 				&nbsp;&nbsp;&nbsp; <i class="fa fa-spin fa-spinner"></i> wait...
 			{{/if}}
 			<!-- <button class="btn btn-default" id="cancel-login-button">Cancel</button> -->
-			
+			<br><br>
+			<div class="strike">
+			   <span>or</span>
+			</div>
 			<br>
-			<br>
+			<a href="/t2api/oauth/everest" class="btn btn-default"><img style="width:50px;" src="/scripts/modules/signin/img/wos2.svg"/> Sign in with your EVER-EST account</a> 
+			<br><br><br>
 			<p><small><b>New here ? <a href="signup" tabindex="5">Create a free account</a></b></small></p>
 		</form>
 	</div>
+
 	
 	<div class="container consentContainer {{#unless showConsentForm }}hidden{{/unless}}">
 	{{#consentData }}
