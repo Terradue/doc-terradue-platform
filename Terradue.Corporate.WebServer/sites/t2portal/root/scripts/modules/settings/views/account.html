@@ -1,4 +1,29 @@
 {{#if user}}
+<div class='settings-username container col-md-9'>
+	<div>
+		<div class='settings settings-title'>Cloud Platform</div>
+		<div class='settings settings-description'>
+			Information about your Cloud Platform account
+		</div>
+		<div class='settings settings-container'>
+		{{#if user.HasLdapAccount}}
+			{{#if usernameSet}}
+				<div><i class="fa fa-check-square text-success"></i> <b>Cloud Username:</b> <span class='account-value'>{{ user.Username }}</span></div>
+				<br/>
+				<div class='alert alert-info'><i class="fa fa-info-circle"></i> Changing your cloud username can have unintended side-effects, so it is highly recommended not to do it. If you wish to do it anyway, please <a href="mailto:support@terradue.com">contact us</a>.</div>
+			{{else}}
+				<div class='alert alert-info'>Please go now to your <a href="profile">profile</a> to set your Cloud username.</div>
+			{{/if}}
+		{{else}}
+			<div class='alert alert-danger'>Your account needs to be integrated to the Terradue Cloud platform.</div>
+			You will need to provide a new password which will be associated to your account and will allow you to access your Cloud environment.
+			<br/><br/>
+			<button class="btn btn-small btn-warning createLdapAccount">Proceed</button>
+		{{/if}}
+
+	</div>
+</div>
+<div class='container col-md-9'><br/></div>
 <div id='settings' class='settings-email container col-md-9'>
 	<div>
 		<div class='settings settings-title'>Email</div>
@@ -6,22 +31,27 @@
 			Your <b>email</b> is important as it is used to verify your account.<br/>
 			If you wish to change your email, you will have to validate the new one before being able to access your Cloud environment again.
 		</div>
-		<div class='settings settings-container'>	
-			{{#if emailNotComplete}}
-				<div class="alert alert-warning">
-					<i class="fa fa-warning"></i> Your email needs to be verified, please check your emails or <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
-				</div>
-			{{else}}
-				{{#if emailConfirmOK}}
-					<div class="alert alert-success"><i class="fa fa-check-square"></i> Your email has been successfully validated!</div>
+		<div class='settings settings-container'>
+			{{#if user.Email}}
+				{{#if emailNotComplete}}
+					<div class="alert alert-warning">
+						<i class="fa fa-warning"></i> Your email needs to be verified, please check your emails or <a class="sendConfirmationEmail" href="javascript://">send again the confirmation email</a>
+					</div>
+				{{else}}
+					{{#if emailConfirmOK}}
+						<div class="alert alert-success"><i class="fa fa-check-square"></i> Your email has been successfully validated!</div>
+					{{/if}}
 				{{/if}}
-			{{/if}}
 
-			<div class="email-change">
-				<span class='account-value'>{{ user.Email }}</span>
-				<br/>
-				<br/>
-			</div>
+				<div class="email-change">
+					<span class='account-value'>{{ user.Email }}</span>
+					<br/>
+					<br/>
+				</div>
+
+			{{else}}
+				<div class='alert alert-warning'>You have no email associated to your account.</div>
+			{{/if}}
 
 			<form class='changeEmailForm'>
 				<div class='form-group'>
@@ -37,10 +67,10 @@
 				{{/if}}
 
 				{{#if emailLoading}}
-					<button type="button" class="btn btn-warning submit" disabled="disabled">Change email</button>
+					<button type="button" class="btn btn-warning submit" disabled="disabled">{{#if user.Email}}Change{{else}}Save{{/if}} email</button>
 					<i class="fa fa-spin fa-spinner"></i> Saving...
 				{{else}}
-					<button type="submit" class="btn btn-warning submit">Change email</button>
+					<button type="submit" class="btn btn-warning submit">{{#if user.Email}}Change{{else}}Save{{/if}} email</button>
 				{{/if}}
 
 			</form>
@@ -50,29 +80,7 @@
 		</div>
 	</div>
 </div>
-<div class='container col-md-9'><br/></div>
-<div class='settings-username container col-md-9'>
-	<div>
-		<div class='settings settings-title'>Cloud username</div>
-		{{#if usernameSet}}
-			<div class='settings settings-description'>
-				Changing your <b>Cloud username</b> can have unintended side-effects, so it is highly recommended not to do it.
-				<br/>If you wish to do it anyway, please <a href="mailto:support@terradue.com">contact us</a>.
-			</div>
-
-			<div class='settings settings-container'>
-				<span class='account-value'>{{ user.Username }}</span>
-			</div>
-		{{else}}
-			<div class='settings settings-description'>
-				Your <b>Cloud username</b> is very important. It will be used as unique identifier to access your Cloud environment.
-			</div>
-			<div class='settings settings-container'>
-				<div class='alert alert-info'>Please go now to your <a href="profile">profile</a> to set your Cloud username.</div>
-			</div>
-		{{/if}}
-	</div>
-</div>
+{{#if HasLdapDomain}}
 <div class='container col-md-9'><br/></div>
 <div class="settings-account container col-md-9">
 	<div class='settings settings-title'>Change password</div>
@@ -111,6 +119,7 @@
 
 	</div>
 </div>
+{{/if}}
 {{else}}
 	{{#if emailConfirmOK}}
 		<div class="alert alert-success"><i class="fa fa-check-square"></i> Your email has been successfully validated!</div>

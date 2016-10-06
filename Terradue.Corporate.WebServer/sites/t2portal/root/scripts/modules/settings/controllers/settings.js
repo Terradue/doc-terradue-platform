@@ -121,17 +121,16 @@ define([
 				console.log("App.controllers.Settings.profile");
 				
 				// first wait user is ready
-				this.fullUserPromise.then(function(user){
+				this.isLoginPromise.then(function(user){
 					// create the view
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					if(usernameDefault) user.Username = null;
 
 					self.profileData = new can.Observe({
 						user: user,
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country && user.HasLdapAccount),
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						nameMissing: !(user.FirstName && user.LastName),
-						usernameNotSet: usernameDefault,
-						ldapLoaded: false
+						usernameNotSet: usernameDefault
 					});
 					self.view({
 						url: 'modules/settings/views/profile.html',
@@ -165,8 +164,8 @@ define([
 				
 				console.log("App.controllers.Settings.account");
 				// first wait user is ready
-				this.isLoginPromise.then(function(user){
-				var usernameDefault = (user.Username == null || user.Username == user.Email);
+				this.fullUserPromise.then(function(user){
+					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					self.accountData.attr({
 						user: user,
 						usernameSet: !(user.Email == user.Username),
@@ -539,6 +538,8 @@ define([
 
 			'.settings-profile .createLdapAccount click': function(){
 				var self = this;
+
+				//TODO CICCIO -> a bootbox dialog with password + password validation, grazie ;)
 			},
 
 			// account

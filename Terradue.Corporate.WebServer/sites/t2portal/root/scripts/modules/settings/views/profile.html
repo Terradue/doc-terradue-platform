@@ -5,13 +5,6 @@
 	</div>
 	<div class='settings settings-container'>
 		{{#if user}}
-			{{#unless user.HasLdapAccount}}
-				<div class="alert alert-danger">
-					<b><i class="fa fa-warning"></i>&nbsp;Your account needs to be integrated to the Terradue Cloud platform!</b>
-					<br/>
-					<button class="btn btn-small btn-warning createLdapAccount">Proceed</button>
-				</div>
-			{{/unless}}
 			{{#if profileNotComplete}}
 				<div class="alert alert-warning">
 					<b><i class="fa fa-warning"></i>&nbsp;Your profile is not yet complete!</b>
