@@ -57,6 +57,11 @@ namespace Terradue.Corporate.Controller {
                 
             }
         }
+
+        /// <summary>
+        /// True if user has a ldap account, else otherwise
+        /// </summary>
+        private bool hasldapaccount;
         
         /// <summary>
         /// Gets or sets the one password.
@@ -601,6 +606,17 @@ namespace Terradue.Corporate.Controller {
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
+        /// Check if user has ldap account
+        /// </summary>
+        /// <returns><c>true</c>, if LDAP account exists, <c>false</c> otherwise.</returns>
+        public bool HasLdapAccount (){
+            if(!hasldapaccount) hasldapaccount = LdapFactory.UserExists (this.Username);
+            return hasldapaccount;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
         /// Creates the LDAP Distinguished Name for people
         /// </summary>
         /// <returns>The LDAP DN.</returns>
@@ -655,6 +671,7 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+            hasldapaccount = true;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -678,6 +695,7 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+            hasldapaccount = true;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -701,6 +719,7 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+            hasldapaccount = false;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -740,6 +759,8 @@ namespace Terradue.Corporate.Controller {
                                 StringUtils.EscapeSql(this.Username),
                                 this.Id);
             context.Execute(sql);
+
+            hasldapaccount = true;
         }
 
         /// <summary>
@@ -787,6 +808,8 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+
+            hasldapaccount = true;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -843,6 +866,8 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+
+            hasldapaccount = true;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -869,6 +894,8 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+
+            hasldapaccount = true;
         }
 
         /// <summary>
@@ -890,6 +917,8 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close ();
+
+            hasldapaccount = true;
         }
 
         public void PublicLoadSshPubKey(string username) {
@@ -905,6 +934,8 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+
+            hasldapaccount = true;
         }
 
         public void SaveApiKey (string password) { 
@@ -932,6 +963,8 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close ();
+
+            hasldapaccount = true;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -973,6 +1006,8 @@ namespace Terradue.Corporate.Controller {
 
             //revoke api key also from Artifactory
             JFrogFactory.RevokeApiKey(this.Username, password);
+
+            hasldapaccount = true;
         }
 
         /// <summary>
@@ -990,6 +1025,7 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+            hasldapaccount = true;
             return result;
         }
 
@@ -1029,6 +1065,8 @@ namespace Terradue.Corporate.Controller {
 
             //Add group on Artifactory
             CreateArtifactoryGroup();
+
+            hasldapaccount = true;
         }
 
 
@@ -1048,6 +1086,8 @@ namespace Terradue.Corporate.Controller {
                 throw e;
             }
             Json2Ldap.Close();
+
+            hasldapaccount = true;
         }
 
         public static string GenerateSaltedSHA1(string plainTextString)
