@@ -160,6 +160,9 @@
     <Reference Include="Terradue.Authentication.OpenId">
       <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.11\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
     </Reference>
+		<Reference Include="Terradue.Authentication.Everest">
+      <HintPath>..\packages\Terradue.Authentication.Everest.0.1.0\lib\net40\Terradue.Authentication.Everest.dll</HintPath>
+    </Reference>
     <Reference Include="NetTopologySuite.IO.ShapeFile">
       <HintPath>..\packages\NetTopologySuite.IO.1.13.3.2\lib\net40-client\NetTopologySuite.IO.ShapeFile.dll</HintPath>
     </Reference>

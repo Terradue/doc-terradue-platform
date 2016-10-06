@@ -295,37 +295,6 @@ namespace Terradue.Corporate.WebServer {
                     return DoRedirect(context, redirect, request.ajax);
                     
                 }
-                
-
-                //user needs to consent
-//                if(oauthsession.type == "consent"){
-//
-//                    var consent = new OauthConsentRequest();
-//
-//                    if(request.scope != null)
-//                        consent = GenerateConsent(request.scope);
-//                    else if(oauthsession.scope.new_claims.Count == 0){
-//                        consent = GenerateConsent(defaultscopes);
-//                    } else if(request.autoconsent || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid")))
-//                        consent = GenerateConsent(oauthsession.scope.new_claims);
-//                    else if (request.username != null && request.password != null){
-//                        //return to the login page so it can display the consent
-//                        return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
-//                    } else {
-//                        throw new Exception("Not expected behaviour");
-//                    }
-//
-//                    var redirect = client.ConsentSession(oauthsession.sid, consent);
-//
-//                    if(request.ajax){
-//                        HttpResult redirectResponse = new HttpResult();
-//                        redirectResponse.Headers[HttpHeaders.Location] = redirect;
-//                        redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
-//                        return redirectResponse;
-//                    } else {
-//                        HttpContext.Current.Response.Redirect(redirect, true);
-//                    }
-//                }
 
                 context.Close();
             } catch (Exception e) {
