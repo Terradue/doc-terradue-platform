@@ -27,6 +27,12 @@ namespace Terradue.Corporate.WebServer {
     public class GetLdapUsers : IReturn<WebUserT2> {
     }
 
+    [Route ("/user/ldap", "POST", Summary = "POST the user ldap", Notes = "User is found on ldap")]
+    public class CreateLdapAccount : IReturn<WebUserT2>{
+        [ApiMember (Name = "password", Description = "User password", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Password { get; set; }
+    }
+
     [Route("/user/{username}", "GET", Summary = "GET the user", Notes = "User is found from username")]
     public class GetUserNameT2 : IReturn<WebUserT2> {
         [ApiMember(Name = "username", Description = "User identifier", ParameterType = "query", DataType = "string", IsRequired = true)]
@@ -273,6 +279,9 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember(Name = "hasoneaccount", Description = "Says if user has an account on OpenNebula", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool HasOneAccount { get; set; }
 
+        [ApiMember (Name = "hasldapaccount", Description = "Says if user has an account on LDAP", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool HasLdapAccount { get; set; }
+
         [ApiMember(Name = "DomainId", Description = "User domain id", ParameterType = "query", DataType = "int", IsRequired = false)]
         public int DomainId { get; set; }
 
@@ -320,13 +329,16 @@ namespace Terradue.Corporate.WebServer {
 
             if (ldap || admin) {
                 log.DebugFormat ("Get LDAP info");
-                if (entity.PublicKey == null) entity.LoadLdapInfo();
-                if (entity.ApiKey == null) entity.LoadApiKey ();
-                if (entity.OneUser != null) {
-                    this.HasOneAccount = true;
+                this.HasLdapAccount = entity.HasLdapAccount ();
+                if (this.HasLdapAccount) {
+                    if (entity.PublicKey == null) entity.LoadLdapInfo ();
+                    if (entity.ApiKey == null) entity.LoadApiKey ();
+                    if (entity.OneUser != null) {
+                        this.HasOneAccount = true;
+                    }
+                    this.PublicKey = entity.PublicKey;
+                    this.ApiKey = entity.ApiKey;
                 }
-                this.PublicKey = entity.PublicKey;
-                this.ApiKey = entity.ApiKey;
             }
             if (admin) { 
                 log.DebugFormat ("Get ADMIN info - HasLDAPDomain");

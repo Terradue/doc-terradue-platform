@@ -72,7 +72,7 @@ define([
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						emailNotComplete: (user.AccountStatus==1),
 						usernameNotSet: usernameDefault,
-						emailNotComplete: !accountEnabled,
+						emailNotComplete: !accountEnabled
 					});
 				}).fail(function(){
 					self.data.attr('hideMenu', true);
@@ -80,6 +80,7 @@ define([
 					if (!self.params.token)
 						self.accessDenied();
 				});
+
 			},
 			
 			indexDependency: function(){
@@ -120,16 +121,17 @@ define([
 				console.log("App.controllers.Settings.profile");
 				
 				// first wait user is ready
-				this.isLoginPromise.then(function(user){
+				this.fullUserPromise.then(function(user){
 					// create the view
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					if(usernameDefault) user.Username = null;
 
 					self.profileData = new can.Observe({
 						user: user,
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country && user.HasLdapAccount),
 						nameMissing: !(user.FirstName && user.LastName),
-						usernameNotSet: usernameDefault
+						usernameNotSet: usernameDefault,
+						ldapLoaded: false
 					});
 					self.view({
 						url: 'modules/settings/views/profile.html',
@@ -533,6 +535,10 @@ define([
 			
 			'.settings-profile .signIn click': function(){
 				App.Login.openLoginForm();
+			},
+
+			'.settings-profile .createLdapAccount click': function(){
+				var self = this;
 			},
 
 			// account
