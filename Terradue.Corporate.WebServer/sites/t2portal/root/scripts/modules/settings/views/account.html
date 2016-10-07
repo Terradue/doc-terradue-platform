@@ -16,10 +16,14 @@
 						<div class='alert alert-info'>Please go now to your <a href="profile">profile</a> to set your Cloud username.</div>
 					{{/if}}
 				{{else}}
-					<div class='alert alert-danger'>Your account needs to be integrated to the Terradue Cloud platform.</div>
-					You will need to provide a new password which will be associated to your account and will allow you to access your Cloud environment.
-					<br/><br/>
-					<button class="btn btn-small btn-warning createLdapAccount">Proceed</button>
+					{{#if createLdapAccountloading}}
+						<p style="text-align: center"><i class="fa fa-spin fa-spinner"></i> Creating Ldap account...</p>
+					{{else}}
+						<div class='alert alert-danger'>Your account needs to be integrated to the Terradue Cloud platform.</div>
+						You will need to provide a new password which will be associated to your account and will allow you to access your Cloud environment.
+						<br/><br/>
+						<button class="btn btn-small btn-warning createLdapAccount">Proceed</button>
+					{{/if}}
 				{{/if}}
 				</div>
 			</div>

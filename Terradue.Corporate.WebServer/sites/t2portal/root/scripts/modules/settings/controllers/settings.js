@@ -595,14 +595,14 @@ define([
 
 						submitHandler: function(){
 							var password = $password.val();
-							accountData.attr('loading', true);
-							// TODO: check
-							ProfileModel.createLdapAccount(password).then(function(res){
+							$modal.modal('hide');
+							accountData.attr('createLdapAccountloading', true);
+							ProfileModel.createLdapAccount(password).then(function(usr){
 								bootbox.alert("Account created.");
-								$modal.modal('hide');
+								accountData.attr('createLdapAccountloading', false);
 							}).fail(function(){
 								bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
-								$modal.modal('hide');
+								accountData.attr('createLdapAccountloading', false);
 							});
 							return false;
 						}
