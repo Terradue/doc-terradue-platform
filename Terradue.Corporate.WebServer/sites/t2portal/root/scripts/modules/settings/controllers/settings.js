@@ -570,7 +570,7 @@ define([
 				App.Login.openLoginForm();
 			},
 			//createLdapAccount
-			'.settings-account .createLdapAccount click': function(){
+			'.settings-account .account-value click': function(){
 				var accountData = this.accountData;
 				
 				var $modal = this.element.find('.settings-account .createLdapAccountModal').modal('show');
@@ -595,9 +595,11 @@ define([
 
 						submitHandler: function(){
 							var password = $password.val();
-							//accountData.attr('')
+							accountData.attr('loading', true);
+							// TODO: check
 							ProfileModel.createLdapAccount(password).then(function(res){
 								bootbox.alert("Account created.");
+								$modal.modal('hide');
 							}).fail(function(){
 								bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
 								$modal.modal('hide');
