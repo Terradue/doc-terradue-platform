@@ -34,6 +34,40 @@ define([
 		return 'Enter a value which suits the regexpr "'+regExprStr+'"';
 	});
 	
+	var DEFAULT_PASSWORD_RULES = {
+			required: true,
+			minlength: 8,
+			atLeastOneUpper: true,
+			atLeastOneLower: true,
+			atLeastOneNumber: true,
+			atLeastOneSpecialChar: true,
+			noOtherSpecialChars: true,
+	};
+	var DEFAULT_PASSWORD_MESSAGES = {
+		required: 'Insert a password',
+		minlength: 'Password must be at least 8 characters',
+		atLeastOneUpper: 'Password must include at least one uppercase character',
+		atLeastOneLower: 'Password must include at least one lowercase character',
+		atLeastOneNumber: 'Password must include at least one number',
+		atLeastOneSpecialChar: 'Password must include at least one special character in the list !@#$%^&*()_+',
+		noOtherSpecialChars: 'Password can\'t include special characters different from the list !@#$%^&*()_+',
+	};
+	var DEFAULT_PASSWORD_POPOVER_SETTINGS = {
+		trigger: 'focus',
+		placement: 'left',
+		title: 'Password',
+		html: true,
+		content: 'It must have:<ul>'
+			+'<li>at least 8 characters</li>'
+			+'<li>at least one uppercase character</li>'
+			+'<li>at least one lowercase character</li>'
+			+'<li>at least one number</li>'
+			+'<li>at least one special character, chosen from the list: ! @ # $ % ^ & * ( ) _ +</li>'
+			+'<li>no other special characters are permitted</li>'
+			+'</ul>',
+	}
+	
+	
 	var SettingsControl = BaseControl(
 		{
 			defaults: { fade: 'slow' },
@@ -158,9 +192,9 @@ define([
 
 			account: function(options) {
 				var self = this;
-				self.accountData = new can.Observe({});
-				self.params = Helpers.getUrlParameters();
-
+				this.accountData = new can.Observe({});
+				this.params = Helpers.getUrlParameters();
+				this.element.html('<br/><br/><p style="text-align:center"><i class="fa fa-spin fa-spinner"></i> Loading account data...</p>');
 				
 				console.log("App.controllers.Settings.account");
 				// first wait user is ready
@@ -535,11 +569,46 @@ define([
 			'.settings-profile .signIn click': function(){
 				App.Login.openLoginForm();
 			},
+			//createLdapAccount
+			'.settings-account .createLdapAccount click': function(){
+				var accountData = this.accountData;
+				
+				var $modal = this.element.find('.settings-account .createLdapAccountModal').modal('show');
+				
+				if (!this.alreadyShowAccountForm){
+					this.alreadyShowAccountForm = true;
+					
+					var $password = this.element.find('.createLdapAccountForm input[name="password"]')
+						.popover(DEFAULT_PASSWORD_POPOVER_SETTINGS);
+					
+					this.element.find('.createLdapAccountForm').validate({
+						rules: {
+							password: DEFAULT_PASSWORD_RULES,
+							password2: {
+								equalTo: '[name="password"]',
+							}
+						},
+						messages : {
+							newpassword: DEFAULT_PASSWORD_MESSAGES,
+							password2: 'Password does not match the confirm password.',
+						},
 
-			'.settings-profile .createLdapAccount click': function(){
-				var self = this;
-
-				//TODO CICCIO -> a bootbox dialog with password + password validation, grazie ;)
+						submitHandler: function(){
+							var password = $password.val();
+							//accountData.attr('')
+							ProfileModel.createLdapAccount(password).then(function(res){
+								bootbox.alert("Account created.");
+							}).fail(function(){
+								bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
+								$modal.modal('hide');
+							});
+							return false;
+						}
+					});
+				} else
+					this.element.find('.createLdapAccountForm input').each(function(){
+						$(this).val('').valid();
+					})
 			},
 
 			// account
@@ -566,29 +635,13 @@ define([
 				this.element.find('form.changePasswordForm').validate({
 					rules: {
 						oldpassword: 'required',
-						newpassword: {
-							required: true,
-							minlength: 8,
-							atLeastOneUpper: true,
-							atLeastOneLower: true,
-							atLeastOneNumber: true,
-							atLeastOneSpecialChar: true,
-							noOtherSpecialChars: true,
-						},
+						newpassword: DEFAULT_PASSWORD_RULES,
 						newpassword2: {
 							equalTo: '[name="newpassword"]',
 						}
 					},
 					messages : {
-						newpassword: {
-							required: 'Insert a password',
-							minlength: 'Password must be at least 8 characters',
-							atLeastOneUpper: 'Password must include at least one uppercase character',
-							atLeastOneLower: 'Password must include at least one lowercase character',
-							atLeastOneNumber: 'Password must include at least one number',
-							atLeastOneSpecialChar: 'Password must include at least one special character in the list !@#$%^&*()_+',
-							noOtherSpecialChars: 'Password can\'t include special characters different from the list !@#$%^&*()_+',
-						},
+						newpassword: DEFAULT_PASSWORD_MESSAGES,
 						newpassword2: 'Password does not match the confirm password.',
 					},
 
@@ -597,20 +650,7 @@ define([
 					}
 				});
 				
-				this.element.find('form.changePasswordForm input[name="newpassword"]').popover({
-					trigger: 'focus',
-					placement: 'left',
-					title: 'Password',
-					html: true,
-					content: 'It must have:<ul>'
-						+'<li>at least 8 characters</li>'
-						+'<li>at least one uppercase character</li>'
-						+'<li>at least one lowercase character</li>'
-						+'<li>at least one number</li>'
-						+'<li>at least one special character, chosen from the list: ! @ # $ % ^ & * ( ) _ +</li>'
-						+'<li>no other special characters are permitted</li>'
-						+'</ul>',
-				});
+				this.element.find('form.changePasswordForm input[name="newpassword"]').popover(DEFAULT_PASSWORD_POPOVER_SETTINGS);
 			},
 
 			changeEmail: function(email){

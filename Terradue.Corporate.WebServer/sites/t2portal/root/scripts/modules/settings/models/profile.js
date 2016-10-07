@@ -66,8 +66,8 @@ define(['can', 'config'], function(can, Config){
 		createFeatures: function(){
 			return $.post('/'+Config.api+'/user/features/geoserver?format=json', {});
 		},
-		createLdapAccount: function(){
-			return $.post('/'+Config.api+'/user/ldap', {});
+		createLdapAccount: function(password){
+			return $.post('/'+Config.api+'/user/ldap', {password: password});
 		}
 		
 	}, {});
