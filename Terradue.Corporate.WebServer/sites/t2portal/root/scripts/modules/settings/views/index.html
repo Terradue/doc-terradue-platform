@@ -2,7 +2,11 @@
 	<br/>
 	<div class="submenu col-md-3">
 		<div class="settings settings-title">
-			<span>Settings</span>
+			<span>Settings 
+				{{#if loading}}
+					<i class="fa fa-spin fa-spinner"></i>
+				{{/if}}
+			</span>
 		</div>
 		<div class="settings settings-container row fluid">
 			<ul class="nav nav-pills nav-stacked">
@@ -12,7 +16,7 @@
 				<li class="account menu-item"><a href="/portal/settings/account"> 
 					Account</a>
 				</li>
-				{{#unless usernameNotSet}}{{#unless emailNotComplete}}
+				{{#unless usernameNotSet}}{{#unless emailNotComplete}}{{#if ldapCreated}}
 					<li class="apikey menu-item"><a href="/portal/settings/apikey">
 						API key</a>
 					</li>
@@ -39,7 +43,7 @@
 					</li>
 					<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
 					</li>
-				{{/if}}{{/if}}
+				{{/if}}{{/unless}}{{/unless}}
 			</ul>
 		</div>
 	</div>

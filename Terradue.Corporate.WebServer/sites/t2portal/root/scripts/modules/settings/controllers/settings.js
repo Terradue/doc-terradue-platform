@@ -89,9 +89,9 @@ define([
 				this.fullUserPromise = ProfileModel.getFullUser(true);
 				this.configPromise = $.get('/'+Config.api+'/config?format=json');
 
-				self.data.attr({loadingLdap: true});
+				self.data.attr({loading: true});
 
-				self.isLoginPromise.then(function(user){
+				self.fullUserPromise.then(function(user){
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					var accountEnabled = user.AccountStatus == 4;
 					self.data.attr({
@@ -106,15 +106,22 @@ define([
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
 						emailNotComplete: (user.AccountStatus==1),
 						usernameNotSet: usernameDefault,
-						emailNotComplete: !accountEnabled
+						emailNotComplete: !accountEnabled,
+						ldapCreated: user.HasLdapAccount,
+						loading: false
 					});
 				}).fail(function(){
-					self.data.attr('hideMenu', true);
+					self.data.attr({'hideMenu': true, loading: false});
 					// access denied only if you haven't a token
 					if (!self.params.token)
 						self.accessDenied();
 				});
 
+				self.fullUserPromise.then(function(user){
+					self.data.attr({
+						ldapNotCreated: !user.HasLdapAccount
+					});
+				});
 			},
 			
 			indexDependency: function(){
@@ -570,8 +577,9 @@ define([
 				App.Login.openLoginForm();
 			},
 			//createLdapAccount
-			'.settings-account .account-value click': function(){
+			'.settings-account .createLdapAccount click': function(){
 				var accountData = this.accountData;
+				var data = this.data;
 				
 				var $modal = this.element.find('.settings-account .createLdapAccountModal').modal('show');
 				
@@ -598,8 +606,9 @@ define([
 							$modal.modal('hide');
 							accountData.attr('createLdapAccountloading', true);
 							ProfileModel.createLdapAccount(password).then(function(usr){
-								bootbox.alert("Account created.");
 								accountData.attr('createLdapAccountloading', false);
+								accountData.attr('user',usr);
+								data.attr('ldapCreated', true);
 							}).fail(function(){
 								bootbox.alert("<i class='fa fa-warning'></i> Password is empty.");
 								accountData.attr('createLdapAccountloading', false);
