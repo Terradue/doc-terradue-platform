@@ -160,9 +160,6 @@
     <Reference Include="Terradue.Authentication.OpenId">
       <HintPath>..\packages\Terradue.Authentication.OpenId.1.0.11\lib\net40\Terradue.Authentication.OpenId.dll</HintPath>
     </Reference>
-		<Reference Include="Terradue.Authentication.Everest">
-      <HintPath>..\packages\Terradue.Authentication.Everest.0.2.0\lib\net40\Terradue.Authentication.Everest.dll</HintPath>
-    </Reference>
     <Reference Include="NetTopologySuite.IO.ShapeFile">
       <HintPath>..\packages\NetTopologySuite.IO.1.13.3.2\lib\net40-client\NetTopologySuite.IO.ShapeFile.dll</HintPath>
     </Reference>
@@ -250,6 +247,9 @@
     <Compile Include="Terradue\Corporate\WebServer\Storage\Storage.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Storage\WebStorage.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Everest.Service.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Auth\EverestAuthenticationType.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Auth\EverestOauthClient.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Auth\EverestOauthRequest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

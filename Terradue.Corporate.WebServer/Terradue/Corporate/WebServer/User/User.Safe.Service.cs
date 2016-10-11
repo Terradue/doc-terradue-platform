@@ -87,7 +87,7 @@ namespace Terradue.Corporate.WebServer {
                     log.ErrorFormat("Error during safe delete - {0} - {1}", e.Message, e.StackTrace);
                     throw new Exception("Invalid password");
                 }
-                user.DeletePublicKey(request.password);
+                user.DeletePublicKey();
                 log.InfoFormat("Safe deleted successfully");
                 context.Close ();
             }catch(Exception e) {

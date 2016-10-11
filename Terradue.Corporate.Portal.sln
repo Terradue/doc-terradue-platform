@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terradue.Corporate.WebServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "www-root", "www-root\www-root.csproj", "{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terradue.Authentication.Everest", "..\..\components\sugar\Terradue.Authentication.Everest\Terradue.Authentication.Everest\Terradue.Authentication.Everest.csproj", "{A39A5014-E4FC-4379-9C8B-ABA8378245CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,12 @@ Global
 		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.List OSEE|x86.Build.0 = Debug|Any CPU
 		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A39A5014-E4FC-4379-9C8B-ABA8378245CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A39A5014-E4FC-4379-9C8B-ABA8378245CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A39A5014-E4FC-4379-9C8B-ABA8378245CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A39A5014-E4FC-4379-9C8B-ABA8378245CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A39A5014-E4FC-4379-9C8B-ABA8378245CB}.List OSEE|x86.ActiveCfg = Debug|Any CPU
+		{A39A5014-E4FC-4379-9C8B-ABA8378245CB}.List OSEE|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

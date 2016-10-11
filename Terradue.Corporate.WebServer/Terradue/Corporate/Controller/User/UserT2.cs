@@ -847,8 +847,7 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Deletes the public key.
         /// </summary>
-        /// <param name="password">Password.</param>
-        public void DeletePublicKey(string password) {
+        public void DeletePublicKey() {
             //open the connection
             Json2Ldap.Connect();
             try {

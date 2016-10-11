@@ -1009,6 +1009,7 @@ define([
                     	return false;
                     };
                     self.apikeyData.attr("loading",true);
+
                     ProfileModel.getApiKey(encodeURIComponent(password)).then(function(apikey){
 
 						self.element.find('.apiKeyVisible').addClass('hidden');
@@ -1193,6 +1194,33 @@ define([
 					})
 				});
 			},
+
+			getCookie: function(cname1, cname2) {
+			    var name1 = cname1 + "=";
+			    var ca = document.cookie.split(';');
+			    for(var i = 0; i <ca.length; i++) {
+			        var c = ca[i];
+			        while (c.charAt(0)==' ') {
+			            c = c.substring(1);
+			        }
+			        if (c.indexOf(name1) == 0) {
+			        	if(!cname2) 
+			        		return c.substring(name1.length,c.length);
+			        	else {
+			        		var cookie2 = c.substring(name1.length,c.length);
+			        		var ca2 = cookie2.split("&");
+			        		var name2 = cname2 + "=";
+			        		for(var j = 0; j <ca2.length; j++) {
+			        			var c2 = ca2[j];
+						        if (c2.indexOf(name2) == 0) {
+						        	return c2.substring(name2.length,c2.length);
+						        }
+			        		}
+			        	}
+			        }
+			    }
+			    return "";
+			}
 
 		}
 	);

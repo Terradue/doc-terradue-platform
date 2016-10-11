@@ -73,6 +73,11 @@ namespace Terradue.Corporate.WebServer {
         public bool ldap { get; set; }
     }
 
+    [Route ("/user/current/logstatus", "GET", Summary = "GET the status of the current user", Notes = "true = is logged, false = is not logged")]
+    public class UserCurrentIsLoggedRequest : IReturn<WebResponseBool>
+    {
+    }
+
     [Route("/user", "PUT", Summary = "Update user", Notes = "User is contained in the PUT data. Only non UMSSO data can be updated, e.g redmineApiKey or certField")]
     public class UpdateUserT2 : WebUserT2, IReturn<WebUserT2> {}
 
