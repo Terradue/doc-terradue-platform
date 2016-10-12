@@ -64,7 +64,7 @@ namespace Terradue.Corporate.Controller {
             AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(EverestAuthenticationType));
 
             bool tokenRefreshed = false;
-            if (!string.IsNullOrEmpty(client.GetRefreshToken()) && client.GetAccessTokenExpiresSecond () == 0) {
+            if (!string.IsNullOrEmpty(client.GetRefreshToken()) && string.IsNullOrEmpty (client.GetAccessToken ())) {
                 client.RefreshToken ();
                 tokenRefreshed = true;
             }
