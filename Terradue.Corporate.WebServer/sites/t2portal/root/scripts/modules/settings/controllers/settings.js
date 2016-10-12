@@ -14,7 +14,7 @@ define([
 	'modules/settings/models/safe',
 	'modules/users/models/plans',
 	'modules/passwordreset/models/passwordreset',
-	'zeroClipboard',
+	'clipboardjs',
 	//'canpromise',
 	'messenger',
 	'jasnyBootstrap',//'bootstrapFileUpload',
@@ -25,9 +25,9 @@ define([
 	'latinise',
 	'jqueryCookie'
 	
-], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, PasswordResetModel, ZeroClipboard){
+], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, PasswordResetModel, Clipboard){
 	
-window.ZeroClipboard = ZeroClipboard;
+window.Clipboard = Clipboard;
 // regexpr validator
 $.validator.addMethod('regExpr', function(value, element, regExprStr) {
 	var regExpr = new RegExp(regExprStr);

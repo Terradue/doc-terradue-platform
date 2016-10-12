@@ -23,7 +23,7 @@ require.config({
 		//bootstrapFileUpload: 'libs/bootstrap-fileupload/bootstrap-fileupload.min',
 		jasnyBootstrap: 'libs/jasny-bootstrap/js/jasny-bootstrap.min',
 		droppableTextarea: 'libs/jquery.droppableTextarea/js/jquery.droppableTextarea',
-		zeroClipboard: 'libs/zeroClipboard/ZeroClipboard',
+		clipboardjs: 'libs/clipboardjs/clipboard',
 		jqueryCopyableInput: 'libs/jquery.copyableInput/js/jquery.copyableInput',
 		summernote: 'libs/summernote/summernote',
 		latinise: 'libs/latinise/latinise.min',
@@ -53,10 +53,10 @@ require.config({
 		jqueryValidate: ['jquery'], 
 		jasnyBootstrap: ['jquery', 'bootstrap'],
 		droppableTextarea: ['jquery', 'bootstrap'],
-		zeroClipboard: {
-			exports: 'ZeroClipboard'
+		clipboardjs: {
+			exports: 'Clipboard'
 		},
-		jqueryCopyableInput: ['zeroClipboard', 'jquery'],
+		jqueryCopyableInput: ['clipboardjs', 'jquery'],
 		summernote: ['jquery', 'bootstrap'],
 		dataTables: ['jquery']
 	}
