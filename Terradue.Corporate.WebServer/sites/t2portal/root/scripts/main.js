@@ -15,6 +15,7 @@ require.config({
 		underscorestring: 'libs/underscore/underscore.string.min',
 		skrollr: 'libs/skrollr/skrollr.min',
 		moment: 'libs/moment/moment.min',
+		jqueryCookie: 'libs/jquery.cookie/jquery.cookie',
 		messenger: 'libs/messenger/js/messenger.min',
 		messengerThemeFlat: 'libs/messenger/js/messenger-theme-flat',
 		ajaxFileUpload: 'libs/ajaxFileUpload/ajaxfileupload',
@@ -37,6 +38,7 @@ require.config({
 		bootstrap: ['jquery'],
 		bootstrapHoverDropdown: ['jquery', 'bootstrap'],
 		bootbox: ['jquery', 'bootstrap'],
+		jqueryCookie: ['jquery'],
 		loadmask: ['jquery'],
 		can: {
 			deps: ['jquery'],
