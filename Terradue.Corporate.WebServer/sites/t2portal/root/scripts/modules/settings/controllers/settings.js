@@ -209,12 +209,14 @@ var SettingsControl = BaseControl(
 			// first wait user is ready
 			this.fullUserPromise.then(function(user){
 				var usernameDefault = (user.Username == null || user.Username == user.Email);
+				var token = $.cookie('t2-sso-externalTokenAccess');
 				self.accountData.attr({
 					user: user,
 					usernameSet: !(user.Email == user.Username),
 					emailNotComplete: (user.AccountStatus==1),
 					emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-					usernameNotSet: usernameDefault
+					usernameNotSet: usernameDefault,
+					showPassword: user.HasLdapAccount && !token
 				});
 
 				self.view({
