@@ -34,37 +34,37 @@ namespace Terradue.Corporate.Controller {
 
         public string GetAccessToken ()
         {
-            if (HttpContext.Current.Request.Cookies ["t2-sso"] != null)
-                return HttpContext.Current.Request.Cookies ["t2-sso"] ["everest-token_access"];
+            if (HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"] != null)
+                return HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"].Value;
             else return null;
         }
 
         public void SetAccessToken (string value, double expires) {
-            HttpCookie cookie = HttpContext.Current.Request.Cookies ["t2-sso"] ?? new HttpCookie ("t2-sso");
-            cookie ["everest-token_access"] = value;
+            HttpCookie cookie = HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"] ?? new HttpCookie ("t2-sso-externalTokenAccess");
+            cookie.Value = value;
             cookie.Expires = DateTime.UtcNow.AddSeconds (expires);
             HttpContext.Current.Response.Cookies.Set (cookie);
         }
 
         public string GetRefreshToken ()
         {
-            if (HttpContext.Current.Request.Cookies ["t2-sso"] != null)
-                return HttpContext.Current.Request.Cookies ["t2-sso"] ["everest-token_refresh"];
+            if (HttpContext.Current.Request.Cookies ["t2-sso-externalTokenRefresh"] != null)
+                return HttpContext.Current.Request.Cookies ["t2-sso-externalTokenRefresh"].Value;
             else return null;
         }
 
         public void SetRefreshToken (string value, double expires)
         {
-            HttpCookie cookie = HttpContext.Current.Request.Cookies ["t2-sso"] ?? new HttpCookie ("t2-sso");
-            cookie ["everest-token_refresh"] = value;
+            HttpCookie cookie = HttpContext.Current.Request.Cookies ["t2-sso-externalTokenRefresh"] ?? new HttpCookie ("t2-sso-externalTokenRefresh");
+            cookie.Value = value;
             cookie.Expires = DateTime.UtcNow.AddSeconds (expires);
             HttpContext.Current.Response.Cookies.Set (cookie);
         }
 
-        public double GetTokenExpiresSecond ()
+        public double GetAccessTokenExpiresSecond ()
         {
-            if (HttpContext.Current.Request.Cookies ["t2-sso"] != null)
-                return Math.Max ((HttpContext.Current.Request.Cookies ["t2-sso"].Expires - DateTime.UtcNow).TotalSeconds, 0);
+            if (HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"] != null)
+                return Math.Max ((HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"].Expires - DateTime.UtcNow).TotalSeconds, 0);
             else
                 return 0;
         }

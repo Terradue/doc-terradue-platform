@@ -64,7 +64,7 @@ namespace Terradue.Corporate.Controller {
             AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(EverestAuthenticationType));
 
             bool tokenRefreshed = false;
-            if (!string.IsNullOrEmpty(client.GetRefreshToken()) && client.GetTokenExpiresSecond () == 0) {
+            if (!string.IsNullOrEmpty(client.GetRefreshToken()) && client.GetAccessTokenExpiresSecond () == 0) {
                 client.RefreshToken ();
                 tokenRefreshed = true;
             }
@@ -115,9 +115,14 @@ namespace Terradue.Corporate.Controller {
             
             client.RevokeToken();
 
-            HttpCookie cookie = new HttpCookie("t2-sso");
+            HttpCookie cookie = new HttpCookie("t2-sso-externalTokenAccess");
             cookie.Expires = DateTime.Now.AddDays(-1d);
             HttpContext.Current.Response.Cookies.Add(cookie);
+
+            cookie = new HttpCookie ("t2-sso-externalTokenRefresh");
+            cookie.Expires = DateTime.Now.AddDays (-1d);
+            HttpContext.Current.Response.Cookies.Add (cookie);
+
         }
 
     }
