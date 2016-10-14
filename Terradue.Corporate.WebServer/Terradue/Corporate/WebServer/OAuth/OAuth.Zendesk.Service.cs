@@ -71,7 +71,8 @@ namespace Terradue.Corporate.WebServer {
                         response_type = "code",
                         nonce = Guid.NewGuid().ToString(),
                         state = Guid.NewGuid().ToString(),
-                        redirect_uri = HttpUtility.UrlEncode(context.BaseUrl + "/t2api/zendesk/cb"),
+                        redirect_uri = HttpUtility.UrlEncode ("https://www.terradue.com/t2api/zendesk/cb"),
+                        //redirect_uri = HttpUtility.UrlEncode(context.BaseUrl + "/t2api/zendesk/cb"),
                         ajax = false
                     });
                 }; 

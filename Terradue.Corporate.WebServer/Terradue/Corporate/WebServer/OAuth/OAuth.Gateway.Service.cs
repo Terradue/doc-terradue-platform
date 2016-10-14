@@ -147,7 +147,8 @@ namespace Terradue.Corporate.WebServer {
 
                 log.InfoFormat("/oauth (GET)");
                 log.DebugFormat("query = {0}",query);
-                if(!string.IsNullOrEmpty(client.SUB_SID)) oauthrequest.sub_sid = client.SUB_SID; 
+                var subsid = client.SUB_SID;
+                if(!string.IsNullOrEmpty(subsid)) oauthrequest.sub_sid = subsid; 
 
                 var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
                 if(!string.IsNullOrEmpty(oauthsession.redirect)) return DoRedirect(context, oauthsession.redirect, request.ajax);

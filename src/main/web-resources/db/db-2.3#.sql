@@ -12,4 +12,8 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-authEndpoint', 'string', 'Everest Authentication Endpoint url', 'Enter the value of the url of the Authentication Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/authorize", '0');
 -- RESULT
 
+-- Adding SSO config... \
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-directAuthEndpoint', 'string', 'Terradue SSO Direct Authorization Endpoint url', 'Enter the value of the url of the Direct Authorization Endpoint of the Terradue SSO', "https://sso.terradue.com/c2id/direct-authz/rest/v2", '0');
+-- RESULT
+
 /*****************************************************************************/

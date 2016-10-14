@@ -64,11 +64,11 @@ namespace Terradue.Corporate.Controller {
             AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(EverestAuthenticationType));
 
             bool tokenRefreshed = false;
-            if (!string.IsNullOrEmpty(client.GetRefreshToken()) && string.IsNullOrEmpty (client.GetAccessToken ())) {
+            if (!string.IsNullOrEmpty(client.EVEREST_TOKEN_REFRESH) && string.IsNullOrEmpty (client.EVEREST_TOKEN_ACCESS)) {
                 client.RefreshToken ();
                 tokenRefreshed = true;
             }
-            if (!string.IsNullOrEmpty(client.GetAccessToken ())) {
+            if (!string.IsNullOrEmpty(client.EVEREST_TOKEN_ACCESS)) {
                 OauthUserInfoResponse usrInfo;
                 try {
                     usrInfo = client.GetUserInfo ();
@@ -98,9 +98,9 @@ namespace Terradue.Corporate.Controller {
                 if (!exists) {
                     usr.LinkToAuthenticationProvider (authType, usr.Username);
                     usr.CreateGithubProfile ();
-                    usr.CreateLdapAccount (client.GetAccessToken ());
+                    usr.CreateLdapAccount (client.EVEREST_TOKEN_ACCESS);
                 } else if (tokenRefreshed){ //in case of Refresh token
-                    usr.ChangeLdapPassword (client.GetAccessToken (), null, true);
+                    usr.ChangeLdapPassword (client.EVEREST_TOKEN_ACCESS, null, true);
                 }
 
                 return usr;

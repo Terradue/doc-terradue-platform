@@ -30,63 +30,97 @@ namespace Terradue.Corporate.Controller {
             Scopes = context.GetConfigValue ("everest-scopes");
         }
 
-        #region Cookies
+        #region TOKEN
 
-        public string GetAccessToken ()
-        {
-            if (HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"] != null)
-                return HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"].Value;
-            else return null;
+        public string EVEREST_TOKEN_ACCESS { 
+            get { 
+                return GetCookie (COOKIE_TOKEN_ACCESS);
+            }
         }
 
-        public void SetAccessToken (string value, double expires) {
-            HttpCookie cookie = HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"] ?? new HttpCookie ("t2-sso-externalTokenAccess");
+        public string EVEREST_TOKEN_REFRESH {
+            get {
+                return GetCookie (COOKIE_TOKEN_REFRESH);
+            }
+        }
+
+        #endregion
+
+        #region COOKIE
+
+        private const string COOKIE_BASENAME = "t2-sso";
+        public const string COOKIE_TOKEN_ACCESS = "external_token_access";
+        public const string COOKIE_TOKEN_REFRESH = "external_token_refresh";
+
+        private string GetCookieName (string name) { 
+            return string.Format ("{0}_{1}", COOKIE_BASENAME, name);
+        }
+
+        /// <summary>
+        /// Gets the cookie.
+        /// </summary>
+        /// <returns>The cookie.</returns>
+        /// <param name="name">Name.</param>
+        public string GetCookie (string name)
+        {
+            var cookieName = GetCookieName (name);
+            if (HttpContext.Current.Request.Cookies [cookieName] != null)
+                return HttpContext.Current.Request.Cookies [cookieName].Value;
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Sets the cookie.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="value">Value.</param>
+        public void SetCookie (string name, string value)
+        {
+            var cookieName = GetCookieName (name);
+            HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName] ?? new HttpCookie (cookieName);
+            cookie.Value = value;
+            HttpContext.Current.Response.Cookies.Set (cookie);
+        }
+
+        /// <summary>
+        /// Sets the cookie.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="value">Value.</param>
+        /// <param name="expires">Expires.</param>
+        public void SetCookie (string name, string value, double expires)
+        {
+            var cookieName = GetCookieName (name);
+            HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName] ?? new HttpCookie (cookieName);
             cookie.Value = value;
             cookie.Expires = DateTime.UtcNow.AddSeconds (expires);
             HttpContext.Current.Request.Cookies.Set (cookie);
             HttpContext.Current.Response.Cookies.Set (cookie);
         }
 
-        public void RevokeAccessToken () { 
-            HttpCookie cookie = HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"];
+        /// <summary>
+        /// Revokes the cookie.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        public void RevokeCookie (string name)
+        {
+            var cookieName = GetCookieName (name);
+            HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName];
             if (cookie != null) {
-                cookie.Expires = DateTime.MinValue;
+                cookie.Expires = DateTime.Now.AddDays (-1d);
                 HttpContext.Current.Request.Cookies.Set (cookie);
                 HttpContext.Current.Response.Cookies.Set (cookie);
             }
         }
 
-        //public double GetAccessTokenExpiresSecond ()
-        //{
-        //    if (HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"] != null)
-        //        return Math.Max ((HttpContext.Current.Request.Cookies ["t2-sso-externalTokenAccess"].Expires - DateTime.UtcNow).TotalSeconds, 0);
-        //    else
-        //        return 0;
-        //}
-
-        public string GetRefreshToken ()
+        /// <summary>
+        /// Revokes all cookies.
+        /// </summary>
+        public void RevokeAllCookies ()
         {
-            if (HttpContext.Current.Request.Cookies ["t2-sso-externalTokenRefresh"] != null)
-                return HttpContext.Current.Request.Cookies ["t2-sso-externalTokenRefresh"].Value;
-            else return null;
-        }
-
-        public void SetRefreshToken (string value)
-        {
-            HttpCookie cookie = HttpContext.Current.Request.Cookies ["t2-sso-externalTokenRefresh"] ?? new HttpCookie ("t2-sso-externalTokenRefresh");
-            cookie.Value = value;
-            HttpContext.Current.Request.Cookies.Set (cookie);
-            HttpContext.Current.Response.Cookies.Set (cookie);
-        }
-
-        public void RevokeRefreshToken ()
-        {
-            HttpCookie cookie = HttpContext.Current.Request.Cookies ["t2-sso-externalTokenRefresh"];
-            if (cookie != null) {
-                cookie.Expires = DateTime.MinValue;
-                HttpContext.Current.Request.Cookies.Set (cookie);
-                HttpContext.Current.Response.Cookies.Set (cookie);
-            }
+            RevokeCookie (COOKIE_TOKEN_ACCESS);
+            RevokeCookie (COOKIE_TOKEN_REFRESH);
         }
 
         #endregion
@@ -129,13 +163,13 @@ namespace Terradue.Corporate.Controller {
                     using (var streamReader = new StreamReader (httpResponse.GetResponseStream ())) {
                         var result = streamReader.ReadToEnd ();
                         var response = JsonSerializer.DeserializeFromString<OauthTokenResponse> (result);
-                        SetAccessToken (response.access_token, response.expires_in);
-                        SetRefreshToken (response.refresh_token);
+                        SetCookie(COOKIE_TOKEN_ACCESS, response.access_token, response.expires_in);
+                        SetCookie (COOKIE_TOKEN_REFRESH, response.refresh_token);
                     }
                 }
             } catch (Exception) {
-                RevokeAccessToken ();
-                RevokeRefreshToken ();
+                RevokeCookie (COOKIE_TOKEN_ACCESS);
+                RevokeCookie (COOKIE_TOKEN_REFRESH);
                 throw;
             }
         }
@@ -146,7 +180,7 @@ namespace Terradue.Corporate.Controller {
                                         TokenEndpoint,
                                         ClientId,
                                         ClientSecret,
-                                        GetRefreshToken(),
+                                        EVEREST_TOKEN_REFRESH,
                                         scope
                                       );
             HttpWebRequest everRequest = (HttpWebRequest)WebRequest.Create (url);
@@ -159,20 +193,20 @@ namespace Terradue.Corporate.Controller {
                     using (var streamReader = new StreamReader (httpResponse.GetResponseStream ())) {
                         var result = streamReader.ReadToEnd ();
                         var response = JsonSerializer.DeserializeFromString<OauthTokenResponse> (result);
-                        SetAccessToken (response.access_token, response.expires_in);
-                        SetRefreshToken (response.refresh_token);
+                        SetCookie (COOKIE_TOKEN_ACCESS, response.access_token, response.expires_in);
+                        SetCookie (COOKIE_TOKEN_REFRESH, response.refresh_token);
                     }
                 }
             } catch (Exception e) {
-                RevokeAccessToken ();
-                RevokeRefreshToken ();
+                RevokeCookie (COOKIE_TOKEN_ACCESS);
+                RevokeCookie (COOKIE_TOKEN_REFRESH);
                 throw;
             }
         }
 
         public void RevokeToken () {
-            RevokeAccessToken ();
-            RevokeRefreshToken ();
+            RevokeCookie (COOKIE_TOKEN_ACCESS);
+            RevokeCookie (COOKIE_TOKEN_REFRESH);
         }
 
         public OauthUserInfoResponse GetUserInfo () {
@@ -182,7 +216,7 @@ namespace Terradue.Corporate.Controller {
             everRequest.Method = "GET";
             everRequest.ContentType = "application/json";
             everRequest.Proxy = null;
-            everRequest.Headers.Add (HttpRequestHeader.Authorization, "Bearer " + GetAccessToken());
+            everRequest.Headers.Add (HttpRequestHeader.Authorization, "Bearer " + EVEREST_TOKEN_ACCESS);
 
             using (var httpResponse = (HttpWebResponse)everRequest.GetResponse ()) {
                 using (var streamReader = new StreamReader (httpResponse.GetResponseStream ())) {
