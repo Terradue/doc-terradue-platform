@@ -134,7 +134,7 @@ namespace Terradue.Corporate.Controller {
             }catch(Exception e){
                 var t = e;
             }
-            reader.Close();
+            context.CloseQueryResult (reader, dbConnection);
             return plan;
         }
 
@@ -159,7 +159,7 @@ namespace Terradue.Corporate.Controller {
                     Name = reader.GetString(1)
                 });
             }
-            reader.Close();
+            context.CloseQueryResult (reader, dbConnection);
             return plans;
         }
 
