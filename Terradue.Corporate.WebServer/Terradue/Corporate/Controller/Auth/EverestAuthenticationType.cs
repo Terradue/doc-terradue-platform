@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Web;
+using Terradue.Ldap;
 using Terradue.Portal;
 
 namespace Terradue.Corporate.Controller {
@@ -13,6 +14,7 @@ namespace Terradue.Corporate.Controller {
         /// The client.
         /// </summary>
         private EverestOauthClient client;
+        private Connect2IdClient clientSSO;
 
         private string UserInfoEndpoint;
         private string Callback;
@@ -43,6 +45,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public EverestAuthenticationType(IfyContext context) : base(context) {
             client = new EverestOauthClient (context);
+            clientSSO = new Connect2IdClient (context);
         }
 
         /// <summary>
@@ -51,6 +54,11 @@ namespace Terradue.Corporate.Controller {
         /// <param name="c">C.</param>
         public void SetCLient(EverestOauthClient c){
             this.client = c;
+        }
+
+        public void SetCLientSSO (Connect2IdClient c)
+        {
+            this.clientSSO = c;
         }
 
         /// <summary>
@@ -63,15 +71,24 @@ namespace Terradue.Corporate.Controller {
             UserT2 usr;
             AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(EverestAuthenticationType));
 
+            var refreshToken = client.LoadTokenRefresh().Value;
+            var accessToken = client.LoadTokenAccess().Value;
             bool tokenRefreshed = false;
-            if (!string.IsNullOrEmpty(client.EVEREST_TOKEN_REFRESH) && string.IsNullOrEmpty (client.EVEREST_TOKEN_ACCESS)) {
-                client.RefreshToken ();
-                tokenRefreshed = true;
+            if (!string.IsNullOrEmpty (refreshToken) && string.IsNullOrEmpty (accessToken)) {
+                // refresh the token
+                try {
+                    client.RefreshToken (refreshToken);
+                    accessToken = client.LoadTokenRefresh ().Value;
+                    refreshToken = client.LoadTokenAccess ().Value;
+                    tokenRefreshed = true;
+                } catch (Exception) {
+                    return null;
+                }
             }
-            if (!string.IsNullOrEmpty(client.EVEREST_TOKEN_ACCESS)) {
+            if (!string.IsNullOrEmpty(accessToken)) {
                 OauthUserInfoResponse usrInfo;
                 try {
-                    usrInfo = client.GetUserInfo ();
+                    usrInfo = client.GetUserInfo (accessToken);
                 }catch(Exception) {
                     return null;
                 }
@@ -98,9 +115,9 @@ namespace Terradue.Corporate.Controller {
                 if (!exists) {
                     usr.LinkToAuthenticationProvider (authType, usr.Username);
                     usr.CreateGithubProfile ();
-                    usr.CreateLdapAccount (client.EVEREST_TOKEN_ACCESS);
+                    usr.CreateLdapAccount (accessToken);
                 } else if (tokenRefreshed){ //in case of Refresh token
-                    usr.ChangeLdapPassword (client.EVEREST_TOKEN_ACCESS, null, true);
+                    usr.ChangeLdapPassword (accessToken, null, true);
                 }
 
                 return usr;
@@ -112,19 +129,20 @@ namespace Terradue.Corporate.Controller {
         } 
 
         public override void EndExternalSession(IfyWebContext context, HttpRequest request, HttpResponse response) {
-            
-            client.RevokeToken();
 
-            HttpCookie cookie = new HttpCookie("t2-sso-externalTokenAccess");
-            cookie.Expires = DateTime.Now.AddDays(-1d);
-            HttpContext.Current.Response.Cookies.Add(cookie);
+            client.RevokeAllCookies ();
 
-            cookie = new HttpCookie ("t2-sso-externalTokenRefresh");
-            cookie.Expires = DateTime.Now.AddDays (-1d);
-            HttpContext.Current.Response.Cookies.Add (cookie);
+            var sid = clientSSO.LoadSID ();
+            var tokenaccess = clientSSO.LoadTokenAccess ();
+            try {
+                clientSSO.DeleteSession (sid.Value);
+            } catch (Exception e) { }
+            clientSSO.RevokeToken (tokenaccess.Value);
+            clientSSO.RevokeAllCookies ();
 
         }
 
     }
 }
+
 

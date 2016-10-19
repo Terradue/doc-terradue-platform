@@ -47,7 +47,7 @@ namespace Terradue.Corporate.WebServer {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
             try {
                 context.Open();
-                var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                var client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
@@ -107,7 +107,7 @@ namespace Terradue.Corporate.WebServer {
                     HttpContext.Current.Response.Redirect(context.BaseUrl, true);
                 }
 
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");

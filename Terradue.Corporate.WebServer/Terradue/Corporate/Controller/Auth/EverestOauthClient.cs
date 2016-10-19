@@ -17,10 +17,10 @@ namespace Terradue.Corporate.Controller {
         public string ClientSecret { get; set; }
         public string Scopes { get; set; }
         public string Callback { get; set; }
-
-        public EverestOauthClient () { }
+        private IfyContext Context; 
 
         public EverestOauthClient (IfyContext context){
+            Context = context;
             AuthEndpoint = context.GetConfigValue ("everest-authEndpoint");
             ClientId = context.GetConfigValue ("everest-clientId");
             ClientSecret = context.GetConfigValue ("everest-clientSecret");
@@ -32,96 +32,154 @@ namespace Terradue.Corporate.Controller {
 
         #region TOKEN
 
-        public string EVEREST_TOKEN_ACCESS { 
-            get { 
-                return GetCookie (COOKIE_TOKEN_ACCESS);
-            }
+        /// <summary>
+        /// Loads the token access.
+        /// </summary>
+        /// <returns>The token access.</returns>
+        public DBCookie LoadTokenAccess ()
+        {
+            return DBCookie.FromSessionAndIdentifier (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS);
         }
 
-        public string EVEREST_TOKEN_REFRESH {
-            get {
-                return GetCookie (COOKIE_TOKEN_REFRESH);
-            }
+        /// <summary>
+        /// Stores the token access.
+        /// </summary>
+        /// <param name="value">Value.</param>
+        /// <param name="expire">Expire.</param>
+        public void StoreTokenAccess (string value, long expire)
+        {
+            DBCookie.StoreDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS, value, DateTime.UtcNow.AddSeconds (expire));
         }
 
+        /// <summary>
+        /// Deletes the token access.
+        /// </summary>
+        public void DeleteTokenAccess ()
+        {
+            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS);
+        }
+
+        /// <summary>
+        /// Loads the token refresh.
+        /// </summary>
+        /// <returns>The token refresh.</returns>
+        public DBCookie LoadTokenRefresh ()
+        {
+            return DBCookie.FromSessionAndIdentifier (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH);
+        }
+
+        /// <summary>
+        /// Stores the token refresh.
+        /// </summary>
+        /// <param name="value">Value.</param>
+        public void StoreTokenRefresh (string value)
+        {
+            DBCookie.StoreDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH, value, DateTime.UtcNow.AddDays (1));
+        }
+
+        /// <summary>
+        /// Deletes the token refresh.
+        /// </summary>
+        public void DeleteTokenRefresh ()
+        {
+            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH);
+        }
+
+        public void RevokeAllCookies ()
+        {
+            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS);
+            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH);
+        }
         #endregion
 
         #region COOKIE
 
-        private const string COOKIE_BASENAME = "t2-sso";
-        public const string COOKIE_TOKEN_ACCESS = "external_token_access";
-        public const string COOKIE_TOKEN_REFRESH = "external_token_refresh";
+                public const string COOKIE_TOKEN_ACCESS = "EVEREST_token_access";
+                public const string COOKIE_TOKEN_REFRESH = "EVEREST_token_refresh";
 
-        private string GetCookieName (string name) { 
-            return string.Format ("{0}_{1}", COOKIE_BASENAME, name);
-        }
+        //        private string GetCookieName (string name) { 
+        //            return string.Format ("{0}_{1}", COOKIE_BASENAME, name);
+        //        }
 
-        /// <summary>
-        /// Gets the cookie.
-        /// </summary>
-        /// <returns>The cookie.</returns>
-        /// <param name="name">Name.</param>
-        public string GetCookie (string name)
-        {
-            var cookieName = GetCookieName (name);
-            if (HttpContext.Current.Request.Cookies [cookieName] != null)
-                return HttpContext.Current.Request.Cookies [cookieName].Value;
-            else
-                return null;
-        }
+        //        /// <summary>
+        //        /// Gets the cookie.
+        //        /// </summary>
+        //        /// <returns>The cookie.</returns>
+        //        /// <param name="name">Name.</param>
+        //        public string GetCookie (string name)
+        //        {
+        //            var cookieName = GetCookieName (name);
+        //            if (HttpContext.Current.Request.Cookies [cookieName] != null)
+        //                return HttpContext.Current.Request.Cookies [cookieName].Value;
+        //            else
+        //                return null;
+        //        }
 
-        /// <summary>
-        /// Sets the cookie.
-        /// </summary>
-        /// <param name="name">Name.</param>
-        /// <param name="value">Value.</param>
-        public void SetCookie (string name, string value)
-        {
-            var cookieName = GetCookieName (name);
-            HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName] ?? new HttpCookie (cookieName);
-            cookie.Value = value;
-            HttpContext.Current.Response.Cookies.Set (cookie);
-        }
+        //        private HttpCookie CreateCookie (string name, string value)
+        //        {
+        //            var cookieName = GetCookieName (name);
+        //            HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName] ?? new HttpCookie (cookieName);
+        //            cookie.Value = value;
+        //#if DEBUG
+        //            cookie.Secure = false;
+        //#else
+        //            cookie.Secure = true;
+        //#endif
+        //            cookie.HttpOnly = true;
+        //            cookie.Domain = HttpContext.Current.Request.Url.Authority;
+        //            cookie.Path = "/t2api/";
+        //            return cookie;
+        //        }
 
-        /// <summary>
-        /// Sets the cookie.
-        /// </summary>
-        /// <param name="name">Name.</param>
-        /// <param name="value">Value.</param>
-        /// <param name="expires">Expires.</param>
-        public void SetCookie (string name, string value, double expires)
-        {
-            var cookieName = GetCookieName (name);
-            HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName] ?? new HttpCookie (cookieName);
-            cookie.Value = value;
-            cookie.Expires = DateTime.UtcNow.AddSeconds (expires);
-            HttpContext.Current.Request.Cookies.Set (cookie);
-            HttpContext.Current.Response.Cookies.Set (cookie);
-        }
+        //        /// <summary>
+        //        /// Sets the cookie.
+        //        /// </summary>
+        //        /// <param name="name">Name.</param>
+        //        /// <param name="value">Value.</param>
+        //        public void SetCookie (string name, string value)
+        //        {
+        //            var cookie = CreateCookie (name, value);
+        //            HttpContext.Current.Response.Cookies.Set (cookie);
+        //        }
 
-        /// <summary>
-        /// Revokes the cookie.
-        /// </summary>
-        /// <param name="name">Name.</param>
-        public void RevokeCookie (string name)
-        {
-            var cookieName = GetCookieName (name);
-            HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName];
-            if (cookie != null) {
-                cookie.Expires = DateTime.Now.AddDays (-1d);
-                HttpContext.Current.Request.Cookies.Set (cookie);
-                HttpContext.Current.Response.Cookies.Set (cookie);
-            }
-        }
+        //        /// <summary>
+        //        /// Sets the cookie.
+        //        /// </summary>
+        //        /// <param name="name">Name.</param>
+        //        /// <param name="value">Value.</param>
+        //        /// <param name="expires">Expires.</param>
+        //        public void SetCookie (string name, string value, double expires)
+        //        {
+        //            var cookie = CreateCookie (name, value);
+        //            cookie.Expires = DateTime.UtcNow.AddSeconds (expires);
+        //            HttpContext.Current.Response.Cookies.Set (cookie);
+        //        }
 
-        /// <summary>
-        /// Revokes all cookies.
-        /// </summary>
-        public void RevokeAllCookies ()
-        {
-            RevokeCookie (COOKIE_TOKEN_ACCESS);
-            RevokeCookie (COOKIE_TOKEN_REFRESH);
-        }
+        //        /// <summary>
+        //        /// Revokes the cookie.
+        //        /// </summary>
+        //        /// <param name="name">Name.</param>
+        //        public void RevokeCookie (string name)
+        //        {
+        //            var cookieName = GetCookieName (name);
+        //            HttpContext.Current.Response.Cookies.Remove (cookieName);
+        //            HttpContext.Current.Request.Cookies.Remove (cookieName);
+        //            //HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName];
+        //            //if (cookie != null) {
+        //            //    cookie.Expires = DateTime.Now.AddDays (-10);
+        //            //    cookie.Value = null;
+        //            //    HttpContext.Current.Response.Cookies.Set (cookie);
+        //            //}
+        //        }
+
+        //        /// <summary>
+        //        /// Revokes all cookies.
+        //        /// </summary>
+        //        public void RevokeAllCookies ()
+        //        {
+        //            RevokeCookie (COOKIE_TOKEN_ACCESS);
+        //            RevokeCookie (COOKIE_TOKEN_REFRESH);
+        //        }
 
         #endregion
 
@@ -163,24 +221,29 @@ namespace Terradue.Corporate.Controller {
                     using (var streamReader = new StreamReader (httpResponse.GetResponseStream ())) {
                         var result = streamReader.ReadToEnd ();
                         var response = JsonSerializer.DeserializeFromString<OauthTokenResponse> (result);
-                        SetCookie(COOKIE_TOKEN_ACCESS, response.access_token, response.expires_in);
-                        SetCookie (COOKIE_TOKEN_REFRESH, response.refresh_token);
+
+                        StoreTokenAccess (response.access_token, response.expires_in);
+                        StoreTokenRefresh (response.refresh_token);
                     }
                 }
-            } catch (Exception) {
-                RevokeCookie (COOKIE_TOKEN_ACCESS);
-                RevokeCookie (COOKIE_TOKEN_REFRESH);
-                throw;
+            } catch (Exception e) {
+                DeleteTokenAccess ();
+                DeleteTokenRefresh ();
+                throw e;
             }
         }
 
-        public void RefreshToken () {
+        /// <summary>
+        /// Refreshs the token.
+        /// </summary>
+        /// <param name="token">Token.</param>
+        public void RefreshToken (string token) {
             var scope = Scopes.Replace (",", "%20");
             string url = string.Format ("{0}?client_id={1}&client_secret={2}&grant_type=refresh_token&refresh_token={3}&scope={4}",
                                         TokenEndpoint,
                                         ClientId,
                                         ClientSecret,
-                                        EVEREST_TOKEN_REFRESH,
+                                        token,
                                         scope
                                       );
             HttpWebRequest everRequest = (HttpWebRequest)WebRequest.Create (url);
@@ -193,30 +256,32 @@ namespace Terradue.Corporate.Controller {
                     using (var streamReader = new StreamReader (httpResponse.GetResponseStream ())) {
                         var result = streamReader.ReadToEnd ();
                         var response = JsonSerializer.DeserializeFromString<OauthTokenResponse> (result);
-                        SetCookie (COOKIE_TOKEN_ACCESS, response.access_token, response.expires_in);
-                        SetCookie (COOKIE_TOKEN_REFRESH, response.refresh_token);
+
+                        StoreTokenAccess (response.access_token, response.expires_in);
+                        StoreTokenRefresh (response.refresh_token);
+
                     }
                 }
             } catch (Exception e) {
-                RevokeCookie (COOKIE_TOKEN_ACCESS);
-                RevokeCookie (COOKIE_TOKEN_REFRESH);
-                throw;
+                DeleteTokenAccess ();
+                DeleteTokenRefresh ();
+                throw e;
             }
         }
 
-        public void RevokeToken () {
-            RevokeCookie (COOKIE_TOKEN_ACCESS);
-            RevokeCookie (COOKIE_TOKEN_REFRESH);
-        }
-
-        public OauthUserInfoResponse GetUserInfo () {
+        /// <summary>
+        /// Gets the user info.
+        /// </summary>
+        /// <returns>The user info.</returns>
+        /// <param name="token">Token.</param>
+        public OauthUserInfoResponse GetUserInfo (string token) {
             OauthUserInfoResponse user;
             string url = string.Format ("{0}", UserInfoEndpoint);
             HttpWebRequest everRequest = (HttpWebRequest)WebRequest.Create (url);
             everRequest.Method = "GET";
             everRequest.ContentType = "application/json";
             everRequest.Proxy = null;
-            everRequest.Headers.Add (HttpRequestHeader.Authorization, "Bearer " + EVEREST_TOKEN_ACCESS);
+            everRequest.Headers.Add (HttpRequestHeader.Authorization, "Bearer " + token);
 
             using (var httpResponse = (HttpWebResponse)everRequest.GetResponse ()) {
                 using (var streamReader = new StreamReader (httpResponse.GetResponseStream ())) {

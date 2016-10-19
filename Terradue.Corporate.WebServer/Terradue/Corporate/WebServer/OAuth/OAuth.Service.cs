@@ -158,7 +158,7 @@ UA -> UA : display user name
                     HttpContext.Current.Response.Redirect(context.BaseUrl, true);
                 }
 
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
@@ -176,6 +176,8 @@ UA -> UA : display user name
                 user.Store();
                 if(!user.HasGithubProfile()) user.CreateGithubProfile();
                 redirect = context.GetConfigValue("t2portal-welcomeEndpoint");
+
+                //context.StartSession (auth, user); 
 
                 context.Close();
             } catch (Exception e) {
