@@ -1,5 +1,5 @@
 jquery.jsonTable                git@git.terradue.int:fruit/jquery.jsonTable.git                         scripts/libs	0.1.2
 jquery.jsonViewer               git@git.terradue.int:fruit/jquery.jsonViewer.git                        scripts/libs	1.0.1
 jquery.pagination               git@git.terradue.int:fruit/jquery.pagination.git                        scripts/libs	1.0.2
-utils							git@git.terradue.int:fruit/tep.utils.git								scripts			0.1.7
+utils							git@git.terradue.int:fruit/tep.utils.git								scripts			0.1.8
 logs							git@git.terradue.int:fruit/tep.logs.git									scripts/modules			0.0.5
