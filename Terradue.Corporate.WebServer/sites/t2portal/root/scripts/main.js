@@ -53,9 +53,6 @@ require.config({
 		jqueryValidate: ['jquery'], 
 		jasnyBootstrap: ['jquery', 'bootstrap'],
 		droppableTextarea: ['jquery', 'bootstrap'],
-		clipboardjs: {
-			exports: 'Clipboard'
-		},
 		jqueryCopyableInput: ['clipboardjs', 'jquery'],
 		summernote: ['jquery', 'bootstrap'],
 		dataTables: ['jquery']

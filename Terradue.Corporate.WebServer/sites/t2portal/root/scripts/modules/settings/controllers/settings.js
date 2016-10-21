@@ -22,10 +22,17 @@ define([
 	'ajaxFileUpload',
 	'droppableTextarea',
 	'jqueryCopyableInput',
-	'latinise',
-	'jqueryCookie'
-	
+	'latinise'
 ], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, PasswordResetModel, Clipboard){
+	
+	window.Clipboard = Clipboard;
+	// regexpr validator
+	$.validator.addMethod('regExpr', function(value, element, regExprStr) {
+		var regExpr = new RegExp(regExprStr);
+		return regExpr.test(value);
+	}, function(regExprStr){
+		return 'Enter a value which suits the regexpr "'+regExprStr+'"';
+	});
 	
 window.Clipboard = Clipboard;
 // regexpr validator
@@ -93,24 +100,30 @@ var SettingsControl = BaseControl(
 
 			self.data.attr({loading: true});
 
-			self.fullUserPromise.then(function(user){
-				var usernameDefault = (user.Username == null || user.Username == user.Email);
-				var accountEnabled = user.AccountStatus == 4;
-				self.data.attr({
-					user: user,
-					emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-					showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
-					showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
-					showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-					showCatalogue: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-					showStorage: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-					showFeatures: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-					profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-					emailNotComplete: (user.AccountStatus==1),
-					usernameNotSet: usernameDefault,
-					emailNotComplete: !accountEnabled,
-					ldapCreated: user.HasLdapAccount,
-					loading: false
+				self.isLoginPromise.then(function(user){
+					var usernameDefault = (user.Username == null || user.Username == user.Email);
+					var accountEnabled = user.AccountStatus == 4;
+					var userHasPlan = (user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
+					var userIdAdmin = user.Level == 4;
+					var userHasDomain = user.DomainId != 0;
+					self.data.attr({
+						user: user,
+						emailConfirmOK: accountEnabled && self.params.emailConfirm=='ok',
+						showApiKey: (userIdAdmin || userHasPlan),
+						showCatalogue: (userIdAdmin || userHasPlan),
+						showStorage: (userIdAdmin || userHasPlan),
+						showSshKey: (userIdAdmin || userHasPlan),
+						showGithub: (userIdAdmin || userHasPlan),
+						showFeatures: userIdAdmin || userHasPlan,
+						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+						usernameNotSet: usernameDefault,
+						emailNotComplete: !accountEnabled,
+					});
+				}).fail(function(){
+					self.data.attr('hideMenu', true);
+					// access denied only if you haven't a token
+					if (!self.params.token)
+						self.accessDenied();
 				});
 			}).fail(function(){
 				self.data.attr({'hideMenu': true, loading: false});
@@ -434,37 +447,60 @@ var SettingsControl = BaseControl(
 				self.data.attr('emailNotComplete', false);
 				
 				
-			}).fail(function(xhr){
-				self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
-			});
-		},
-		
-		initProfileValidation: function(){
-			var self = this;
-			var $form = this.element.find('form.profileForm').validate({
-				rules: {
-					FirstName: 'required',
-					LastName: 'required',
-					Username: {
-						required: true,
-						regExpr: '^[a-z_][a-z0-9_-]{1,30}[$]?$',
-						remote: {
-					        url: "/t2api/user/ldap/available?format=json",
-					        type: "GET",
-					        processData: true,
-					        data: {
-					        	Username: function() {
-					        		return self.element.find('input[name="Username"]').val();
-					        	}
-					        },
-					        noStringify: true,
-					        beforeSend: function(){
-					        	self.profileData.attr('usernameLoader', true);
-					        	self.element.find('input[name="Username"]').parent().find('label.error').empty();
-					        },
-					        complete: function(){
-					        	self.profileData.attr('usernameLoader', false);
-					        }
+				this.view({
+					url: 'modules/settings/views/features.html',
+					selector: Config.subContainer,
+					dependency: self.indexDependency(),
+					data: this.featuresData,
+					fnLoad: function(){
+						self.initSubmenu('features');
+					}
+				});
+				this.loadFeatures();
+			},
+			
+			// profile	
+			manageEmailConfirm: function(token){
+				var self=this;
+				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
+					self.accountData.attr('emailConfirmOK', true);
+					self.accountData.attr('emailNotComplete', false);
+					self.accountData.user.attr('AccountStatus',4);
+					self.data.attr('emailNotComplete', false);
+					self.data.user.attr('AccountStatus',4);
+					
+				}).fail(function(xhr){
+					self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
+				});
+			},
+			
+			initProfileValidation: function(){
+				var self = this;
+				var $form = this.element.find('form.profileForm').validate({
+					rules: {
+						FirstName: 'required',
+						LastName: 'required',
+						Username: {
+							required: true,
+							regExpr: '^[a-z_][a-z0-9_-]{1,30}[$]?$',
+							remote: {
+						        url: "/t2api/user/ldap/available?format=json",
+						        type: "GET",
+						        processData: true,
+						        data: {
+						        	Username: function() {
+						        		return self.element.find('input[name="Username"]').val();
+						        	}
+						        },
+						        noStringify: true,
+						        beforeSend: function(){
+						        	self.profileData.attr('usernameLoader', true);
+						        	self.element.find('input[name="Username"]').parent().find('label.error').empty();
+						        },
+						        complete: function(){
+						        	self.profileData.attr('usernameLoader', false);
+						        }
+							}
 						}
 					}
 				},

@@ -99,6 +99,9 @@
 									<br/><br/>
 									<button class="btn btn-small btn-warning createLdapDomain" data-user="{{user.Id}}">Create LDAP domain</button>
 								{{/if}}
+								{{#if storageFailMessage}}
+									<br/><span class="text-danger"><strong>{{storageFailMessage}}</strong></span>
+								{{/if}}
 							{{/if}}
 						</div>
 					</div>

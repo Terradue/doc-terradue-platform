@@ -150,29 +150,25 @@ namespace Terradue.Corporate.Controller
             }
         }
 
-        /// <summary>
-        /// Create the specified type and parameters.
-        /// </summary>
-        /// <param name="type">Type.</param>
-        /// <param name="parameters">Parameters.</param>
-        public OpenSearchRequest Create(string type, NameValueCollection parameters) {
-
-            UriBuilder url = new UriBuilder(context.BaseUrl);
+        public OpenSearchRequest Create (QuerySettings querySettings, NameValueCollection parameters)
+        {
+            UriBuilder url = new UriBuilder (context.BaseUrl);
             url.Path += "/catalogue/";
             var array = (from key in parameters.AllKeys
-                         from value in parameters.GetValues(key)
-                         select string.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(value)))
-                .ToArray();
-            url.Query = string.Join("&", array);
+                         from value in parameters.GetValues (key)
+                         select string.Format ("{0}={1}", HttpUtility.UrlEncode (key), HttpUtility.UrlEncode (value)))
+                .ToArray ();
+            url.Query = string.Join ("&", array);
 
-            MemoryOpenSearchRequest request = new MemoryOpenSearchRequest(new OpenSearchUrl(url.ToString()), type);
+            MemoryOpenSearchRequest request = new MemoryOpenSearchRequest (new OpenSearchUrl (url.ToString ()), querySettings.PreferredContentType);
 
             Stream input = request.MemoryInputStream;
 
-            GenerateCatalogueAtomFeed(input, parameters);
+            GenerateCatalogueAtomFeed (input, parameters);
 
             return request;
         }
+
         /// <summary>
         /// Gets the open search parameters.
         /// </summary>

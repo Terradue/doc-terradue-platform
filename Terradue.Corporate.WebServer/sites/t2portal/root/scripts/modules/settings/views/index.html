@@ -16,10 +16,12 @@
 				<li class="account menu-item"><a href="/portal/settings/account"> 
 					Account</a>
 				</li>
-				{{#unless usernameNotSet}}{{#unless emailNotComplete}}{{#if ldapCreated}}
+				{{#unless usernameNotSet}}{{#unless emailNotComplete}}
+					{{#if showApiKey}}
 					<li class="apikey menu-item"><a href="/portal/settings/apikey">
 						API key</a>
 					</li>
+					{{/if}}
 					{{#if showCatalogue}}
 					<li class="catalogue menu-item"><a href="/portal/settings/catalogue">
 						Catalogue</a>
@@ -35,12 +37,16 @@
 						Features</a>
 					</li>
 					{{/if}}-->
+					{{#if showSshKey}}
 					<li class="key menu-item"><a href="/portal/settings/key">
 						SSH keys</a>
 					</li>
+					{{/if}}
+					{{#if showGithub}}
 					<li class="github menu-item"><a href="/portal/settings/github">
 						Github</a>
 					</li>
+					{{/if}}
 					<li class="plan menu-item"><a href="/portal/settings/plan">Subscription plans</a>
 					</li>
 				{{/if}}{{/unless}}{{/unless}}

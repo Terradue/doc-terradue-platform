@@ -418,7 +418,7 @@ namespace Terradue.Corporate.Controller {
                 case Plan.SCALER:
                 case Plan.PREMIUM:
                     if (!HasCloudAccount()) CreateCloudAccount(plan);
-                    //if (!HasLdapDomain()) CreateLdapDomain();
+                    if (!HasLdapDomain()) CreateLdapDomain();
                     //if (!HasCatalogueIndex()) CreateCatalogueIndex();
                     //if (!HasRepository()) CreateRepository();
                     break;
