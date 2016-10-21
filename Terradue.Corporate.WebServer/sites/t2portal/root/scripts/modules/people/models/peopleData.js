@@ -129,7 +129,7 @@ define({
 			focus3: {title: 'Web Services API', url: 'http://www.linkedin.com/skills/skill/Web_Services_API'},
 			focus4: {title: 'Monitoring', url: 'http://geek-and-poke.com/geekandpoke/2011/8/22/hudsonjenkins-status-monitor.html'},
 			profile: '',
-			linkedin: '',
+			linkedin: 'https://www.linkedin.com/in/manuela-sagona-9ba02231',
 			twitter: ''},
 		{id:13, 
 			surname: 'Roberto', 
