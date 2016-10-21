@@ -83,10 +83,10 @@ namespace Terradue.Corporate.Controller {
 
         #region IOpenSearchable implementation
 
-        public OpenSearchRequest Create(string type, NameValueCollection parameters) {
+        public OpenSearchRequest Create(QuerySettings querySettings, NameValueCollection parameters) {
             NameValueCollection nvc = new NameValueCollection(parameters);
             nvc.Add(HttpUtility.ParseQueryString(url.Query));
-            return Entity.Create(type, nvc);
+            return Entity.Create(querySettings, nvc);
         }
 
         public QuerySettings GetQuerySettings(OpenSearchEngine ose) {
