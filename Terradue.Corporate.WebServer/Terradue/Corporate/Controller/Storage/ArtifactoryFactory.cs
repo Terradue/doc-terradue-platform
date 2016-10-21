@@ -213,18 +213,24 @@ namespace Terradue.Corporate.Controller {
             JFrogClient.SetUserAuthentication(username, password);
 
             //test if key already exists
-            ArtifactoryApiKey key;
+            ArtifactoryApiKey key = null;
             try {
                 key = JFrogClient.GetApiKey ();
                 JFrogClient.RevokeApiKey ();
             } catch (Exception){}
 
-            key = JFrogClient.CreateApiKey();
+            try {
+                key = JFrogClient.CreateApiKey ();
+            } catch (Exception e){
+                Context.LogError (this, e.Message + "-" + e.StackTrace);
+            }
 
             //put admin config back
             JFrogClient.SetApiKeyAuthentication();
 
-            return key.apiKey;
+            if (key != null)
+                return key.apiKey;
+            else return null;
         }
 
         /// <summary>
