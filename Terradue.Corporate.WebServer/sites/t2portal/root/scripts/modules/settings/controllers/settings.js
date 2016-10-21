@@ -14,7 +14,7 @@ define([
 	'modules/settings/models/safe',
 	'modules/users/models/plans',
 	'modules/passwordreset/models/passwordreset',
-	'zeroClipboard',
+	'clipboardjs',
 	//'canpromise',
 	'messenger',
 	'jasnyBootstrap',//'bootstrapFileUpload',
@@ -23,9 +23,9 @@ define([
 	'droppableTextarea',
 	'jqueryCopyableInput',
 	'latinise'
-], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, PasswordResetModel, ZeroClipboard){
+], function($, can, bootbox, BaseControl, Config, Helpers, ProfileModel, CertificateModel, OneConfigModel, GithubModel, OneUserModel, SafeModel, PlansModel, PasswordResetModel, Clipboard){
 	
-	window.ZeroClipboard = ZeroClipboard;
+	window.Clipboard = Clipboard;
 	// regexpr validator
 	$.validator.addMethod('regExpr', function(value, element, regExprStr) {
 		var regExpr = new RegExp(regExprStr);
@@ -60,17 +60,19 @@ define([
 				self.isLoginPromise.then(function(user){
 					var usernameDefault = (user.Username == null || user.Username == user.Email);
 					var accountEnabled = user.AccountStatus == 4;
+					var userHasPlan = (user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
+					var userIdAdmin = user.Level == 4;
+					var userHasDomain = user.DomainId != 0;
 					self.data.attr({
 						user: user,
-						emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
-						showSafe: (user.DomainId!=0 && user.AccountStatus!=1),
-						showGithub: (user.DomainId!=0 && user.AccountStatus!=1),
-						showCloud: (user.DomainId!=0 && user.AccountStatus!=1),
-						showCatalogue: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-						showStorage: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
-						showFeatures: user.Level == 4 || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium",
+						emailConfirmOK: accountEnabled && self.params.emailConfirm=='ok',
+						showApiKey: (userIdAdmin || userHasPlan),
+						showCatalogue: (userIdAdmin || userHasPlan),
+						showStorage: (userIdAdmin || userHasPlan),
+						showSshKey: (userIdAdmin || userHasPlan),
+						showGithub: (userIdAdmin || userHasPlan),
+						showFeatures: userIdAdmin || userHasPlan,
 						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						emailNotComplete: (user.AccountStatus==1),
 						usernameNotSet: usernameDefault,
 						emailNotComplete: !accountEnabled,
 					});
@@ -385,8 +387,9 @@ define([
 				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
 					self.accountData.attr('emailConfirmOK', true);
 					self.accountData.attr('emailNotComplete', false);
+					self.accountData.user.attr('AccountStatus',4);
 					self.data.attr('emailNotComplete', false);
-					
+					self.data.user.attr('AccountStatus',4);
 					
 				}).fail(function(xhr){
 					self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);

@@ -88,40 +88,14 @@ define([
 						PlansModel.upgrade({
 		 					Id: userid,
 		 					Plan: plan.Key,
-		 				}).then(function(){
+		 				}).then(function(user){
+		 					self.userData.attr('user', user);
 							self.userData.attr('planUpgradedSuccessName', plan.Key);
-							self.userData.user.attr('HasOneAccount', true);
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug
 		 					self.userData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
 		 				});
 		 			}
-		 		});
-			}
-		},
-
-		'.createLdapDomain click': function(data){
-			var self = this,
-				userid = data.data('user');
-			
-			if (userid){
-
-				this.userData.attr({
-					domainLoading: true
-				});
-				
-				bootbox.confirm('Create Ldap domain for user <b>'+self.userData.attr('user').Username+'</b>.<br/>Are you sure?', function(confirmed){
-					if (confirmed)
-						UsersAdminModel.createLdapDomain({
-		 					Id: userid
-		 				}).then(function(){
-							self.userData.user.attr('HasLdapDomain', true);
-							self.userData.user.attr('domainLoading', false);
-		 				}).fail(function(xhr){
-		 					errXhr=xhr; // for debug
-		 					self.userData.user.attr('domainLoading', false);
-		 					self.userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
-		 				});
 		 		});
 			}
 		},
@@ -167,6 +141,31 @@ define([
 		 					Id: userid
 		 				}).then(function(){
 							userData.user.attr('HasLdapDomain', true);
+							userData.user.attr('ArtifactoryDomainExists', true);
+							userData.attr('domainLoading', false);
+		 				}).fail(function(xhr){
+		 					errXhr=xhr; // for debug
+		 					userData.attr('storageFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
+		 					userData.attr('domainLoading', false);
+		 				});
+					}
+		 		});
+		},
+
+		'.createArtifactoryDomain click': function(data){
+			var userData = this.userData,
+				userid = data.data('user');
+			
+			if (userid)
+				bootbox.confirm('Create Storage domain for user <b>' + userData.attr('user').Username + '</b>.<br/>Are you sure?', function(confirmed){
+					if (confirmed){
+						userData.attr('domainLoading', true);
+
+						UsersAdminModel.createArtifactoryDomain({
+		 					Id: userid
+		 				}).then(function(){
+		 					userData.user.attr('HasLdapDomain', true);
+							userData.user.attr('ArtifactoryDomainExists', true);
 							userData.attr('domainLoading', false);
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug

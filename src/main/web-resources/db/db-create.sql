@@ -1,4 +1,4 @@
--- VERSION 2.1.4
+-- VERSION 2.2.1
 
 USE $MAIN$;
 
@@ -131,7 +131,7 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 -- RESULT
 
 -- Adding Artifactory config ...\
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-APIurl', 'string', 'Artifactory API Url', 'Enter the value of the Artifactory API Url', 'https://store.terradue.com/api', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-APIurl', 'string', 'Artifactory API Url', 'Enter the value of the Artifactory API Url', 'https://store.terradue.com/sapi', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-SyncUrl', 'string', 'Artifactory Sync Url', 'Enter the value of the Artifactory Sync Url', 'https://store.terradue.com/ldap-test/', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-APIkey', 'string', 'Artifactory API Key', 'Enter the value of the Artifactory API Key', 'AKCp2V5pLBiabTT8RoSpP6gbsZFGFGNc2PoL6LeWZf2gyDMsqD8nuqcRaeNe7Cpco2hepyxte', '0');
 -- RESULT
