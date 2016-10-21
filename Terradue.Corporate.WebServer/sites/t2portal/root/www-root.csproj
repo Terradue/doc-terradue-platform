@@ -22,10 +22,36 @@
     <ConsolePause>False</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Custom" name="run webtest" command="rm -f ${ProjectDir}/files/* &amp;&amp; ../webtest/build-webtest.sh" workingdir="" externalConsole="True" />
-        <Command type="Custom" name="nuget install" command="./nuget-install.sh" workingdir="${SolutionDir}" externalConsole="True" />
-        <Command type="Custom" name="create db" command="mono bin/Terradue.Portal.AdminTool.exe create -r . -u root -S t2portal" workingdir="${ProjectDir}" externalConsole="True" pauseExternalConsole="True" />
-        <Command type="Custom" name="update db" command="mono bin/Terradue.Portal.AdminTool.exe auto -r . -u root -S t2portal" workingdir="${ProjectDir}" externalConsole="True" pauseExternalConsole="True" />
+        <Command>
+          <type>Custom</type>
+          <name>run webtest</name>
+          <command>rm -f ${ProjectDir}/files/* &amp;&amp; ../webtest/build-webtest.sh</command>
+          <workingdir></workingdir>
+          <externalConsole>True</externalConsole>
+        </Command>
+        <Command>
+          <type>Custom</type>
+          <name>nuget install</name>
+          <command>./nuget-install.sh</command>
+          <workingdir>${SolutionDir}</workingdir>
+          <externalConsole>True</externalConsole>
+        </Command>
+        <Command>
+          <type>Custom</type>
+          <name>create db</name>
+          <command>mono bin/Terradue.Portal.AdminTool.exe create -r . -u root -S t2portal</command>
+          <workingdir>${ProjectDir}</workingdir>
+          <externalConsole>True</externalConsole>
+          <pauseExternalConsole>True</pauseExternalConsole>
+        </Command>
+        <Command>
+          <type>Custom</type>
+          <name>update db</name>
+          <command>mono bin/Terradue.Portal.AdminTool.exe auto -r . -u root -S t2portal</command>
+          <workingdir>${ProjectDir}</workingdir>
+          <externalConsole>True</externalConsole>
+          <pauseExternalConsole>True</pauseExternalConsole>
+        </Command>
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
