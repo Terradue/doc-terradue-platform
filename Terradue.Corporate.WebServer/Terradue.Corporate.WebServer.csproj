@@ -106,9 +106,6 @@
     <Reference Include="Terradue.Github.WebService">
       <HintPath>..\packages\Terradue.Github.WebService.1.0.1\lib\net40\Terradue.Github.WebService.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Certification">
-      <HintPath>..\packages\Terradue.Certification.1.4.7\lib\net40\Terradue.Certification.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.OpenSearch.Tumblr">
       <HintPath>..\packages\Terradue.OpenSearch.Tumblr.1.0.11\lib\net40\Terradue.OpenSearch.Tumblr.dll</HintPath>
     </Reference>
