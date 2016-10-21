@@ -88,9 +88,9 @@ define([
 						PlansModel.upgrade({
 		 					Id: userid,
 		 					Plan: plan.Key,
-		 				}).then(function(){
+		 				}).then(function(user){
+		 					self.userData.attr('user', user);
 							self.userData.attr('planUpgradedSuccessName', plan.Key);
-							self.userData.user.attr('HasOneAccount', true);
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug
 		 					self.userData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
@@ -164,6 +164,7 @@ define([
 						UsersAdminModel.createArtifactoryDomain({
 		 					Id: userid
 		 				}).then(function(){
+		 					userData.user.attr('HasLdapDomain', true);
 							userData.user.attr('ArtifactoryDomainExists', true);
 							userData.attr('domainLoading', false);
 		 				}).fail(function(xhr){
