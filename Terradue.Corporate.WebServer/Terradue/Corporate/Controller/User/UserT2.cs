@@ -286,59 +286,6 @@ namespace Terradue.Corporate.Controller {
             return token;
         }
 
-        /// <summary>
-        /// Gets the token.
-        /// </summary>
-        /// <returns>The token.</returns>
-        /// <param name="name">Name.</param>
-        //public string GetToken (string name) {
-        //    string result = null;
-        //    IDataReader reader = context.GetQueryResult (String.Format ("SELECT value, expire FROM usr_token WHERE id_usr={0} AND name={1};", this.Id, StringUtils.EscapeSql (name)));
-        //    if (reader.Read ()) {
-        //        var value = reader.GetString (0);
-        //        var expire = reader.GetDateTime (1);
-        //        if (DateTime.UtcNow < expire) result = value;
-        //    }
-        //    reader.Close ();
-        //    return result;
-        //}
-
-        /// <summary>
-        /// Saves the token.
-        /// </summary>
-        /// <param name="name">Name.</param>
-        /// <param name="value">Value.</param>
-        /// <param name="expire">Expire.</param>
-        //public void SaveToken (string name, string value, DateTime expire) {
-        //    //delete old value if exists
-        //    RemoveToken (name);
-
-        //    var sql = string.Format ("INSERT INTO usr_token (id_usr, name, value, expire) VALUES ({0}, {1}, {2}, {3})", this.Id, name, value, expire.ToString (@"yyyy\-MM\-dd HH\:mm\:ss"));
-        //    context.Execute (sql);
-        //}
-
-        /// <summary>
-        /// Saves the token.
-        /// </summary>
-        /// <param name="name">Name.</param>
-        /// <param name="value">Value.</param>
-        public void SaveToken (string name, string value) { 
-            //delete old value if exists
-            RemoveToken (name);
-
-            var sql = string.Format ("INSERT INTO usr_token (id_usr, name, value) VALUES ({0}, {1}, {2}, {3})", this.Id, name, value);
-            context.Execute (sql);
-        }
-
-        /// <summary>
-        /// Removes the token.
-        /// </summary>
-        /// <param name="name">Name.</param>
-        public void RemoveToken (string name) { 
-            var sql = string.Format ("DELETE FROM usr_token WHERE id_usr={0} AND name={1};", this.Id, StringUtils.EscapeSql (name));
-            context.Execute (sql);
-        }
-
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>

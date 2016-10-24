@@ -314,8 +314,8 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember (Name = "HasCatalogueIndex", Description = "Check if user has catalogue index", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool HasCatalogueIndex { get; set; }
 
-        //[ApiMember (Name = "ExternalAuth", Description = "Check if user uses external auth", ParameterType = "query", DataType = "bool", IsRequired = false)]
-        //public bool ExternalAuth { get; set; }
+        [ApiMember (Name = "ExternalAuth", Description = "Check if user uses external auth", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool ExternalAuth { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
@@ -359,9 +359,8 @@ namespace Terradue.Corporate.WebServer {
                 this.HasCatalogueIndex = entity.HasCatalogueIndex ();
             }
 
-            //var UserSession = System.Web.HttpContext.Current.Session ["user"] as UserInformation;
-            //if (UserSession != null && UserSession.AuthenticationType is EverestAuthenticationType) this.ExternalAuth = true;
-            //else this.ExternalAuth = false;
+            var UserSession = System.Web.HttpContext.Current.Session ["user"] as UserInformation;
+            this.ExternalAuth = (UserSession != null && UserSession.AuthenticationType.UsesExternalIdentityProvider);
         }
 
         /// <summary>

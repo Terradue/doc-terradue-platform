@@ -118,10 +118,18 @@ namespace Terradue.Corporate.WebServer
 
                 var defaultscopes = new List<string> (context.GetConfigValue ("sso-scopes").Split (",".ToCharArray ()));
 
+                var span = DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
                 var directAuthRequest = new OauthDirectAuthzRequest {
                     client_id = clientSSO.SSOApiClient,
                     sub_session = new OauthSubSessionRequest {
-                        sub = user.Username
+                        sub = user.Username,
+                        auth_time = (long)span.TotalSeconds,
+                        creation_time = (long)span.TotalSeconds
+                    },
+                    refresh_token = new OauthRefreshToken {
+                        issue = true,
+                        lifetime = 3600
                     },
                     long_lived = true,
                     scope = defaultscopes
@@ -133,7 +141,7 @@ namespace Terradue.Corporate.WebServer
                 var accesstoken = directAuthResponse.access_token;
                 var refreshtoken = directAuthResponse.refresh_token;
                 if (string.IsNullOrEmpty (sid)) throw new Exception ("SID received is empty");
-                clientSSO.StoreSID(sid);
+                clientSSO.StoreSUBSID(sid);
                 if (!string.IsNullOrEmpty (accesstoken)) {
                     clientSSO.StoreTokenAccess (accesstoken, directAuthResponse.expires_in);
                 }
@@ -145,16 +153,7 @@ namespace Terradue.Corporate.WebServer
                     sub = user.Username
                 };
 
-                //create the sub_sid
-                //TODO: try using direct auth
-                var oauthputsession = clientSSO.AuthzSession (sid, oauthrequest2, false);
-
-                if (oauthputsession.sub_session != null) {
-                    var subsid = oauthputsession.sub_session.sid;
-                    clientSSO.StoreSUBSID(subsid);
-                }
-
-                redirect = oauthputsession.redirect;
+                redirect = context.GetConfigValue ("t2portal-welcomeEndpoint");
 
                 context.Close ();
             } catch (Exception e) {

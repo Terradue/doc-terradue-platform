@@ -45,7 +45,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public EverestAuthenticationType(IfyContext context) : base(context) {
             client = new EverestOauthClient (context);
-            clientSSO = new Connect2IdClient (context);
+            clientSSO = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
         }
 
         /// <summary>
@@ -130,15 +130,16 @@ namespace Terradue.Corporate.Controller {
 
         public override void EndExternalSession(IfyWebContext context, HttpRequest request, HttpResponse response) {
 
-            client.RevokeAllCookies ();
-
             var sid = clientSSO.LoadSID ();
             var tokenaccess = clientSSO.LoadTokenAccess ();
+
+            client.RevokeAllCookies ();
+            clientSSO.RevokeAllCookies ();
+
             try {
                 clientSSO.DeleteSession (sid.Value);
+                clientSSO.RevokeToken (tokenaccess.Value);
             } catch (Exception e) { }
-            clientSSO.RevokeToken (tokenaccess.Value);
-            clientSSO.RevokeAllCookies ();
 
         }
 

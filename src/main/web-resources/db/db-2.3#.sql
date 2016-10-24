@@ -17,4 +17,8 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-sessionEndpoint', 'string', 'Terradue SSO Session Endpoint url', 'Enter the value of the url of the Session Endpoint of the Terradue SSO', "https://sso.terradue.com/c2id/session-store/rest/v2/sessions", '0');
 -- RESULT
 
+-- Adding Agent action...\
+INSERT INTO action (`identifier`, `name`, `description`, `class`, `method`) VALUES ('cleanupCookie', 'Clean up cookies', 'This action clean the expired cookies stored in db', 'Terradue.Corporate.WebServer.Actions, Terradue.Corporate.WebServer', 'CleanDBCookies');
+-- RESULT
+
 /*****************************************************************************/

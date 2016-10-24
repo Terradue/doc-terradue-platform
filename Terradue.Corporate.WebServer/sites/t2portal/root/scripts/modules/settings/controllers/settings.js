@@ -100,30 +100,24 @@ var SettingsControl = BaseControl(
 
 			self.data.attr({loading: true});
 
-				self.isLoginPromise.then(function(user){
-					var usernameDefault = (user.Username == null || user.Username == user.Email);
-					var accountEnabled = user.AccountStatus == 4;
-					var userHasPlan = (user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
-					var userIdAdmin = user.Level == 4;
-					var userHasDomain = user.DomainId != 0;
-					self.data.attr({
-						user: user,
-						emailConfirmOK: accountEnabled && self.params.emailConfirm=='ok',
-						showApiKey: (userIdAdmin || userHasPlan),
-						showCatalogue: (userIdAdmin || userHasPlan),
-						showStorage: (userIdAdmin || userHasPlan),
-						showSshKey: (userIdAdmin || userHasPlan),
-						showGithub: (userIdAdmin || userHasPlan),
-						showFeatures: userIdAdmin || userHasPlan,
-						profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
-						usernameNotSet: usernameDefault,
-						emailNotComplete: !accountEnabled,
-					});
-				}).fail(function(){
-					self.data.attr('hideMenu', true);
-					// access denied only if you haven't a token
-					if (!self.params.token)
-						self.accessDenied();
+			self.isLoginPromise.then(function(user){
+				var usernameDefault = (user.Username == null || user.Username == user.Email);
+				var accountEnabled = user.AccountStatus == 4;
+				var userHasPlan = (user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
+				var userIsAdmin = user.Level == 4;
+				var userHasDomain = user.DomainId != 0;
+				self.data.attr({
+					user: user,
+					emailConfirmOK: accountEnabled && self.params.emailConfirm=='ok',
+					showApiKey: (userIsAdmin || userHasPlan),
+					showCatalogue: (userIsAdmin || userHasPlan),
+					showStorage: (userIsAdmin || userHasPlan),
+					showSshKey: (userIsAdmin || userHasPlan),
+					showGithub: (userIsAdmin || userHasPlan),
+					showFeatures: userIsAdmin || userHasPlan,
+					profileNotComplete: !(user.FirstName && user.LastName && user.Affiliation && user.Country),
+					usernameNotSet: usernameDefault,
+					emailNotComplete: !accountEnabled,
 				});
 			}).fail(function(){
 				self.data.attr({'hideMenu': true, loading: false});
@@ -222,14 +216,13 @@ var SettingsControl = BaseControl(
 			// first wait user is ready
 			this.fullUserPromise.then(function(user){
 				var usernameDefault = (user.Username == null || user.Username == user.Email);
-				var token = $.cookie('t2-sso-externalTokenAccess');
 				self.accountData.attr({
 					user: user,
 					usernameSet: !(user.Email == user.Username),
 					emailNotComplete: (user.AccountStatus==1),
 					emailConfirmOK: user.AccountStatus>1 && self.params.emailConfirm=='ok',
 					usernameNotSet: usernameDefault,
-					showPassword: user.HasLdapAccount && !token
+					showPassword: user.HasLdapAccount && !user.ExternalAuth
 				});
 
 				self.view({
@@ -437,70 +430,48 @@ var SettingsControl = BaseControl(
 			});
 			this.loadFeatures();
 		},
-		
+
 		// profile	
 		manageEmailConfirm: function(token){
 			var self=this;
 			$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
 				self.accountData.attr('emailConfirmOK', true);
 				self.accountData.attr('emailNotComplete', false);
+				self.accountData.user.attr('AccountStatus',4);
 				self.data.attr('emailNotComplete', false);
+				self.data.user.attr('AccountStatus',4);
 				
-				
-				this.view({
-					url: 'modules/settings/views/features.html',
-					selector: Config.subContainer,
-					dependency: self.indexDependency(),
-					data: this.featuresData,
-					fnLoad: function(){
-						self.initSubmenu('features');
-					}
-				});
-				this.loadFeatures();
-			},
+			}).fail(function(xhr){
+				self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
+			});
+		},
 			
-			// profile	
-			manageEmailConfirm: function(token){
-				var self=this;
-				$.getJSON('/t2api/user/emailconfirm?token='+token, function(){
-					self.accountData.attr('emailConfirmOK', true);
-					self.accountData.attr('emailNotComplete', false);
-					self.accountData.user.attr('AccountStatus',4);
-					self.data.attr('emailNotComplete', false);
-					self.data.user.attr('AccountStatus',4);
-					
-				}).fail(function(xhr){
-					self.errorView({}, 'Unable to get the token.', Helpers.getErrMsg(xhr), true);
-				});
-			},
-			
-			initProfileValidation: function(){
-				var self = this;
-				var $form = this.element.find('form.profileForm').validate({
-					rules: {
-						FirstName: 'required',
-						LastName: 'required',
-						Username: {
-							required: true,
-							regExpr: '^[a-z_][a-z0-9_-]{1,30}[$]?$',
-							remote: {
-						        url: "/t2api/user/ldap/available?format=json",
-						        type: "GET",
-						        processData: true,
-						        data: {
-						        	Username: function() {
-						        		return self.element.find('input[name="Username"]').val();
-						        	}
-						        },
-						        noStringify: true,
-						        beforeSend: function(){
-						        	self.profileData.attr('usernameLoader', true);
-						        	self.element.find('input[name="Username"]').parent().find('label.error').empty();
-						        },
-						        complete: function(){
-						        	self.profileData.attr('usernameLoader', false);
-						        }
-							}
+		initProfileValidation: function(){
+			var self = this;
+			var $form = this.element.find('form.profileForm').validate({
+				rules: {
+					FirstName: 'required',
+					LastName: 'required',
+					Username: {
+						required: true,
+						regExpr: '^[a-z_][a-z0-9_-]{1,30}[$]?$',
+						remote: {
+					        url: "/t2api/user/ldap/available?format=json",
+					        type: "GET",
+					        processData: true,
+					        data: {
+					        	Username: function() {
+					        		return self.element.find('input[name="Username"]').val();
+					        	}
+					        },
+					        noStringify: true,
+					        beforeSend: function(){
+					        	self.profileData.attr('usernameLoader', true);
+					        	self.element.find('input[name="Username"]').parent().find('label.error').empty();
+					        },
+					        complete: function(){
+					        	self.profileData.attr('usernameLoader', false);
+					        }
 						}
 					}
 				},
@@ -533,16 +504,16 @@ var SettingsControl = BaseControl(
 			});
 
 			this.element.find('form.profileForm .UsernameNotSet').popover({
-			trigger: 'focus',
-			placement: 'left',
-			title: 'Username',
-			html: true,
-			content: 'It must:<ul>'
-				+'<li>begin with a lower case letter or an underscore</li>'
-				+'<li>followed by lower case letters, digits, underscores, or dashes</li>'
-				+'<li>have a maximum of 32 characters</li>'
-				+'</ul>',
-		});
+				trigger: 'focus',
+				placement: 'left',
+				title: 'Username',
+				html: true,
+				content: 'It must:<ul>'
+					+'<li>begin with a lower case letter or an underscore</li>'
+					+'<li>followed by lower case letters, digits, underscores, or dashes</li>'
+					+'<li>have a maximum of 32 characters</li>'
+					+'</ul>',
+			});
 		},
 		
 		usernameGeneration: function(){
@@ -1084,12 +1055,7 @@ var SettingsControl = BaseControl(
 		
 		askPassword: function(subTitle){
 			var deferred = new can.Deferred(); // askPassword is a deferred function
-			
-			// check if token is available: if yes, use token as password
-			var token = $.cookie('t2-sso-externalTokenAccess');
-			if (token)
-				deferred.resolve(token);
-			
+
 			// otherwise ask password from the modal form				
 			else {
 				var $dialog;

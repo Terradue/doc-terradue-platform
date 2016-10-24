@@ -85,9 +85,6 @@
     <Reference Include="Terradue.Metadata">
       <HintPath>..\packages\Terradue.Metadata.1.4.0\lib\net40\Terradue.Metadata.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Portal">
-      <HintPath>..\packages\Terradue.Portal.2.6.66\lib\net40\Terradue.Portal.dll</HintPath>
-    </Reference>
     <Reference Include="ServiceStack.ServiceInterface">
       <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
     </Reference>
@@ -199,9 +196,6 @@
 	<Reference Include="Terradue.JFrog.Artifactory">
       <HintPath>..\packages\Terradue.JFrog.Artifactory.1.0.3\lib\net40\Terradue.JFrog.Artifactory.dll</HintPath>
 	</Reference>
-    <Reference Include="Terradue.Ldap">
-      <HintPath>..\packages\Terradue.Ldap.1.0.19\lib\net40\Terradue.Ldap.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -244,6 +238,7 @@
     <Compile Include="Terradue\Corporate\Controller\Auth\EverestAuthenticationType.cs" />
     <Compile Include="Terradue\Corporate\Controller\Auth\EverestOauthClient.cs" />
     <Compile Include="Terradue\Corporate\Controller\Auth\EverestOauthRequest.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Agent\Actions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -258,6 +253,7 @@
     <Folder Include="Terradue\Corporate\Controller\Features\" />
     <Folder Include="Terradue\Corporate\WebServer\Activity\" />
     <Folder Include="Terradue\Corporate\WebServer\Catalogue\" />
+    <Folder Include="Terradue\Corporate\WebServer\Agent\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
