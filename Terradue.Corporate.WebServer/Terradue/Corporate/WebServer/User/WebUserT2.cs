@@ -359,8 +359,7 @@ namespace Terradue.Corporate.WebServer {
                 this.HasCatalogueIndex = entity.HasCatalogueIndex ();
             }
 
-            var UserSession = System.Web.HttpContext.Current.Session ["user"] as UserInformation;
-            this.ExternalAuth = (UserSession != null && UserSession.AuthenticationType.UsesExternalIdentityProvider);
+            this.ExternalAuth = entity.IsExternalAuthentication ();
         }
 
         /// <summary>

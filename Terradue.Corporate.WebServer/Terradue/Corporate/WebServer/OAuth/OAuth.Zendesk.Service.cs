@@ -7,8 +7,8 @@ using System.Web;
 using System.Security.Cryptography;
 using System.Text;
 using Terradue.Corporate.Controller;
-using Terradue.Authentication.OAuth;
 using ServiceStack.Text;
+using Terradue.Authentication.Ldap;
 
 namespace Terradue.Corporate.WebServer {
 
@@ -106,7 +106,7 @@ namespace Terradue.Corporate.WebServer {
                 client.RedirectUri = context.BaseUrl + "/t2api/zendesk/cb";
                 client.AccessToken(request.Code);
 
-                OAuth2AuthenticationType auth = new OAuth2AuthenticationType(context);
+                LdapAuthenticationType auth = new LdapAuthenticationType(context);
                 auth.SetConnect2IdCLient(client);
 
                 user = (UserT2)auth.GetUserProfile(context);

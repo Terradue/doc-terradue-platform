@@ -21,4 +21,8 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO action (`identifier`, `name`, `description`, `class`, `method`) VALUES ('cleanupCookie', 'Clean up cookies', 'This action clean the expired cookies stored in db', 'Terradue.Corporate.WebServer.Actions, Terradue.Corporate.WebServer', 'CleanDBCookies');
 -- RESULT
 
+-- Update Auth name...\
+UPDATE auth SET `identifier`='ldap', `name`='Ldap authentication', `description`='Ldap authentication allows users to identify themselves using an external OAuth provider.', `type`='Terradue.Authentication.Ldap.LdapAuthenticationType, Terradue.Authentication.Ldap' WHERE `identifier`='oauth';
+-- RESULT
+
 /*****************************************************************************/

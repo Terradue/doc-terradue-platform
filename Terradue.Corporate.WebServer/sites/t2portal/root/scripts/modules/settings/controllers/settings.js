@@ -128,7 +128,8 @@ var SettingsControl = BaseControl(
 
 			self.fullUserPromise.then(function(user){
 				self.data.attr({
-					ldapNotCreated: !user.HasLdapAccount
+					ldapNotCreated: !user.HasLdapAccount,
+					loading: false
 				});
 			});
 		},
@@ -804,15 +805,16 @@ var SettingsControl = BaseControl(
 		},
 
 		/* ssh key */
-		'.settings-key .generateSafe click': function(){
+		'.settings-key .generateSafe click': function(el){
 			var keyData = this.keyData;
 			var githubData = this.githubData;
 			var data = this.data;
 			
-			var subTitle = keyData.PublicKey ? 
-					'Please note that this will overwrite your current SSH key pair.' : null;
-			
-			this.askPassword(subTitle).then(function(password){
+			var subTitle = keyData.PublicKey ? 'Please note that this will overwrite your current SSH key pair.' : null;
+
+			var externalAuth = $(el).data('ExternalAuth');
+
+			this.askPassword(externalAuth, subTitle).then(function(password){
 				keyData.attr("loading",true);
             	SafeModel.create(password).then(function(safe){
 					// setup keyData
@@ -840,14 +842,16 @@ var SettingsControl = BaseControl(
             });
 		},
 
-		'.settings-key .deletePublicKeyBtn click': function(){
+		'.settings-key .deletePublicKeyBtn click': function(el){
 			var keyData = this.keyData;
 			var githubData = this.githubData;
 			
 			var subTitle = this.keyData.PublicKey ? 
 					'Please note that this will overwrite your current SSH key pair from your VMs.' : null;
+
+			var externalAuth = $(el).data('ExternalAuth');
 			
-			this.askPassword(subTitle).then(function(password){
+			this.askPassword(externalAuth, subTitle).then(function(password){
                 keyData.attr("loading",true);
                 SafeModel.delete(encodeURIComponent(password)).then(function(safe){
 					if (githubData)
@@ -883,12 +887,14 @@ var SettingsControl = BaseControl(
 			self.element.find('.apiKeyHidden').removeClass('hidden');
 		},
 
-		'.settings-apikey .generateApiKey click': function(){
+		'.settings-apikey .generateApiKey click': function(el){
 			var apikeyData = this.apikeyData;
 			var data = this.data;
 			var element = this.element;
+
+			var externalAuth = $(el).data('ExternalAuth');
 			
-			this.askPassword().then(function(password){
+			this.askPassword(externalAuth).then(function(password){
 			    apikeyData.attr("loading",true);
 			    ProfileModel.generateApiKey(password).then(function(apikey){
 			    	data.attr({
@@ -908,11 +914,13 @@ var SettingsControl = BaseControl(
 			
 		},
 		
-		'.settings-apikey .getApiKey click': function(){
+		'.settings-apikey .getApiKey click': function(el){
 			var apikeyData = this.apikeyData;
 			var element = this.element;
+
+			var externalAuth = $(el).data('ExternalAuth');
 			
-			this.askPassword().then(function(password){
+			this.askPassword(externalAuth).then(function(password){
 				apikeyData.attr("loading",true);
 				
 				ProfileModel.getApiKey(encodeURIComponent(password)).then(function(apikey){
@@ -932,10 +940,12 @@ var SettingsControl = BaseControl(
 		},
 		
 
-		'.settings-apikey .revokeApiKeyBtn click': function(){
+		'.settings-apikey .revokeApiKeyBtn click': function(el){
 			var apikeyData = this.apikeyData;
+
+			var externalAuth = $(el).data('ExternalAuth');
 			
-			this.askPassword().then(function(password){
+			this.askPassword(externalAuth).then(function(password){
 				apikeyData.attr("loading",true);
                 ProfileModel.revokeApiKey(encodeURIComponent(password)).then(function(){
 					apikeyData.user.attr("ApiKey",null);
@@ -1053,8 +1063,12 @@ var SettingsControl = BaseControl(
 			});
 		},
 		
-		askPassword: function(subTitle){
+		askPassword: function(externalAuth, subTitle){
 			var deferred = new can.Deferred(); // askPassword is a deferred function
+
+			// if external Authentication, we dont ask for password
+			if (externalAuth)
+				deferred.resolve("");
 
 			// otherwise ask password from the modal form				
 			else {

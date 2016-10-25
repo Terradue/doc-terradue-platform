@@ -38,6 +38,11 @@ namespace Terradue.Corporate.WebServer
 
                 log.InfoFormat ("Create safe for user {0}", user.Username);
 
+                if (string.IsNullOrEmpty (request.password) && user.IsExternalAuthentication ()) {
+                    context.LogDebug (this, "Get password from Token for External Auth");
+                    request.password = user.GetExternalAuthAccessToken ();
+                }
+
                 //authenticate user
                 try {
                     var j2ldapclient = new LdapAuthClient (context.GetConfigValue ("ldap-authEndpoint"));
@@ -73,6 +78,12 @@ namespace Terradue.Corporate.WebServer
                 context.Open ();
                 UserT2 user = UserT2.FromId (context, context.UserId);
                 log.InfoFormat ("Delete safe for user {0}", user.Username);
+
+                if (string.IsNullOrEmpty (request.password) && user.IsExternalAuthentication ()) {
+                    context.LogDebug (this, "Get password from Token for External Auth");
+                    request.password = user.GetExternalAuthAccessToken ();
+                }
+
                 //authenticate user
                 try {
                     var j2ldapclient = new LdapAuthClient (context.GetConfigValue ("ldap-authEndpoint"));

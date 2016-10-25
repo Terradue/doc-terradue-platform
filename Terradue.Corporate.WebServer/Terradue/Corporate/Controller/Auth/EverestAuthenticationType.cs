@@ -49,13 +49,17 @@ namespace Terradue.Corporate.Controller {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Terradue.Authentication.OAuth.OAuth2AuthenticationType"/> class.
+        /// Sets the Everest Client.
         /// </summary>
-        /// <param name="c">C.</param>
+        /// <param name="c">Client.</param>
         public void SetCLient(EverestOauthClient c){
             this.client = c;
         }
 
+        /// <summary>
+        /// Sets the SSO Client.
+        /// </summary>
+        /// <param name="c">Client.</param>
         public void SetCLientSSO (Connect2IdClient c)
         {
             this.clientSSO = c;

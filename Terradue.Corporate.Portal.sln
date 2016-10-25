@@ -5,12 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terradue.Corporate.WebServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "www-root", "www-root\www-root.csproj", "{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terradue.Ldap", "..\..\components\sugar\DotNetJson2Ldap\Terradue.Ldap\Terradue.Ldap.csproj", "{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terradue.Authentication.OpenId", "..\..\components\sugar\Terradue.Authentication.Openid\Terradue.Authentication.OpenId\Terradue.Authentication.OpenId.csproj", "{368A87F9-0ED5-4423-B32D-F3411189A8F8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terradue.Portal", "..\..\components\sugar\Terradue.Portal\Terradue.Portal\Terradue.Portal.csproj", "{2E8D7875-8347-4205-936B-F1BBA2164D87}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,24 +24,6 @@ Global
 		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.List OSEE|x86.Build.0 = Debug|Any CPU
 		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB09ABE3-75E9-410C-B4BF-B9FCCD45E066}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}.List OSEE|x86.ActiveCfg = Debug|Any CPU
-		{EDF550B2-3CA1-4A59-BF9B-E5DEC4C24031}.List OSEE|x86.Build.0 = Debug|Any CPU
-		{368A87F9-0ED5-4423-B32D-F3411189A8F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{368A87F9-0ED5-4423-B32D-F3411189A8F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{368A87F9-0ED5-4423-B32D-F3411189A8F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{368A87F9-0ED5-4423-B32D-F3411189A8F8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{368A87F9-0ED5-4423-B32D-F3411189A8F8}.List OSEE|x86.ActiveCfg = Debug|Any CPU
-		{368A87F9-0ED5-4423-B32D-F3411189A8F8}.List OSEE|x86.Build.0 = Debug|Any CPU
-		{2E8D7875-8347-4205-936B-F1BBA2164D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E8D7875-8347-4205-936B-F1BBA2164D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E8D7875-8347-4205-936B-F1BBA2164D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E8D7875-8347-4205-936B-F1BBA2164D87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E8D7875-8347-4205-936B-F1BBA2164D87}.List OSEE|x86.ActiveCfg = Debug|Any CPU
-		{2E8D7875-8347-4205-936B-F1BBA2164D87}.List OSEE|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
