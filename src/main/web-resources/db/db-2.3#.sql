@@ -25,4 +25,7 @@ INSERT INTO action (`identifier`, `name`, `description`, `class`, `method`) VALU
 UPDATE auth SET `identifier`='ldap', `name`='Ldap authentication', `description`='Ldap authentication allows users to identify themselves using an external OAuth provider.', `type`='Terradue.Authentication.Ldap.LdapAuthenticationType, Terradue.Authentication.Ldap' WHERE `identifier`='oauth';
 -- RESULT
 
+-- Add Auth type
+INSERT INTO auth (`identifier`, `name`, `description`, `type`, `enabled`, `activation_rule`, `normal_rule`, `refresh_period`) VALUES ('everest', 'Everest authentication', 'Everest authentication', 'Terradue.Corporate.Controller.EverestAuthenticationType, Terradue.Corporate.WebServer', '1', '2', '2', '0');
+-- RESULT
 /*****************************************************************************/
