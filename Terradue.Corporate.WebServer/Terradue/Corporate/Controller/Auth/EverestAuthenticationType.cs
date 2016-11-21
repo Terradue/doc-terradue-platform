@@ -99,7 +99,7 @@ namespace Terradue.Corporate.Controller {
                 if (usrInfo == null) return null;
 
                 bool exists = User.DoesUserExist(context, usrInfo.sub, authType);
-                usr = (UserT2)User.GetOrCreate(context, usrInfo.sub);
+                usr = (UserT2)User.GetOrCreate(context, usrInfo.sub, authType);
 
                 if (usr.AccountStatus == AccountStatusType.Disabled) usr.AccountStatus = AccountStatusType.Enabled;
 
@@ -117,7 +117,7 @@ namespace Terradue.Corporate.Controller {
 
                 usr.Store();
                 if (!exists) {
-                    usr.LinkToAuthenticationProvider (authType, usr.Username);
+                    usr.LinkToAuthenticationProvider (authType, usrInfo.sub);
                     usr.CreateGithubProfile ();
                     usr.CreateLdapAccount (accessToken);
                 } else if (tokenRefreshed){ //in case of Refresh token
