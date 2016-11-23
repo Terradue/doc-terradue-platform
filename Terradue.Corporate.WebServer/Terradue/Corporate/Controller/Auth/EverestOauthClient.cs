@@ -8,7 +8,7 @@ using Terradue.Portal;
 
 namespace Terradue.Corporate.Controller {
     public class EverestOauthClient{
-
+        
         public string RedirectUri { get; set; }
         public string AuthEndpoint { get; set; }
         public string TokenEndpoint { get; set; }
@@ -204,7 +204,15 @@ namespace Terradue.Corporate.Controller {
         /// Accesses the token.
         /// </summary>
         /// <param name="code">Code.</param>
-        public void AccessToken (string code) { 
+        public void AccessToken (string code) {
+
+            ServicePointManager.ServerCertificateValidationCallback = delegate (
+                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
+                System.Net.Security.SslPolicyErrors errors) {
+                    return (true);
+                };
+
+
             string url = string.Format("{0}?grant_type=authorization_code&redirect_uri={1}&code={2}", 
                                        TokenEndpoint,
                                        Callback,
@@ -238,6 +246,13 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="token">Token.</param>
         public void RefreshToken (string token) {
+
+            ServicePointManager.ServerCertificateValidationCallback = delegate (
+                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
+                System.Net.Security.SslPolicyErrors errors) {
+                    return (true);
+                };
+
             var scope = Scopes.Replace (",", "%20");
             string url = string.Format ("{0}?client_id={1}&client_secret={2}&grant_type=refresh_token&refresh_token={3}&scope={4}",
                                         TokenEndpoint,
@@ -275,6 +290,13 @@ namespace Terradue.Corporate.Controller {
         /// <returns>The user info.</returns>
         /// <param name="token">Token.</param>
         public OauthUserInfoResponse GetUserInfo (string token) {
+
+            ServicePointManager.ServerCertificateValidationCallback = delegate (
+                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
+                System.Net.Security.SslPolicyErrors errors) {
+                    return (true);
+                };
+
             OauthUserInfoResponse user;
             string url = string.Format ("{0}", UserInfoEndpoint);
             HttpWebRequest everRequest = (HttpWebRequest)WebRequest.Create (url);
