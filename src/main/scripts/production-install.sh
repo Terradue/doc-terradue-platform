@@ -12,7 +12,9 @@ mkdir -p $portal_path/services
 mkdir -p $portal_path/modules
 
 mkdir /var/www/.config
+mkdir /usr/share/httpd/.config
 chown apache:apache /var/www/.config
+chown apache:apache /usr/share/httpd/.config
 
 mkdir $portal_path/sites/$site/root/logs
 chown apache:apache $portal_path/sites/$site/root/logs
