@@ -319,10 +319,16 @@ namespace Terradue.Corporate.WebServer {
             this.Plan = entity.Plan != null ? entity.Plan.Name : "";
 
             if (ldap || admin) {
-                log.DebugFormat ("Get LDAP info");
-                if (entity.PublicKey == null) entity.LoadLdapInfo();
-                if (entity.ApiKey == null) entity.LoadApiKey ();
+                if (entity.PublicKey == null) {
+                    log.DebugFormat ("Get LDAP info");
+                    entity.LoadLdapInfo ();
+                }
+                if (entity.ApiKey == null) {
+                    log.DebugFormat ("Get API KEY");
+                    entity.LoadApiKey ();
+                }
                 if (entity.OneUser != null) {
+                    log.DebugFormat ("Get ONE info");
                     this.HasOneAccount = true;
                 }
                 this.PublicKey = entity.PublicKey;
