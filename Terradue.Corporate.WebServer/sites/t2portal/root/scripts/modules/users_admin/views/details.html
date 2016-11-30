@@ -161,7 +161,22 @@
 		</div>
 		
 		<div class="col-md-6">
-		
+
+			<!-- CHANGE USER NAME -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Change username</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					<div class="input-append">
+					    <input id="ssousernameinput" type="text" class="input" value="{{user.Username}}" placeholder="Username" name="Username">
+					    <span class="updateT2Username"><button type="submit" class="btn btn-warning">Update</button></span>
+					</div>
+					{{#if updatet2usernameloading}}<span><i class="fa fa-spinner"> Loading...</i></span>{{/if}}
+					{{#if updatet2usernamesuccess}}<span<i class="text-success"> Update done !!</i></span>{{/if}}
+				</div>
+			</div>
+			
 			<!-- CHANGE USER LEVEL -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -194,7 +209,7 @@
 					{{#if plans}}
 						<div class="list-group">
 						{{#each plans}}
-							<a class="user-plan list-group-item {{#ifEquals Key ../user.Plan}}active{{/ifEquals}}" data-plan="{{Value}}">{{Key}}</a>
+							<a class="user-plan list-group-item {{#ifEquals Name ../user.Plan}}active{{/ifEquals}}" data-plan="{{Id}}">{{Name}}</a>
 						{{/each}}
 						</div>
 						<button class="btn btn-warning upgradePlanBtn" data-user="{{user.Id}}">Upgrade</button>&nbsp;&nbsp;

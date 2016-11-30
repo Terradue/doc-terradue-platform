@@ -260,7 +260,9 @@ namespace Terradue.Corporate.WebServer {
                     try{
                         var usert2 = Terradue.Corporate.Controller.UserT2.FromUsernameOrEmail(context, request.username);
                         if (usert2 != null) usert2.SyncArtifactory(request.username, request.password);
-                    }catch(Exception){}
+                    }catch(Exception e){
+                        var test = e;
+                    }
 
                 }catch(Exception e){
                     log.ErrorFormat("User {0} is not authenticated: {1}", request.username, e.Message);

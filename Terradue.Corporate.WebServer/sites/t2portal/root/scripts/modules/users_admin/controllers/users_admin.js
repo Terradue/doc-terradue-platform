@@ -72,7 +72,7 @@ define([
 				selectedPlanId = this.element.find('a[class="user-plan list-group-item active"]').data('plan'),
 				plans = this.userData.plans,
 				planSearch = $.grep(plans, function(plan){
-					return (plan.Value==selectedPlanId);
+					return (plan.Id==selectedPlanId);
 				}),
 				plan = (planSearch.length ? planSearch[0] : null),
 				userid = data.data('user');
@@ -80,17 +80,17 @@ define([
 			if (plan && userid){
 				// save plan
 
-				bootbox.confirm('Upgrade user <b>'+self.userData.attr('user').Username+'</b> to plan <b>'+plan.Key+'</b>.<br/>Are you sure?', function(confirmed){
+				bootbox.confirm('Upgrade user <b>'+self.userData.attr('user').Username+'</b> to plan <b>'+plan.Name+'</b>.<br/>Are you sure?', function(confirmed){
 					if (confirmed){
 						self.userData.attr({
 							planUpgradedLoading: true, planUpgradedSuccessName:null, planUpgradedFailMessage:null
 						});
 						PlansModel.upgrade({
 		 					Id: userid,
-		 					Plan: plan.Key,
+		 					Plan: plan.Name,
 		 				}).then(function(user){
 		 					self.userData.attr('user', user);
-							self.userData.attr('planUpgradedSuccessName', plan.Key);
+							self.userData.attr('planUpgradedSuccessName', plan.Name);
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug
 		 					self.userData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
@@ -277,6 +277,18 @@ define([
 				}
 			});
 
+		},
+
+		'.updateT2Username click': function(data){
+			var self = this;
+			self.userData.attr('updatet2usernameloading', true);
+			UserModel.updateT2user(self.currentUser.Id, data.parent().find('input').val()).then(function(usert2){
+				self.currentUser.attr('Username',usert2.T2Username);
+				self.currentUser.attr('updatet2usernameloading', false);
+				self.currentUser.attr('updatet2usernamesuccess', true);
+			}).fail(function(xhr){
+				self.currentUser.attr('updatet2usernameloading', false);	
+			});
 		}
 		
 	});

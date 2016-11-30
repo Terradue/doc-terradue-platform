@@ -64,11 +64,15 @@ using System.Data;
 
 
 namespace Terradue.Corporate.Controller {
-    
-    /// <summary>
-    /// Plan.
-    /// </summary>
-    public class Plan {
+
+    public class Plan { 
+
+        public Role Role { get; set; }
+
+        public Domain Domain { get; set; }
+    }
+
+    public class PlanFactory{
 
         public const string NONE = "No Plan";
         public const string TRIAL = "Free Trial";
@@ -76,36 +80,8 @@ namespace Terradue.Corporate.Controller {
         public const string SCALER = "Scaler";
         public const string PREMIUM = "Premium";
 
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-        public Plan(){
-            Id = 0;
-            Name = Plan.NONE;
-        }
-
-        public static Plan FromId(IfyContext context, int id){
-            Plan plan = new Plan();
-            if (id != 0) {
-                plan.Id = id;
-                plan.Name = context.GetQueryStringValue(String.Format("SELECT role.name FROM role WHERE role.id={0};",id));
-            }
-            return plan;
-        }
-
-        public static Plan FromName(IfyContext context, string name){
-            Plan plan = new Plan();
-            if (!name.Equals(Plan.NONE)) {
-                var pid = context.GetQueryIntegerValue(String.Format("SELECT role.id FROM role WHERE role.name={0};",StringUtils.EscapeSql(name)));
-                if (pid == 0) throw new Exception("Invalid plan name");
-                plan.Name = name;
-                plan.Id = pid;
-            }
-            return plan;
-        }
-    }
-
-    public class PlanFactory{
+        public const string ROLEPREFIX = "plan_";
+        public const string DOMAINPREFIX = "terradue_";
 
         private IfyContext context { get; set; }
 
@@ -114,75 +90,87 @@ namespace Terradue.Corporate.Controller {
         }
 
         /// <summary>
-        /// Gets the plan.
+        /// Verify if the role can be used for plans.
         /// </summary>
-        /// <returns>The plan.</returns>
-        public Plan GetPlanForUser(int userId){
-            Plan plan = new Plan();
-
-            string sql = String.Format("SELECT role.id, role.name FROM role INNER JOIN usr_role ON role.id=usr_role.id_role WHERE usr_role.id_usr={0};",
-                                       userId);
-            IDbConnection dbConnection = context.GetDbConnection();
-            IDataReader reader = context.GetQueryResult(sql, dbConnection);
-            try{
-                if(reader.Read()){
-                    plan = new Plan{
-                        Id = reader.GetInt32(0),
-                        Name = reader.GetString(1)
-                    };
-                }
-            }catch(Exception e){
-                var t = e;
-            }
-            context.CloseQueryResult (reader, dbConnection);
-            return plan;
+        /// <returns><c>true</c>, if role can be used for plan, <c>false</c> otherwise.</returns>
+        /// <param name="role">role</param>
+        public static bool IsRoleForPlan (Role role) {
+            return role.Identifier.StartsWith (ROLEPREFIX);
         }
 
         /// <summary>
-        /// Gets all plans.
+        /// Verify if the domain can be used for plans.
         /// </summary>
-        /// <returns>The all plans.</returns>
-        public List<Plan> GetAllPlans(){
-            List<Plan> plans = new List<Plan>();
+        /// <returns><c>true</c>, if domain can be used for plan, <c>false</c> otherwise.</returns>
+        /// <param name="domain">domain</param>
+        public static bool IsDomainForPlan (Domain domain)
+        {
+            return domain.Identifier.StartsWith (DOMAINPREFIX);
+        }
 
-            //add default plan
-            plans.Add(new Plan());
+        /// <summary>
+        /// Gets the plan for user.
+        /// </summary>
+        /// <returns>The plan for user.</returns>
+        /// <param name="user">User.</param>
+        /// <param name="domain">Domain.</param>
+        public Plan GetPlanForUser(User user, Domain domain){
+            Role[] roles = Role.GetUserRolesForDomain (context, user.Id, domain.Id);
 
-            string sql = String.Format("SELECT id, name FROM role order by id;");
-            IDbConnection dbConnection = context.GetDbConnection();
-            IDataReader reader = context.GetQueryResult(sql, dbConnection);
+            //user can only have one role for a domain
+            if (roles.Length > 0) return new Plan { Role = roles [0], Domain = domain };
+            else return null;
+        }
 
-            while (reader.Read()) {
-                if (reader.GetValue(0) != DBNull.Value)
-                    plans.Add(new Plan{
-                    Id = reader.GetInt32(0),
-                    Name = reader.GetString(1)
-                });
+        /// <summary>
+        /// Gets the plans for user.
+        /// </summary>
+        /// <returns>The plans for user.</returns>
+        /// <param name="user">User.</param>
+        public List<Plan> GetPlansForUser (User user){
+            List<Plan> plans = new List<Plan> ();
+            List<Domain> domains = GetAllDomains ();
+
+            foreach (var domain in domains) {
+                var plan = GetPlanForUser (user, domain);
+                if (plan != null) plans.Add (plan);
             }
-            context.CloseQueryResult (reader, dbConnection);
             return plans;
         }
 
         /// <summary>
-        /// Upgrades the user plan.
+        /// Gets all roles that can be used for plans.
         /// </summary>
-        /// <param name="usrId">Usr identifier.</param>
-        /// <param name="plan">Plan.</param>
-        public void UpgradeUserPlan(int usrId,Plan plan){
-            //delete old plan
-            string sql = String.Format ("DELETE FROM usr_role WHERE id_usr={0};",
-                                        usrId);
-                                                    
-            context.Execute (sql);
+        /// <returns>all roles.</returns>
+        public List<Role> GetAllRoles(){
+            List<Role> plans = new List<Role>();
 
-            if (plan.Id != 0) {
-                //insert new plan
-                sql = String.Format("INSERT INTO usr_role (id_usr,id_role) VALUES ({0},{1});", 
-                                    usrId, 
-                                    plan.Id);
-                context.Execute(sql);
-            }
+            EntityList<Role> allRoles = new EntityList<Role> (context);
+            allRoles.Load ();
+
+            foreach (var role in allRoles)
+                if (IsRoleForPlan(role)) plans.Add (role);
+
+            return plans;
         }
+
+        /// <summary>
+        /// Gets all domains that can be used for plans.
+        /// </summary>
+        /// <returns>all domains.</returns>
+        public List<Domain> GetAllDomains ()
+        {
+            List<Domain> plans = new List<Domain> ();
+
+            EntityList<Domain> allDomains = new EntityList<Domain> (context);
+            allDomains.Load ();
+
+            foreach (var domain in allDomains)
+                if (IsDomainForPlan (domain)) plans.Add (domain);
+
+            return plans;
+        }
+
     }
 }
 

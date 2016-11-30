@@ -147,3 +147,26 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-SyncUrl', 'string', 'Artifactory Sync Url', 'Enter the value of the Artifactory Sync Url', 'https://store.terradue.com/ldap-test/', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-APIkey', 'string', 'Artifactory API Key', 'Enter the value of the Artifactory API Key', 'AKCp2V5pLBiabTT8RoSpP6gbsZFGFGNc2PoL6LeWZf2gyDMsqD8nuqcRaeNe7Cpco2hepyxte', '0');
 -- RESULT
+
+-- Create domain for existing users...\
+INSERT IGNORE INTO domain (`name`, `description`) SELECT username, CONCAT('Domain of user ',username) FROM usr;
+-- RESULT
+
+-- Add Owner role ... \
+INSERT INTO role (identifier, name, description) VALUES ('owner', 'owner', 'Default role for every user to be able to use his own domain');
+SET @role_id = (SELECT LAST_INSERT_ID());
+
+-- Assign owner role to existing users...\
+SET @role_id = (SELECT id FROM role WHERE identifier='owner');
+INSERT IGNORE INTO rolegrant (id_usr,id_role,id_domain) SELECT u.id,@role_id,d.id FROM usr as u LEFT JOIN domain AS d ON u.username=d.name;
+-- RESULT
+
+-- Add EVEREST domains...\
+SET @role_id = (SELECT id FROM role WHERE identifier='starter');
+
+INSERT INTO domain (`name`, `description`) VALUES ('everest-CNR', 'Domain of Thematic Group CNR for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-INGV', 'Domain of Thematic Group INGV for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-NERC', 'Domain of Thematic Group NERC for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-SatCen', 'Domain of Thematic Group SatCen for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-Citizens', 'Domain of Thematic Group Citizens for Everest');
+-- RESULT

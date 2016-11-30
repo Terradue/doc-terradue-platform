@@ -149,10 +149,6 @@ namespace Terradue.Corporate.WebServer
                     clientSSO.StoreTokenRefresh (refreshtoken);
                 }
 
-                OauthAuthzPutSessionRequest oauthrequest2 = new OauthAuthzPutSessionRequest {
-                    sub = user.Username
-                };
-
                 redirect = context.GetConfigValue ("t2portal-welcomeEndpoint");
 
                 context.Close ();

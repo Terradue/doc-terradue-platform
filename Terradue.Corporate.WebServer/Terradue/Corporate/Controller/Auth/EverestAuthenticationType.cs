@@ -99,6 +99,8 @@ namespace Terradue.Corporate.Controller {
                 if (usrInfo == null) return null;
 
                 bool exists = User.DoesUserExist(context, usrInfo.sub, authType);
+
+                if (!exists) context.AccessLevel = EntityAccessLevel.Administrator;
                 usr = (UserT2)User.GetOrCreate(context, usrInfo.sub, authType);
 
                 if (usr.AccountStatus == AccountStatusType.Disabled) usr.AccountStatus = AccountStatusType.Enabled;
@@ -114,7 +116,7 @@ namespace Terradue.Corporate.Controller {
                     usr.TimeZone = usrInfo.zoneinfo;
                 if (!string.IsNullOrEmpty(usrInfo.locale))
                     usr.Language = usrInfo.locale;
-
+                
                 usr.Store();
                 if (!exists) {
                     usr.LinkToAuthenticationProvider (authType, usrInfo.sub);
@@ -124,6 +126,28 @@ namespace Terradue.Corporate.Controller {
                     usr.ChangeLdapPassword (accessToken, null, true);
                 }
 
+                //update domain
+                if (!string.IsNullOrEmpty (usrInfo.VRC)) {
+                    Domain vrcDomain;
+                    var domainIdentifier = string.Format ("everest-{0}", usrInfo.VRC);
+                    try {
+                        vrcDomain = Domain.FromIdentifier (context, domainIdentifier);
+                    } catch (Exception e){
+                        //domain does not exists, we create it
+                        vrcDomain = new Domain (context);
+                        vrcDomain.Identifier = domainIdentifier;
+                        vrcDomain.Name = domainIdentifier;
+                        vrcDomain.Description = string.Format("Domain of Thematic Group {0} for Everest",domainIdentifier);
+                        vrcDomain.Store ();
+                    }
+                    //check if user has already a role in the domain
+                    //if not we add it (+on ldap)
+                    Role roleVRC = Role.FromIdentifier (context, "member");
+                    if (!roleVRC.IsGrantedTo (usr, vrcDomain)) { 
+                        roleVRC.GrantToUser (usr, vrcDomain);
+                        usr.AddToLdapDomain (domainIdentifier + ".reader", domainIdentifier);
+                    }
+                }
                 return usr;
             } else {
                       

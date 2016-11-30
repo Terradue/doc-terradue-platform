@@ -131,19 +131,34 @@ namespace Terradue.Corporate.Controller
 
         private Json2LdapClient Json2Ldap { get; set; }
 
-        private Plan plan { get; set; }
-
-        public Plan Plan {
+        /// <summary>
+        /// Gets or sets the private domain of the user.
+        /// </summary>
+        /// <value>The domain.</value>
+        public override Domain Domain {
             get {
-                if (plan == null && this.Id != 0) {
-                    plan = this.PlanFactory.GetPlanForUser (this.Id);
+                if (base.Domain == null) {
+                    try {
+                        base.Domain = Domain.FromIdentifier (context, Username);
+                    } catch (Exception e) { }
                 }
-                return plan;
+                return base.Domain;
+            }
+            set {
+                base.Domain = value;
             }
         }
 
-        [EntityDataField ("id_domain")]
-        public new int DomainId { get; set; }
+        public override int DomainId {
+            get {
+                return Domain.Id;
+            }
+            set {
+                base.DomainId = value;
+            }
+        }
+
+        public List<Plan> Plans { get; set; }
 
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -162,6 +177,8 @@ namespace Terradue.Corporate.Controller
             this.PlanFactory = new PlanFactory (context);
             this.CatFactory = new CatalogueFactory (context);
             this.JFrogFactory = new ArtifactoryFactory (context);
+
+            this.Plans = PlanFactory.GetPlansForUser (this);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -218,6 +235,7 @@ namespace Terradue.Corporate.Controller
         /// <param name="id">Identifier.</param>
         public new static UserT2 FromId (IfyContext context, int id)
         {
+            if (context.UserId == id) context.AccessLevel = EntityAccessLevel.Administrator;
             UserT2 user = new UserT2 (context);
             user.Id = id;
             user.Load ();
@@ -275,6 +293,16 @@ namespace Terradue.Corporate.Controller
                 }
             }
             return user;
+        }
+
+        /// <summary>
+        /// Load this instance.
+        /// </summary>
+        public override void Load ()
+        {
+            base.Load ();
+
+            if (Domain == null) CreatePrivateDomain ();
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -399,25 +427,24 @@ namespace Terradue.Corporate.Controller
         /// Upgrade with the specified plan.
         /// </summary>
         /// <param name="plan">Plan.</param>
-        public void Upgrade (Plan plan)
-        {
-            log.Info (String.Format ("Upgrade user {0} with plan {1}", this.Username, plan.Name));
+        public void Upgrade (Plan plan){
+            
+            log.Info (String.Format ("Upgrade user {0} with role {1} for domain {2}", this.Username, plan.Role.Name, plan.Domain.Name));
             context.StartTransaction ();
 
             //sanity check
             if (!HasGithubProfile ()) CreateGithubProfile ();
-            if (this.DomainId == 0) CreateDomain ();
 
-            switch (plan.Name) {
-            case Plan.NONE:
+            switch (plan.Role.Name) {
+            case PlanFactory.NONE:
                 break;
-            case Plan.TRIAL:
-                if (!HasCloudAccount ()) CreateCloudAccount (plan);
+            case PlanFactory.TRIAL:
+                if (!HasCloudAccount ()) CreateCloudAccount ();
                 break;
-            case Plan.EXPLORER:
-            case Plan.SCALER:
-            case Plan.PREMIUM:
-                if (!HasCloudAccount ()) CreateCloudAccount (plan);
+            case PlanFactory.EXPLORER:
+            case PlanFactory.SCALER:
+            case PlanFactory.PREMIUM:
+                if (!HasCloudAccount ()) CreateCloudAccount ();
                 if (!HasLdapDomain ()) CreateLdapDomain ();
                 //if (!HasCatalogueIndex()) CreateCatalogueIndex();
                 //if (!HasRepository()) CreateRepository();
@@ -426,9 +453,27 @@ namespace Terradue.Corporate.Controller
                 break;
             }
 
-            this.PlanFactory.UpgradeUserPlan (this.Id, plan);
+            //remove previous role of the user for this domain
+            var roles = Role.GetUserRolesForDomain (context, this.Id, plan.Domain.Id);
+            if (roles.Length > 0) {
+                foreach (var userrole in roles)
+                    userrole.RevokeFromUser (this, plan.Domain);
+            }
+
+            plan.Role.GrantToUser (this, plan.Domain);
 
             context.Commit ();
+        }
+
+        public Role GetRoleForDomain (string domainname)
+        {
+            var domain = Domain.FromIdentifier (context, domainname);
+            return GetRoleForDomain (domain);
+        }
+
+        public Role GetRoleForDomain (Domain domain) {
+            var roles = Role.GetUserRolesForDomain (context, this.Id, domain.Id);
+            return roles.Length > 0 ? roles [0] : null;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -484,7 +529,7 @@ namespace Terradue.Corporate.Controller
         /// <summary>
         /// Creates the cloud profile.
         /// </summary>
-        public void CreateCloudAccount (Plan plan)
+        public void CreateCloudAccount ()
         {
             log.Info (String.Format ("Creating Cloud account for {0}", this.Username));
             if (this.Username.Equals (this.Email)) {
@@ -533,18 +578,18 @@ namespace Terradue.Corporate.Controller
         {
             var views = "";
             var defaultview = "";
-            switch (plan.Name) {
-            case Plan.EXPLORER:
-                views = Plan.EXPLORER;
-                defaultview = Plan.EXPLORER;
+            switch (plan.Role.Name) {
+            case PlanFactory.EXPLORER:
+                views = PlanFactory.EXPLORER;
+                defaultview = PlanFactory.EXPLORER;
                 break;
-            case Plan.SCALER:
-                views = Plan.SCALER;
-                defaultview = Plan.SCALER;
+            case PlanFactory.SCALER:
+                views = PlanFactory.SCALER;
+                defaultview = PlanFactory.SCALER;
                 break;
-            case Plan.PREMIUM:
-                views = Plan.SCALER + "," + Plan.PREMIUM;
-                defaultview = Plan.PREMIUM;
+            case PlanFactory.PREMIUM:
+                views = PlanFactory.SCALER + "," + PlanFactory.PREMIUM;
+                defaultview = PlanFactory.PREMIUM;
                 break;
             default:
                 break;
@@ -618,19 +663,26 @@ namespace Terradue.Corporate.Controller
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Creates the domain.
+        /// Creates the private domain.
         /// </summary>
-        public void CreateDomain ()
+        public void CreatePrivateDomain ()
         {
-            Domain domain = new Domain (context);
-            domain.Identifier = this.Username;
-            domain.Name = this.Username;
-            domain.Description = string.Format ("Domain belonging to user {0}", this.Username);
-            domain.Store ();
-            this.DomainId = domain.Id;
-            this.Store ();
-        }
+            //create new domain with Identifier = Username
+            var privatedomain = new Domain (context);
+            privatedomain.Identifier = Username;
+            privatedomain.Description = "Domain of user " + Username;
+            privatedomain.Store ();
 
+            //set the userdomain
+            Domain = privatedomain;
+
+            //Get role owner
+            var userRole = Role.FromIdentifier (context, "owner");
+
+            //Grant role for user
+            userRole.GrantToUser (this, Domain);
+
+        }
         //--------------------------------------------------------------------------------------------------------------
 
         #region SAFE
@@ -694,25 +746,21 @@ namespace Terradue.Corporate.Controller
         }
 
         /// <summary>
-        /// Creates the LDAP Distinguished Name for domain.
+        /// /// Creates the LDAP Distinguished Name for domain.
         /// </summary>
-        /// <returns>The LDAP D nfor domain.</returns>
+        /// <returns>The LDAP DN for domain.</returns>
         private string CreateLdapDNforDomain ()
         {
-            string dn = string.Format ("cn={0}, ou={1}, ou=domains, dc=terradue, dc=com", OwnerDomainName, this.Username);
-            dn = LdapFactory.NormalizeLdapDN (dn);
-            return dn;
+            return LdapFactory.CreateLdapDNforDomain (OwnerDomainName, this.Username);
         }
 
         /// <summary>
-        /// Creates the LDAP D nfor domain level1.
+        /// /// Creates the LDAP Distinguished Name for domain level1.
         /// </summary>
-        /// <returns>The LDAP D nfor domain level1.</returns>
+        /// <returns>The LDAP DN for domain level1.</returns>
         private string CreateLdapDNforDomainLevel1 ()
         {
-            string dn = string.Format ("ou={0}, ou=domains, dc=terradue, dc=com", this.Username);
-            dn = LdapFactory.NormalizeLdapDN (dn);
-            return dn;
+            return LdapFactory.CreateLdapDNforDomain (null, this.Username);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -1158,6 +1206,29 @@ namespace Terradue.Corporate.Controller
             CreateArtifactoryGroup ();
 
             hasldapaccount = true;
+        }
+
+        /// <summary>
+        /// Adds to LDAP domain.
+        /// </summary>
+        /// <param name="subdomain">Subdomain.</param>
+        /// <param name="parentDomain">Parent domain.</param>
+        public void AddToLdapDomain (string subdomain, string parentDomain) {
+            Json2Ldap.Connect ();
+
+            try {
+                //login as ldap admin to have creation rights
+                Json2Ldap.SimpleBind (context.GetConfigValue ("ldap-admin-dn"), context.GetConfigValue ("ldap-admin-pwd"));
+
+                var dnD = LdapFactory.CreateLdapDNforDomain (subdomain, parentDomain);
+                var dnP = CreateLdapDNforPeople ();
+
+                Json2Ldap.ModifyEntry (dnD, "uniqueMember", new List<string> { dnP }, "add");
+            } catch (Exception e) {
+                Json2Ldap.Close ();
+                throw e;
+            }
+            Json2Ldap.Close ();
         }
 
 

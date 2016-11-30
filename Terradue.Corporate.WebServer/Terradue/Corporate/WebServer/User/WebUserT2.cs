@@ -212,6 +212,36 @@ namespace Terradue.Corporate.WebServer {
 
     }
 
+    public class WebPlan
+    {
+
+        [ApiMember (Name = "Role", Description = "Plan Role", ParameterType = "query", DataType = "WebRole", IsRequired = true)]
+        public WebRole Role { get; set; }
+
+        [ApiMember (Name = "Domain", Description = "Plan Domain", ParameterType = "query", DataType = "WebDomain", IsRequired = true)]
+        public WebDomain Domain { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
+        /// </summary>
+        public WebPlan () { }
+
+        public WebPlan (Plan plan) {
+            this.Role = new WebRole (plan.Role);
+            this.Domain = new WebDomain (plan.Domain);
+        }
+
+        public Plan ToEntity (IfyContext context)
+        {
+            Plan plan = new Plan ();
+            Role role = this.Role != null ? Terradue.Portal.Role.FromId (context, this.Role.Id) : null;
+            Domain domain = this.Domain != null ? Terradue.Portal.Domain.FromId (context, this.Domain.Id) : null;
+            plan.Role = role;
+            plan.Domain = domain;
+            return plan;
+        }
+
+    }
 
 
     //-------------------------------------------------------------------------------------------------------------------------
@@ -301,6 +331,8 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String Plan { get; set; }
+        //[ApiMember(Name = "Plans", Description = "User Plan", ParameterType = "query", DataType = "WebPlan", IsRequired = false)]
+        //public List<WebPlan> Plans { get; set; }
 
         [ApiMember(Name = "HasLdapDomain", Description = "Check if user has ldap domain", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool HasLdapDomain { get; set; }
@@ -333,7 +365,10 @@ namespace Terradue.Corporate.WebServer {
             log.DebugFormat ("Transforms UserT2 into WebUserT2");
 
             this.DomainId = entity.DomainId;
-            this.Plan = entity.Plan != null ? entity.Plan.Name : "";
+            var role = entity.GetRoleForDomain ("terradue");
+            this.Plan = role != null ? role.Name : PlanFactory.NONE;
+            //this.Plans = new List<WebPlan> ();
+            //foreach (var plan in entity.Plans) this.Plans.Add (new WebPlan (plan));
 
             if (ldap || admin) {
                 log.DebugFormat ("Get LDAP info");
