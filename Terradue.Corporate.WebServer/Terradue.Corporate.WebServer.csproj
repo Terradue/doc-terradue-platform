@@ -199,11 +199,11 @@
     <Reference Include="Terradue.Metadata.EarthObservation">
       <HintPath>..\packages\Terradue.Metadata.EarthObservation.1.4.13\lib\net40\Terradue.Metadata.EarthObservation.dll</HintPath>
     </Reference>
-	<Reference Include="Terradue.JFrog.Artifactory">
-      <HintPath>..\packages\Terradue.JFrog.Artifactory.1.0.3\lib\net40\Terradue.JFrog.Artifactory.dll</HintPath>
-	</Reference>
     <Reference Include="Terradue.Ldap">
       <HintPath>..\packages\Terradue.Ldap.1.0.19\lib\net40\Terradue.Ldap.dll</HintPath>
+    </Reference>
+    <Reference Include="Terradue.JFrog.Artifactory">
+      <HintPath>..\packages\Terradue.JFrog.Artifactory.1.0.4\lib\net40\Terradue.JFrog.Artifactory.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
