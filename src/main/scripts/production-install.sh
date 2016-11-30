@@ -11,8 +11,13 @@ publicIP="https://www.terradue.com"
 mkdir -p $portal_path/services
 mkdir -p $portal_path/modules
 
+#apache config centos6
 mkdir /var/www/.config
 chown apache:apache /var/www/.config
+
+#apache config centos7
+mkdir /usr/share/httpd/.config
+chown apache:apache /usr/share/httpd/.config
 
 mkdir $portal_path/sites/$site/root/logs
 chown apache:apache $portal_path/sites/$site/root/logs
@@ -25,7 +30,7 @@ chown apache:apache $portal_path/sites/$site/root/files
 #dynamic hostname
 sed -i -e 's/${PORTALWEBSERVER}/'$HOSTNAME'/g' $portal_path/sites/$site/root/web.config
 sed -i -e 's/${PORTALWEBSERVER}/'$HOSTNAME'/g' $portal_path/sites/$site/config/*
-sed -i -e 's/${PORTALWEBSERVER}/'$HOSTNAME'/g' /etc/httpd/conf.d/*t2portal*
+sed -i -e 's/${PORTALWEBSERVER}/'$HOSTNAME'/g' /etc/httpd/conf.d/*t2portal*.conf
 
 #dumped database copy
 if [ -f $dump ] 
