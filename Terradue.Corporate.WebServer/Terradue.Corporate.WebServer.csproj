@@ -106,9 +106,6 @@
     <Reference Include="Terradue.Github.WebService">
       <HintPath>..\packages\Terradue.Github.WebService.1.0.1\lib\net40\Terradue.Github.WebService.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.OpenSearch.Tumblr">
-      <HintPath>..\packages\Terradue.OpenSearch.Tumblr.1.0.11\lib\net40\Terradue.OpenSearch.Tumblr.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.ServiceModel.Ogc.OwsContext">
       <HintPath>..\packages\Terradue.ServiceModel.Ogc.OwsContext.1.0.6\lib\net40\Terradue.ServiceModel.Ogc.OwsContext.dll</HintPath>
     </Reference>
@@ -178,14 +175,8 @@
     <Reference Include="Terradue.Portal.AdminTool">
       <HintPath>..\packages\Terradue.Portal.2.6.66\lib\net40\Terradue.Portal.AdminTool.exe</HintPath>
     </Reference>
-    <Reference Include="Terradue.OpenSearch.Twitter">
-      <HintPath>..\packages\Terradue.OpenSearch.Twitter.1.0.10\lib\net40\Terradue.OpenSearch.Twitter.dll</HintPath>
-    </Reference>
     <Reference Include="Terradue.WebService.Model">
       <HintPath>..\packages\Terradue.WebService.Model.1.1.13\lib\net40\Terradue.WebService.Model.dll</HintPath>
-    </Reference>
-    <Reference Include="Terradue.News">
-      <HintPath>..\packages\Terradue.News.1.0.13\lib\net40\Terradue.News.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -215,9 +206,6 @@
     <Compile Include="Terradue\Corporate\WebServer\Global.asax.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\WebUserT2.cs" />
-    <Compile Include="Terradue\Corporate\WebServer\News\RssNews.Service.cs" />
-    <Compile Include="Terradue\Corporate\WebServer\News\TumblrNews.Service.cs" />
-    <Compile Include="Terradue\Corporate\WebServer\News\TwitterNews.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\News\News.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\User\User.Github.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OpenNebula\One.Image.Service.cs" />
