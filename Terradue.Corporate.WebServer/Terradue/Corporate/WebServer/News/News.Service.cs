@@ -1,18 +1,16 @@
 ﻿using System;
-using ServiceStack.ServiceHost;
 using System.Collections.Generic;
-using Terradue.Portal;
-using Terradue.Corporate.WebServer.Common;
-using Terradue.WebService.Model;
-using System.Web;
-using Terradue.OpenSearch.Engine;
-using Terradue.Corporate.Controller;
-using Terradue.News;
-using Terradue.OpenSearch.Result;
-using Terradue.OpenSearch.Twitter;
-using Terradue.OpenSearch;
 using System.Linq;
+using System.Web;
 using ServiceStack.Common.Web;
+using ServiceStack.ServiceHost;
+using Terradue.Corporate.Controller;
+using Terradue.Corporate.WebServer.Common;
+using Terradue.OpenSearch;
+using Terradue.OpenSearch.Engine;
+using Terradue.OpenSearch.Result;
+using Terradue.Portal;
+using Terradue.WebService.Model;
 
 namespace Terradue.Corporate.WebServer {
     [Api("Terradue Corporate webserver")]
@@ -54,42 +52,6 @@ namespace Terradue.Corporate.WebServer {
             }
                 
             return new HttpResult(result.SerializeToString(), result.ContentType);
-        }
-
-        public object Get(GetAllNewsFeeds request) {
-            List<WebNews> result = new List<WebNews>();
-
-            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
-            try {
-                context.Open();
-
-                //get internal news
-                EntityList<Article> news = new EntityList<Article>(context);
-                news.Load();
-                foreach(Terradue.Portal.Article f in news){
-                    if(f.GetType() == typeof(Article))
-                        result.Add(new WebNews(f));
-                }
-
-                //get twitter news
-                List<TwitterFeed> twitters = TwitterNews.LoadTwitterFeeds(context);
-                List<TwitterNews> tweetsfeeds = new List<TwitterNews>();
-                foreach(TwitterFeed tweet in twitters) tweetsfeeds.AddRange(TwitterNews.FromFeeds(context, tweet.GetFeeds()));
-                foreach(TwitterNews tweetfeed in tweetsfeeds) result.Add(new WebNews(tweetfeed));
-
-                //get rss news
-                EntityList<RssNews> rsss = new EntityList<RssNews>(context);
-                rsss.Load();
-                List<RssNews> rssfeeds = new List<RssNews>();
-                foreach(RssNews rss in rsss) rssfeeds.AddRange(rss.GetFeeds());
-                foreach(RssNews rssfeed in rssfeeds) result.Add(new WebNews(rssfeed));
-
-                context.Close();
-            } catch (Exception e) {
-                context.Close();
-                throw e;
-            }
-            return result;
         }
 
         public object Get(GetAllNews request) {
