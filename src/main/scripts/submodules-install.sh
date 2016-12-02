@@ -10,9 +10,16 @@ if [ ! -f $file ]
 	exit 1;
 fi
 
-cat $file | while read dir	git	location branch; 
+cat $file | while read dir	git	location	branch; 
 do 
-	echo "Checkout $git into $subdir/root/$location/$dir ($2)";
+	if [ $2 = "develop" ]; then
+   		branch="develop"
+	else
+  		if [ $2 = "master" ]; then
+  			branch="master"
+  		fi
+	fi
+	echo "git clone $git --branch $branch $subdir/root/$location/$dir";
 	rm -rf $subdir/root/$location/$dir
-	git clone $git --branch $2 $subdir/root/$location/$dir
+	git clone $git --branch $branch $subdir/root/$location/$dir
 done;
