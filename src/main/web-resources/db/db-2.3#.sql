@@ -58,3 +58,9 @@ INSERT INTO role (`identifier`, `name`, `description`) VALUES ('member', 'member
 INSERT INTO domain (`name`, `description`, `kind`) VALUES ('terradue', 'Domain of Terradue',4);
 -- RESULT
 
+-- Update plans...\
+UPDATE role SET identifier='plan_FreeTrial' WHERE name='Free Trial';
+UPDATE role SET identifier='plan_Explorer' WHERE name='Explorer';
+UPDATE role SET identifier='plan_Premium' WHERE name='Premium';
+UPDATE role SET identifier='plan_Scaler' WHERE name='Scaler';
+-- RESULT

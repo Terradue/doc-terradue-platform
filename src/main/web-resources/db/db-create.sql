@@ -100,10 +100,10 @@ UPDATE auth SET `activation_rule`='2' WHERE `identifier`='oauth';
 /*****************************************************************************/
 
 -- Create roles ... \
-INSERT into role (name, description) VALUES ('Free Trial', 'non paying user role');
-INSERT into role (name, description) VALUES ('Explorer', 'paying developer user role');
-INSERT into role (name, description) VALUES ('Premium', 'paying integrator user role');
-INSERT into role (name, description) VALUES ('Scaler', 'paying producer user role');
+INSERT into role (identifier, name, description) VALUES ('plan_FreeTrial', 'Free Trial', 'non paying user role');
+INSERT into role (identifier, name, description) VALUES ('plan_Explorer', 'Explorer', 'paying developer user role');
+INSERT into role (identifier, name, description) VALUES ('plan_Premium', 'Premium', 'paying integrator user role');
+INSERT into role (identifier, name, description) VALUES ('plan_Scaler', 'Scaler', 'paying producer user role');
 -- RESULT
 
 /*****************************************************************************/

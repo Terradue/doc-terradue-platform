@@ -121,7 +121,7 @@ namespace Terradue.Corporate.Controller {
                 if (!exists) {
                     usr.LinkToAuthenticationProvider (authType, usrInfo.sub);
                     usr.CreateGithubProfile ();
-                    usr.CreateLdapAccount (accessToken);
+                    usr.CreateLdapAccount (accessToken);//we use the accesstoken as pwd
                 } else if (tokenRefreshed){ //in case of Refresh token
                     usr.ChangeLdapPassword (accessToken, null, true);
                 }
