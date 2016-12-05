@@ -282,12 +282,14 @@ define([
 		'.updateT2Username click': function(data){
 			var self = this;
 			self.userData.attr('updatet2usernameloading', true);
-			UserModel.updateT2user(self.currentUser.Id, data.parent().find('input').val()).then(function(usert2){
-				self.currentUser.attr('Username',usert2.T2Username);
-				self.currentUser.attr('updatet2usernameloading', false);
-				self.currentUser.attr('updatet2usernamesuccess', true);
+			var currentUser = self.userData.attr('user');
+			currentUser.attr('Username', data.parent().find('input').val());
+			UsersAdminModel.updateT2username(currentUser).then(function(usert2){
+				self.userData.user.attr('Username',usert2.Username);
+				self.userData.attr('updatet2usernameloading', false);
+				self.userData.attr('updatet2usernamesuccess', true);
 			}).fail(function(xhr){
-				self.currentUser.attr('updatet2usernameloading', false);	
+				self.userData.attr('updatet2usernameloading', false);	
 			});
 		}
 		

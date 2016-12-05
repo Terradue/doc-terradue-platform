@@ -848,14 +848,16 @@ namespace Terradue.Corporate.Controller
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Updates the LDAP uid.
+        /// Updates the username.
         /// </summary>
-        public void UpdateUsername ()
-        {
-            ValidateUsername (this.Username);
+        /// <param name="oldUid">Old uid.</param>
+        /// <param name="newUid">New uid.</param>
+        public void UpdateUsername (string oldUid, string newUid){
+            
+            ValidateUsername (newUid);
 
             //change username on LDAP
-            var dn = LdapFactory.CreateLdapPeopleDN (this.Email);
+            var dn = LdapFactory.CreateLdapPeopleDN (oldUid);
 
             //open the connection
             Json2Ldap.Connect ();
@@ -864,7 +866,7 @@ namespace Terradue.Corporate.Controller
                 //login as ldap admin to have creation rights
                 Json2Ldap.SimpleBind (context.GetConfigValue ("ldap-admin-dn"), context.GetConfigValue ("ldap-admin-pwd"));
 
-                Json2Ldap.ModifyUID (dn, this.Username);
+                Json2Ldap.ModifyUID (dn, newUid);
 
             } catch (Exception e) {
                 Json2Ldap.Close ();
@@ -875,14 +877,16 @@ namespace Terradue.Corporate.Controller
             //Change username on the db
             AuthenticationType authType = IfyWebContext.GetAuthenticationType (typeof (Terradue.Authentication.Ldap.LdapAuthenticationType));
             string sql = string.Format ("UPDATE usr_auth SET username={0} WHERE id_usr={1} and id_auth={2};",
-                                       StringUtils.EscapeSql (this.Username),
+                                       StringUtils.EscapeSql (newUid),
                                        this.Id,
                                        authType.Id);
             context.Execute (sql);
             sql = string.Format ("UPDATE usr SET username={0} WHERE id={1};",
-                                StringUtils.EscapeSql (this.Username),
+                                StringUtils.EscapeSql (newUid),
                                 this.Id);
             context.Execute (sql);
+
+            this.Username = newUid;
 
             hasldapaccount = true;
         }

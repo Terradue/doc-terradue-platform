@@ -8,6 +8,10 @@ define(['can', 'config'], function(can, Config){
 		update: 'PUT /'+Config.api+'/user',
 		destroy: 'DELETE /'+Config.api+'/user/{id}',
 
+		updateT2username: function(data){
+			return $.post('/'+Config.api+'/user/username', data);
+		},
+
 		createLdapDomain: function(data){
 			return $.post('/'+Config.api+'/user/ldap/domain', data);
 		},

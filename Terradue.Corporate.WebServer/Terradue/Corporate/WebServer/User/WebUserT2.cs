@@ -84,6 +84,9 @@ namespace Terradue.Corporate.WebServer {
     [Route("/user", "POST", Summary = "Create a new user", Notes = "User is contained in the POST data.")]
     public class CreateUserT2 : WebUserT2, IReturn<WebUserT2> {}
 
+    [Route ("/user/username", "POST", Summary = "Update user username", Notes = "User is contained in the PUT data. Only non UMSSO data can be updated, e.g redmineApiKey or certField")]
+    public class UpdateUsernameT2 : WebUserT2, IReturn<WebUserT2> { }
+
     [Route("/user/cert", "PUT", Summary = "Update user cert", Notes = "User is contained in the PUT data. Only non UMSSO data can be updated, e.g redmineApiKey or certField")]
     public class UpdateUserCertTep : WebUserT2, IReturn<WebUserT2> {}
 
