@@ -3,8 +3,8 @@ USE $MAIN$;
 /*****************************************************************************/
 
 -- Adding EVEREST config... \
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientId', 'string', 'Everest Client Id', 'Enter the value of the client identifier for Everest', "6Qvr7x2nAkFbzOntBJAoAo9gNmoa", '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientSecret', 'string', 'Everest Client Secret', 'Enter the value of the client secret password of Everest', "Osg2_eCwbifTlSRyUqimGmiXQkka", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientId', 'string', 'Everest Client Id', 'Enter the value of the client identifier for Everest', "L4oW1mysB3cxf_hFAHU9DlzZRAoa", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientSecret', 'string', 'Everest Client Secret', 'Enter the value of the client secret password of Everest', "Y8ysZ0IvS3hKVmAzyRQMIZqV8jYa", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-tokenEndpoint', 'string', 'Everest Token Endpoint url', 'Enter the value of the url of the Token Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/token", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-userInfoEndpoint', 'string', 'Everest User Info Endpoint url', 'Enter the value of the url of the User Info Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/userinfo?schema=openid", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-scopes', 'string', 'Everest default scopes', 'Enter the value of the default scopes of Everest', "openid,profile", '0');
@@ -54,6 +54,7 @@ INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-INGV', 'Doma
 INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-NERC', 'Domain of Thematic Group NERC for Everest',3);
 INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-SatCen', 'Domain of Thematic Group SatCen for Everest',3);
 INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-Citizens', 'Domain of Thematic Group Citizens for Everest',3);
+INSERT INTO role (`identifier`, `name`, `description`) VALUES ('member', 'member', 'Member role of a domain');
 INSERT INTO domain (`name`, `description`, `kind`) VALUES ('terradue', 'Domain of Terradue',4);
 -- RESULT
 
