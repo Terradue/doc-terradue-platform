@@ -23,6 +23,7 @@ INSERT INTO action (`identifier`, `name`, `description`, `class`, `method`) VALU
 
 -- Update Auth name...\
 UPDATE auth SET `identifier`='ldap', `name`='Ldap authentication', `description`='Ldap authentication allows users to identify themselves using an external OAuth provider.', `type`='Terradue.Authentication.Ldap.LdapAuthenticationType, Terradue.Authentication.Ldap' WHERE `identifier`='oauth';
+DELETE FROM auth WHERE identifier='oauth';
 -- RESULT
 
 -- Add Auth type
@@ -46,9 +47,13 @@ INSERT IGNORE INTO rolegrant (id_usr,id_role,id_domain) SELECT u.id,@role_id,d.i
 -- Add EVEREST domains...\
 SET @role_id = (SELECT id FROM role WHERE identifier='starter');
 
-INSERT INTO domain (`name`, `description`) VALUES ('everest-CNR', 'Domain of Thematic Group CNR for Everest');
-INSERT INTO domain (`name`, `description`) VALUES ('everest-INGV', 'Domain of Thematic Group INGV for Everest');
-INSERT INTO domain (`name`, `description`) VALUES ('everest-NERC', 'Domain of Thematic Group NERC for Everest');
-INSERT INTO domain (`name`, `description`) VALUES ('everest-SatCen', 'Domain of Thematic Group SatCen for Everest');
-INSERT INTO domain (`name`, `description`) VALUES ('everest-Citizens', 'Domain of Thematic Group Citizens for Everest');
+-- Add domains...\
+UPDATE domain set kind=1;
+INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-CNR', 'Domain of Thematic Group CNR for Everest',3);
+INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-INGV', 'Domain of Thematic Group INGV for Everest',3);
+INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-NERC', 'Domain of Thematic Group NERC for Everest',3);
+INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-SatCen', 'Domain of Thematic Group SatCen for Everest',3);
+INSERT INTO domain (`name`, `description`, `kind`) VALUES ('everest-Citizens', 'Domain of Thematic Group Citizens for Everest',3);
+INSERT INTO domain (`name`, `description`, `kind`) VALUES ('terradue', 'Domain of Terradue',4);
 -- RESULT
+

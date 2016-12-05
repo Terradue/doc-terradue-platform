@@ -164,9 +164,11 @@ INSERT IGNORE INTO rolegrant (id_usr,id_role,id_domain) SELECT u.id,@role_id,d.i
 -- Add EVEREST domains...\
 SET @role_id = (SELECT id FROM role WHERE identifier='starter');
 
-INSERT INTO domain (`name`, `description`) VALUES ('everest-CNR', 'Domain of Thematic Group CNR for Everest');
-INSERT INTO domain (`name`, `description`) VALUES ('everest-INGV', 'Domain of Thematic Group INGV for Everest');
-INSERT INTO domain (`name`, `description`) VALUES ('everest-NERC', 'Domain of Thematic Group NERC for Everest');
-INSERT INTO domain (`name`, `description`) VALUES ('everest-SatCen', 'Domain of Thematic Group SatCen for Everest');
-INSERT INTO domain (`name`, `description`) VALUES ('everest-Citizens', 'Domain of Thematic Group Citizens for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-CNR', 'Domain of Thematic Group CNR for Everest',3);
+INSERT INTO domain (`name`, `description`) VALUES ('everest-INGV', 'Domain of Thematic Group INGV for Everest',3);
+INSERT INTO domain (`name`, `description`) VALUES ('everest-NERC', 'Domain of Thematic Group NERC for Everest',3);
+INSERT INTO domain (`name`, `description`) VALUES ('everest-SatCen', 'Domain of Thematic Group SatCen for Everest',3);
+INSERT INTO domain (`name`, `description`) VALUES ('everest-Citizens', 'Domain of Thematic Group Citizens for Everest',3);
+INSERT INTO role (`identifier`, `name`, `description`) VALUES ('member', 'member', 'Member role of a domain',3);
+INSERT INTO domain (`name`, `description`, `kind`) VALUES ('terradue', 'Domain of Terradue',4);
 -- RESULT

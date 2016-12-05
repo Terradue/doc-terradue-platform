@@ -47,7 +47,7 @@
         <Command>
           <type>Custom</type>
           <name>update db</name>
-          <command>mono bin/Terradue.Portal.AdminTool.exe auto -r . -u root -S t2portal</command>
+          <command>mono bin/Terradue.Portal.AdminTool.exe auto -r . -u root -S t2portal -H localhost</command>
           <workingdir>${ProjectDir}</workingdir>
           <externalConsole>True</externalConsole>
           <pauseExternalConsole>True</pauseExternalConsole>
