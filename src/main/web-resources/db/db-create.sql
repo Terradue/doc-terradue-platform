@@ -1,4 +1,4 @@
--- VERSION 2.2.1
+-- VERSION 2.3
 
 USE $MAIN$;
 
@@ -54,6 +54,18 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-authEndpoint', 'string', 'Terradue SSO Authentication Endpoint url', 'Enter the value of the url of the Authentication Endpoint of the Terradue SSO', "https://sso.terradue.com/c2id/authz-sessions/rest/v2", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-apiAccessToken', 'string', 'Terradue SSO API Access Token', 'Enter the value of the API Access token of the Terradue SSO', "ztucZS1ZyFKgh0tUEruUtiSTXhnexmd6", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-configUrl', 'string', 'Terradue SSO Configuration url', 'Enter the value of the url of the Configuration of the Terradue SSO', "https://sso.terradue.com/c2id//.well-known/openid-configuration", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-directAuthEndpoint', 'string', 'Terradue SSO Direct Authorization Endpoint url', 'Enter the value of the url of the Direct Authorization Endpoint of the Terradue SSO', "https://sso.terradue.com/c2id/direct-authz/rest/v2", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-sessionEndpoint', 'string', 'Terradue SSO Session Endpoint url', 'Enter the value of the url of the Session Endpoint of the Terradue SSO', "https://sso.terradue.com/c2id/session-store/rest/v2/sessions", '0');
+-- RESULT
+
+-- Adding EVEREST config... \
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientId', 'string', 'Everest Client Id', 'Enter the value of the client identifier for Everest', "6Qvr7x2nAkFbzOntBJAoAo9gNmoa", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientSecret', 'string', 'Everest Client Secret', 'Enter the value of the client secret password of Everest', "Osg2_eCwbifTlSRyUqimGmiXQkka", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-tokenEndpoint', 'string', 'Everest Token Endpoint url', 'Enter the value of the url of the Token Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/token", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-userInfoEndpoint', 'string', 'Everest User Info Endpoint url', 'Enter the value of the url of the User Info Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/userinfo?schema=openid", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-scopes', 'string', 'Everest default scopes', 'Enter the value of the default scopes of Everest', "openid,profile", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-callback', 'string', 'Everest callback url', 'Enter the value of the callback url of Everest', "http://127.0.0.1:8081/t2api/everest/cb", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-authEndpoint', 'string', 'Everest Authentication Endpoint url', 'Enter the value of the url of the Authentication Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/authorize", '0');
 -- RESULT
 
 
@@ -134,4 +146,27 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-APIurl', 'string', 'Artifactory API Url', 'Enter the value of the Artifactory API Url', 'https://store.terradue.com/sapi', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-SyncUrl', 'string', 'Artifactory Sync Url', 'Enter the value of the Artifactory Sync Url', 'https://store.terradue.com/ldap-test/', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('artifactory-APIkey', 'string', 'Artifactory API Key', 'Enter the value of the Artifactory API Key', 'AKCp2V5pLBiabTT8RoSpP6gbsZFGFGNc2PoL6LeWZf2gyDMsqD8nuqcRaeNe7Cpco2hepyxte', '0');
+-- RESULT
+
+-- Create domain for existing users...\
+INSERT IGNORE INTO domain (`name`, `description`) SELECT username, CONCAT('Domain of user ',username) FROM usr;
+-- RESULT
+
+-- Add Owner role ... \
+INSERT INTO role (identifier, name, description) VALUES ('owner', 'owner', 'Default role for every user to be able to use his own domain');
+SET @role_id = (SELECT LAST_INSERT_ID());
+
+-- Assign owner role to existing users...\
+SET @role_id = (SELECT id FROM role WHERE identifier='owner');
+INSERT IGNORE INTO rolegrant (id_usr,id_role,id_domain) SELECT u.id,@role_id,d.id FROM usr as u LEFT JOIN domain AS d ON u.username=d.name;
+-- RESULT
+
+-- Add EVEREST domains...\
+SET @role_id = (SELECT id FROM role WHERE identifier='starter');
+
+INSERT INTO domain (`name`, `description`) VALUES ('everest-CNR', 'Domain of Thematic Group CNR for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-INGV', 'Domain of Thematic Group INGV for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-NERC', 'Domain of Thematic Group NERC for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-SatCen', 'Domain of Thematic Group SatCen for Everest');
+INSERT INTO domain (`name`, `description`) VALUES ('everest-Citizens', 'Domain of Thematic Group Citizens for Everest');
 -- RESULT

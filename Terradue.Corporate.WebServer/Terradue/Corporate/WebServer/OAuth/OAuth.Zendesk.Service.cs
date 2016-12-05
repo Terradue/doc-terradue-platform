@@ -7,8 +7,8 @@ using System.Web;
 using System.Security.Cryptography;
 using System.Text;
 using Terradue.Corporate.Controller;
-using Terradue.Authentication.OAuth;
 using ServiceStack.Text;
+using Terradue.Authentication.Ldap;
 
 namespace Terradue.Corporate.WebServer {
 
@@ -55,7 +55,7 @@ namespace Terradue.Corporate.WebServer {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-                var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                var client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
@@ -71,7 +71,8 @@ namespace Terradue.Corporate.WebServer {
                         response_type = "code",
                         nonce = Guid.NewGuid().ToString(),
                         state = Guid.NewGuid().ToString(),
-                        redirect_uri = HttpUtility.UrlEncode(context.BaseUrl + "/t2api/zendesk/cb"),
+                        redirect_uri = HttpUtility.UrlEncode ("https://www.terradue.com/t2api/zendesk/cb"),
+                        //redirect_uri = HttpUtility.UrlEncode(context.BaseUrl + "/t2api/zendesk/cb"),
                         ajax = false
                     });
                 }; 
@@ -97,7 +98,7 @@ namespace Terradue.Corporate.WebServer {
                     HttpContext.Current.Response.Redirect(context.BaseUrl, true);
                 }
 
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
@@ -105,7 +106,7 @@ namespace Terradue.Corporate.WebServer {
                 client.RedirectUri = context.BaseUrl + "/t2api/zendesk/cb";
                 client.AccessToken(request.Code);
 
-                OAuth2AuthenticationType auth = new OAuth2AuthenticationType(context);
+                LdapAuthenticationType auth = new LdapAuthenticationType(context);
                 auth.SetConnect2IdCLient(client);
 
                 user = (UserT2)auth.GetUserProfile(context);
@@ -144,7 +145,7 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");

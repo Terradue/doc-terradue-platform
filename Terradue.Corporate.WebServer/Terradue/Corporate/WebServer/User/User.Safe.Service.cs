@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ServiceStack.ServiceHost;
 using Terradue.WebService.Model;
 using Terradue.Portal;
@@ -28,7 +28,7 @@ namespace Terradue.Corporate.WebServer
             try {
                 context.Open ();
 
-                Connect2IdClient client = new Connect2IdClient (context.GetConfigValue ("sso-configUrl"));
+                Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue ("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue ("sso-clientSecret");
@@ -37,6 +37,11 @@ namespace Terradue.Corporate.WebServer
                 UserT2 user = UserT2.FromId (context, context.UserId);
 
                 log.InfoFormat ("Create safe for user {0}", user.Username);
+
+                if (string.IsNullOrEmpty (request.password) && user.IsExternalAuthentication ()) {
+                    context.LogDebug (this, "Get password from Token for External Auth");
+                    request.password = user.GetExternalAuthAccessToken ();
+                }
 
                 //authenticate user
                 try {
@@ -73,6 +78,12 @@ namespace Terradue.Corporate.WebServer
                 context.Open ();
                 UserT2 user = UserT2.FromId (context, context.UserId);
                 log.InfoFormat ("Delete safe for user {0}", user.Username);
+
+                if (string.IsNullOrEmpty (request.password) && user.IsExternalAuthentication ()) {
+                    context.LogDebug (this, "Get password from Token for External Auth");
+                    request.password = user.GetExternalAuthAccessToken ();
+                }
+
                 //authenticate user
                 try {
                     var j2ldapclient = new LdapAuthClient (context.GetConfigValue ("ldap-authEndpoint"));
@@ -81,7 +92,7 @@ namespace Terradue.Corporate.WebServer
                     log.ErrorFormat ("Error during safe delete - {0} - {1}", e.Message, e.StackTrace);
                     throw new Exception ("Invalid password");
                 }
-                user.DeletePublicKey (request.password);
+                user.DeletePublicKey ();
                 log.InfoFormat ("Safe deleted successfully");
                 context.Close ();
             } catch (Exception e) {

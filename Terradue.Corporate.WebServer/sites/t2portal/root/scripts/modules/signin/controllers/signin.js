@@ -242,6 +242,18 @@ var SigninControl = BaseControl(
 		
 		return false;
 	},
+
+	'.everestSignin click': function(element){
+		
+		SigninModel.signInEverest().then(function(data, textStatus, jqXHR){
+			self.redirectToCallback(jqXHR);
+		}).fail(function(jqXHR){
+			self.displayErrorMessage('Everest submit failed.', Helpers.getErrMsg(jqXHR));
+		}).always(function(){
+		});
+		
+		return false;
+	},
 	
 	'.newScopes input[type="checkbox"] click': function(){
 		var isDisabled = ($('.newScopes input[type="checkbox"]:not(:checked)').length > 0);

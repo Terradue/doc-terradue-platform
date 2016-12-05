@@ -56,3 +56,51 @@
     border-bottom: 1px solid #ddd;
 }
 
+#signinPage .strike {
+    display: block;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap; 
+}
+
+#signinPage .strike > span {
+    position: relative;
+    display: inline-block;
+}
+
+#signinPage .strike > span:before,
+#signinPage .strike > span:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 9999px;
+    height: 1px;
+    background: gray;
+}
+
+#signinPage .strike > span:before {
+    right: 100%;
+    margin-right: 15px;
+}
+
+#signinPage .strike > span:after {
+    left: 100%;
+    margin-left: 15px;
+}
+
+#signinPage .signinWith {
+	width: 100%;
+	text-align: center;
+	position: relative;
+}
+#signinPage .signinWith > img {
+    vertical-align: middle;
+    position: absolute;
+    width: 26px;
+    left: 3px;
+    top: 3px;
+}
+
+#signinPage .signinWith.signinWithEverest > img {
+    border: 3px solid #c55041;
+}
