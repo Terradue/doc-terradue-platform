@@ -140,12 +140,15 @@ namespace Terradue.Corporate.Controller {
                         vrcDomain.Description = string.Format("Domain of Thematic Group {0} for Everest",domainIdentifier);
                         vrcDomain.Store ();
                     }
+                    context.LogDebug (this, string.Format("Everest user '{0}' is part of domain '{1}'", usr.Username, domainIdentifier));
                     //check if user has already a role in the domain
                     //if not we add it (+on ldap)
                     Role roleVRC = Role.FromIdentifier (context, "member");
                     if (!roleVRC.IsGrantedTo (usr, vrcDomain)) { 
                         roleVRC.GrantToUser (usr, vrcDomain);
+                        context.LogDebug (this, string.Format ("Everest user '{0}' added as {2} for domain '{1}'", usr.Username, domainIdentifier, roleVRC.Identifier));
                         usr.AddToLdapDomain (domainIdentifier + ".reader", domainIdentifier);
+                        context.LogDebug (this, string.Format ("Everest user '{0}' added as {2} on LDAP domain '{1}'", usr.Username, domainIdentifier, domainIdentifier + ".reader"));
                     }
                 }
                 return usr;
