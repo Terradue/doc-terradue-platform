@@ -131,6 +131,12 @@ UA -> UA : display user name
 
         [ApiMember (Name = "originator", Description = "system making the request", ParameterType = "query", DataType = "string", IsRequired = false)]
         public string Originator { get; set; }
+
+        [ApiMember (Name = "plan", Description = "plan's role at user creation", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string Plan { get; set; }
+
+        [ApiMember (Name = "domain", Description = "plan's domain at user creation", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string Domain { get; set; }
     }
 
     [Route ("/logout", "GET", Summary = "logout", Notes = "Logout from the platform")]
@@ -296,15 +302,20 @@ UA -> UA : display user name
         {
             T2CorporateWebContext context = new T2CorporateWebContext (PagePrivileges.EverybodyView);
             WebUserT2 result = null;
+            var plan = new Plan ();
             try {
                 context.Open ();
                 context.LogInfo (this, string.Format ("/sso/user POST eosso='{0}',email='{1}',originator='{2}'", request.EoSSO, request.Email, request.Originator));
+
+                //check request token
                 if (string.IsNullOrEmpty (request.Token) || !request.Token.Equals (context.GetConfigValue ("t2portal-token-usrsso"))) {
                     return new HttpError (HttpStatusCode.BadRequest, new Exception ("Invalid token parameter"));
                 }
+                //check request username
                 if (string.IsNullOrEmpty (request.Username)) {
                     return new HttpError (HttpStatusCode.BadRequest, new Exception ("Invalid username parameter"));
                 }
+                //check request password
                 if (string.IsNullOrEmpty (request.Password)) {
                     return new HttpError (HttpStatusCode.BadRequest, new Exception ("Invalid password parameter"));
                 } else {
@@ -314,13 +325,34 @@ UA -> UA : display user name
                         return new HttpError (HttpStatusCode.BadRequest, e);
                     }
                 }
+                //check request eosso
                 if (string.IsNullOrEmpty (request.EoSSO)) {
                     return new HttpError (HttpStatusCode.BadRequest, new Exception ("Invalid eosso parameter"));
                 }
+                //check request email
                 if (string.IsNullOrEmpty (request.Email) || !request.Email.Contains ("@")) {
                     return new HttpError (HttpStatusCode.BadRequest, new Exception ("Invalid email parameter"));
                 }
+                //check request plan
+                if (!string.IsNullOrEmpty (request.Plan)) {
+                    try {
+                        plan.Role = Role.FromIdentifier (context, "plan_" + request.Plan);
+                    } catch (Exception) {
+                        return new HttpError (HttpStatusCode.BadRequest, new Exception ("Invalid plan parameter"));
+                    }
+                }
+                //check request domain
+                if (!string.IsNullOrEmpty (request.Domain)) {
+                    try {
+                        plan.Domain = Domain.FromIdentifier (context, request.Domain);
+                    } catch (Exception) {
+                        return new HttpError (HttpStatusCode.BadRequest, new Exception ("Invalid domain parameter"));
+                    }
+                } else { 
+                    plan.Domain = Domain.FromIdentifier (context, "terradue");
+                }
 
+                //check if email is already used
                 try {
                     UserT2.FromEmail (context, request.Email);
                     throw new Exception ("Sorry, this email is already used.");
@@ -375,6 +407,11 @@ UA -> UA : display user name
                     context.SendMail (context.GetConfigValue ("SmtpUsername"), context.GetConfigValue ("SmtpUsername"), subject, body);
                 } catch (Exception) {
                     //we dont want to send an error if mail was not sent
+                }
+
+                //Set plan
+                if (!string.IsNullOrEmpty (request.Plan)){
+                    user.Upgrade (plan);
                 }
 
                 //TODO: log user created from TEP
