@@ -90,6 +90,10 @@ namespace Terradue.Corporate.Controller {
             DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS);
             DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH);
         }
+
+        public void RevokeSessionCookies () { 
+            DBCookie.DeleteDBCookies (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value);
+        }
         #endregion
 
         #region COOKIE

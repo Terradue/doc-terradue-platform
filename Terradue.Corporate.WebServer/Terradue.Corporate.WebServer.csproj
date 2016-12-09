@@ -164,7 +164,7 @@
 	  <HintPath>..\packages\MySql.Data.6.9.9\lib\net40\MySql.Data.dll</HintPath>
 	</Reference>
 	<Reference Include="Terradue.Ldap">
-	  <HintPath>..\packages\Terradue.Ldap.1.1.0-ft1120161025T082024\lib\net40\Terradue.Ldap.dll</HintPath>
+	  <HintPath>..\packages\Terradue.Ldap.1.1.0-ftea20161209T095258\lib\net40\Terradue.Ldap.dll</HintPath>
 	</Reference>
 	<Reference Include="Microsoft.Web.XmlTransform">
 	  <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
@@ -185,7 +185,7 @@
 	  <HintPath>..\packages\Terradue.OpenSearch.1.13.2\lib\net40\Terradue.OpenSearch.dll</HintPath>
 	</Reference>
 	<Reference Include="Terradue.Authentication.Ldap">
-	  <HintPath>..\packages\Terradue.Authentication.Ldap.1.1.0-build20161025T091435\lib\net40\Terradue.Authentication.Ldap.dll</HintPath>
+	  <HintPath>..\packages\Terradue.Authentication.Ldap.1.0.4-build20161209T100242\lib\net40\Terradue.Authentication.Ldap.dll</HintPath>
 	</Reference>
 	<Reference Include="Terradue.JFrog.Artifactory">
 	  <HintPath>..\packages\Terradue.JFrog.Artifactory.1.0.4\lib\net40\Terradue.JFrog.Artifactory.dll</HintPath>
@@ -209,13 +209,13 @@
 	  <HintPath>..\packages\Terradue.Metadata.EarthObservation.1.4.14\lib\net40\Terradue.Metadata.EarthObservation.dll</HintPath>
 	</Reference>
 	<Reference Include="Terradue.Portal.AdminTool">
-	  <HintPath>..\packages\Terradue.Portal.2.7.0-ftea20161201T161731\lib\net40\Terradue.Portal.AdminTool.exe</HintPath>
+	  <HintPath>..\packages\Terradue.Portal.2.7.0-ftea20161209T090846\lib\net40\Terradue.Portal.AdminTool.exe</HintPath>
 	</Reference>
 	<Reference Include="Terradue.Portal.Agent">
-	  <HintPath>..\packages\Terradue.Portal.2.7.0-ftea20161201T161731\lib\net40\Terradue.Portal.Agent.exe</HintPath>
+	  <HintPath>..\packages\Terradue.Portal.2.7.0-ftea20161209T090846\lib\net40\Terradue.Portal.Agent.exe</HintPath>
 	</Reference>
 	<Reference Include="Terradue.Portal">
-	  <HintPath>..\packages\Terradue.Portal.2.7.0-ftea20161201T161731\lib\net40\Terradue.Portal.dll</HintPath>
+	  <HintPath>..\packages\Terradue.Portal.2.7.0-ftea20161209T090846\lib\net40\Terradue.Portal.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
