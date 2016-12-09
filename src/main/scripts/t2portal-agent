@@ -18,7 +18,7 @@
 ### END INIT INFO
 
 agentpath="/usr/local/t2portal/webserver/sites/t2portal/root/bin"
-prog="portal-core-agent.exe"
+prog="Terradue.Portal.Agent.exe"
 pidfile=/var/run/t2portal-agent.pid
 lockfile=/var/lock/subsys/$prog
 

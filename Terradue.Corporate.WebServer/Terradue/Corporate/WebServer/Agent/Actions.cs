@@ -12,7 +12,7 @@ namespace Terradue.Corporate.WebServer {
         /// </summary>
         /// <param name="context">Context.</param>
         public static void CleanDBCookies(IfyContext context) {
-            string sql = String.Format ("DELETE * FROM cookie WHERE expire < {0};", StringUtils.EscapeSql (DateTime.UtcNow.ToString (@"yyyy\-MM\-dd\THH\:mm\:ss")));
+            string sql = String.Format ("DELETE FROM cookie WHERE expire < {0};", StringUtils.EscapeSql (DateTime.UtcNow.ToString (@"yyyy\-MM\-dd\THH\:mm\:ss")));
             context.Execute (sql);
         }
     }
