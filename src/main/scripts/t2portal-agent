@@ -38,7 +38,7 @@ start() {
                 fi
         fi
 
-        export tepqwAGENTD_PID=$pidfile
+        export t2portalAGENTD_PID=$pidfile
         touch $pidfile
         # Handle transition from root to non-root packages.
         mono $agentpath/$prog > /var/log/t2portal-agent.log 2>&1 &
