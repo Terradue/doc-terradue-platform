@@ -151,7 +151,9 @@ namespace Terradue.Corporate.Controller
 
         public override int DomainId {
             get {
-                return Domain.Id;
+                if (Domain != null)
+                    return Domain.Id;
+                else return 0;
             }
             set {
                 base.DomainId = value;
