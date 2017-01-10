@@ -391,8 +391,16 @@ UA -> UA : display user name
 
                 user.EoSSO = request.EoSSO;
                 user.UpdateLdapAccount ();
+                user.RegistrationOrigin = request.Originator;
 
+                //need to use admin rigths to create user
+                var currentContextAccessLevel = context.AccessLevel;
+                var currentUserAccessLevel = user.AccessLevel;
+                context.AccessLevel = EntityAccessLevel.Administrator;
+                user.AccessLevel = EntityAccessLevel.Administrator;
                 user.Store ();
+                context.AccessLevel = currentContextAccessLevel;
+                user.AccessLevel = currentUserAccessLevel;
 
                 user.LinkToAuthenticationProvider (AuthType, user.Username);
                 user.CreateGithubProfile ();

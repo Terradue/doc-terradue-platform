@@ -43,6 +43,21 @@ define([
 				}).fail(function(){
 					self.errorView({}, 'Unable to get user repositories', 'The user doesn\'t exist or you can\'t access this page.', true);
 				});
+				if(user.RegistrationOrigin != null){
+					var originIconUrl = "";
+					switch(user.RegistrationOrigin){
+						case "GEP":
+						originIconUrl = "https://geohazards-tep.eo.esa.int/styles/img/logo-geohazard.png";
+						break;
+						case "HEP":
+						originIconUrl = "https://hydrology-tep.eo.esa.int/styles/img/logo-hydro.png";
+						break;
+						case "UTEP":
+						originIconUrl = "https://urban-tep.eo.esa.int/styles/img/icons/logo_tep_urban.png";
+						break;
+					}
+					self.userData.user.attr('RegistrationOrigin', originIconUrl);
+				}
 			}).fail(function(){
 				self.errorView({}, 'Unable to get user info', 'The user doesn\'t exist or you can\'t access this page.', true);
 			});
@@ -60,6 +75,8 @@ define([
 				data: this.userData
 			});
 		},
+
+
 
 		'.list-group-item click': function(el){
 			var self = this;

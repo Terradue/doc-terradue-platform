@@ -20,6 +20,7 @@
 						{{#ifEquals Level 3}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
 						{{#ifEquals Level 2}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
 						{{#ifEquals Level 1}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
+						{{#if RegistrationOrigin}}<img src="{{RegistrationOrigin}}" height="30" class="pull-right"/>{{/if}}
 						<dl class="dl-horizontal">
 							<dt>Id</dt><dd>&nbsp;{{Id}}</dd>
 							<dt>Username</dt><dd>&nbsp;{{Username}}</dd>
@@ -33,9 +34,10 @@
 								{{#ifEquals AccountStatus 1}}<span class="label label-warning">Pending</span>{{/ifEquals}}
 							</dd>
 							<dt>DomainId</dt><dd>&nbsp;{{DomainId}}</dd>
-							<dt>EmailNotification</dt><dd>&nbsp;{{EmailNotification}}</dd>
 							<dt>PublicKey</dt><dd>&nbsp;{{PublicKey}}</dd>
 							<dt>One Account</dt><dd>&nbsp;{{#if HasOneAccount}}<span class="label label-success">OK</span>{{else}}<span class="label label-danger">Not created</span>{{/if}}</dd>
+							<dt>Registration</dt><dd>&nbsp;{{ simpleDate FirstLoginDate "n/a" }}</dd>
+							<dt>Last login</dt><dd>&nbsp;{{ fromNow LastLoginDate "n/a" }}</dd>
 						</dl>
 					{{/user}}
 				</div>

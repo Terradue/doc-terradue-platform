@@ -305,7 +305,6 @@ namespace Terradue.Corporate.WebServer {
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
 
-
     /// <summary>
     /// User.
     /// </summary>
@@ -352,6 +351,15 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember (Name = "ExternalAuth", Description = "Check if user uses external auth", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool ExternalAuth { get; set; }
 
+        [ApiMember (Name = "FirstLoginDate", Description = "User first login date", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string FirstLoginDate { get; set; }
+
+        [ApiMember (Name = "LastLoginDate", Description = "User last login date", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string LastLoginDate { get; set; }
+
+        [ApiMember (Name = "RegistrationOrigin", Description = "User Registration Origin", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string RegistrationOrigin { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
         /// </summary>
@@ -395,6 +403,12 @@ namespace Terradue.Corporate.WebServer {
                 this.ArtifactoryDomainExists = entity.OwnerGroupExists ();
                 log.DebugFormat ("Get ADMIN info - HasCatalogueIndex");
                 this.HasCatalogueIndex = entity.HasCatalogueIndex ();
+                log.DebugFormat ("Get ADMIN info - Last Login date");
+                DateTime timef = entity.RegistrationDate == DateTime.MinValue ? entity.GetFirstLoginDate () : entity.RegistrationDate;
+                this.FirstLoginDate = (timef == DateTime.MinValue ? null : timef.ToString ("U"));
+                DateTime timel = entity.GetLastLoginDate ();
+                this.LastLoginDate = (timel == DateTime.MinValue ? null : timel.ToString ("U"));
+                this.RegistrationOrigin = entity.RegistrationOrigin;
             }
 
             this.ExternalAuth = entity.IsExternalAuthentication ();

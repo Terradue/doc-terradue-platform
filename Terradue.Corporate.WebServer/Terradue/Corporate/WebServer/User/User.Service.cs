@@ -482,9 +482,6 @@ namespace Terradue.Corporate.WebServer
 
                     var query = string.Format ("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}&nonce={5}",
                                               response_type, scope, client_id, state, redirect_uri, nonce);
-
-                    //client.RevokeAllCookies ();
-
                     user.CreateLdapAccount (request.Password);
 
                     //need to use admin rigths to create user

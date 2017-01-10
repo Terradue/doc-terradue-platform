@@ -1457,6 +1457,44 @@ namespace Terradue.Corporate.Controller
             if (LdapFactory.GetUserFromEmail (email) != null) throw new Exception ("This email is already used.");
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Gets the first login date.
+        /// </summary>
+        /// <returns>The first login date.</returns>
+        public DateTime GetFirstLoginDate ()
+        {
+            DateTime value = DateTime.MinValue;
+            try {
+                System.Data.IDbConnection dbConnection = context.GetDbConnection ();
+                string sql = String.Format ("SELECT log_time FROM usrsession WHERE id_usr={0} ORDER BY log_time ASC LIMIT 1;", this.Id);
+                System.Data.IDataReader reader = context.GetQueryResult (sql, dbConnection);
+                if (reader.Read ()) value = context.GetDateTimeValue (reader, 0);
+                context.CloseQueryResult (reader, dbConnection);
+            } catch (Exception) { }
+            return value;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Gets the last login date.
+        /// </summary>
+        /// <returns>The last login date.</returns>
+        public DateTime GetLastLoginDate ()
+        {
+            DateTime value = DateTime.MinValue;
+            try {
+                System.Data.IDbConnection dbConnection = context.GetDbConnection ();
+                string sql = String.Format ("SELECT log_time FROM usrsession WHERE id_usr={0} ORDER BY log_time DESC LIMIT 1;", this.Id);
+                System.Data.IDataReader reader = context.GetQueryResult (sql, dbConnection);
+                if (reader.Read ()) value = context.GetDateTimeValue (reader, 0);
+                context.CloseQueryResult (reader, dbConnection);
+            } catch (Exception) { }
+            return value;
+        }
+
     }
 }
 
