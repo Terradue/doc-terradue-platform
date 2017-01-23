@@ -405,7 +405,7 @@ namespace Terradue.Corporate.Controller
         public override void Delete ()
         {
             //delete user on cloud
-            if (GetCloudUser () != null) DeleteCloudAccount ();
+            if (OneUser != null) DeleteCloudAccount ();
 
             //delete user catalogue index
             //if (HasCatalogueIndex ()) {
@@ -545,7 +545,7 @@ namespace Terradue.Corporate.Controller
                 context.Execute (String.Format ("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql (this.Username)));
             }
 
-            if (GetCloudUser () == null) {
+            if (OneUser == null) {
 
                 //create user (using email as password)
                 int id = oneClient.UserAllocate (this.Username, this.Email, "SSO");
@@ -554,26 +554,7 @@ namespace Terradue.Corporate.Controller
 
         public void UpdateCloudAccount (Plan plan)
         {
-            var usercloud = GetCloudUser ();
-            if (usercloud != null) UpdateOneUser (usercloud, plan);
-        }
-
-        /// <summary>
-        /// Gets the cloud user.
-        /// </summary>
-        /// <returns>The cloud user.</returns>
-        public USER_POOLUSER GetCloudUser ()
-        {
-            //get user from username
-            USER_POOL users = oneClient.UserGetPoolInfo ();
-            foreach (object user in users.Items) {
-                if (user.GetType () == typeof (USER_POOLUSER)) {
-                    if (((USER_POOLUSER)user).NAME.Equals (this.Username)) {
-                        return (USER_POOLUSER)user;
-                    }
-                }
-            }
-            return null;
+            if (OneUser != null) UpdateOneUser (OneUser, plan);
         }
 
         private void UpdateOneUser (object user, Plan plan)
@@ -622,8 +603,7 @@ namespace Terradue.Corporate.Controller
 
         public void UpdateOneGroup (int grpId)
         {
-            var usercloud = GetCloudUser ();
-            if (usercloud != null) oneClient.UserUpdateGroup (Int32.Parse (usercloud.ID), grpId);
+            if (OneUser != null) oneClient.UserUpdateGroup (Int32.Parse (OneUser.ID), grpId);
         }
 
         private string CreateTemplate (XmlNode [] template, List<KeyValuePair<string, string>> pairs)
@@ -655,8 +635,7 @@ namespace Terradue.Corporate.Controller
 
         public void DeleteCloudAccount ()
         {
-            var usercloud = GetCloudUser ();
-            if (usercloud != null) oneClient.UserDelete (Int32.Parse (usercloud.ID));
+            if (OneUser != null) oneClient.UserDelete (Int32.Parse (OneUser.ID));
             context.Execute (String.Format ("DELETE FROM usr_cloud WHERE id={0} AND id_provider={1};", this.Id, context.GetConfigIntegerValue ("One-default-provider")));
         }
 
