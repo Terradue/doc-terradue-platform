@@ -1,6 +1,3 @@
-[submodule "developer-sandbox"]
-	path = developer-sandbox
-	url = git@github.com:Terradue/doc-developer-sandbox.git
 [submodule "t2-api"]
 	path = t2-api
 	url = git@github.com:Terradue/api.git
