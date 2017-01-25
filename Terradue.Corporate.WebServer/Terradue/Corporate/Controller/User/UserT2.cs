@@ -39,6 +39,7 @@ namespace Terradue.Corporate.Controller
                                     if (oneUser.NAME == this.Username) {
                                         oneId = Int32.Parse (oneUser.ID);
                                         oneuser = oneUser;
+                                        log.Debug (String.Format ("OneUser {0} found", oneId));
                                         break;
                                     }
                                 }
@@ -541,6 +542,7 @@ namespace Terradue.Corporate.Controller
             EntityList<CloudProvider> provs = new EntityList<CloudProvider> (context);
             provs.Load ();
             foreach (CloudProvider prov in provs) {
+                log.Debug (String.Format ("Update usr_cloud table for provider {0}", prov.Id));
                 context.Execute (String.Format ("DELETE FROM usr_cloud WHERE id={0} AND id_provider={1};", this.Id, prov.Id));
                 context.Execute (String.Format ("INSERT IGNORE INTO usr_cloud (id, id_provider, username) VALUES ({0},{1},{2});", this.Id, prov.Id, StringUtils.EscapeSql (this.Username)));
             }
