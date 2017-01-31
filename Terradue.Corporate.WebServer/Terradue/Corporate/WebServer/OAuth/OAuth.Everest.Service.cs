@@ -105,6 +105,9 @@ namespace Terradue.Corporate.WebServer
                 if (user == null) throw new Exception ("Error to load user");
                 context.LogDebug (this, string.Format ("Loaded user '{0}'", user.Username));
 
+                context.StartSession (auth, user);
+                context.SetUserInformation (auth, user);
+
                 //Create the session also on SSO
                 var clientSSO = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
                 clientSSO.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");

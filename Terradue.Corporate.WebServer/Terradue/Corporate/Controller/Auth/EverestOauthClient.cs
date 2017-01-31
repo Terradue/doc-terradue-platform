@@ -228,14 +228,11 @@ namespace Terradue.Corporate.Controller {
             return Convert.ToBase64String (Encoding.Default.GetBytes (this.ClientId + ":" + this.ClientSecret));
         }
 
-        public void Logout () { 
-            string url = string.Format ("{0}?commonAuthLogout=true&type=oidc&commonAuthCallerPath={1}&relyingParty={2}", LogoutEndpoint, Context.BaseUrl, ClientName);
-           
-            HttpWebRequest everRequest = (HttpWebRequest)WebRequest.Create (url);
-            everRequest.Method = "GET";
-            everRequest.Proxy = null;
-
-            using (var httpResponse = (HttpWebResponse)everRequest.GetResponse ()) {}
+        public string GetLogoutUrl () { 
+            return string.Format ("{0}?commonAuthLogout=true&type=oidc&commonAuthCallerPath={1}&relyingParty={2}", 
+                                  LogoutEndpoint, 
+                                  HttpUtility.UrlEncode(Context.BaseUrl), 
+                                  ClientName);
         }
 
     }

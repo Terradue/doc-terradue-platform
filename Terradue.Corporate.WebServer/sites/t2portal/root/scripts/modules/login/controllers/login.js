@@ -49,9 +49,19 @@ define([
 //		
 		'#loginDiv .logout click': function(sender, e) {
 			var self=this;
-			LoginModel.logout(function(){
+			var jqXHR = LoginModel.logout();
+			jqXHR.then(function(){
 				self.User.attr({noLogged: true, current:null});
-				document.location = "/";
+				if (jqXHR.status==204){
+					var location = jqXHR.getResponseHeader('Location');
+					var hash = can.route.attr('hash');
+					if (location){
+						window.location.replace(location); // redirect
+					} else{
+					}
+					return true;
+				} else
+					return false;
 			});
 			
 			return false;

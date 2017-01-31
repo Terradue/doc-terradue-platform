@@ -1,5 +1,6 @@
 using System;
 using System.Web;
+using ServiceStack.Common.Web;
 using Terradue.Ldap;
 using Terradue.Portal;
 
@@ -160,22 +161,8 @@ namespace Terradue.Corporate.Controller {
         } 
 
         public override void EndExternalSession(IfyWebContext context, HttpRequest request, HttpResponse response) {
-
-            var sid = clientSSO.LoadSID ();
-            var tokenaccess = clientSSO.LoadTokenAccess ();
-
-            try{
-                client.Logout ();
-            } catch (Exception e) { }
-
             client.RevokeSessionCookies ();
-            clientSSO.RevokeSessionCookies ();
-
-            try {
-                clientSSO.DeleteSession (sid.Value);
-                clientSSO.RevokeToken (tokenaccess.Value);
-            } catch (Exception e) { }
-
+            response.Headers[HttpHeaders.Location] = client.GetLogoutUrl ();
         }
 
     }

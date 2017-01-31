@@ -56,6 +56,7 @@ namespace Terradue.Corporate.WebServer {
         public bool autoconsent { get; set; }
     }
 
+    [Route ("/oauth/logout", "GET", Summary = "login", Notes = "")]
     [Route("/oauth", "DELETE", Summary = "login", Notes = "")]
     public class OAuthDeleteAuthorizationRequest
     {
@@ -358,38 +359,16 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 context.LogInfo (this, string.Format ("/oauth DELETE"));
-                Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
-                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
-                client.SSOApiClient = context.GetConfigValue("sso-clientId");
-                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
-                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
 
-//                var client_id = request.client_id ?? context.GetConfigValue("sso-clientId");
-//                var response_type = request.response_type ?? "code";
-//                var nonce = request.nonce ?? Guid.NewGuid().ToString();
-//                var scope = request.scope ?? context.GetConfigValue("sso-scopes").Replace(","," ");
-//                var state = request.state ?? Guid.NewGuid().ToString();
-//                var redirect_uri = request.redirect_uri ?? HttpUtility.UrlEncode(context.GetConfigValue("sso-callback"));
-//
-//                var query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}&nonce={5}",
-//                                          response_type, scope, client_id, state, redirect_uri, nonce);
-//                OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
-//                    query = query,
-//                    sub_sid = client.SUB_SID
-//                };
-//
-//                OauthAuthzSessionResponse oauthsession = new OauthAuthzSessionResponse();
-//                var oauthsessionresponse = client.AuthzSession(oauthrequest1);
-//
-//                var redirect = client.DeleteAuthz(oauthsessionresponse.sid);
                 context.EndSession();
+                var redirect = HttpContext.Current.Response.Headers [HttpHeaders.Location];
+                return DoRedirect (context, redirect ?? context.BaseUrl, request.ajax);
                 context.Close();
             } catch (Exception e) {
                 context.Close();
                 throw e;
             }
             return new Terradue.WebService.Model.WebResponseBool(true);
-//            HttpContext.Current.Response.Redirect(baseurl, true);
         }
 
         private OauthConsentRequest GenerateConsent(List<string> scope){
