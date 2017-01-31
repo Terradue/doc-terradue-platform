@@ -3,6 +3,7 @@ USE $MAIN$;
 /*****************************************************************************/
 
 -- Adding EVEREST config... \
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientName', 'string', 'Everest Client Name', 'Enter the value of the client name for Everest', 'TerradueCloudPlatform', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientId', 'string', 'Everest Client Id', 'Enter the value of the client identifier for Everest', "L4oW1mysB3cxf_hFAHU9DlzZRAoa", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientSecret', 'string', 'Everest Client Secret', 'Enter the value of the client secret password of Everest', "Y8ysZ0IvS3hKVmAzyRQMIZqV8jYa", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-tokenEndpoint', 'string', 'Everest Token Endpoint url', 'Enter the value of the url of the Token Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/token", '0');
@@ -10,6 +11,7 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-scopes', 'string', 'Everest default scopes', 'Enter the value of the default scopes of Everest', "openid,profile", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-callback', 'string', 'Everest callback url', 'Enter the value of the callback url of Everest', "https://www.terradue.com/t2api/everest/cb", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-authEndpoint', 'string', 'Everest Authentication Endpoint url', 'Enter the value of the url of the Authentication Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/authorize", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-logoutEndpoint', 'string', 'Everest Logout Endpoint url', 'Enter the value of the url of the Logout Endpoint of Everest', 'https://sso.everest.psnc.pl/commonauth', '0');
 -- RESULT
 
 -- Adding SSO config... \

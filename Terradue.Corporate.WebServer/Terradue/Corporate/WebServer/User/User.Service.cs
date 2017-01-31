@@ -241,8 +241,8 @@ namespace Terradue.Corporate.WebServer
                 bool newusername = (user.Username == user.Email);
                 user = request.ToEntity (context, user);
 
-                //update the Ldap uid
-                if (newusername) {
+                //update the Ldap uid only if in db Username=Email and in the request Username is not null and not equal to Email
+                if (newusername && !string.IsNullOrEmpty(user.Username) && (user.Username != user.Email)) {
                     user.UpdateUsername (user.Email, user.Username);
                 }
 

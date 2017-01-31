@@ -13,6 +13,8 @@ namespace Terradue.Corporate.Controller {
         public string AuthEndpoint { get; set; }
         public string TokenEndpoint { get; set; }
         public string UserInfoEndpoint { get; set; }
+        public string LogoutEndpoint { get; set; }
+        public string ClientName { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string Scopes { get; set; }
@@ -22,12 +24,18 @@ namespace Terradue.Corporate.Controller {
         public EverestOauthClient (IfyContext context){
             Context = context;
             AuthEndpoint = context.GetConfigValue ("everest-authEndpoint");
+            ClientName = context.GetConfigValue ("everest-clientName");
             ClientId = context.GetConfigValue ("everest-clientId");
             ClientSecret = context.GetConfigValue ("everest-clientSecret");
             TokenEndpoint = context.GetConfigValue ("everest-tokenEndpoint");
+            LogoutEndpoint = context.GetConfigValue ("everest-logoutEndpoint");
             UserInfoEndpoint = context.GetConfigValue ("everest-userInfoEndpoint");
             Callback = context.GetConfigValue ("everest-callback");
             Scopes = context.GetConfigValue ("everest-scopes");
+
+            ServicePointManager.ServerCertificateValidationCallback = delegate (
+                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
+                System.Net.Security.SslPolicyErrors errors) { return (true); };
         }
 
         #region TOKEN
@@ -101,90 +109,6 @@ namespace Terradue.Corporate.Controller {
                 public const string COOKIE_TOKEN_ACCESS = "EVEREST_token_access";
                 public const string COOKIE_TOKEN_REFRESH = "EVEREST_token_refresh";
 
-        //        private string GetCookieName (string name) { 
-        //            return string.Format ("{0}_{1}", COOKIE_BASENAME, name);
-        //        }
-
-        //        /// <summary>
-        //        /// Gets the cookie.
-        //        /// </summary>
-        //        /// <returns>The cookie.</returns>
-        //        /// <param name="name">Name.</param>
-        //        public string GetCookie (string name)
-        //        {
-        //            var cookieName = GetCookieName (name);
-        //            if (HttpContext.Current.Request.Cookies [cookieName] != null)
-        //                return HttpContext.Current.Request.Cookies [cookieName].Value;
-        //            else
-        //                return null;
-        //        }
-
-        //        private HttpCookie CreateCookie (string name, string value)
-        //        {
-        //            var cookieName = GetCookieName (name);
-        //            HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName] ?? new HttpCookie (cookieName);
-        //            cookie.Value = value;
-        //#if DEBUG
-        //            cookie.Secure = false;
-        //#else
-        //            cookie.Secure = true;
-        //#endif
-        //            cookie.HttpOnly = true;
-        //            cookie.Domain = HttpContext.Current.Request.Url.Authority;
-        //            cookie.Path = "/t2api/";
-        //            return cookie;
-        //        }
-
-        //        /// <summary>
-        //        /// Sets the cookie.
-        //        /// </summary>
-        //        /// <param name="name">Name.</param>
-        //        /// <param name="value">Value.</param>
-        //        public void SetCookie (string name, string value)
-        //        {
-        //            var cookie = CreateCookie (name, value);
-        //            HttpContext.Current.Response.Cookies.Set (cookie);
-        //        }
-
-        //        /// <summary>
-        //        /// Sets the cookie.
-        //        /// </summary>
-        //        /// <param name="name">Name.</param>
-        //        /// <param name="value">Value.</param>
-        //        /// <param name="expires">Expires.</param>
-        //        public void SetCookie (string name, string value, double expires)
-        //        {
-        //            var cookie = CreateCookie (name, value);
-        //            cookie.Expires = DateTime.UtcNow.AddSeconds (expires);
-        //            HttpContext.Current.Response.Cookies.Set (cookie);
-        //        }
-
-        //        /// <summary>
-        //        /// Revokes the cookie.
-        //        /// </summary>
-        //        /// <param name="name">Name.</param>
-        //        public void RevokeCookie (string name)
-        //        {
-        //            var cookieName = GetCookieName (name);
-        //            HttpContext.Current.Response.Cookies.Remove (cookieName);
-        //            HttpContext.Current.Request.Cookies.Remove (cookieName);
-        //            //HttpCookie cookie = HttpContext.Current.Request.Cookies [cookieName];
-        //            //if (cookie != null) {
-        //            //    cookie.Expires = DateTime.Now.AddDays (-10);
-        //            //    cookie.Value = null;
-        //            //    HttpContext.Current.Response.Cookies.Set (cookie);
-        //            //}
-        //        }
-
-        //        /// <summary>
-        //        /// Revokes all cookies.
-        //        /// </summary>
-        //        public void RevokeAllCookies ()
-        //        {
-        //            RevokeCookie (COOKIE_TOKEN_ACCESS);
-        //            RevokeCookie (COOKIE_TOKEN_REFRESH);
-        //        }
-
         #endregion
 
         /// <summary>
@@ -209,13 +133,6 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <param name="code">Code.</param>
         public void AccessToken (string code) {
-
-            ServicePointManager.ServerCertificateValidationCallback = delegate (
-                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
-                System.Net.Security.SslPolicyErrors errors) {
-                    return (true);
-                };
-
 
             string url = string.Format("{0}?grant_type=authorization_code&redirect_uri={1}&code={2}", 
                                        TokenEndpoint,
@@ -251,13 +168,7 @@ namespace Terradue.Corporate.Controller {
         /// <param name="token">Token.</param>
         public void RefreshToken (string token) {
 
-            ServicePointManager.ServerCertificateValidationCallback = delegate (
-                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
-                System.Net.Security.SslPolicyErrors errors) {
-                    return (true);
-                };
-
-            var scope = Scopes.Replace (",", "%20");
+           var scope = Scopes.Replace (",", "%20");
             string url = string.Format ("{0}?client_id={1}&client_secret={2}&grant_type=refresh_token&refresh_token={3}&scope={4}",
                                         TokenEndpoint,
                                         ClientId,
@@ -295,12 +206,6 @@ namespace Terradue.Corporate.Controller {
         /// <param name="token">Token.</param>
         public OauthUserInfoResponse GetUserInfo (string token) {
 
-            ServicePointManager.ServerCertificateValidationCallback = delegate (
-                Object obj, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain,
-                System.Net.Security.SslPolicyErrors errors) {
-                    return (true);
-                };
-
             OauthUserInfoResponse user;
             string url = string.Format ("{0}", UserInfoEndpoint);
             HttpWebRequest everRequest = (HttpWebRequest)WebRequest.Create (url);
@@ -321,6 +226,16 @@ namespace Terradue.Corporate.Controller {
         private string GetBasicAuthenticationSecret ()
         {
             return Convert.ToBase64String (Encoding.Default.GetBytes (this.ClientId + ":" + this.ClientSecret));
+        }
+
+        public void Logout () { 
+            string url = string.Format ("{0}?commonAuthLogout=true&type=oidc&commonAuthCallerPath={1}&relyingParty={2}", LogoutEndpoint, Context.BaseUrl, ClientName);
+           
+            HttpWebRequest everRequest = (HttpWebRequest)WebRequest.Create (url);
+            everRequest.Method = "GET";
+            everRequest.Proxy = null;
+
+            using (var httpResponse = (HttpWebResponse)everRequest.GetResponse ()) {}
         }
 
     }

@@ -164,6 +164,10 @@ namespace Terradue.Corporate.Controller {
             var sid = clientSSO.LoadSID ();
             var tokenaccess = clientSSO.LoadTokenAccess ();
 
+            try{
+                client.Logout ();
+            } catch (Exception e) { }
+
             client.RevokeSessionCookies ();
             clientSSO.RevokeSessionCookies ();
 
