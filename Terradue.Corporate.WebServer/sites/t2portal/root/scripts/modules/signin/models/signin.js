@@ -6,6 +6,10 @@ define(['can', 'config'], function(can, Config){
 		signin: function(signinInfo){
 			return $.post('/'+Config.api+'/oauth?ajax=true', signinInfo);
 		},
+
+		signInEverest: function(){
+			return $.get('/'+Config.api+'/oauth/everest');
+		},
 		
 		consent: function(consentInfo){
 			return $.ajax({

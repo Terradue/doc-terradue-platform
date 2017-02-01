@@ -32,6 +32,7 @@ namespace Terradue.Corporate.WebServer.Common {
     /// </summary>
     public class T2CorporateWebContext : IfyWebContext {
 
+
         public T2CorporateWebContext(PagePrivileges privileges) : base(privileges) {
             HideMessages = true;
             System.Configuration.Configuration rootWebConfig =

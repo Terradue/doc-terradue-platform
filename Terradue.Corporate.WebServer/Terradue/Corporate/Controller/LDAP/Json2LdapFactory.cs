@@ -27,11 +27,39 @@ namespace Terradue.Corporate.Controller {
             return NormalizeLdapDN(dn);
         }
 
+        /// <summary>
+        /// Creates the LDAP DN for domain.
+        /// </summary>
+        /// <returns>The LDAP DN for domain.</returns>
+        /// <param name="cn">Cn.</param>
+        /// <param name="ou">Ou.</param>
+        public string CreateLdapDNforDomain (string cn, string ou) {
+            string dn = null;
+            if (string.IsNullOrEmpty (cn))
+                dn = string.Format ("ou={0}, ou=domains, dc=terradue, dc=com", ou);
+            else
+                dn = string.Format ("cn={0}, ou={1}, ou=domains, dc=terradue, dc=com", cn, ou);
+            return NormalizeLdapDN (dn);
+
+        }
+
+        /// <summary>
+        /// Creates the LDAP t2 dn.
+        /// </summary>
+        /// <returns>The LDAP t2 dn.</returns>
+        /// <param name="uid">Uid.</param>
+        /// <param name="ou">Ou.</param>
         public string CreateLdapT2DN(string uid, string ou) {
             string dn = string.Format("uid={0}, ou={1}, dc={2}, dc={3}", uid, ou, "terradue", "com");
             return NormalizeLdapDN(dn);
         }
 
+        /// <summary>
+        /// Creates the LDAP t2 dn.
+        /// </summary>
+        /// <returns>The LDAP t2 dn.</returns>
+        /// <param name="uid">Uid.</param>
+        /// <param name="ou">Ou.</param>
         public string CreateLdapT2DN(string uid, List<string> ou) {
             var ous = "";
             foreach (var entry in ou)
@@ -40,6 +68,11 @@ namespace Terradue.Corporate.Controller {
             return NormalizeLdapDN(dn);
         }
 
+        /// <summary>
+        /// Normalizes the LDAP dn.
+        /// </summary>
+        /// <returns>The LDAP dn.</returns>
+        /// <param name="dn">Dn.</param>
         public string NormalizeLdapDN(string dn) {
             string dnn = Json2Ldap.NormalizeDN(dn);
             if (!Json2Ldap.IsValidDN(dnn))

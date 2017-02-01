@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.ComponentModel;
 using System.Collections.Generic;
@@ -25,6 +25,12 @@ namespace Terradue.Corporate.WebServer {
 
     [Route("/user/ldap", "GET", Summary = "GET the users", Notes = "User is found on ldap")]
     public class GetLdapUsers : IReturn<WebUserT2> {
+    }
+
+    [Route ("/user/ldap", "POST", Summary = "POST the user ldap", Notes = "User is found on ldap")]
+    public class CreateLdapAccount : IReturn<WebUserT2>{
+        [ApiMember (Name = "password", Description = "User password", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string Password { get; set; }
     }
 
     [Route("/user/{username}", "GET", Summary = "GET the user", Notes = "User is found from username")]
@@ -67,11 +73,19 @@ namespace Terradue.Corporate.WebServer {
         public bool ldap { get; set; }
     }
 
+    [Route ("/user/current/logstatus", "GET", Summary = "GET the status of the current user", Notes = "true = is logged, false = is not logged")]
+    public class UserCurrentIsLoggedRequest : IReturn<WebResponseBool>
+    {
+    }
+
     [Route("/user", "PUT", Summary = "Update user", Notes = "User is contained in the PUT data. Only non UMSSO data can be updated, e.g redmineApiKey or certField")]
     public class UpdateUserT2 : WebUserT2, IReturn<WebUserT2> {}
 
     [Route("/user", "POST", Summary = "Create a new user", Notes = "User is contained in the POST data.")]
     public class CreateUserT2 : WebUserT2, IReturn<WebUserT2> {}
+
+    [Route ("/user/username", "POST", Summary = "Update user username", Notes = "User is contained in the PUT data. Only non UMSSO data can be updated, e.g redmineApiKey or certField")]
+    public class UpdateUsernameT2 : WebUserT2, IReturn<WebUserT2> { }
 
     [Route("/user/cert", "PUT", Summary = "Update user cert", Notes = "User is contained in the PUT data. Only non UMSSO data can be updated, e.g redmineApiKey or certField")]
     public class UpdateUserCertTep : WebUserT2, IReturn<WebUserT2> {}
@@ -201,6 +215,36 @@ namespace Terradue.Corporate.WebServer {
 
     }
 
+    public class WebPlan
+    {
+
+        [ApiMember (Name = "Role", Description = "Plan Role", ParameterType = "query", DataType = "WebRole", IsRequired = true)]
+        public WebRole Role { get; set; }
+
+        [ApiMember (Name = "Domain", Description = "Plan Domain", ParameterType = "query", DataType = "WebDomain", IsRequired = true)]
+        public WebDomain Domain { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
+        /// </summary>
+        public WebPlan () { }
+
+        public WebPlan (Plan plan) {
+            this.Role = new WebRole (plan.Role);
+            this.Domain = new WebDomain (plan.Domain);
+        }
+
+        public Plan ToEntity (IfyContext context)
+        {
+            Plan plan = new Plan ();
+            Role role = this.Role != null ? Terradue.Portal.Role.FromId (context, this.Role.Id) : null;
+            Domain domain = this.Domain != null ? Terradue.Portal.Domain.FromId (context, this.Domain.Id) : null;
+            plan.Role = role;
+            plan.Domain = domain;
+            return plan;
+        }
+
+    }
 
 
     //-------------------------------------------------------------------------------------------------------------------------
@@ -261,7 +305,6 @@ namespace Terradue.Corporate.WebServer {
     //-------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------------------------------
 
-
     /// <summary>
     /// User.
     /// </summary>
@@ -272,6 +315,9 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name = "hasoneaccount", Description = "Says if user has an account on OpenNebula", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool HasOneAccount { get; set; }
+
+        [ApiMember (Name = "hasldapaccount", Description = "Says if user has an account on LDAP", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool HasLdapAccount { get; set; }
 
         [ApiMember(Name = "DomainId", Description = "User domain id", ParameterType = "query", DataType = "int", IsRequired = false)]
         public int DomainId { get; set; }
@@ -287,6 +333,8 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember(Name = "Plan", Description = "User Plan", ParameterType = "query", DataType = "String", IsRequired = false)]
         public String Plan { get; set; }
+        //[ApiMember(Name = "Plans", Description = "User Plan", ParameterType = "query", DataType = "WebPlan", IsRequired = false)]
+        //public List<WebPlan> Plans { get; set; }
 
         [ApiMember(Name = "HasLdapDomain", Description = "Check if user has ldap domain", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool HasLdapDomain { get; set; }
@@ -299,6 +347,18 @@ namespace Terradue.Corporate.WebServer {
 
         [ApiMember (Name = "HasCatalogueIndex", Description = "Check if user has catalogue index", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool HasCatalogueIndex { get; set; }
+
+        [ApiMember (Name = "ExternalAuth", Description = "Check if user uses external auth", ParameterType = "query", DataType = "bool", IsRequired = false)]
+        public bool ExternalAuth { get; set; }
+
+        [ApiMember (Name = "FirstLoginDate", Description = "User first login date", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string FirstLoginDate { get; set; }
+
+        [ApiMember (Name = "LastLoginDate", Description = "User last login date", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string LastLoginDate { get; set; }
+
+        [ApiMember (Name = "RegistrationOrigin", Description = "User Registration Origin", ParameterType = "query", DataType = "string", IsRequired = false)]
+        public string RegistrationOrigin { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
@@ -316,23 +376,23 @@ namespace Terradue.Corporate.WebServer {
             log.DebugFormat ("Transforms UserT2 into WebUserT2");
 
             this.DomainId = entity.DomainId;
-            this.Plan = entity.Plan != null ? entity.Plan.Name : "";
+            var role = entity.GetRoleForDomain ("terradue");
+            this.Plan = role != null ? role.Name : PlanFactory.NONE;
+            //this.Plans = new List<WebPlan> ();
+            //foreach (var plan in entity.Plans) this.Plans.Add (new WebPlan (plan));
 
             if (ldap || admin) {
-                if (entity.PublicKey == null) {
-                    log.DebugFormat ("Get LDAP info");
-                    entity.LoadLdapInfo ();
+                log.DebugFormat ("Get LDAP info");
+                this.HasLdapAccount = entity.HasLdapAccount ();
+                if (this.HasLdapAccount) {
+                    if (entity.PublicKey == null) entity.LoadLdapInfo ();
+                    if (entity.ApiKey == null) entity.LoadApiKey ();
+                    if (entity.OneUser != null) {
+                        this.HasOneAccount = true;
+                    }
+                    this.PublicKey = entity.PublicKey;
+                    this.ApiKey = entity.ApiKey;
                 }
-                if (entity.ApiKey == null) {
-                    log.DebugFormat ("Get API KEY");
-                    entity.LoadApiKey ();
-                }
-                if (entity.OneUser != null) {
-                    log.DebugFormat ("Get ONE info");
-                    this.HasOneAccount = true;
-                }
-                this.PublicKey = entity.PublicKey;
-                this.ApiKey = entity.ApiKey;
             }
             if (admin) { 
                 log.DebugFormat ("Get ADMIN info - HasLDAPDomain");
@@ -343,7 +403,15 @@ namespace Terradue.Corporate.WebServer {
                 this.ArtifactoryDomainExists = entity.OwnerGroupExists ();
                 log.DebugFormat ("Get ADMIN info - HasCatalogueIndex");
                 this.HasCatalogueIndex = entity.HasCatalogueIndex ();
+                log.DebugFormat ("Get ADMIN info - Last Login date");
+                DateTime timef = entity.RegistrationDate == DateTime.MinValue ? entity.GetFirstLoginDate () : entity.RegistrationDate;
+                this.FirstLoginDate = (timef == DateTime.MinValue ? null : timef.ToString ("U"));
+                DateTime timel = entity.GetLastLoginDate ();
+                this.LastLoginDate = (timel == DateTime.MinValue ? null : timel.ToString ("U"));
+                this.RegistrationOrigin = entity.RegistrationOrigin;
             }
+
+            this.ExternalAuth = entity.IsExternalAuthentication ();
         }
 
         /// <summary>

@@ -2,11 +2,18 @@
 define(['can', 'config'], function(can, Config){
 	
 	return can.Model({
+		
+		id: 'Id',
+		
 		findAll: 'GET /'+Config.api+'/user',
 		findOne: 'GET /'+Config.api+'/user/{id}/admin',
 		create: 'POST /'+Config.api+'/user',
 		update: 'PUT /'+Config.api+'/user',
 		destroy: 'DELETE /'+Config.api+'/user/{id}',
+
+		updateT2username: function(data){
+			return $.post('/'+Config.api+'/user/username', data);
+		},
 
 		createLdapDomain: function(data){
 			return $.post('/'+Config.api+'/user/ldap/domain', data);

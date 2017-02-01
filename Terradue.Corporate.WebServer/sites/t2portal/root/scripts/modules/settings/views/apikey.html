@@ -12,13 +12,13 @@
 						<button class="btn btn-small btn-primary showApiKeyBtn apiKeyHidden" title="Show API Key" data-public-key="{{ user.ApiKey }}" t2-helpers="tooltip"><i class="fa fa-eye"></i></button>
 						<button class="btn btn-small btn-primary hideApiKeyBtn apiKeyVisible hidden" title="Hide API Key" data-public-key="{{ user.ApiKey }}" t2-helpers="tooltip"><i class="fa fa-eye-slash"></i></button>
 						&nbsp;&nbsp;<button class="btn btn-small btn-primary copyApiKeyBtn" title="Copy on clipboard" data-copyable-value="{{ user.ApiKey }}" t2-helpers="copyable-input"><i class="fa fa-clipboard"></i></button>
-						&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn" title="Revoke API Key" t2-helpers="tooltip"><i class="fa fa-trash"></i></button>
-						&nbsp;&nbsp;<button class="btn btn-small btn-warning generateApiKey">Generate a new API Key</button>
+						&nbsp;&nbsp;<button class="btn btn-small btn-danger revokeApiKeyBtn" title="Revoke API Key" t2-helpers="tooltip" data-ExternalAuth="{{ user.ExternalAuth }}"><i class="fa fa-trash"></i></button>
+						&nbsp;&nbsp;<button class="btn btn-small btn-warning generateApiKey" data-ExternalAuth="{{ user.ExternalAuth }}">Generate a new API Key</button>
 					</div>
 					<br/>
 				{{else}}
 					<div>
-						<button class="btn btn-warning getApiKey">Get your API key</button>
+						<button class="btn btn-warning getApiKey" data-ExternalAuth="{{ user.ExternalAuth }}">Get your API key</button>
 					</div>
 				{{/if}}
 				{{#if loading}}

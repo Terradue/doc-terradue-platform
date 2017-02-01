@@ -33,7 +33,7 @@ $.fn.copyableInput = function(textToCopy, options){
 		this.append($div);
 	}
 	
-	$button.attr('data-clipboard-text', textToCopy);
+	//$button.attr('data-clipboard-text', textToCopy);
 	
 	var clipboard = new Clipboard($button.get(0));
 
@@ -46,13 +46,12 @@ $.fn.copyableInput = function(textToCopy, options){
 		trigger: 'manual',
 		title: options.title ? options.title : 'copy to clipboard',
 		placement:'bottom'
-	}).mouseover(function(){
+	}).mouseenter(function(){
  		$(this).attr('data-original-title', options.title ? options.title : 'copy to clipboard');
  		$button.tooltip('show');
 	}).mouseout(function(){
 		$button.tooltip('hide');
 	});
-	
 	this.attr('data-copyableInput-enabled', 'true');
 
 	return this;

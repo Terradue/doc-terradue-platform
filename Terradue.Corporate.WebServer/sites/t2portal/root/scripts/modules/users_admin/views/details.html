@@ -20,6 +20,7 @@
 						{{#ifEquals Level 3}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
 						{{#ifEquals Level 2}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
 						{{#ifEquals Level 1}}<span class="label label-primary">Normal user</span>{{/ifEquals}}
+						{{#if RegistrationOrigin}}<img src="{{RegistrationOrigin}}" height="30" class="pull-right"/>{{/if}}
 						<dl class="dl-horizontal">
 							<dt>Id</dt><dd>&nbsp;{{Id}}</dd>
 							<dt>Username</dt><dd>&nbsp;{{Username}}</dd>
@@ -33,9 +34,10 @@
 								{{#ifEquals AccountStatus 1}}<span class="label label-warning">Pending</span>{{/ifEquals}}
 							</dd>
 							<dt>DomainId</dt><dd>&nbsp;{{DomainId}}</dd>
-							<dt>EmailNotification</dt><dd>&nbsp;{{EmailNotification}}</dd>
 							<dt>PublicKey</dt><dd>&nbsp;{{PublicKey}}</dd>
 							<dt>One Account</dt><dd>&nbsp;{{#if HasOneAccount}}<span class="label label-success">OK</span>{{else}}<span class="label label-danger">Not created</span>{{/if}}</dd>
+							<dt>Registration</dt><dd>&nbsp;{{ simpleDate FirstLoginDate "n/a" }}</dd>
+							<dt>Last login</dt><dd>&nbsp;{{ fromNow LastLoginDate "n/a" }}</dd>
 						</dl>
 					{{/user}}
 				</div>
@@ -161,7 +163,58 @@
 		</div>
 		
 		<div class="col-md-6">
-		
+
+			<!-- CHANGE USER NAME -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Change LDAP username</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					<div class="input-append">
+					    <input id="ssousernameinput" type="text" class="input" value="{{user.Username}}" placeholder="Username" name="Username">
+					    <span class="updateT2Username"><button type="submit" class="btn btn-warning">Update</button></span>
+					</div>
+					{{#if updatet2usernameloading}}<span><i class="fa fa-spinner"> Loading...</i></span>{{/if}}
+					{{#if updatet2usernamesuccess}}<span><i class="text-success"> Update done !!</i></span>{{/if}}
+				</div>
+			</div>
+			
+			<!--  UPDATE USER INFO -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Update User Info</h3>
+				</div>
+				<div class="panel-body" style="overflow: scroll">
+					{{#user}}
+					<form class="updateUserInfoForm">
+						<input type="hidden" name="Id" value="{{Id}}" />
+						<div class="form-group">
+							<label>Email address</label>
+							<input type="email" class="form-control" name="Email" placeholder="Email" value="{{Email}}">
+						</div>
+						<div class="form-group">
+							<label>First name</label>
+							<input type="text" class="form-control" name="FirstName" placeholder="First name" value="{{FirstName}}">
+						</div>
+						<div class="form-group">
+							<label>Last name</label>
+							<input type="text" class="form-control" name="LastName" placeholder="Last name" value="{{LastName}}">
+						</div>
+						<div class="form-group">
+							<label>Affiliation</label>
+							<input type="text" class="form-control" name="Affiliation" placeholder="Affiliation" value="{{Affiliation}}">
+						</div>
+						<div class="form-group">
+							<label>Country</label>
+							<input type="text" class="form-control" name="Country" placeholder="Country" value="{{Country}}">
+						</div>
+						<button type="submit" class="btn btn-warning">Save changes</button>
+						{{#if updateUserInfoLoading}} <i class="fa fa-spin fa-spinner"></i> Saving...{{/if}}
+					</form>
+					{{/user}}
+				</div>
+			</div>
+
 			<!-- CHANGE USER LEVEL -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -194,7 +247,7 @@
 					{{#if plans}}
 						<div class="list-group">
 						{{#each plans}}
-							<a class="user-plan list-group-item {{#ifEquals Key ../user.Plan}}active{{/ifEquals}}" data-plan="{{Value}}">{{Key}}</a>
+							<a class="user-plan list-group-item {{#ifEquals Name ../user.Plan}}active{{/ifEquals}}" data-plan="{{Id}}">{{Name}}</a>
 						{{/each}}
 						</div>
 						<button class="btn btn-warning upgradePlanBtn" data-user="{{user.Id}}">Upgrade</button>&nbsp;&nbsp;

@@ -56,6 +56,7 @@ namespace Terradue.Corporate.WebServer {
         public bool autoconsent { get; set; }
     }
 
+    [Route ("/oauth/logout", "GET", Summary = "login", Notes = "")]
     [Route("/oauth", "DELETE", Summary = "login", Notes = "")]
     public class OAuthDeleteAuthorizationRequest
     {
@@ -125,7 +126,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
                 context.LogInfo (this, string.Format ("/oauth GET"));
 
-                var client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                var client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
@@ -147,12 +148,14 @@ namespace Terradue.Corporate.WebServer {
 
                 log.InfoFormat("/oauth (GET)");
                 log.DebugFormat("query = {0}",query);
-                if(!string.IsNullOrEmpty(client.SUB_SID)) oauthrequest.sub_sid = client.SUB_SID; 
+                var subsid = client.LoadSUBSID ().Value;
+                if(!string.IsNullOrEmpty(subsid)) oauthrequest.sub_sid = subsid; 
 
                 var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
                 if(!string.IsNullOrEmpty(oauthsession.redirect)) return DoRedirect(context, oauthsession.redirect, request.ajax);
-                client.SID = oauthsession.sid;
-                log.DebugFormat("SID = {0}",oauthsession.sid);
+                var sid = oauthsession.sid;
+                client.StoreSID (sid);
+                log.DebugFormat("SID = {0}",sid);
                 if (oauthsession.error != null){
                     log.ErrorFormat("{0}",oauthsession.error);
                     log.ErrorFormat("{0}",oauthsession.error_description);
@@ -167,7 +170,10 @@ namespace Terradue.Corporate.WebServer {
                 }
 
                 else if (oauthsession.type == "consent"){
-                    if(oauthsession.sub_session != null) client.SUB_SID = oauthsession.sub_session.sid;
+                    if (oauthsession.sub_session != null) {
+                        subsid = oauthsession.sub_session.sid;
+                        client.StoreSUBSID (subsid);
+                    }
                     log.DebugFormat("type = consent");
                     log.DebugFormat("{0} new claims to consent : {1}", oauthsession.scope.new_claims.Count, string.Join(",",oauthsession.scope.new_claims));
 
@@ -211,15 +217,17 @@ namespace Terradue.Corporate.WebServer {
                 context.Open();
                 context.LogInfo (this, string.Format ("/oauth POST Username='{0}'", request.username));
 
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
 
                 var defaultscopes = new List<string>(context.GetConfigValue("sso-scopes").Split(",".ToCharArray()));
-
                 var query = HttpUtility.UrlDecode(request.query);
+
+                var sid = client.LoadSID ().Value;
+                var subsid = client.LoadSUBSID ().Value;
 
                 log.InfoFormat("/oauth (POST) - username={0}", request.username);
 
@@ -231,14 +239,14 @@ namespace Terradue.Corporate.WebServer {
                     OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                         query = query
                     };
-                    if(!string.IsNullOrEmpty(client.SUB_SID)) oauthrequest1.sub_sid = client.SUB_SID;
+                    if(!string.IsNullOrEmpty(subsid)) oauthrequest1.sub_sid = subsid;
                     return new HttpResult(client.AuthzSession(oauthrequest1), System.Net.HttpStatusCode.OK);
                 }
 
                 if(request.scope != null){
                     OauthConsentRequest consent = GenerateConsent(request.scope);
 
-                    var redirect = client.ConsentSession(client.SID, consent);
+                    var redirect = client.ConsentSession(sid, consent);
                     return DoRedirect(context, redirect, request.ajax);
                 }
 
@@ -253,7 +261,9 @@ namespace Terradue.Corporate.WebServer {
                     try{
                         var usert2 = Terradue.Corporate.Controller.UserT2.FromUsernameOrEmail(context, request.username);
                         if (usert2 != null) usert2.SyncArtifactory(request.username, request.password);
-                    }catch(Exception){}
+                    }catch(Exception e){
+                        var test = e;
+                    }
 
                 }catch(Exception e){
                     log.ErrorFormat("User {0} is not authenticated: {1}", request.username, e.Message);
@@ -270,14 +280,17 @@ namespace Terradue.Corporate.WebServer {
 //                        email = user.Email
 //                    }
                 };
-                log.DebugFormat("test1 : {0}", client.SID);
-                var oauthputsession = client.AuthzSession(client.SID, oauthrequest2, request.ajax);
-                log.DebugFormat("test2 : {0}", client.SUB_SID);
+                log.DebugFormat("test1 : {0}", sid);
+                var oauthputsession = client.AuthzSession(sid, oauthrequest2, request.ajax);
+                log.DebugFormat("test2 : {0}", subsid);
                 if (!string.IsNullOrEmpty (oauthputsession.redirect)) {
                     return DoRedirect (context, oauthputsession.redirect, request.ajax);
-                } 
+                }
                 //                    client.SID = null;
-                if (oauthputsession.sub_session != null) client.SUB_SID = oauthputsession.sub_session.sid;
+                if (oauthputsession.sub_session != null) {
+                    subsid = oauthputsession.sub_session.sid;
+                    client.StoreSUBSID (subsid);
+                }
                 log.Debug("test3");
                 //user is now authenticated and need to consent
                 if(oauthputsession.type == "consent"){
@@ -295,37 +308,6 @@ namespace Terradue.Corporate.WebServer {
                     return DoRedirect(context, redirect, request.ajax);
                     
                 }
-                
-
-                //user needs to consent
-//                if(oauthsession.type == "consent"){
-//
-//                    var consent = new OauthConsentRequest();
-//
-//                    if(request.scope != null)
-//                        consent = GenerateConsent(request.scope);
-//                    else if(oauthsession.scope.new_claims.Count == 0){
-//                        consent = GenerateConsent(defaultscopes);
-//                    } else if(request.autoconsent || (oauthsession.scope.new_claims.Count == 1 && oauthsession.scope.new_claims[0].Equals("openid")))
-//                        consent = GenerateConsent(oauthsession.scope.new_claims);
-//                    else if (request.username != null && request.password != null){
-//                        //return to the login page so it can display the consent
-//                        return new HttpResult(oauthsession, System.Net.HttpStatusCode.OK);
-//                    } else {
-//                        throw new Exception("Not expected behaviour");
-//                    }
-//
-//                    var redirect = client.ConsentSession(oauthsession.sid, consent);
-//
-//                    if(request.ajax){
-//                        HttpResult redirectResponse = new HttpResult();
-//                        redirectResponse.Headers[HttpHeaders.Location] = redirect;
-//                        redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
-//                        return redirectResponse;
-//                    } else {
-//                        HttpContext.Current.Response.Redirect(redirect, true);
-//                    }
-//                }
 
                 context.Close();
             } catch (Exception e) {
@@ -354,7 +336,7 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 context.LogInfo (this, string.Format ("/oauth/JWT POST"));
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
+                Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
                 client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
@@ -362,7 +344,6 @@ namespace Terradue.Corporate.WebServer {
 
                 //we do the JWT token (this authenticates the client)
                 client.JWTBearerToken(request.assertion);
-                token = client.OAUTHTOKEN_ACCESS;
 
                 context.Close();
             } catch (Exception e) {
@@ -378,38 +359,16 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
                 context.LogInfo (this, string.Format ("/oauth DELETE"));
-                Connect2IdClient client = new Connect2IdClient(context.GetConfigValue("sso-configUrl"));
-                client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
-                client.SSOApiClient = context.GetConfigValue("sso-clientId");
-                client.SSOApiSecret = context.GetConfigValue("sso-clientSecret");
-                client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
 
-//                var client_id = request.client_id ?? context.GetConfigValue("sso-clientId");
-//                var response_type = request.response_type ?? "code";
-//                var nonce = request.nonce ?? Guid.NewGuid().ToString();
-//                var scope = request.scope ?? context.GetConfigValue("sso-scopes").Replace(","," ");
-//                var state = request.state ?? Guid.NewGuid().ToString();
-//                var redirect_uri = request.redirect_uri ?? HttpUtility.UrlEncode(context.GetConfigValue("sso-callback"));
-//
-//                var query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}&nonce={5}",
-//                                          response_type, scope, client_id, state, redirect_uri, nonce);
-//                OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
-//                    query = query,
-//                    sub_sid = client.SUB_SID
-//                };
-//
-//                OauthAuthzSessionResponse oauthsession = new OauthAuthzSessionResponse();
-//                var oauthsessionresponse = client.AuthzSession(oauthrequest1);
-//
-//                var redirect = client.DeleteAuthz(oauthsessionresponse.sid);
                 context.EndSession();
+                var redirect = HttpContext.Current.Response.Headers [HttpHeaders.Location];
+                return DoRedirect (context, redirect ?? context.BaseUrl, request.ajax);
                 context.Close();
             } catch (Exception e) {
                 context.Close();
                 throw e;
             }
             return new Terradue.WebService.Model.WebResponseBool(true);
-//            HttpContext.Current.Response.Redirect(baseurl, true);
         }
 
         private OauthConsentRequest GenerateConsent(List<string> scope){

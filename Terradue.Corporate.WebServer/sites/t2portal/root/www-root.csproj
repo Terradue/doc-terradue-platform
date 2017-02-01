@@ -47,7 +47,7 @@
         <Command>
           <type>Custom</type>
           <name>update db</name>
-          <command>mono bin/Terradue.Portal.AdminTool.exe auto -r . -u root -S t2portal</command>
+          <command>mono bin/Terradue.Portal.AdminTool.exe auto -r . -u root -S t2portal -H localhost</command>
           <workingdir>${ProjectDir}</workingdir>
           <externalConsole>True</externalConsole>
           <pauseExternalConsole>True</pauseExternalConsole>
@@ -83,5 +83,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Terradue.Corporate.WebServer\Terradue.Corporate.WebServer.csproj">
+      <Project>{76CBD7B6-4156-424C-9662-CDEDE1548781}</Project>
+      <Name>Terradue.Corporate.WebServer</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

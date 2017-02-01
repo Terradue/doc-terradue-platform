@@ -18,7 +18,7 @@
 ### END INIT INFO
 
 agentpath="/usr/local/t2portal/webserver/sites/t2portal/root/bin"
-prog="portal-core-agent.exe"
+prog="Terradue.Portal.Agent.exe"
 pidfile=/var/run/t2portal-agent.pid
 lockfile=/var/lock/subsys/$prog
 
@@ -38,7 +38,7 @@ start() {
                 fi
         fi
 
-        export tepqwAGENTD_PID=$pidfile
+        export t2portalAGENTD_PID=$pidfile
         touch $pidfile
         # Handle transition from root to non-root packages.
         mono $agentpath/$prog > /var/log/t2portal-agent.log 2>&1 &

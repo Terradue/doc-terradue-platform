@@ -43,6 +43,21 @@ define([
 				}).fail(function(){
 					self.errorView({}, 'Unable to get user repositories', 'The user doesn\'t exist or you can\'t access this page.', true);
 				});
+				if(user.RegistrationOrigin != null){
+					var originIconUrl = "";
+					switch(user.RegistrationOrigin){
+						case "GEP":
+						originIconUrl = "https://geohazards-tep.eo.esa.int/styles/img/logo-geohazard.png";
+						break;
+						case "HEP":
+						originIconUrl = "https://hydrology-tep.eo.esa.int/styles/img/logo-hydro.png";
+						break;
+						case "UTEP":
+						originIconUrl = "https://urban-tep.eo.esa.int/styles/img/icons/logo_tep_urban.png";
+						break;
+					}
+					self.userData.user.attr('RegistrationOrigin', originIconUrl);
+				}
 			}).fail(function(){
 				self.errorView({}, 'Unable to get user info', 'The user doesn\'t exist or you can\'t access this page.', true);
 			});
@@ -61,6 +76,8 @@ define([
 			});
 		},
 
+
+
 		'.list-group-item click': function(el){
 			var self = this;
 			el.parent().find('a').removeClass('active');
@@ -72,7 +89,7 @@ define([
 				selectedPlanId = this.element.find('a[class="user-plan list-group-item active"]').data('plan'),
 				plans = this.userData.plans,
 				planSearch = $.grep(plans, function(plan){
-					return (plan.Value==selectedPlanId);
+					return (plan.Id==selectedPlanId);
 				}),
 				plan = (planSearch.length ? planSearch[0] : null),
 				userid = data.data('user');
@@ -80,17 +97,17 @@ define([
 			if (plan && userid){
 				// save plan
 
-				bootbox.confirm('Upgrade user <b>'+self.userData.attr('user').Username+'</b> to plan <b>'+plan.Key+'</b>.<br/>Are you sure?', function(confirmed){
+				bootbox.confirm('Upgrade user <b>'+self.userData.attr('user').Username+'</b> to plan <b>'+plan.Name+'</b>.<br/>Are you sure?', function(confirmed){
 					if (confirmed){
 						self.userData.attr({
 							planUpgradedLoading: true, planUpgradedSuccessName:null, planUpgradedFailMessage:null
 						});
 						PlansModel.upgrade({
 		 					Id: userid,
-		 					Plan: plan.Key,
+		 					Plan: plan.Name,
 		 				}).then(function(user){
 		 					self.userData.attr('user', user);
-							self.userData.attr('planUpgradedSuccessName', plan.Key);
+							self.userData.attr('planUpgradedSuccessName', plan.Name);
 		 				}).fail(function(xhr){
 		 					errXhr=xhr; // for debug
 		 					self.userData.attr('planUpgradedFailMessage', Helpers.getErrMsg(xhr, 'Generic Error'));
@@ -277,6 +294,47 @@ define([
 				}
 			});
 
+		},
+
+		'.updateT2Username click': function(data){
+			var self = this;
+			self.userData.attr('updatet2usernameloading', true);
+			var currentUser = self.userData.attr('user');
+			currentUser.attr('Username', data.parent().find('input').val());
+			UsersAdminModel.updateT2username(currentUser).then(function(usert2){
+				self.userData.user.attr('Username',usert2.Username);
+				self.userData.attr('updatet2usernameloading', false);
+				self.userData.attr('updatet2usernamesuccess', true);
+			}).fail(function(xhr){
+				self.userData.attr('updatet2usernameloading', false);	
+			});
+		},
+		
+		'.updateUserInfoForm submit': function(el){
+			var formData = Helpers.retrieveDataFromForm(el, ['Id', 'Email', 'FirstName', 'LastName', 'Affiliation', 'Country']);
+			var userData = this.userData;
+			
+			var currentUser = this.userData.user.attr();
+			var newUser = $.extend({}, currentUser, formData);
+			
+			userData.attr('updateUserInfoLoading', true);
+			new UsersAdminModel(newUser).save().then(function(usr){
+				userData.user.attr(formData);
+				Messenger().post({
+					message: 'User info updated.', 
+					type: 'success',
+					showCloseButton: true, hideAfter: 4,
+				});
+				userData.attr('updateUserInfoLoading', false);
+			}).fail(function(xhr){
+				Messenger().post({
+					message: Helpers.getErrMsg(xhr, 'Generic Error'), 
+					type: 'error',
+					showCloseButton: true, hideAfter: 4,
+				});
+				userData.attr('updateUserInfoLoading', false);
+			});
+			return false;
 		}
 		
 	});
