@@ -14,8 +14,11 @@ define(['can', 'config'], function(can, Config){
 			
 //			return $.get('/'+Config.api+'/login?username='+user.username+'&password='+user.password+'&format=json', callback);
 		},
-		logout: function(callback){
-			return this.destroy().then(callback);
+		logout: function(){
+			return $.ajax({
+				type: 'DELETE',
+				url: '/'+Config.api+'/oauth?ajax=true'
+				});
 		},
 		isLogged: function(callback){
 			return this.findOne({}, callback);
