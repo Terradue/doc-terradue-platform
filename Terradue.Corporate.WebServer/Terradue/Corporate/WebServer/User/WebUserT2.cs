@@ -385,8 +385,11 @@ namespace Terradue.Corporate.WebServer {
                 log.DebugFormat ("Get LDAP info");
                 this.HasLdapAccount = entity.HasLdapAccount ();
                 if (this.HasLdapAccount) {
+                    log.DebugFormat ("Get LDAP info");
                     if (entity.PublicKey == null) entity.LoadLdapInfo ();
+                    log.DebugFormat ("Get APIKEY info");
                     if (entity.ApiKey == null) entity.LoadApiKey ();
+                    log.DebugFormat ("Get ONE info");
                     if (entity.OneUser != null) {
                         this.HasOneAccount = true;
                     }
@@ -403,7 +406,7 @@ namespace Terradue.Corporate.WebServer {
                 this.ArtifactoryDomainExists = entity.OwnerGroupExists ();
                 log.DebugFormat ("Get ADMIN info - HasCatalogueIndex");
                 this.HasCatalogueIndex = entity.HasCatalogueIndex ();
-                log.DebugFormat ("Get ADMIN info - Last Login date");
+                log.DebugFormat ("Get ADMIN info - Registration info");
                 DateTime timef = entity.RegistrationDate == DateTime.MinValue ? entity.GetFirstLoginDate () : entity.RegistrationDate;
                 this.FirstLoginDate = (timef == DateTime.MinValue ? null : timef.ToString ("U"));
                 DateTime timel = entity.GetLastLoginDate ();
