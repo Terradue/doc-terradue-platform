@@ -8,6 +8,7 @@ define([
 	'utils/helpers',
 	'bootstrap',
 	'underscorestring',
+	'messenger'
 	//'canpromise'
 ], function(require, $, can, _, Config, Helpers) {
 	
@@ -54,6 +55,12 @@ define([
 			
 			// choose default template engine
 			can.view.types[''] = can.view.types['.' + options.template || 'mustache'];
+			
+			// messenger init
+			Messenger.options = {
+			    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+			    theme: 'flat'
+			};
 			
 			//this.initErrorHandler(options);
 			

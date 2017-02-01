@@ -2,6 +2,9 @@
 define(['can', 'config'], function(can, Config){
 	
 	return can.Model({
+		
+		id: 'Id',
+		
 		findAll: 'GET /'+Config.api+'/user',
 		findOne: 'GET /'+Config.api+'/user/{id}/admin',
 		create: 'POST /'+Config.api+'/user',

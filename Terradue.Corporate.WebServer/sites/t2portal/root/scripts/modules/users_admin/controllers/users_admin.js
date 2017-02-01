@@ -308,6 +308,33 @@ define([
 			}).fail(function(xhr){
 				self.userData.attr('updatet2usernameloading', false);	
 			});
+		},
+		
+		'.updateUserInfoForm submit': function(el){
+			var formData = Helpers.retrieveDataFromForm(el, ['Id', 'Email', 'FirstName', 'LastName', 'Affiliation', 'Country']);
+			var userData = this.userData;
+			
+			var currentUser = this.userData.user.attr();
+			var newUser = $.extend({}, currentUser, formData);
+			
+			userData.attr('updateUserInfoLoading', true);
+			new UsersAdminModel(newUser).save().then(function(usr){
+				userData.user.attr(formData);
+				Messenger().post({
+					message: 'User info updated.', 
+					type: 'success',
+					showCloseButton: true, hideAfter: 4,
+				});
+				userData.attr('updateUserInfoLoading', false);
+			}).fail(function(xhr){
+				Messenger().post({
+					message: Helpers.getErrMsg(xhr, 'Generic Error'), 
+					type: 'error',
+					showCloseButton: true, hideAfter: 4,
+				});
+				userData.attr('updateUserInfoLoading', false);
+			});
+			return false;
 		}
 		
 	});
