@@ -137,7 +137,7 @@ namespace Terradue.Corporate.WebServer {
                 var nonce = request.nonce ?? Guid.NewGuid().ToString();
                 var scope = request.scope ?? context.GetConfigValue("sso-scopes").Replace(","," ");
                 var state = request.state ?? Guid.NewGuid().ToString();
-                var redirect_uri = request.redirect_uri ?? HttpUtility.UrlEncode(context.GetConfigValue("sso-callback"));
+                var redirect_uri = !string.IsNullOrEmpty(request.redirect_uri) ? HttpUtility.UrlEncode(request.redirect_uri) : HttpUtility.UrlEncode(context.GetConfigValue("sso-callback"));
 
                 var query = string.Format("response_type={0}&scope={1}&client_id={2}&state={3}&redirect_uri={4}&nonce={5}",
                                           response_type, scope, client_id, state, redirect_uri, nonce);
