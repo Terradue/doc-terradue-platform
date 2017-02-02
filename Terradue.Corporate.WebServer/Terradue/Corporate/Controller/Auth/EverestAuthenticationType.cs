@@ -101,7 +101,15 @@ namespace Terradue.Corporate.Controller {
 
                 bool exists = User.DoesUserExist(context, usrInfo.sub, authType);
 
-                if (!exists) context.AccessLevel = EntityAccessLevel.Administrator;
+                if (!exists) {
+                    bool emailUsed = false;
+                    try {
+                        UserT2.FromEmail (context, usrInfo.email);
+                        emailUsed = true;
+                    } catch (Exception){}
+                    if (emailUsed) HttpContext.Current.Response.Redirect (context.GetConfigValue ("t2portal-emailAlreadyUsedEndpoint"), true);
+                    context.AccessLevel = EntityAccessLevel.Administrator;
+                }
                 usr = (UserT2)User.GetOrCreate(context, usrInfo.sub, authType);
 
                 if (usr.AccountStatus == AccountStatusType.Disabled) usr.AccountStatus = AccountStatusType.Enabled;
