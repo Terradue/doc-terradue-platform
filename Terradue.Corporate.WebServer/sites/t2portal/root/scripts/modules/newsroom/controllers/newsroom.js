@@ -116,6 +116,10 @@ var NewsControl = BaseControl({}, {
 	
 	addDataToNews: function(news){
 		// get image TODO:improve with a property for image
+		if (news.properties.content && news.properties.content.type=='text')
+			news.properties.content = news.properties.content.value || '';
+		else if (!news.properties.content)
+			news.properties.content = '';
 		
 		if (news.properties.content.startsWith('<img class="preview" src="')){
 			var imgTag = news.properties.content.substring(0, news.properties.content.indexOf('/>')+2);
