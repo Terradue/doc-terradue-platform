@@ -174,7 +174,7 @@ namespace Terradue.Corporate.WebServer
             context.ConsoleDebug = true;
             try {
                 context.Open ();
-                context.LogInfo (this, string.Format ("/user/current GET"));
+                context.LogInfo (this, string.Format ("/user/current GET" + (request.ldap ? " (ldap)" : "")));
                 UserT2 user = UserT2.FromId (context, context.UserId);
                 context.LogDebug (this, string.Format ("User {0} loaded on db", user.Username));
                 result = new WebUserT2 (user, request.ldap);

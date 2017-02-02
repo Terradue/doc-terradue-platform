@@ -73,7 +73,8 @@ namespace Terradue.Corporate.WebServer
 				newUrls.Values.CopyTo(OSDD.Url,0);
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 			HttpResult hr = new HttpResult ( OSDD, "application/opensearchdescription+xml" );
@@ -95,7 +96,8 @@ namespace Terradue.Corporate.WebServer
 				
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 			HttpResult hr = new HttpResult ( OSDD, "application/opensearchdescription+xml" );
@@ -129,7 +131,8 @@ namespace Terradue.Corporate.WebServer
 				context.Close ();
 
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 
@@ -161,7 +164,8 @@ namespace Terradue.Corporate.WebServer
 
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 
@@ -196,6 +200,7 @@ namespace Terradue.Corporate.WebServer
                 context.Close();
 
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -226,6 +231,7 @@ namespace Terradue.Corporate.WebServer
 
                 return new HttpResult(osd,"application/opensearchdescription+xml");
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }

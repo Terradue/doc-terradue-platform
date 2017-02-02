@@ -25,6 +25,7 @@ namespace Terradue.TepQW.WebServer {
 
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }

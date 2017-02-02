@@ -79,6 +79,7 @@ namespace Terradue.Corporate.WebServer {
 
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -132,6 +133,7 @@ namespace Terradue.Corporate.WebServer {
                                          return_to);
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -160,6 +162,7 @@ namespace Terradue.Corporate.WebServer {
                 context.EndSession();
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }

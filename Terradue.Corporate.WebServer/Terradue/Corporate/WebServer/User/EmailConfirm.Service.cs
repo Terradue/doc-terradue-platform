@@ -35,6 +35,7 @@ namespace Terradue.Corporate.WebServer {
 
                 // The user is pending activation
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -63,6 +64,7 @@ namespace Terradue.Corporate.WebServer {
                 return new HttpResult(new EmailConfirmationMessage(){ Status = "sent", Email = usr.Email });
 
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
