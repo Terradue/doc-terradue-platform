@@ -29,6 +29,10 @@ define([
 			data.controller = 'signin';
 			this.dispatch(data);
 		},
+		
+		'email_already_used route': function(){
+			Pages.errorView({selector: Config.mainContainer}, 'User bla bla bla blsdkfjlsdk flskhdjf lasjkhdfl ajkshd fljkh', ';aksldj fsdfklj sdf;gklhj sdflkjfd ', true);
+		},
 
 		':controller/:action/:id route': function(data){
 			this.dispatch(data)
