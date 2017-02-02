@@ -31,7 +31,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
 
@@ -57,7 +58,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebGithubProfile (user);
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
 
@@ -82,7 +84,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebGithubProfile (user);
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
 
@@ -116,7 +119,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebGithubProfile (user);
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
 

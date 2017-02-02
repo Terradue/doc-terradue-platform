@@ -83,7 +83,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
 
@@ -149,7 +150,8 @@ namespace Terradue.Corporate.WebServer
                                          sig);
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             HttpContext.Current.Response.Redirect (redirect, true);
