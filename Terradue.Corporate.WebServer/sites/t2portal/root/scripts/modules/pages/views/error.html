@@ -13,9 +13,9 @@
 		{{/if}}
 	</p>
 	<p class="lead goBack">
-		Go back to <a href="/portal/">Terradue</a> or <a href="">contact us</a>.
+		Go back to <a href="/portal/">{{siteName}}</a> or <a href="{{contactUsUrl}}">contact us</a>.
 	</p>
-	<!-- <img src="/styles/img/earthDeflated.jpg" class="deflatedEarth"> -->
+	{{#if errorImageUrl }}<img src="{{ errorImageUrl }}" class="deflatedEarth">{{/if}}
 	<hr class="bar">
 	<div class="message">{{ longMsg }}</div>
 </div>
