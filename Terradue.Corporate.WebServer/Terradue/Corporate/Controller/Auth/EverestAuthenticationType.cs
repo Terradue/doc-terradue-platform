@@ -128,29 +128,28 @@ namespace Terradue.Corporate.Controller {
                 }
 
                 //update domain
-                if (!string.IsNullOrEmpty (usrInfo.VRC)) {
-                    Domain vrcDomain;
-                    var domainIdentifier = string.Format ("everest-{0}", usrInfo.VRC);
-                    try {
-                        vrcDomain = Domain.FromIdentifier (context, domainIdentifier);
-                    } catch (Exception e){
-                        //domain does not exists, we create it
-                        vrcDomain = new Domain (context);
-                        vrcDomain.Identifier = domainIdentifier;
-                        vrcDomain.Name = domainIdentifier;
-                        vrcDomain.Description = string.Format("Domain of Thematic Group {0} for Everest",domainIdentifier);
-                        vrcDomain.Store ();
-                    }
-                    context.LogDebug (this, string.Format("Everest user '{0}' is part of domain '{1}'", usr.Username, domainIdentifier));
-                    //check if user has already a role in the domain
-                    //if not we add it (+on ldap)
-                    Role roleVRC = Role.FromIdentifier (context, "member");
-                    if (!roleVRC.IsGrantedTo (usr, vrcDomain)) { 
-                        roleVRC.GrantToUser (usr, vrcDomain);
-                        context.LogDebug (this, string.Format ("Everest user '{0}' added as {2} for domain '{1}'", usr.Username, domainIdentifier, roleVRC.Identifier));
-                        usr.AddToLdapDomain (domainIdentifier + ".reader", domainIdentifier);
-                        context.LogDebug (this, string.Format ("Everest user '{0}' added as {2} on LDAP domain '{1}'", usr.Username, domainIdentifier, domainIdentifier + ".reader"));
-                    }
+                var VRC = string.IsNullOrEmpty (usrInfo.VRC) ? "Citizens" : usrInfo.VRC;
+                Domain vrcDomain;
+                var domainIdentifier = string.Format ("everest-{0}", VRC);
+                try {
+                    vrcDomain = Domain.FromIdentifier (context, domainIdentifier);
+                } catch (Exception e){
+                    //domain does not exists, we create it
+                    vrcDomain = new Domain (context);
+                    vrcDomain.Identifier = domainIdentifier;
+                    vrcDomain.Name = domainIdentifier;
+                    vrcDomain.Description = string.Format("Domain of Thematic Group {0} for Everest",domainIdentifier);
+                    vrcDomain.Store ();
+                }
+                context.LogDebug (this, string.Format("Everest user '{0}' is part of domain '{1}'", usr.Username, domainIdentifier));
+                //check if user has already a role in the domain
+                //if not we add it (+on ldap)
+                Role roleVRC = Role.FromIdentifier (context, "member");
+                if (!roleVRC.IsGrantedTo (usr, vrcDomain)) { 
+                    roleVRC.GrantToUser (usr, vrcDomain);
+                    context.LogDebug (this, string.Format ("Everest user '{0}' added as {2} for domain '{1}'", usr.Username, domainIdentifier, roleVRC.Identifier));
+                    usr.AddToLdapDomain (domainIdentifier + ".reader", domainIdentifier);
+                    context.LogDebug (this, string.Format ("Everest user '{0}' added as {2} on LDAP domain '{1}'", usr.Username, domainIdentifier, domainIdentifier + ".reader"));
                 }
                 return usr;
             } else {
@@ -163,6 +162,13 @@ namespace Terradue.Corporate.Controller {
         public override void EndExternalSession(IfyWebContext context, HttpRequest request, HttpResponse response) {
             client.RevokeSessionCookies ();
             response.Headers[HttpHeaders.Location] = client.GetLogoutUrl ();
+        }
+
+        public static bool IsUserCitizens (IfyContext context, User user) { 
+            var roleMember = Role.FromIdentifier (context, "member");
+            var citizensDomain = Domain.FromIdentifier (context, "everest-Citizens");
+            var isMember = roleMember.IsGrantedTo (user, citizensDomain);
+            return isMember;
         }
 
     }

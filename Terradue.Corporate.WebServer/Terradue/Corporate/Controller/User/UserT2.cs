@@ -315,14 +315,14 @@ namespace Terradue.Corporate.Controller
         /// <summary>
         /// The authentication type.
         /// </summary>
-        private AuthenticationType authtype;
-        public AuthenticationType AuthType {
+        private List<AuthenticationType> authtypes;
+        public List<AuthenticationType> AuthTypes {
             get {
-                if (authtype == null) {
+                if (authtypes == null) {
                     var UserSession = System.Web.HttpContext.Current.Session ["user"] as UserInformation;
-                    if (UserSession != null) authtype = UserSession.AuthenticationType;
+                    if (UserSession != null) authtypes = UserSession.AllAuthenticationTypes;
                 }
-                return authtype;
+                return authtypes;
             }
         }
 
@@ -331,7 +331,8 @@ namespace Terradue.Corporate.Controller
         /// </summary>
         /// <returns><c>true</c>, if external authentication was used, <c>false</c> otherwise.</returns>
         public bool IsExternalAuthentication () {
-            if (AuthType != null) return AuthType.UsesExternalIdentityProvider;
+            if (AuthTypes == null) return false;
+            foreach(var auth in AuthTypes) if(auth.UsesExternalIdentityProvider) return true;
             return false;
         }
 
@@ -340,11 +341,13 @@ namespace Terradue.Corporate.Controller
         /// </summary>
         /// <returns>The external auth access token.</returns>
         public string GetExternalAuthAccessToken () {
-            if (AuthType is EverestAuthenticationType) {
-                return new EverestOauthClient (context).LoadTokenAccess ().Value;
-            } else {
-                return null;
+            if (AuthTypes == null) return null;
+            foreach (var auth in AuthTypes) {
+                if (auth is EverestAuthenticationType) {
+                    return new EverestOauthClient (context).LoadTokenAccess ().Value;
+                }
             }
+            return null;
         }
 
         #endregion
