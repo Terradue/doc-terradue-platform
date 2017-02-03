@@ -130,9 +130,6 @@
     <Reference Include="Mono.Addins">
       <HintPath>..\packages\Mono.Addins.1.2\lib\net40\Mono.Addins.dll</HintPath>
     </Reference>
-    <Reference Include="Terradue.Cloud">
-      <HintPath>..\packages\Terradue.Cloud.1.2.15\lib\net40\Terradue.Cloud.dll</HintPath>
-    </Reference>
     <Reference Include="MathNet.Numerics">
       <HintPath>..\packages\MathNet.Numerics.3.7.1\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
@@ -162,9 +159,6 @@
     </Reference>
     <Reference Include="MySql.Data">
 	  <HintPath>..\packages\MySql.Data.6.9.9\lib\net40\MySql.Data.dll</HintPath>
-	</Reference>
-	<Reference Include="Terradue.Ldap">
-	  <HintPath>..\packages\Terradue.Ldap.1.1.0\lib\net40\Terradue.Ldap.dll</HintPath>
 	</Reference>
 	<Reference Include="Microsoft.Web.XmlTransform">
 	  <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
@@ -216,6 +210,12 @@
     </Reference>
 	<Reference Include="Terradue.WebService.Model">
 	  <HintPath>..\packages\Terradue.WebService.Model.1.1.15\lib\net40\Terradue.WebService.Model.dll</HintPath>
+	</Reference>
+	<Reference Include="Terradue.Cloud">
+	  <HintPath>..\packages\Terradue.Cloud.1.3.0\lib\net40\Terradue.Cloud.dll</HintPath>
+	</Reference>
+	<Reference Include="Terradue.Ldap">
+	  <HintPath>..\packages\Terradue.Ldap.1.1.4\lib\net40\Terradue.Ldap.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
