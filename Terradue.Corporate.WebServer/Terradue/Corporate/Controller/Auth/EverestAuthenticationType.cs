@@ -107,7 +107,10 @@ namespace Terradue.Corporate.Controller {
                         UserT2.FromEmail (context, usrInfo.email);
                         emailUsed = true;
                     } catch (Exception){}
-                    if (emailUsed) HttpContext.Current.Response.Redirect (context.GetConfigValue ("t2portal-emailAlreadyUsedEndpoint"), true);
+                    if (emailUsed) {
+                        client.RevokeSessionCookies ();
+                        HttpContext.Current.Response.Redirect (context.GetConfigValue ("t2portal-emailAlreadyUsedEndpoint"), true);
+                    }
                     context.AccessLevel = EntityAccessLevel.Administrator;
                 }
                 usr = (UserT2)User.GetOrCreate(context, usrInfo.sub, authType);
