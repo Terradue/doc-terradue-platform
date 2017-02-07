@@ -146,26 +146,27 @@ namespace Terradue.Corporate.WebServer {
                     query = query
                 };
 
-                log.InfoFormat("/oauth (GET)");
-                log.DebugFormat("query = {0}",query);
+                context.LogInfo(this, string.Format("/oauth (GET)"));
+                context.LogDebug(this, string.Format("query = {0}",query));
                 var subsid = client.LoadSUBSID ().Value;
                 if(!string.IsNullOrEmpty(subsid)) oauthrequest.sub_sid = subsid; 
 
                 var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
                 if(!string.IsNullOrEmpty(oauthsession.redirect)) return DoRedirect(context, oauthsession.redirect, request.ajax);
+                if (!string.IsNullOrEmpty (oauthsession.error)) throw new Exception (oauthsession.error + " - " + oauthsession.error_description);
                 var sid = oauthsession.sid;
                 client.StoreSID (sid);
-                log.DebugFormat("SID = {0}",sid);
+                context.LogDebug (this, string.Format ("SID = {0} ; SESSION = {1}", sid, HttpContext.Current.Session != null ? HttpContext.Current.Session.SessionID : ""));
                 if (oauthsession.error != null){
-                    log.ErrorFormat("{0}",oauthsession.error);
-                    log.ErrorFormat("{0}",oauthsession.error_description);
+                    context.LogError(this, string.Format("{0}",oauthsession.error));
+                    context.LogError(this, string.Format("{0}",oauthsession.error_description));
                 }
 
                 //session is not active
                 if (oauthsession.error != null || oauthsession.type == "auth"){
                     //redirect to T2 login page
                     var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query) + "&type=auth";
-                    log.DebugFormat("type = auth");
+                    context.LogDebug(this, string.Format("type = auth"));
                     return DoRedirect(context, redirect, request.ajax);
                 }
 
@@ -174,8 +175,8 @@ namespace Terradue.Corporate.WebServer {
                         subsid = oauthsession.sub_session.sid;
                         client.StoreSUBSID (subsid);
                     }
-                    log.DebugFormat("type = consent");
-                    log.DebugFormat("{0} new claims to consent : {1}", oauthsession.scope.new_claims.Count, string.Join(",",oauthsession.scope.new_claims));
+                    context.LogDebug(this, string.Format("type = consent"));
+                    context.LogDebug(this, string.Format("{0} new claims to consent : {1}", oauthsession.scope.new_claims.Count, string.Join(",",oauthsession.scope.new_claims)));
 
                     //no new scope to consent
                     if(oauthsession.scope.new_claims.Count == 0 
@@ -230,12 +231,12 @@ namespace Terradue.Corporate.WebServer {
                 var sid = client.LoadSID ().Value;
                 var subsid = client.LoadSUBSID ().Value;
 
-                log.InfoFormat("/oauth (POST) - username={0}", request.username);
+                context.LogInfo(this, string.Format("/oauth (POST) - username={0}", request.username));
 
                 //request was done just to get the oauthsession (and the list of scopes to consent)
                 if(request.username == null && request.password == null && request.scope == null){
 
-                    log.DebugFormat("request was done just to get the oauthsession (and the list of scopes to consent)");
+                    context.LogDebug(this, string.Format("request was done just to get the oauthsession (and the list of scopes to consent)"));
 
                     OauthAuthzPostSessionRequest oauthrequest1 = new OauthAuthzPostSessionRequest {
                         query = query
@@ -256,18 +257,18 @@ namespace Terradue.Corporate.WebServer {
                 try{
                     var j2ldapclient = new LdapAuthClient(context.GetConfigValue("ldap-authEndpoint"));
                     user = j2ldapclient.Authenticate(request.username, request.password, context.GetConfigValue("ldap-apikey"));
-                    log.DebugFormat("User {0} is authenticated succesfully", request.username);
+                    context.LogDebug(this, string.Format("User {0} is authenticated succesfully", request.username));
 
                     //if user exists, sync Artifactory
                     try{
                         var usert2 = Terradue.Corporate.Controller.UserT2.FromUsernameOrEmail(context, request.username);
                         if (usert2 != null) usert2.SyncArtifactory(request.username, request.password);
                     }catch(Exception e){
-                        var test = e;
+                        context.LogError (this, string.Format ("{0} - {1}", e.Message, e.StackTrace));    
                     }
 
                 }catch(Exception e){
-                    log.ErrorFormat("User {0} is not authenticated: {1}", request.username, e.Message);
+                    context.LogError(this, string.Format("User {0} is not authenticated: {1}", request.username, e.Message));
                     return new HttpError(System.Net.HttpStatusCode.Forbidden, "Wrong username or password");
                 }
 
@@ -281,9 +282,9 @@ namespace Terradue.Corporate.WebServer {
 //                        email = user.Email
 //                    }
                 };
-                log.DebugFormat("test1 : {0}", sid);
+                context.LogDebug(this, string.Format ("SID = {0} ; SESSION = {1}", sid, HttpContext.Current.Session != null ? HttpContext.Current.Session.SessionID : ""));
                 var oauthputsession = client.AuthzSession(sid, oauthrequest2, request.ajax);
-                log.DebugFormat("test2 : {0}", subsid);
+                context.LogDebug(this, string.Format("SUBSID : {0}", subsid));
                 if (!string.IsNullOrEmpty (oauthputsession.redirect)) {
                     return DoRedirect (context, oauthputsession.redirect, request.ajax);
                 }
@@ -292,18 +293,18 @@ namespace Terradue.Corporate.WebServer {
                     subsid = oauthputsession.sub_session.sid;
                     client.StoreSUBSID (subsid);
                 }
-                log.Debug("test3");
+
                 //user is now authenticated and need to consent
                 if(oauthputsession.type == "consent"){
-                    log.DebugFormat("type = consent");
-                    log.DebugFormat("{0} new claims to consent : {1}", oauthputsession.scope.new_claims.Count, string.Join(",",oauthputsession.scope.new_claims));
+                    context.LogDebug(this, string.Format("type = consent"));
+                    context.LogDebug(this, string.Format("{0} new claims to consent : {1}", oauthputsession.scope.new_claims.Count, string.Join(",",oauthputsession.scope.new_claims)));
                     OauthConsentRequest consent = null;
                     if(oauthputsession.scope.new_claims.Count == 0){
                         consent = GenerateConsent(defaultscopes);
                     } else if(request.autoconsent) consent = GenerateConsent(oauthputsession.scope.new_claims);
                     else return new HttpResult(oauthputsession, System.Net.HttpStatusCode.OK);
 
-                    log.DebugFormat("consent is now : {0}", string.Join(",",consent.scope));
+                    context.LogDebug(this, string.Format("consent is now : {0}", string.Join(",",consent.scope)));
                         
                     var redirect = client.ConsentSession(oauthputsession.sid, consent);
                     return DoRedirect(context, redirect, request.ajax);
@@ -320,7 +321,7 @@ namespace Terradue.Corporate.WebServer {
         }
 
         private HttpResult DoRedirect(IfyContext context, string redirect, bool ajax){
-            log.DebugFormat("redirect to {0}", redirect);
+            context.LogDebug(this, string.Format("redirect to {0}", redirect));
             if(ajax){
                 HttpResult redirectResponse = new HttpResult();
                 redirectResponse.Headers[HttpHeaders.Location] = redirect;
