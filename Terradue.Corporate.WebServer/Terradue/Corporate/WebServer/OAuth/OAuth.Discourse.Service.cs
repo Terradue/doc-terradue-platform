@@ -76,7 +76,7 @@ namespace Terradue.Corporate.WebServer
                         response_type = "code",
                         nonce = nonce,
                         state = Guid.NewGuid ().ToString (),
-                        redirect_uri = HttpUtility.UrlEncode (context.BaseUrl + "/t2api/discourse/cb"),
+                        redirect_uri = context.BaseUrl + "/t2api/discourse/cb",
                         ajax = false
                     });
                 };
