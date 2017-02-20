@@ -117,7 +117,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -136,7 +137,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -155,7 +157,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -174,7 +177,7 @@ namespace Terradue.Corporate.WebServer
             context.ConsoleDebug = true;
             try {
                 context.Open ();
-                context.LogInfo (this, string.Format ("/user/current GET"));
+                context.LogInfo (this, string.Format ("/user/current GET" + (request.ldap ? " (ldap)" : "")));
                 UserT2 user = UserT2.FromId (context, context.UserId);
                 context.LogDebug (this, string.Format ("User {0} loaded on db", user.Username));
                 result = new WebUserT2 (user, request.ldap);
@@ -218,7 +221,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -254,7 +258,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebUserT2 (user);
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -279,7 +284,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebUserT2 (user);
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -402,7 +408,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return new WebResponseBool (true);
@@ -424,7 +431,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -443,7 +451,7 @@ namespace Terradue.Corporate.WebServer
 
                 if (context.UserLevel == UserLevel.Administrator) {
                     var plan = new Plan ();
-                    plan.Domain = Domain.FromIdentifier (context, "terradue");//TODO: domain should come from webclient
+                    //TODO: domain should come from webclient
                     plan.Role = Role.FromIdentifier (context, "plan_" + request.Plan.Replace (" ", ""));
                     user.Upgrade (plan);
                     //foreach (var plan in request.Plans) { 
@@ -468,7 +476,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebUserT2 (new UserT2 (context, user), true, true);
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -491,7 +500,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return new WebResponseBool (true);
@@ -521,7 +531,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return new WebResponseBool (true);
@@ -547,7 +558,8 @@ namespace Terradue.Corporate.WebServer
                 }
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return new WebResponseBool (true);
@@ -570,7 +582,8 @@ namespace Terradue.Corporate.WebServer
                 }
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return new WebResponseBool (true);
@@ -606,7 +619,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -626,7 +640,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;
@@ -697,7 +712,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return new HttpResult ();
@@ -728,7 +744,8 @@ namespace Terradue.Corporate.WebServer
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return users;

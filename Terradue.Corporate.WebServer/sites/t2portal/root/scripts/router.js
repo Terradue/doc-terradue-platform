@@ -29,6 +29,10 @@ define([
 			data.controller = 'signin';
 			this.dispatch(data);
 		},
+		
+		'email_already_used route': function(){
+			Pages.errorView({selector: Config.mainContainer}, 'Unable to register', 'The referred email address is already used by a Platform account', true);
+		},
 
 		':controller/:action/:id route': function(data){
 			this.dispatch(data)

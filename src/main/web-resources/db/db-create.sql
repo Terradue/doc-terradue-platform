@@ -1,4 +1,4 @@
--- VERSION 2.3
+-- VERSION 2.3.1
 
 USE $MAIN$;
 
@@ -34,6 +34,7 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordSubject', 'string', 'Email subject sent to support for user upgrade', 'Email subject sent to support for user upgrade', '[$(PORTAL)] - password reset request', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('EmailSupportResetPasswordBody', 'string', 'Email body sent to support for user upgrade', 'Email subject sent to support for user upgrade', 'Dear $(USERNAME), You have made a password reset request for the $(PORTAL).\nPlease go to this link to set your new password:\n$(LINK)', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('t2-safe-token', 'string', 'secret token to get ssh pubkey', 'secret token to get ssh pubkey', 'jfiojsealhjfkdn4kjfdskjnfjhskjnfjklhjmEDFFSR23433fdf', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('t2portal-emailAlreadyUsedEndpoint', 'string', 'T2 portal email already used endpoint', 'T2 portal email already used endpoint', 'https://www.terradue.com/portal/email_already_used', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('t2portal-loginEndpoint', 'string', 'Terradue portal login endpoint', 'Terradue portal login endpoint', 'https://www.terradue.com/portal/signin', '0');
 -- RESULT
 
@@ -59,14 +60,15 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 -- RESULT
 
 -- Adding EVEREST config... \
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientId', 'string', 'Everest Client Id', 'Enter the value of the client identifier for Everest', "6Qvr7x2nAkFbzOntBJAoAo9gNmoa", '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientSecret', 'string', 'Everest Client Secret', 'Enter the value of the client secret password of Everest', "Osg2_eCwbifTlSRyUqimGmiXQkka", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientName', 'string', 'Everest Client Name', 'Enter the value of the client name for Everest', 'TerradueCloudPlatform', '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientId', 'string', 'Everest Client Id', 'Enter the value of the client identifier for Everest', "L4oW1mysB3cxf_hFAHU9DlzZRAoa", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-clientSecret', 'string', 'Everest Client Secret', 'Enter the value of the client secret password of Everest', "Y8ysZ0IvS3hKVmAzyRQMIZqV8jYa", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-tokenEndpoint', 'string', 'Everest Token Endpoint url', 'Enter the value of the url of the Token Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/token", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-userInfoEndpoint', 'string', 'Everest User Info Endpoint url', 'Enter the value of the url of the User Info Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/userinfo?schema=openid", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-scopes', 'string', 'Everest default scopes', 'Enter the value of the default scopes of Everest', "openid,profile", '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-callback', 'string', 'Everest callback url', 'Enter the value of the callback url of Everest', "http://127.0.0.1:8081/t2api/everest/cb", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-callback', 'string', 'Everest callback url', 'Enter the value of the callback url of Everest', "https://www.terradue.com/t2api/everest/cb", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-authEndpoint', 'string', 'Everest Authentication Endpoint url', 'Enter the value of the url of the Authentication Endpoint of Everest', "https://sso.everest.psnc.pl/oauth2/authorize", '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-logoutEndpoint', 'string', 'Everest Logout Endpoint url', 'Enter the value of the url of the Logout Endpoint of Everest', "https://sso.everest.psnc.pl/commonauth", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('everest-logoutEndpoint', 'string', 'Everest Logout Endpoint url', 'Enter the value of the url of the Logout Endpoint of Everest', 'https://sso.everest.psnc.pl/commonauth', '0');
 -- RESULT
 
 

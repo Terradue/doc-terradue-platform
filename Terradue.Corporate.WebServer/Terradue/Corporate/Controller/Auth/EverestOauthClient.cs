@@ -46,8 +46,8 @@ namespace Terradue.Corporate.Controller {
         /// <returns>The token access.</returns>
         public DBCookie LoadTokenAccess ()
         {
-            if (HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"] == null) return new DBCookie (Context);
-            return DBCookie.FromSessionAndIdentifier (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS);
+            if (HttpContext.Current.Session == null) return new DBCookie (Context);
+            return DBCookie.FromSessionAndIdentifier (Context, HttpContext.Current.Session.SessionID, COOKIE_TOKEN_ACCESS);
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace Terradue.Corporate.Controller {
         /// <param name="expire">Expire.</param>
         public void StoreTokenAccess (string value, long expire)
         {
-            if (HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"] == null) return;
-            DBCookie.StoreDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS, value, DateTime.UtcNow.AddSeconds (expire));
+            if (HttpContext.Current.Session == null) return;
+            DBCookie.StoreDBCookie (Context, HttpContext.Current.Session.SessionID, COOKIE_TOKEN_ACCESS, value, DateTime.UtcNow.AddSeconds (expire));
         }
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public void DeleteTokenAccess ()
         {
-            if (HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"] == null) return;
-            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS);
+            if (HttpContext.Current.Session == null) return;
+            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Session.SessionID, COOKIE_TOKEN_ACCESS);
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace Terradue.Corporate.Controller {
         /// <returns>The token refresh.</returns>
         public DBCookie LoadTokenRefresh ()
         {
-            if (HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"] == null) return new DBCookie (Context);
-            return DBCookie.FromSessionAndIdentifier (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH);
+            if (HttpContext.Current.Session == null) return new DBCookie (Context);
+            return DBCookie.FromSessionAndIdentifier (Context, HttpContext.Current.Session.SessionID, COOKIE_TOKEN_REFRESH);
         }
 
         /// <summary>
@@ -86,8 +86,8 @@ namespace Terradue.Corporate.Controller {
         /// <param name="value">Value.</param>
         public void StoreTokenRefresh (string value)
         {
-            if (HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"] == null) return;
-            DBCookie.StoreDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH, value, DateTime.UtcNow.AddDays (1));
+            if (HttpContext.Current.Session == null) return;
+            DBCookie.StoreDBCookie (Context, HttpContext.Current.Session.SessionID, COOKIE_TOKEN_REFRESH, value, DateTime.UtcNow.AddDays (1));
         }
 
         /// <summary>
@@ -95,20 +95,20 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public void DeleteTokenRefresh ()
         {
-            if (HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"] == null) return;
-            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH);
+            if (HttpContext.Current.Session == null) return;
+            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Session.SessionID, COOKIE_TOKEN_REFRESH);
         }
 
         public void RevokeAllCookies ()
         {
-            if (HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"] == null) return;
-            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_ACCESS);
-            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value, COOKIE_TOKEN_REFRESH);
+            if (HttpContext.Current.Session == null) return;
+            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Session.SessionID, COOKIE_TOKEN_ACCESS);
+            DBCookie.DeleteDBCookie (Context, HttpContext.Current.Session.SessionID, COOKIE_TOKEN_REFRESH);
         }
 
         public void RevokeSessionCookies () { 
-            if (HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"] == null) return;
-            DBCookie.DeleteDBCookies (Context, HttpContext.Current.Request.Cookies ["ASP.NET_SessionId"].Value);
+            if (HttpContext.Current.Session == null) return;
+            DBCookie.DeleteDBCookies (Context, HttpContext.Current.Session.SessionID);
         }
         #endregion
 

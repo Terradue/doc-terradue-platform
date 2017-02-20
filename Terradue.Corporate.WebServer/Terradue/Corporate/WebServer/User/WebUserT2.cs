@@ -378,8 +378,6 @@ namespace Terradue.Corporate.WebServer {
             this.DomainId = entity.DomainId;
             var role = entity.GetRoleForDomain ("terradue");
             this.Plan = role != null ? role.Name : PlanFactory.NONE;
-            //this.Plans = new List<WebPlan> ();
-            //foreach (var plan in entity.Plans) this.Plans.Add (new WebPlan (plan));
 
             if (ldap || admin) {
                 log.DebugFormat ("Get LDAP info");

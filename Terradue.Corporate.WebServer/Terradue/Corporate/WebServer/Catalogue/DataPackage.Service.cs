@@ -41,7 +41,8 @@ namespace Terradue.Corporate.WebServer
                     result.Add(new WebDataPackageTep(a));
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 
@@ -63,7 +64,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebDataPackageTep(tmp);
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 
@@ -87,7 +89,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebDataPackageTep(tmp);
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 
@@ -110,7 +113,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebDataPackageTep(tmp);
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 
@@ -130,7 +134,8 @@ namespace Terradue.Corporate.WebServer
 				tmp.Delete();
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 
@@ -154,7 +159,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebDataPackageTep(tmp);
                 context.Close ();
             }catch(Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
 
@@ -177,7 +183,8 @@ namespace Terradue.Corporate.WebServer
                 result = new WebDataPackageTep(dp);
 				context.Close ();
 			}catch(Exception e) {
-				context.Close ();
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
 			}
 

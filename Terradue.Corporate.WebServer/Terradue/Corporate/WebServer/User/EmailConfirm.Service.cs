@@ -5,6 +5,7 @@ using Terradue.WebService.Model;
 using ServiceStack.Common.Web;
 using System.Web;
 using Terradue.Corporate.WebServer.Common;
+using Terradue.Corporate.Controller;
 
 namespace Terradue.Corporate.WebServer {
 
@@ -26,15 +27,34 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             // Let's try to open context
             try {
-                context.Open();
-                AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(TokenAuthenticationType));
+                context.Open ();
+                AuthenticationType authType = IfyWebContext.GetAuthenticationType (typeof (TokenAuthenticationType));
                 // User is logged, now we confirm the email with the token
-                var tokenUser = ((TokenAuthenticationType)authType).AuthenticateUser(context, request.Token);
+                UserT2 tokenUser = (UserT2)((TokenAuthenticationType)authType).AuthenticateUser (context, request.Token);
+
+                //case Everest user, we must set to Explorer if user not from group Citizens
+                if (tokenUser.AuthTypes != null) {
+                    try{
+                        foreach (var auth in tokenUser.AuthTypes) {
+                            if (auth is EverestAuthenticationType) {
+                                if (!EverestAuthenticationType.IsUserCitizens (context, tokenUser)) {
+                                    var plan = new Plan { Role = Role.FromIdentifier (context, "plan_Explorer") };
+                                    tokenUser.Upgrade (plan);
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        //we donnot throw, admin will be able to update the Plan manually
+                        context.LogError (this, e.Message);
+                    }
+                }
                 context.Close();
 //                return new HttpError(System.Net.HttpStatusCode.MethodNotAllowed, new InvalidOperationException("Email already confirmed"));
 
                 // The user is pending activation
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -63,6 +83,7 @@ namespace Terradue.Corporate.WebServer {
                 return new HttpResult(new EmailConfirmationMessage(){ Status = "sent", Email = usr.Email });
 
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }

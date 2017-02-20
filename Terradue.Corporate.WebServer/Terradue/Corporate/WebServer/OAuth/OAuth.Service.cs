@@ -192,7 +192,8 @@ UA -> UA : display user name
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             HttpContext.Current.Response.Redirect (redirect, true);
@@ -208,7 +209,8 @@ UA -> UA : display user name
                 context.EndSession ();
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return true;
@@ -223,7 +225,8 @@ UA -> UA : display user name
                 context.EndSession ();
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return true;
@@ -428,7 +431,8 @@ UA -> UA : display user name
 
                 context.Close ();
             } catch (Exception e) {
-                context.Close ();
+                context.LogError(this, e.Message + " - " + e.StackTrace);
+                context.Close();
                 throw e;
             }
             return result;

@@ -25,6 +25,7 @@ namespace Terradue.Corporates.WebServer {
                 foreach(Series s in series) result.Add(new WebSeries(s));
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -45,6 +46,7 @@ namespace Terradue.Corporates.WebServer {
                 result = new WebSeries(serie);
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -67,6 +69,7 @@ namespace Terradue.Corporates.WebServer {
                 result = new WebSeries(serie);
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -88,6 +91,7 @@ namespace Terradue.Corporates.WebServer {
                 result = new WebSeries(serie);
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
@@ -109,6 +113,7 @@ namespace Terradue.Corporates.WebServer {
                 serie.Delete();
                 context.Close();
             } catch (Exception e) {
+                context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
