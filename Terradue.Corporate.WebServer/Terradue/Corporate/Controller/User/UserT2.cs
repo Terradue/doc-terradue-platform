@@ -340,7 +340,9 @@ namespace Terradue.Corporate.Controller
         /// <returns><c>true</c>, if external authentication was used, <c>false</c> otherwise.</returns>
         public bool IsExternalAuthentication () {
             if (AuthTypes == null) return false;
-            foreach(var auth in AuthTypes) if(auth.UsesExternalIdentityProvider) return true;
+            foreach (var auth in AuthTypes)
+                if (!(auth is Authentication.Ldap.LdapAuthenticationType) && auth.UsesExternalIdentityProvider) return true;
+
             return false;
         }
 
