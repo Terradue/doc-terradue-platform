@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using Funq;
-using Mono.Addins;
 using ServiceStack.Configuration;
 using ServiceStack.ServiceHost;
 using ServiceStack.ServiceInterface;
@@ -53,9 +52,6 @@ namespace Terradue.Corporate.WebServer {
 
             this.ContentTypeFilters.Register("application/opensearchdescription+xml", AppHost.CustomXmlSerializer, null);
             ResponseFilters.Add(CustomResponseFilter);
-
-            AddinManager.Initialize();
-            AddinManager.Registry.Update(null);
 
         }
 
