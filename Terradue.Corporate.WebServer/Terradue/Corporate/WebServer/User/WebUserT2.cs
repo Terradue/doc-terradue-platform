@@ -319,9 +319,6 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember (Name = "hasldapaccount", Description = "Says if user has an account on LDAP", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool HasLdapAccount { get; set; }
 
-        [ApiMember(Name = "DomainId", Description = "User domain id", ParameterType = "query", DataType = "int", IsRequired = false)]
-        public int DomainId { get; set; }
-
         [ApiMember(Name = "EmailNotification", Description = "User email notification tag", ParameterType = "query", DataType = "bool", IsRequired = false)]
         public bool EmailNotification { get; set; }
 
@@ -375,7 +372,6 @@ namespace Terradue.Corporate.WebServer {
 
             log.DebugFormat ("Transforms UserT2 into WebUserT2");
 
-            this.DomainId = entity.DomainId;
             var role = entity.GetRoleForDomain ("terradue");
             this.Plan = role != null ? role.Name : PlanFactory.NONE;
 

@@ -288,7 +288,8 @@ namespace Terradue.Corporate.Controller
         {
             base.Load ();
 
-            if (Domain == null) CreatePrivateDomain ();
+            //we only create domain for user having validated their email
+            if (Domain == null && AccountStatus == AccountStatusType.Enabled) CreatePrivateDomain ();
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -301,6 +302,7 @@ namespace Terradue.Corporate.Controller
             //create new domain with Identifier = Username
             var privatedomain = new Domain (context);
             privatedomain.Identifier = Username;
+            privatedomain.Name = Username;
             privatedomain.Description = "Domain of user " + Username;
             privatedomain.Kind = DomainKind.User;
             privatedomain.Store ();
