@@ -330,6 +330,14 @@ namespace Terradue.Corporate.WebServer
                 user.Level = UserLevel.User;
                 user.PasswordAuthenticationAllowed = true;
 
+                //get username / lastname from email
+                var emailname = request.Email.Split("@".ToCharArray())[0];
+                var emailname2 = emailname.Split(".".ToCharArray());
+                if (emailname2.Length == 2) {
+                    user.FirstName = emailname2[0];
+                    user.LastName = emailname2[1];
+                } else user.LastName = emailname2[0];
+
                 try {
                     Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
                     client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
