@@ -1,4 +1,4 @@
--- VERSION 2.3.1
+-- VERSION 2.3.2
 
 USE $MAIN$;
 
@@ -174,4 +174,9 @@ INSERT INTO domain (`name`, `description`) VALUES ('everest-SatCen', 'Domain of 
 INSERT INTO domain (`name`, `description`) VALUES ('everest-Citizens', 'Domain of Thematic Group Citizens for Everest',3);
 INSERT INTO role (`identifier`, `name`, `description`) VALUES ('member', 'member', 'Member role of a domain',3);
 INSERT INTO domain (`name`, `description`, `kind`) VALUES ('terradue', 'Domain of Terradue',4);
+-- RESULT
+
+-- Adding usr links
+ALTER TABLE usr
+ADD COLUMN links TEXT NULL DEFAULT NULL;
 -- RESULT

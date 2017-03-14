@@ -357,6 +357,9 @@ namespace Terradue.Corporate.WebServer {
         [ApiMember (Name = "RegistrationOrigin", Description = "User Registration Origin", ParameterType = "query", DataType = "string", IsRequired = false)]
         public string RegistrationOrigin { get; set; }
 
+        [ApiMember(Name = "Links", Description = "User Links", ParameterType = "query", DataType = "List<string>", IsRequired = false)]
+        public List<string> Links { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.Corporate.WebServer.WebUserT2"/> class.
         /// </summary>
@@ -406,6 +409,7 @@ namespace Terradue.Corporate.WebServer {
                 DateTime timel = entity.GetLastLoginDate ();
                 this.LastLoginDate = (timel == DateTime.MinValue ? null : timel.ToString ("U"));
                 this.RegistrationOrigin = entity.RegistrationOrigin;
+                this.Links = entity.LinksList;
             }
 
             this.ExternalAuth = entity.IsExternalAuthentication ();
@@ -419,6 +423,7 @@ namespace Terradue.Corporate.WebServer {
         public UserT2 ToEntity(IfyContext context, UserT2 input) {
             UserT2 user = (input == null ? new UserT2(context) : input);
             base.ToEntity(context, user);
+            user.LinksList = this.Links;
             return user;
         }
 

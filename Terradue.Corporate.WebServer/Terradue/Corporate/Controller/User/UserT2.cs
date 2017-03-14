@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Text;
 using Terradue.JFrog.Artifactory;
+using System.Linq;
 
 namespace Terradue.Corporate.Controller
 {
@@ -111,6 +112,8 @@ namespace Terradue.Corporate.Controller
 
         private Json2LdapClient Json2Ldap { get; set; }
 
+
+
         /// <summary>
         /// Gets or sets the private domain of the user.
         /// </summary>
@@ -141,6 +144,21 @@ namespace Terradue.Corporate.Controller
         }
 
         public List<Plan> Plans { get; set; }
+
+        [EntityDataField("links")]
+        public string Links { get; set; }
+
+        private List<string> linkslist;
+        public List<string> LinksList { 
+            get {
+                if(linkslist == null && Links != null) linkslist = Links.Split(",".ToCharArray()).ToList();
+                return linkslist;
+            }
+            set {
+                linkslist = value;
+                Links = string.Join(",", linkslist);
+            }
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------

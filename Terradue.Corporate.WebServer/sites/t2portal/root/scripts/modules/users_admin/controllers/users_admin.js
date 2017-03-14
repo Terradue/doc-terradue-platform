@@ -84,6 +84,25 @@ define([
 			el.addClass('active');
 		},
 
+		'.addLink click': function(el){
+			var self = this;
+			var input = el.parent().find('input');
+			var link = input.val();
+			input[0].value = '';
+			self.userData.user.Links.push(link);
+			return false;
+		},
+
+		'.removeLink click': function(el){
+			var self = this;
+			var link = el.parent().find('input').val();
+			var index = self.userData.user.Links.indexOf(link);
+			if (index > -1) {
+			    self.userData.user.Links.splice(index, 1);
+			}
+			return false;
+		},
+
 		'.upgradePlanBtn click': function(data){
 			var self = this,
 				selectedPlanId = this.element.find('a[class="user-plan list-group-item active"]').data('plan'),
