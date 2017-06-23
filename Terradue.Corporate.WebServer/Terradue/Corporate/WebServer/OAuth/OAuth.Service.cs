@@ -141,8 +141,12 @@ UA -> UA : display user name
 
     [Route ("/logout", "GET", Summary = "logout", Notes = "Logout from the platform")]
     [Route ("/auth", "DELETE", Summary = "logout", Notes = "Logout from the platform")]
-    public class OauthLogoutRequest : IReturn<String>
-    {
+    public class OauthLogoutRequest : IReturn<String>{
+		[ApiMember(Name = "ajax", Description = "ajax", ParameterType = "path", DataType = "bool", IsRequired = false)]
+		public bool ajax { get; set; }
+
+		[ApiMember(Name = "redirect_uri", Description = "Redirect uri", ParameterType = "path", DataType = "String", IsRequired = false)]
+		public String redirect_uri { get; set; }
     }
 
     [Api ("Terradue Corporate webserver")]

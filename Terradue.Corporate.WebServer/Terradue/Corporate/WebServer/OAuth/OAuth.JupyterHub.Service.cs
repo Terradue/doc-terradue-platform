@@ -33,8 +33,17 @@ namespace Terradue.Corporate.WebServer
         [ApiMember (Name = "sso", Description = "oauth sso", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string sso { get; set; }
 
-        [ApiMember (Name = "sig", Description = "oauth sig", ParameterType = "query", DataType = "string", IsRequired = true)]
-        public string sig { get; set; }
+		[ApiMember(Name = "sig", Description = "oauth sig", ParameterType = "query", DataType = "string", IsRequired = true)]
+		public string sig { get; set; }
+
+		[ApiMember(Name = "redirect_uri", Description = "oauth redirect_uri", ParameterType = "query", DataType = "string", IsRequired = true)]
+		public string redirect_uri { get; set; }
+
+		[ApiMember(Name = "client_id", Description = "oauth client_id", ParameterType = "query", DataType = "string", IsRequired = true)]
+		public string client_id { get; set; }
+
+		[ApiMember(Name = "client_secret", Description = "oauth client_secret", ParameterType = "query", DataType = "string", IsRequired = true)]
+		public string client_secret { get; set; }
     }
 
     [Api ("Terradue Corporate webserver")]
@@ -51,19 +60,23 @@ namespace Terradue.Corporate.WebServer
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding ();
             try {
                 context.Open ();
-                var client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
-                client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
-                client.SSOApiClient = context.GetConfigValue ("sso-clientId");
-                client.SSOApiSecret = context.GetConfigValue ("sso-clientSecret");
-                client.SSOApiToken = context.GetConfigValue ("sso-apiAccessToken");
 
-                HttpContext.Current.Session ["jupyterhub-nonce"] = nonce;
+				var base64Payload = System.Convert.FromBase64String(request.sso);
+				var payload = encoding.GetString(base64Payload);
+				var querystring = HttpUtility.ParseQueryString(payload);
+				var nonce = querystring["nonce"];
+
+				//validate the payload
+				var sig = HashHMAC(context.GetConfigValue("sso-jupyterhub-clientSecret"), request.sso);
+				if (!sig.Equals(request.sig)) throw new Exception("Invalid payload");
+
+                HttpContext.Current.Session["jupyterhub-nonce"] = nonce;
+                HttpContext.Current.Session["jupyterhub-callback"] = request.redirect_uri;
 
                 //redirect to t2 portal SSO
                 using (var service = base.ResolveService<OAuthGatewayService> ()) {
                     var response = service.Get (new OAuthAuthorizationRequest {
-                        client_id = context.GetConfigValue
-                            ("sso-clientId"),
+						client_id = context.GetConfigValue("sso-jupyterhub-clientId"),
                         response_type = "code",
                         nonce = nonce,
                         state = Guid.NewGuid ().ToString (),
@@ -82,15 +95,15 @@ namespace Terradue.Corporate.WebServer
             return null;
         }
 
-        private static string HashHMAC (string key, string msg)
-        {
-            var encoding = new System.Text.ASCIIEncoding ();
-            var bkey = encoding.GetBytes (key);
-            var bmsg = encoding.GetBytes (msg);
-            var hash = new HMACSHA256 (bkey);
-            var hashmac = hash.ComputeHash (bmsg);
-            return BitConverter.ToString (hashmac).Replace ("-", "").ToLower ();
-        }
+		private static string HashHMAC(string key, string msg)
+		{
+			var encoding = new System.Text.ASCIIEncoding();
+			var bkey = encoding.GetBytes(key);
+			var bmsg = encoding.GetBytes(msg);
+			var hash = new HMACSHA256(bkey);
+			var hashmac = hash.ComputeHash(bmsg);
+			return BitConverter.ToString(hashmac).Replace("-", "").ToLower();
+		}
 
         public object Get (OauthJupyterHubCallBackRequest request)
         {
@@ -107,34 +120,39 @@ namespace Terradue.Corporate.WebServer
 
                 Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
-                client.SSOApiClient = context.GetConfigValue ("sso-clientId");
-                client.SSOApiSecret = context.GetConfigValue ("sso-clientSecret");
+                client.SSOApiClient = context.GetConfigValue ("sso-jupyterhub-clientId");
+                client.SSOApiSecret = context.GetConfigValue ("sso-jupyterhub-clientSecret");
                 client.SSOApiToken = context.GetConfigValue ("sso-apiAccessToken");
                 client.RedirectUri = context.BaseUrl + "/t2api/jupyterhub/cb";
                 client.AccessToken (request.Code);
 
                 LdapAuthenticationType auth = new LdapAuthenticationType (context);
                 auth.SetConnect2IdCLient (client);
-
-                user = (UserT2)auth.GetUserProfile (context);.
+                user = (UserT2)auth.GetUserProfile (context);
                 user.LoadLdapInfo ();//TODO: should be done automatically on the previous call
                 user.Store ();
 
-                var nonce = HttpContext.Current.Session ["jupyterhub-nonce"];
+                var nonce = HttpContext.Current.Session["jupyterhub-nonce"];
+                var callback = HttpContext.Current.Session["jupyterhub-callback"];
 
-                //build payload
-                var payload = string.Format ("nonce={0}&email={1}&external_id={2}&username={3}&name={4}&require_activation=true",
-                                         nonce,
-                                         user.Email,
-                                         user.Identifier,
-                                         user.Username,
-                                         user.Name
-                                        );
+				//build payload
+				var payload = string.Format("nonce={0}&email={1}&external_id={2}&username={3}&name={4}&require_activation=true",
+										 nonce,
+										 user.Email,
+										 user.Identifier,
+										 user.Username,
+										 user.Name
+										);
 
-                redirect = string.Format ("{0}?username.",
-                                         context.GetConfigValue ("JupyterHub-sso-callback"),
-                                         sso,
-                                         sig);
+				System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+				byte[] payloadBytes = encoding.GetBytes(payload);
+				var sso = System.Convert.ToBase64String(payloadBytes);
+				var sig = HashHMAC(context.GetConfigValue("sso-jupyterhub-clientSecret"), sso);
+				redirect = string.Format("{0}?sso={1}&sig={2}",
+										 callback,
+										 sso,
+										 sig);
+                
                 context.Close ();
             } catch (Exception e) {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
