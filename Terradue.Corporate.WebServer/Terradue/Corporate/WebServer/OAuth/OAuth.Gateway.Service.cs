@@ -152,7 +152,7 @@ namespace Terradue.Corporate.WebServer {
                 if(!string.IsNullOrEmpty(subsid)) oauthrequest.sub_sid = subsid; 
 
                 var oauthsession = client.AuthzSession(oauthrequest, request.ajax);
-                if(!string.IsNullOrEmpty(oauthsession.redirect)) return DoRedirect(context, oauthsession.redirect, request.ajax);
+                if(!string.IsNullOrEmpty(oauthsession.redirect)) return OAuthUtils.DoRedirect(context, oauthsession.redirect, request.ajax);
                 if (!string.IsNullOrEmpty (oauthsession.error)) throw new Exception (oauthsession.error + " - " + oauthsession.error_description);
                 var sid = oauthsession.sid;
                 client.StoreSID (sid);
@@ -167,7 +167,7 @@ namespace Terradue.Corporate.WebServer {
                     //redirect to T2 login page
                     var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query) + "&type=auth";
                     context.LogDebug(this, string.Format("type = auth"));
-                    return DoRedirect(context, redirect, request.ajax);
+                    return OAuthUtils.DoRedirect(context, redirect, request.ajax);
                 }
 
                 else if (oauthsession.type == "consent"){
@@ -184,11 +184,11 @@ namespace Terradue.Corporate.WebServer {
                         var scopes = new List<string>(context.GetConfigValue("sso-scopes").Split(",".ToCharArray()));
                         var consent = GenerateConsent(scopes);
                         var redirect = client.ConsentSession(oauthsession.sid, consent);
-                        return DoRedirect(context, redirect, request.ajax);
+                        return OAuthUtils.DoRedirect(context, redirect, request.ajax);
                     } else {
                         //redirect to T2 consent page
                         var redirect = context.GetConfigValue("t2portal-loginEndpoint") + "?query=" + HttpUtility.UrlEncode(query) + "&type=consent";
-                        return DoRedirect(context, redirect, request.ajax);
+                        return OAuthUtils.DoRedirect(context, redirect, request.ajax);
                     }
                 }
 
@@ -231,6 +231,7 @@ namespace Terradue.Corporate.WebServer {
                 var sid = client.LoadSID ().Value;
                 var subsid = client.LoadSUBSID ().Value;
 
+
                 context.LogInfo(this, string.Format("/oauth (POST) - username={0}", request.username));
 
                 //request was done just to get the oauthsession (and the list of scopes to consent)
@@ -249,7 +250,7 @@ namespace Terradue.Corporate.WebServer {
                     OauthConsentRequest consent = GenerateConsent(request.scope);
 
                     var redirect = client.ConsentSession(sid, consent);
-                    return DoRedirect(context, redirect, request.ajax);
+                    return OAuthUtils.DoRedirect(context, redirect, request.ajax);
                 }
 
                 //user needs to authenticate
@@ -286,7 +287,7 @@ namespace Terradue.Corporate.WebServer {
                 var oauthputsession = client.AuthzSession(sid, oauthrequest2, request.ajax);
                 context.LogDebug(this, string.Format("SUBSID : {0}", subsid));
                 if (!string.IsNullOrEmpty (oauthputsession.redirect)) {
-                    return DoRedirect (context, oauthputsession.redirect, request.ajax);
+                    return OAuthUtils.DoRedirect (context, oauthputsession.redirect, request.ajax);
                 }
                 //                    client.SID = null;
                 if (oauthputsession.sub_session != null) {
@@ -307,7 +308,7 @@ namespace Terradue.Corporate.WebServer {
                     context.LogDebug(this, string.Format("consent is now : {0}", string.Join(",",consent.scope)));
                         
                     var redirect = client.ConsentSession(oauthputsession.sid, consent);
-                    return DoRedirect(context, redirect, request.ajax);
+                    return OAuthUtils.DoRedirect(context, redirect, request.ajax);
                     
                 }
 
@@ -316,19 +317,6 @@ namespace Terradue.Corporate.WebServer {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
-            }
-            return null;
-        }
-
-        private HttpResult DoRedirect(IfyContext context, string redirect, bool ajax){
-            context.LogDebug(this, string.Format("redirect to {0}", redirect));
-            if(ajax){
-                HttpResult redirectResponse = new HttpResult();
-                redirectResponse.Headers[HttpHeaders.Location] = redirect;
-                redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
-                return redirectResponse;
-            } else {
-                HttpContext.Current.Response.Redirect(redirect, true);
             }
             return null;
         }
@@ -366,7 +354,7 @@ namespace Terradue.Corporate.WebServer {
 
                 context.EndSession();
                 var redirect = HttpContext.Current.Response.Headers [HttpHeaders.Location];
-                return DoRedirect (context, redirect ?? context.BaseUrl, request.ajax);
+                return OAuthUtils.DoRedirect (context, redirect ?? context.BaseUrl, request.ajax);
                 context.Close();
             } catch (Exception e) {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
@@ -387,7 +375,7 @@ namespace Terradue.Corporate.WebServer {
             var consent = new OauthConsentRequest {
                 scope = scope,
 //                scope = new List<string>{ "openid", "email", "profile", "rn" },
-//                claims = new List<string>{ "openid", "email", "sshPublicKey", "given_name", "rn" },
+                claims = new List<string>{ "openid", "email", "sshPublicKey", "given_name", "rn" },
 //                preset_claims = new OauthPresetClaims{
 //                    userinfo = new OauthAuthzClaimsUserInfoRequest{
 //                        sshPublicKey = ""

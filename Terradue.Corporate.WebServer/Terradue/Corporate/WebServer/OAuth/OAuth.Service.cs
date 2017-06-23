@@ -229,6 +229,8 @@ UA -> UA : display user name
                 context.Close();
                 throw e;
             }
+            if(request.redirect_uri != null)
+			    return OAuthUtils.DoRedirect(context, request.redirect_uri, request.ajax);
             return true;
         }
 

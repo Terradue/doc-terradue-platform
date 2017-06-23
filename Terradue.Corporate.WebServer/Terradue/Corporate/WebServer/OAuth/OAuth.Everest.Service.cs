@@ -80,7 +80,7 @@ namespace Terradue.Corporate.WebServer
                 throw e;
             }
 
-            return DoRedirect (context, url, false);
+            return OAuthUtils.DoRedirect (context, url, false);
         }
 
         public object Get (OauthEverestCallBackRequest request)
@@ -189,20 +189,6 @@ namespace Terradue.Corporate.WebServer
                 throw e;
             }
             HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
-        }
-
-        private HttpResult DoRedirect (IfyContext context, string redirect, bool ajax)
-        {
-            context.LogDebug (this, string.Format ("redirect to {0}", redirect));
-            if (ajax) {
-                HttpResult redirectResponse = new HttpResult ();
-                redirectResponse.Headers [HttpHeaders.Location] = redirect;
-                redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
-                return redirectResponse;
-            } else {
-                HttpContext.Current.Response.Redirect (redirect, true);
-            }
             return null;
         }
 
