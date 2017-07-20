@@ -101,6 +101,7 @@ namespace Terradue.Corporate.WebServer
 				//validate the payload
 				var sig = HashHMAC(context.GetConfigValue("sso-eosso-secret"), request.payload);
 				if (!sig.Equals(request.sig)) throw new Exception("Invalid payload");
+                if (!nonce.Equals(HttpContext.Current.Session["eosso-nonce"])) throw new Exception("Invalid nonce");
 
                 var auth = new EossoAuthenticationType (context);
                 auth.SetUserInformation(username, email);
