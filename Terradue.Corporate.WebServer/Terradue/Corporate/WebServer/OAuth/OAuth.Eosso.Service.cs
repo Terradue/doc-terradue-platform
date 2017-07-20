@@ -165,36 +165,6 @@ namespace Terradue.Corporate.WebServer
             return null;
         }
 
-        public object Get (OauthEverestDeleteRequest request)
-        {
-            T2CorporateWebContext context = new T2CorporateWebContext (PagePrivileges.EverybodyView);
-            var redirect = "";
-            try {
-                context.Open ();
-
-                Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
-                client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
-                client.SSOApiClient = context.GetConfigValue ("sso-clientId");
-                client.SSOApiSecret = context.GetConfigValue ("sso-clientSecret");
-                client.SSOApiToken = context.GetConfigValue ("sso-apiAccessToken");
-
-                if (!string.IsNullOrEmpty (request.kind) && request.kind.Equals ("error")) {
-                    redirect = context.BaseUrl + "/portal/error?msg=Error%20from%20everest&longmsg=" + request.message;
-                } else {
-                    redirect = context.BaseUrl;
-                }
-
-                context.EndSession ();
-                context.Close ();
-            } catch (Exception e) {
-                context.LogError(this, e.Message + " - " + e.StackTrace);
-                context.Close();
-                throw e;
-            }
-            HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
-        }
-
     }
 }
 
