@@ -348,20 +348,21 @@ namespace Terradue.Corporate.WebServer {
 
         public object Delete(OAuthDeleteAuthorizationRequest request) {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            string redirect = null;
             try {
                 context.Open();
                 context.LogInfo (this, string.Format ("/oauth DELETE"));
 
                 context.EndSession();
-                var redirect = HttpContext.Current.Response.Headers [HttpHeaders.Location];
-                return OAuthUtils.DoRedirect (context, redirect ?? context.BaseUrl, request.ajax);
+                redirect = HttpContext.Current.Response.Headers [HttpHeaders.Location];
+
                 context.Close();
             } catch (Exception e) {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
                 context.Close();
                 throw e;
             }
-            return new Terradue.WebService.Model.WebResponseBool(true);
+            return OAuthUtils.DoRedirect(context, redirect ?? context.BaseUrl, request.ajax);
         }
 
         private OauthConsentRequest GenerateConsent(List<string> scope){

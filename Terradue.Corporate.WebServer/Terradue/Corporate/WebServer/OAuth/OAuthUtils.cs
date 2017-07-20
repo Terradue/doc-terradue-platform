@@ -14,7 +14,11 @@ namespace Terradue.Corporate.WebServer {
 				redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
 				return redirectResponse;
 			} else {
-				HttpContext.Current.Response.Redirect(redirect, true);
+                try {
+                    HttpContext.Current.Response.Redirect(redirect, true);
+                }catch(Exception e){
+                    
+                }
 			}
 			return null;
 		}
