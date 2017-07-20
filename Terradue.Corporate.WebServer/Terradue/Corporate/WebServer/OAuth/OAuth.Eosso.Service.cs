@@ -56,7 +56,7 @@ namespace Terradue.Corporate.WebServer
 				var sso = System.Convert.ToBase64String(payloadBytes);
 				var sig = HashHMAC(context.GetConfigValue("sso-eosso-secret"), sso);
 
-				redirect = string.Format("{0}?sso={1}&sig={2}",
+				redirect = string.Format("{0}?payload={1}&sig={2}",
 										 context.GetConfigValue("sso-eosso-endpoint"),
 										 sso,
 										 sig);
