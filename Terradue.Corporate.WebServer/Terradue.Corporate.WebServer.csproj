@@ -258,6 +258,8 @@
     <Compile Include="Terradue\Corporate\WebServer\Agent\Actions.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.JupyterHub.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuthUtils.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Eosso.Service.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Auth\EossoAuthenticationType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
