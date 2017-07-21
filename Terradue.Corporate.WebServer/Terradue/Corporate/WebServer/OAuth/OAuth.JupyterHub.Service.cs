@@ -67,7 +67,7 @@ namespace Terradue.Corporate.WebServer
 				var nonce = querystring["nonce"];
 
 				//validate the payload
-				var sig = HashHMAC(context.GetConfigValue("sso-jupyterhub-clientSecret"), request.sso);
+				var sig = OAuthUtils.HashHMAC(context.GetConfigValue("sso-jupyterhub-clientSecret"), request.sso);
 				if (!sig.Equals(request.sig)) throw new Exception("Invalid payload");
 
                 HttpContext.Current.Session["jupyterhub-nonce"] = nonce;
@@ -94,16 +94,6 @@ namespace Terradue.Corporate.WebServer
 
             return null;
         }
-
-		private static string HashHMAC(string key, string msg)
-		{
-			var encoding = new System.Text.ASCIIEncoding();
-			var bkey = encoding.GetBytes(key);
-			var bmsg = encoding.GetBytes(msg);
-			var hash = new HMACSHA256(bkey);
-			var hashmac = hash.ComputeHash(bmsg);
-			return BitConverter.ToString(hashmac).Replace("-", "").ToLower();
-		}
 
         public object Get (OauthJupyterHubCallBackRequest request)
         {
@@ -147,7 +137,7 @@ namespace Terradue.Corporate.WebServer
 				System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
 				byte[] payloadBytes = encoding.GetBytes(payload);
 				var sso = System.Convert.ToBase64String(payloadBytes);
-				var sig = HashHMAC(context.GetConfigValue("sso-jupyterhub-clientSecret"), sso);
+				var sig = OAuthUtils.HashHMAC(context.GetConfigValue("sso-jupyterhub-clientSecret"), sso);
 				redirect = string.Format("{0}?sso={1}&sig={2}",
 										 callback,
 										 sso,
