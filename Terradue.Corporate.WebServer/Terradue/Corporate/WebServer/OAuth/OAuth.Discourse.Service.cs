@@ -111,7 +111,7 @@ namespace Terradue.Corporate.WebServer
 
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
-                    HttpContext.Current.Response.Redirect (context.BaseUrl, true);
+                    return OAuthUtils.DoRedirect(context, context.BaseUrl, false);
                 }
 
                 Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
@@ -154,8 +154,7 @@ namespace Terradue.Corporate.WebServer
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
     }
 }

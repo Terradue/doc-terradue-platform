@@ -93,7 +93,7 @@ namespace Terradue.Corporate.WebServer
 
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
-                    HttpContext.Current.Response.Redirect (context.BaseUrl, true);
+                    return OAuthUtils.DoRedirect(context, context.BaseUrl, false);
                 }
 
                 var client = new EverestOauthClient (context);
@@ -158,8 +158,7 @@ namespace Terradue.Corporate.WebServer
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
         public object Get (OauthEverestDeleteRequest request)
@@ -188,8 +187,7 @@ namespace Terradue.Corporate.WebServer
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
     }

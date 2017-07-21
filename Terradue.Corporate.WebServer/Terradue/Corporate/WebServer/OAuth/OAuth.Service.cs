@@ -170,7 +170,7 @@ UA -> UA : display user name
                 context.LogInfo (this, string.Format ("/cb GET"));
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
-                    HttpContext.Current.Response.Redirect (context.BaseUrl, true);
+                    return OAuthUtils.DoRedirect(context, context.BaseUrl, false);
                 }
 
                 Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
@@ -200,8 +200,7 @@ UA -> UA : display user name
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
         public object Delete (OauthLogoutRequest request)

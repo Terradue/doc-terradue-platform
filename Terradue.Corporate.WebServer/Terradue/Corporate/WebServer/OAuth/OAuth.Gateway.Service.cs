@@ -196,7 +196,7 @@ namespace Terradue.Corporate.WebServer {
                 else if (oauthsession.sub_session != null){
                     //redirect to redirect_uri
                     var redirect = request.redirect_uri;
-                    HttpContext.Current.Response.Redirect(redirect, true);
+                    return OAuthUtils.DoRedirect(context, redirect, false);
                 }
 
                 context.Close();
