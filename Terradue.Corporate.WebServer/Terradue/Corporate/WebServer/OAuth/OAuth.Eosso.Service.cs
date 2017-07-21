@@ -136,7 +136,11 @@ namespace Terradue.Corporate.WebServer {
                 //get user from username/email
                 var auth = new EossoAuthenticationType(context);
                 auth.SetUserInformation(username, email);
-                user = (UserT2)auth.GetUserProfile(context);
+                try {
+                    user = (UserT2)auth.GetUserProfile(context);
+                }catch(EmailAlreadyUsedException){
+                    OAuthUtils.DoRedirect(context, context.GetConfigValue("t2portal-emailAlreadyUsedEndpoint"), false);
+				}
                 if (user == null) throw new Exception("Error to load user");
                 context.LogDebug(this, string.Format("Loaded user '{0}'", user.Username));
 

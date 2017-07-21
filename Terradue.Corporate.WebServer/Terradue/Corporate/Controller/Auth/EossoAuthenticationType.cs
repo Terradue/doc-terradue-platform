@@ -95,9 +95,12 @@ namespace Terradue.Corporate.Controller {
             //case user does not exists
 
             //email already used, we do not create the new user
-            UserT2.FromEmail (context, EossoEmail);
-            throw new Exception("Email already used, cannot create new user");
-            //HttpContext.Current.Response.Redirect(context.GetConfigValue("t2portal-emailAlreadyUsedEndpoint"), true);
+            try {
+                UserT2.FromEmail(context, EossoEmail);
+                throw new EmailAlreadyUsedException("Email already used, cannot create new user");
+            } catch (EmailAlreadyUsedException e) { 
+                throw e; 
+            } catch (Exception) { }
 
             //create user
             context.AccessLevel = EntityAccessLevel.Administrator;

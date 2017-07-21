@@ -102,7 +102,12 @@ namespace Terradue.Corporate.WebServer
                 EverestAuthenticationType auth = new EverestAuthenticationType (context);
                 auth.SetCLient (client);
 
-                user = (UserT2)auth.GetUserProfile (context);
+				try {
+					user = (UserT2)auth.GetUserProfile(context);
+				} catch (EmailAlreadyUsedException) {
+					OAuthUtils.DoRedirect(context, context.GetConfigValue("t2portal-emailAlreadyUsedEndpoint"), false);
+				}
+
                 if (user == null) throw new Exception ("Error to load user");
                 context.LogDebug (this, string.Format ("Loaded user '{0}'", user.Username));
 
