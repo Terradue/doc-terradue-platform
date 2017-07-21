@@ -7,18 +7,11 @@ using Terradue.Portal;
 namespace Terradue.Corporate.Controller {
 
     /// <summary>
-    /// Authentication open identifier.
+    /// Eosso authentication type.
     /// </summary>
     public class EossoAuthenticationType : AuthenticationType {
-
-        /// <summary>
-        /// The client.
-        /// </summary>
-        private Connect2IdClient clientSSO;
-
-        private string UserInfoEndpoint;
+        
         private string Username, Email;
-        private string Callback;
 
         /// <summary>
         /// Indicates whether the authentication type depends on external identity providers.
@@ -31,7 +24,7 @@ namespace Terradue.Corporate.Controller {
         }
 
         /// <summary>
-        /// In a derived class, checks whether an session corresponding to the current web server session exists on the
+        /// In a derived class, checks whether a session corresponding to the current web server session exists on the
         /// external identity provider.
         /// </summary>
         /// <returns><c>true</c> if this instance is external session active the specified context request; otherwise, <c>false</c>.</returns>
@@ -44,18 +37,7 @@ namespace Terradue.Corporate.Controller {
         /// <summary>
         /// Initializes a new instance of the <see cref="Terradue.OAuth.OAuth2AuthenticationType"/> class.
         /// </summary>
-        public EossoAuthenticationType(IfyContext context) : base(context) {
-            clientSSO = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
-        }
-
-        /// <summary>
-        /// Sets the SSO Client.
-        /// </summary>
-        /// <param name="c">Client.</param>
-        public void SetCLientSSO (Connect2IdClient c)
-        {
-            this.clientSSO = c;
-        }
+        public EossoAuthenticationType(IfyContext context) : base(context) {}
 
         public void SetUserInformation(string username, string email){
             this.Username = username;
@@ -70,19 +52,23 @@ namespace Terradue.Corporate.Controller {
         /// <param name="request">Request.</param>
         public override User GetUserProfile(IfyWebContext context, HttpRequest request = null, bool strict = false){
             UserT2 usr;
+            AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(EossoAuthenticationType));
             try{
-                //case user exists
+				//case user exists
                 usr = UserT2.FromUsername(context, this.Username);
-                usr.ChangeLdapPassword(HttpContext.Current.Session.SessionID, null, true);
+				int userId = User.GetUserId(context, this.Username, authType);
+				
+                //case user exists and is associated to Eosso Authentication Type, we set his password to the current Session Id
+				if (userId != 0) usr.ChangeLdapPassword(HttpContext.Current.Session.SessionID, null, true);
+
                 return usr;
             }catch(Exception e){
-                
+                //user does not exist, we create it
             }
 
             //case user does not exists
-            AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(EossoAuthenticationType));
-
             try {
+                //email already used, we do not create the new user
                 UserT2.FromEmail (context, Email);
                 HttpContext.Current.Response.Redirect(context.GetConfigValue("t2portal-emailAlreadyUsedEndpoint"), true);
             } catch (Exception){}

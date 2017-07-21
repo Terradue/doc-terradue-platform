@@ -36,6 +36,11 @@ namespace Terradue.Corporate.WebServer
     /// </summary>
     public class OAuthEossoService : ServiceStack.ServiceInterface.Service
     {
+        /// <summary>
+        /// Get the specified request. Used to log in user via EOSSO
+        /// </summary>
+        /// <returns>The get.</returns>
+        /// <param name="request">Request.</param>
         public object Get (OauthEoSsoRequest request)
         {
             string redirect;
@@ -45,12 +50,13 @@ namespace Terradue.Corporate.WebServer
 
                 context.LogInfo (this, string.Format ("/oauth/eosso GET"));
 
+                //save nonce in session, will be used as security check in callback function
 				var nonce = Guid.NewGuid().ToString();
 				HttpContext.Current.Session["eosso-nonce"] = nonce;
 				var callback = context.BaseUrl + "/eosso/cb";
 
-                //build payload
-                var payload = string.Format("nonce={0}&redirect_url={1}", nonce, callback);
+                //build payload (in base 64) + SIG (used to validate the payload on EOSSO side, using the same secret key)
+                var payload = string.Format("nonce={0}&redirect_uri={1}", nonce, callback);
 				System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
 				byte[] payloadBytes = encoding.GetBytes(payload);
 				var sso = System.Convert.ToBase64String(payloadBytes);
@@ -90,7 +96,11 @@ namespace Terradue.Corporate.WebServer
 
                 System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
 
-				//validate payload
+				//validate the payload using the SIG generated on EOSSO with the same secret key
+				var sig = HashHMAC(context.GetConfigValue("sso-eosso-secret"), request.payload);
+				if (!sig.Equals(request.sig)) throw new Exception("Invalid payload");
+				
+				//validate payload 
 				var base64Payload = System.Convert.FromBase64String(request.payload);
 				var payload = encoding.GetString(base64Payload);
 				var querystring = HttpUtility.ParseQueryString(payload);
@@ -98,18 +108,17 @@ namespace Terradue.Corporate.WebServer
                 var username = querystring["username"];
                 var email = querystring["email"];
 
-				//validate the payload
-				var sig = HashHMAC(context.GetConfigValue("sso-eosso-secret"), request.payload);
-				if (!sig.Equals(request.sig)) throw new Exception("Invalid payload");
+                //security check using nonce (should be the same as the one stored in session)
                 if (!nonce.Equals(HttpContext.Current.Session["eosso-nonce"])) throw new Exception("Invalid nonce");
-
+				
+                //get user from username/email
                 var auth = new EossoAuthenticationType (context);
                 auth.SetUserInformation(username, email);
-
                 user = (UserT2)auth.GetUserProfile (context);
                 if (user == null) throw new Exception ("Error to load user");
                 context.LogDebug (this, string.Format ("Loaded user '{0}'", user.Username));
 
+                //start user session
                 context.StartSession (auth, user);
                 context.SetUserInformation (auth, user);
 
@@ -162,8 +171,7 @@ namespace Terradue.Corporate.WebServer
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
     }
