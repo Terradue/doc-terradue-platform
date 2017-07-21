@@ -11,7 +11,7 @@ namespace Terradue.Corporate.Controller {
     /// </summary>
     public class EossoAuthenticationType : AuthenticationType {
         
-        private string Username, Email;
+        private string EossoUsername, EossoEmail, EossoOriginator;
 
         /// <summary>
         /// Indicates whether the authentication type depends on external identity providers.
@@ -39,9 +39,10 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         public EossoAuthenticationType(IfyContext context) : base(context) {}
 
-        public void SetUserInformation(string username, string email){
-            this.Username = username;
-            this.Email = email;
+        public void SetUserInformation(string username, string email, string originator = null){
+            this.EossoUsername = username;
+            this.EossoEmail = email;
+            this.EossoOriginator = originator;
         }
 
         /// <summary>
@@ -51,47 +52,76 @@ namespace Terradue.Corporate.Controller {
         /// <param name="context">Context.</param>
         /// <param name="request">Request.</param>
         public override User GetUserProfile(IfyWebContext context, HttpRequest request = null, bool strict = false){
-            UserT2 usr;
+            UserT2 usr = null;
             AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(EossoAuthenticationType));
-            try{
-				//case user exists
-                usr = UserT2.FromUsername(context, this.Username);
-				int userId = User.GetUserId(context, this.Username, authType);
-				
-                //case user exists and is associated to Eosso Authentication Type, we set his password to the current Session Id
-				if (userId != 0) usr.ChangeLdapPassword(HttpContext.Current.Session.SessionID, null, true);
+            var validusername = UserT2.MakeUsernameValid(EossoUsername);
 
+            //case user exists (test with EOSSO attribute on ldap)
+            var json2Ldap = new Json2LdapFactory(context);
+            var lusr = json2Ldap.GetUserFromEOSSO(EossoUsername);
+			if (lusr != null) usr = UserT2.FromUsername(context, lusr.Username);
+
+            //case user exists (test with username)
+            if (usr == null) {
+                try {
+                    usr = UserT2.FromUsername(context, validusername);
+                } catch (Exception e) {
+                    //user does not exist, we'll create it
+                }
+            }
+
+            if (usr != null) {
+                //if email is different on LDAP, we take the one from the request as reference, but user must revalidate his email
+                try {
+                    if (!string.IsNullOrEmpty(EossoEmail) && !EossoEmail.Equals(usr.Email)) {
+                        usr.Email = EossoEmail;
+                        usr.AccountStatus = AccountStatusType.PendingActivation;
+                        //update email on ldap
+                        usr.UpdateLdapAccount();
+                        //update email on db
+                        usr.Store();
+                    }
+                } catch (Exception e) { context.LogError(this, e.Message); }
+
+				//if user is associated to Eosso Authentication Type, we set his password to the current Session Id
+                try{
+	                int userId = User.GetUserId(context, usr.Username, authType);
+	                if (userId != 0) usr.ChangeLdapPassword(HttpContext.Current.Session.SessionID, null, true);
+				} catch (Exception e) { context.LogError(this, e.Message); }
+               
                 return usr;
-            }catch(Exception e){
-                //user does not exist, we create it
             }
 
             //case user does not exists
-            try {
-                //email already used, we do not create the new user
-                UserT2.FromEmail (context, Email);
-                HttpContext.Current.Response.Redirect(context.GetConfigValue("t2portal-emailAlreadyUsedEndpoint"), true);
-            } catch (Exception){}
+
+            //email already used, we do not create the new user
+            UserT2.FromEmail (context, EossoEmail);
+            throw new Exception("Email already used, cannot create new user");
+            //HttpContext.Current.Response.Redirect(context.GetConfigValue("t2portal-emailAlreadyUsedEndpoint"), true);
 
             //create user
             context.AccessLevel = EntityAccessLevel.Administrator;
-            usr = (UserT2)User.GetOrCreate(context, Username, authType);
-            usr.Email = Email;
+            usr = (UserT2)User.GetOrCreate(context, validusername, authType);
+            usr.Email = EossoEmail;
+			usr.RegistrationOrigin = EossoOriginator;
             usr.Store();
 
-            usr.LinkToAuthenticationProvider (authType, Username);
+            usr.LinkToAuthenticationProvider (authType, validusername);
             try {
                 usr.CreateGithubProfile();
                 usr.CreateLdapAccount(HttpContext.Current.Session.SessionID);//we use the sessionId as pwd
 				usr.CreateLdapDomain();
+				usr.EoSSO = EossoUsername;
+				usr.UpdateLdapAccount();
                 usr.CreateCatalogueIndex();
                 usr.CreateRepository();
+                usr.GenerateApiKey(HttpContext.Current.Session.SessionID);
             }catch(Exception e){
                 context.LogError(this, e.Message);
             }
 			
 			return usr;
-        } 
+        }
 
         public override void EndExternalSession(IfyWebContext context, HttpRequest request, HttpResponse response) {
             DBCookie.DeleteDBCookies(context, HttpContext.Current.Session.SessionID);
