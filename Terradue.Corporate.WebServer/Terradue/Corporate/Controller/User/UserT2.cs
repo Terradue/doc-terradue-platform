@@ -310,6 +310,39 @@ namespace Terradue.Corporate.Controller
             if (Domain == null && AccountStatus == AccountStatusType.Enabled) CreatePrivateDomain ();
         }
 
+        public static UserT2 Create(IfyContext context, string username, string email, string password, AuthenticationType authType, bool createLdap, string eosso = null){
+			
+            //test if email is already used, we do not create the new user
+			try {
+				UserT2.FromEmail(context, email);
+				throw new EmailAlreadyUsedException("Your email is already associated to another account, we cannot create a new user");
+			} catch (EmailAlreadyUsedException e) {
+				throw e;
+			} catch (Exception) { }
+
+			//create user
+			context.AccessLevel = EntityAccessLevel.Administrator;
+			//TODO: get unique username
+			UserT2 usr = (UserT2)User.GetOrCreate(context, username, authType);
+			usr.Email = email;
+			usr.Store();
+
+			usr.LinkToAuthenticationProvider(authType, username);
+            if (createLdap) {
+                usr.CreateGithubProfile();
+                usr.CreateLdapAccount(password);//we use the sessionId as pwd
+                usr.CreateLdapDomain();
+                if (!string.IsNullOrEmpty(eosso)) {
+                    usr.EoSSO = eosso;
+                    usr.UpdateLdapAccount();
+                }
+                usr.CreateCatalogueIndex();
+                usr.CreateRepository();
+                usr.GenerateApiKey(password);
+            }
+            return usr;
+        }
+
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
@@ -455,9 +488,13 @@ namespace Terradue.Corporate.Controller
         /// </summary>
         /// <param name="plan">Plan.</param>
         public void Upgrade (Plan plan){
-
             if (plan.Domain == null) plan.Domain = Domain.FromIdentifier (context, "terradue");
             if (plan.Role == null) throw new Exception ("Invalid role for user upgrade");
+            var role = this.GetRoleForDomain(plan.Domain);
+            if (role.Id == plan.Role.Id){
+                log.Debug(String.Format("Upgrade user {0} with role {1} for domain {2} - NOT NEEDED", this.Username, plan.Role.Name, plan.Domain.Name));
+                return;
+            }
             log.Info (String.Format ("Upgrade user {0} with role {1} for domain {2}", this.Username, plan.Role.Name, plan.Domain.Name));
             context.StartTransaction ();
 

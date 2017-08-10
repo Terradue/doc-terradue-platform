@@ -116,6 +116,8 @@ namespace Terradue.Corporate.WebServer {
             try {
                 context.Open();
 
+                context.LogInfo(this, string.Format("/eosso/cb GET"));
+
                 System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
 
                 //validate the payload using the SIG generated on EOSSO with the same secret key
@@ -206,7 +208,7 @@ namespace Terradue.Corporate.WebServer {
             WebEossoUser result = null;
             try {
                 context.Open();
-                context.LogInfo(this, string.Format("/sso/user GET"));
+                context.LogInfo(this, string.Format("/eosso/user GET"));
 
                 System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
 
@@ -228,7 +230,7 @@ namespace Terradue.Corporate.WebServer {
                 //get user from username/email
                 var auth = new EossoAuthenticationType(context);
                 auth.SetUserInformation(username, email, originator);
-                user = (UserT2)auth.GetUserProfile(context);//TODO: existing identifier
+                user = (UserT2)auth.GetUserProfile(context);
                 if (user == null) throw new Exception("Error to load user");
                 context.LogDebug(this, string.Format("Loaded user '{0}'", user.Username));
 
@@ -253,7 +255,7 @@ namespace Terradue.Corporate.WebServer {
             } catch (Exception e) {
                 context.LogError(this, e.Message);
                 context.Close();
-                return null;
+                throw e;
             }
             return result;
         }

@@ -53,76 +53,78 @@ namespace Terradue.Corporate.Controller {
         /// <param name="request">Request.</param>
         public override User GetUserProfile(IfyWebContext context, HttpRequest request = null, bool strict = false){
             UserT2 usr = null;
-            AuthenticationType authType = IfyWebContext.GetAuthenticationType(typeof(EossoAuthenticationType));
+            if (string.IsNullOrEmpty(EossoUsername)) return null;
+
+            AuthenticationType eossoAuthType = IfyWebContext.GetAuthenticationType(typeof(EossoAuthenticationType));
             var validusername = UserT2.MakeUsernameValid(EossoUsername);
 
             //case user exists (test with EOSSO attribute on ldap)
             var json2Ldap = new Json2LdapFactory(context);
             var lusr = json2Ldap.GetUserFromEOSSO(EossoUsername);
-			if (lusr != null) usr = UserT2.FromUsername(context, lusr.Username);
+            if (lusr != null) {
+                try {
+                    usr = UserT2.FromUsername(context, lusr.Username);
+                }catch(Exception e){
+					//TODO: user may be on ldap but not on db
+					usr = UserT2.Create(context, validusername, EossoEmail, HttpContext.Current.Session.SessionID, eossoAuthType, false, EossoUsername);
+                }
+            }
 
-            //case user exists (test with username)
+            //case user exists (test with email)
             if (usr == null) {
                 try {
-                    usr = UserT2.FromUsername(context, validusername);
+                    usr = UserT2.FromEmail(context, EossoEmail);
                 } catch (Exception e) {
                     //user does not exist, we'll create it
+                }
+                if (usr != null) {
+					usr.LoadLdapInfo();
+					//if user does not have the Eosso attribute we add it
+					if (string.IsNullOrEmpty(usr.EoSSO)) {
+						usr.EoSSO = EossoUsername;
+						usr.UpdateLdapAccount();
+                    } 
+                    //if user has the Eosso attribute, we check it matches
+                    else {
+                        if (usr.EoSSO != EossoUsername) {
+                            var message = "Your email is already associated to another EO-SSO name: " + usr.EoSSO;
+                            context.LogError(this, message);
+                            throw new Exception(message);
+                        }
+                    }
                 }
             }
 
             if (usr != null) {
                 //if email is different on LDAP, we take the one from the request as reference, but user must revalidate his email
-                try {
-                    if (!string.IsNullOrEmpty(EossoEmail) && !EossoEmail.Equals(usr.Email)) {
-                        usr.Email = EossoEmail;
-                        usr.AccountStatus = AccountStatusType.PendingActivation;
-                        //update email on ldap
-                        usr.UpdateLdapAccount();
-                        //update email on db
-                        usr.Store();
-                    }
-                } catch (Exception e) { context.LogError(this, e.Message); }
+                //try {
+                //    if (!string.IsNullOrEmpty(EossoEmail) && !EossoEmail.Equals(usr.Email)) {
+                //        usr.Email = EossoEmail;
+                //        usr.AccountStatus = AccountStatusType.PendingActivation;
+                //        //update email on ldap
+                //        usr.UpdateLdapAccount();
+                //        //update email on db
+                //        usr.Store();
+                //    }
+                //} catch (Exception e) { context.LogError(this, e.Message); }
 
 				//if user is associated to Eosso Authentication Type, we set his password to the current Session Id
                 try{
-	                int userId = User.GetUserId(context, usr.Username, authType);
-	                if (userId != 0) usr.ChangeLdapPassword(HttpContext.Current.Session.SessionID, null, true);
+	                int userId = User.GetUserId(context, usr.Username, eossoAuthType);
+                    if (userId != 0) {
+                        context.LogDebug(this, "userId = " + userId + " ; authId = " + eossoAuthType.Id);
+                        context.LogDebug(this, "Password changed for user " + usr.Username);
+                        usr.ChangeLdapPassword(HttpContext.Current.Session.SessionID, null, true);
+                    }
 				} catch (Exception e) { context.LogError(this, e.Message); }
                
                 return usr;
             }
 
             //case user does not exists
+            context.LogDebug(this, "User " + validusername + "does not exists, we create it");
+            usr = UserT2.Create(context, validusername, EossoEmail, HttpContext.Current.Session.SessionID, eossoAuthType, true, EossoUsername);
 
-            //email already used, we do not create the new user
-            try {
-                UserT2.FromEmail(context, EossoEmail);
-                throw new EmailAlreadyUsedException("Email already used, cannot create new user");
-            } catch (EmailAlreadyUsedException e) { 
-                throw e; 
-            } catch (Exception) { }
-
-            //create user
-            context.AccessLevel = EntityAccessLevel.Administrator;
-            usr = (UserT2)User.GetOrCreate(context, validusername, authType);
-            usr.Email = EossoEmail;
-			usr.RegistrationOrigin = EossoOriginator;
-            usr.Store();
-
-            usr.LinkToAuthenticationProvider (authType, validusername);
-            try {
-                usr.CreateGithubProfile();
-                usr.CreateLdapAccount(HttpContext.Current.Session.SessionID);//we use the sessionId as pwd
-				usr.CreateLdapDomain();
-				usr.EoSSO = EossoUsername;
-				usr.UpdateLdapAccount();
-                usr.CreateCatalogueIndex();
-                usr.CreateRepository();
-                usr.GenerateApiKey(HttpContext.Current.Session.SessionID);
-            }catch(Exception e){
-                context.LogError(this, e.Message);
-            }
-			
 			return usr;
         }
 
