@@ -311,7 +311,9 @@ namespace Terradue.Corporate.Controller
         }
 
         public static UserT2 Create(IfyContext context, string username, string email, string password, AuthenticationType authType, int accountstatus, bool createLdap, string eosso = null, string originator = null, bool sendEmail = false){
-            
+
+            context.LogInfo(context, string.Format("Create new user: {0} - {1}", username, email));
+
             //test if email is already used, we do not create the new user
 			try {
 				UserT2.FromEmail(context, email);
@@ -327,6 +329,7 @@ namespace Terradue.Corporate.Controller
                 exists = true;
 			} catch (Exception) {}
 			if (exists) {
+                context.LogDebug(context, "Username alreasy in use, generating a new one");
                 int i = 1;
 	            while (exists && i < 100) {
 			        var uname = string.Format("{0}{1}", username, i);
@@ -339,6 +342,7 @@ namespace Terradue.Corporate.Controller
                     }			        
 			    }
                 if (i == 99) throw new Exception("Sorry, we were not able to find a valid username");
+                context.LogDebug(context, "Generated username: " + username);
 			}
   
 			//create user
@@ -351,19 +355,26 @@ namespace Terradue.Corporate.Controller
             usr.PasswordAuthenticationAllowed = true;
             if (!string.IsNullOrEmpty(originator)) usr.RegistrationOrigin = originator;
 			usr.Store();
+            context.LogDebug(context, "New user stored in DB");
 			usr.LinkToAuthenticationProvider(authType, username);
             usr.CreateGithubProfile();
 
             if (createLdap) {
+                context.LogDebug(context, "Creating LDAP account");
                 usr.CreateLdapAccount(password);
+                context.LogDebug(context, "Creating LDAP domain");
                 usr.CreateLdapDomain();
                 if (!string.IsNullOrEmpty(eosso)) {
+                    context.LogDebug(context, "Adding Eosso attribute");
                     usr.EoSSO = eosso;
                     usr.UpdateLdapAccount();
                 }
-                usr.CreateCatalogueIndex();//TODO: see if we need to use thread Tasks
-                usr.CreateRepository();
+                context.LogDebug(context, "Generating apikey");
                 usr.GenerateApiKey(password);
+                context.LogDebug(context, "Creating Catalogue index");
+                usr.CreateCatalogueIndex();//TODO: see if we need to use thread Tasks
+                context.LogDebug(context, "Creating repository");
+                usr.CreateRepository();
             }
 
             if (sendEmail) {

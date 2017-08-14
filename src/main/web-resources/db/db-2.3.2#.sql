@@ -16,4 +16,8 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('sso-eosso-endpoint', 'string', 'Eosso secret Endpoint', 'Eosso secret Endpoint', 'https://geohazards-tep.eo.esa.int/t2api/t2sso', '0');
 -- RESULT
 
+-- auth
+INSERT INTO auth (`identifier`, `name`, `description`, `type`, `enabled`, `activation_rule`, `normal_rule`, `refresh_period`) VALUES ('eosso', 'Eosso authentication', 'Eosso authentication', 'Terradue.Corporate.Controller.EossoAuthenticationType, Terradue.Corporate.WebServer', '1', '2', '2', '0');
+-- RESULT
+
 /*****************************************************************************/

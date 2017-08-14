@@ -53,7 +53,10 @@ namespace Terradue.Corporate.Controller {
         /// <param name="request">Request.</param>
         public override User GetUserProfile(IfyWebContext context, HttpRequest request = null, bool strict = false){
             UserT2 usr = null;
+            bool newUser = false;
             if (string.IsNullOrEmpty(EossoUsername)) return null;
+
+            context.LogDebug(this, "Get user profile via EOSSO Auth");
 
             AuthenticationType eossoAuthType = IfyWebContext.GetAuthenticationType(typeof(EossoAuthenticationType));
             var validusername = UserT2.MakeUsernameValid(EossoUsername);
@@ -62,11 +65,14 @@ namespace Terradue.Corporate.Controller {
             var json2Ldap = new Json2LdapFactory(context);
             var lusr = json2Ldap.GetUserFromEOSSO(EossoUsername);
             if (lusr != null) {
+                context.LogDebug(this, "User found on LDAP (via eosso attribute)");
                 try {
                     usr = UserT2.FromUsername(context, lusr.Username);
                 }catch(Exception e){
+                    context.LogDebug(this, "User not found on DB -- " + e.Message);
 					//TODO: user may be on ldap but not on db
                     usr = UserT2.Create(context, lusr.Username, EossoEmail, HttpContext.Current.Session.SessionID, eossoAuthType, AccountStatusType.Enabled, false, EossoUsername, EossoOriginator, false);
+                    newUser = true;
                 }
             }
 
@@ -74,6 +80,7 @@ namespace Terradue.Corporate.Controller {
             if (usr == null) {
                 lusr = json2Ldap.GetUserFromEmail(EossoEmail);
                 if (lusr != null) {
+                    context.LogDebug(this, "User found on LDAP (via email)");
                     //if user has the Eosso attribute, we check it matches
                     if (!string.IsNullOrEmpty(lusr.EoSSO) && lusr.EoSSO != EossoUsername) {
 						var message = "Your email is already associated to another EO-SSO name: " + lusr.EoSSO;
@@ -83,8 +90,10 @@ namespace Terradue.Corporate.Controller {
                     try {
                         usr = UserT2.FromUsername(context, lusr.Username);
 					} catch (Exception e) {
+                        context.LogDebug(this, "User not found on DB -- " + e.Message);
                         //TODO: user may be on ldap but not on db
                         usr = UserT2.Create(context, lusr.Username, EossoEmail, HttpContext.Current.Session.SessionID, eossoAuthType, AccountStatusType.Enabled, false, EossoUsername, EossoOriginator, false);
+                        newUser = true;
                     }
                 }
             }
@@ -102,29 +111,39 @@ namespace Terradue.Corporate.Controller {
                 //    }
                 //} catch (Exception e) { context.LogError(this, e.Message); }
 
+                //load the apikey
+                context.LogDebug(this, "Loading apikey");
+                usr.LoadApiKey();
+
 				//if user is associated to Eosso Authentication Type, we set his password to the current Session Id
                 try{
 	                int userId = User.GetUserId(context, usr.Username, eossoAuthType);
                     if (userId != 0) {
-                        context.LogDebug(this, "userId = " + userId + " ; authId = " + eossoAuthType.Id);
-                        context.LogDebug(this, "Password changed for user " + usr.Username);
-                        usr.ChangeLdapPassword(HttpContext.Current.Session.SessionID, null, true);
+                        if (!newUser) {//we change the password only if the user was not just created
+                            context.LogDebug(this, "Changing Password for user " + usr.Username);
+                            usr.ChangeLdapPassword(HttpContext.Current.Session.SessionID, null, true);
+                        }
+                        if (string.IsNullOrEmpty(usr.ApiKey)) {
+                            context.LogDebug(this, "Generating ApiKey for user " + usr.Username);
+                            usr.GenerateApiKey(HttpContext.Current.Session.SessionID);
+                        }
                     }
 				} catch (Exception e) { context.LogError(this, e.Message); }
 
                 //if user does not have the Eosso attribute we add it
                 if (string.IsNullOrEmpty(usr.EoSSO)) {
+                    context.LogDebug(this, "Adding EOSSO attribute for user " + usr.Username);
                     usr.EoSSO = EossoUsername;
                     usr.UpdateLdapAccount();
                 }
-       
+                context.LogDebug(this, "Returning user " + usr.Username);
                 return usr;
             }
 
             //case user does not exists
-            context.LogDebug(this, "User " + validusername + "does not exists, we create it");
+            context.LogDebug(this, "User " + validusername + " does not exists, we create it");
             usr = UserT2.Create(context, validusername, EossoEmail, HttpContext.Current.Session.SessionID, eossoAuthType, AccountStatusType.Enabled, true, EossoUsername, EossoOriginator, false);
-
+            context.LogDebug(this, "Returning user " + usr.Username);
 			return usr;
         }
 

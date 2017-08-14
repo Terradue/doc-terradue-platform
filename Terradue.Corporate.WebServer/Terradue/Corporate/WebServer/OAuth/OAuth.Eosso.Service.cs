@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using ServiceStack.ServiceHost;
 using Terradue.Ldap;
 using Terradue.Corporate.WebServer.Common;
@@ -241,8 +241,6 @@ namespace Terradue.Corporate.WebServer {
                     }
                 }
 
-                user.LoadApiKey();
-
 				result = new WebEossoUser { 
                     Username = user.Username,
                     ApiKey = user.ApiKey
@@ -252,7 +250,8 @@ namespace Terradue.Corporate.WebServer {
             } catch (Exception e) {
                 context.LogError(this, e.Message);
                 context.Close();
-                throw e;
+                return new HttpError(e.Message);
+                //throw e;
             }
             return result;
         }
