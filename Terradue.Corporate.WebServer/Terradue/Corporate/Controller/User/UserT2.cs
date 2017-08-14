@@ -310,8 +310,8 @@ namespace Terradue.Corporate.Controller
             if (Domain == null && AccountStatus == AccountStatusType.Enabled) CreatePrivateDomain ();
         }
 
-        public static UserT2 Create(IfyContext context, string username, string email, string password, AuthenticationType authType, bool createLdap, string eosso = null){
-			
+        public static UserT2 Create(IfyContext context, string username, string email, string password, AuthenticationType authType, int accountstatus, bool createLdap, string eosso = null, string originator = null, bool sendEmail = false){
+            
             //test if email is already used, we do not create the new user
 			try {
 				UserT2.FromEmail(context, email);
@@ -320,26 +320,67 @@ namespace Terradue.Corporate.Controller
 				throw e;
 			} catch (Exception) { }
 
+            //get unique username
+            var exists = false;
+			try {
+				UserT2.FromUsername(context, username);
+                exists = true;
+			} catch (Exception) {}
+			if (exists) {
+                int i = 1;
+	            while (exists && i < 100) {
+			        var uname = string.Format("{0}{1}", username, i);
+                    try{
+                        UserT2.FromUsername(context, username);
+                        i++;
+                    } catch (Exception) {
+                        exists = false;
+                        username = uname;
+                    }			        
+			    }
+                if (i == 99) throw new Exception("Sorry, we were not able to find a valid username");
+			}
+  
 			//create user
 			context.AccessLevel = EntityAccessLevel.Administrator;
-			//TODO: get unique username
 			UserT2 usr = (UserT2)User.GetOrCreate(context, username, authType);
 			usr.Email = email;
+            usr.Level = UserLevel.User;
+            usr.AccountStatus = accountstatus;
+            usr.NeedsEmailConfirmation = false;
+            usr.PasswordAuthenticationAllowed = true;
+            if (!string.IsNullOrEmpty(originator)) usr.RegistrationOrigin = originator;
 			usr.Store();
-
 			usr.LinkToAuthenticationProvider(authType, username);
+            usr.CreateGithubProfile();
+
             if (createLdap) {
-                usr.CreateGithubProfile();
-                usr.CreateLdapAccount(password);//we use the sessionId as pwd
+                usr.CreateLdapAccount(password);
                 usr.CreateLdapDomain();
                 if (!string.IsNullOrEmpty(eosso)) {
                     usr.EoSSO = eosso;
                     usr.UpdateLdapAccount();
                 }
-                usr.CreateCatalogueIndex();
+                usr.CreateCatalogueIndex();//TODO: see if we need to use thread Tasks
                 usr.CreateRepository();
                 usr.GenerateApiKey(password);
             }
+
+            if (sendEmail) {
+                try {
+                    usr.SendMail(UserMailType.Registration, true);
+                } catch (Exception) { }
+            }
+
+			try {
+				var subject = "[T2 Portal] - User registration on Terradue Portal";
+                var originatorText = !string.IsNullOrEmpty(originator) ? "\nThe request was performed from " + originator : "";
+				var body = string.Format("This is an automatic email to notify that an account has been automatically created on Terradue Corporate Portal for the user {0} ({1}).{2}", usr.Username, usr.Email, originatorText);
+				context.SendMail(context.GetConfigValue("SmtpUsername"), context.GetConfigValue("SmtpUsername"), subject, body);
+			} catch (Exception) {
+				//we dont want to send an error if mail was not sent
+			}
+
             return usr;
         }
 
