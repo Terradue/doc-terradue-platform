@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Text;
 using Terradue.JFrog.Artifactory;
+using System.Linq;
 
 namespace Terradue.Corporate.Controller
 {
@@ -111,6 +112,8 @@ namespace Terradue.Corporate.Controller
 
         private Json2LdapClient Json2Ldap { get; set; }
 
+
+
         /// <summary>
         /// Gets or sets the private domain of the user.
         /// </summary>
@@ -141,6 +144,21 @@ namespace Terradue.Corporate.Controller
         }
 
         public List<Plan> Plans { get; set; }
+
+        [EntityDataField("links")]
+        public string Links { get; set; }
+
+        private List<string> linkslist;
+        public List<string> LinksList { 
+            get {
+                if(linkslist == null && Links != null) linkslist = Links.Split(",".ToCharArray()).ToList();
+                return linkslist;
+            }
+            set {
+                linkslist = value;
+                Links = string.Join(",", linkslist);
+            }
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -288,7 +306,93 @@ namespace Terradue.Corporate.Controller
         {
             base.Load ();
 
-            if (Domain == null) CreatePrivateDomain ();
+            //we only create domain for user having validated their email
+            if (Domain == null && AccountStatus == AccountStatusType.Enabled) CreatePrivateDomain ();
+        }
+
+        public static UserT2 Create(IfyContext context, string username, string email, string password, AuthenticationType authType, int accountstatus, bool createLdap, string eosso = null, string originator = null, bool sendEmail = false){
+
+            context.LogInfo(context, string.Format("Create new user: {0} - {1}", username, email));
+
+            //test if email is already used, we do not create the new user
+			try {
+				UserT2.FromEmail(context, email);
+				throw new EmailAlreadyUsedException("Your email is already associated to another account, we cannot create a new user");
+			} catch (EmailAlreadyUsedException e) {
+				throw e;
+			} catch (Exception) { }
+
+            //get unique username
+            var exists = false;
+			try {
+				UserT2.FromUsername(context, username);
+                exists = true;
+			} catch (Exception) {}
+			if (exists) {
+                context.LogDebug(context, "Username alreasy in use, generating a new one");
+                int i = 1;
+	            while (exists && i < 100) {
+			        var uname = string.Format("{0}{1}", username, i);
+                    try{
+                        UserT2.FromUsername(context, username);
+                        i++;
+                    } catch (Exception) {
+                        exists = false;
+                        username = uname;
+                    }			        
+			    }
+                if (i == 99) throw new Exception("Sorry, we were not able to find a valid username");
+                context.LogDebug(context, "Generated username: " + username);
+			}
+  
+			//create user
+			context.AccessLevel = EntityAccessLevel.Administrator;
+			UserT2 usr = (UserT2)User.GetOrCreate(context, username, authType);
+			usr.Email = email;
+            usr.Level = UserLevel.User;
+            usr.AccountStatus = accountstatus;
+            usr.NeedsEmailConfirmation = false;
+            usr.PasswordAuthenticationAllowed = true;
+            if (!string.IsNullOrEmpty(originator)) usr.RegistrationOrigin = originator;
+			usr.Store();
+            context.LogDebug(context, "New user stored in DB");
+			usr.LinkToAuthenticationProvider(authType, username);
+            usr.CreateGithubProfile();
+
+            if (createLdap) {
+                context.LogDebug(context, "Creating LDAP account");
+                usr.CreateLdapAccount(password);
+                context.LogDebug(context, "Creating LDAP domain");
+                usr.CreateLdapDomain();
+                if (!string.IsNullOrEmpty(eosso)) {
+                    context.LogDebug(context, "Adding Eosso attribute");
+                    usr.EoSSO = eosso;
+                    usr.UpdateLdapAccount();
+                }
+                context.LogDebug(context, "Generating apikey");
+                usr.GenerateApiKey(password);
+                context.LogDebug(context, "Creating Catalogue index");
+                usr.CreateCatalogueIndex();//TODO: see if we need to use thread Tasks
+                context.LogDebug(context, "Creating repository");
+                usr.CreateRepository();
+            }
+
+            if (sendEmail) {
+                try {
+                    usr.SendMail(UserMailType.Registration, true);
+                } catch (Exception) { }
+            }
+
+			try {
+				var subject = "[T2 Portal] - User registration on Terradue Portal";
+                var originatorText = !string.IsNullOrEmpty(originator) ? "\nThe request was performed from " + originator : "";
+				var body = string.Format("This is an automatic email to notify that an account has been automatically created on Terradue Corporate Portal for the user {0} ({1}).{2}", usr.Username, usr.Email, originatorText);
+				context.SendMail(context.GetConfigValue("SmtpUsername"), context.GetConfigValue("SmtpUsername"), subject, body);
+			} catch (Exception) {
+				//we dont want to send an error if mail was not sent
+			}
+
+            return usr;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -301,6 +405,7 @@ namespace Terradue.Corporate.Controller
             //create new domain with Identifier = Username
             var privatedomain = new Domain (context);
             privatedomain.Identifier = Username;
+            privatedomain.Name = Username;
             privatedomain.Description = "Domain of user " + Username;
             privatedomain.Kind = DomainKind.User;
             privatedomain.Store ();
@@ -340,7 +445,9 @@ namespace Terradue.Corporate.Controller
         /// <returns><c>true</c>, if external authentication was used, <c>false</c> otherwise.</returns>
         public bool IsExternalAuthentication () {
             if (AuthTypes == null) return false;
-            foreach(var auth in AuthTypes) if(auth.UsesExternalIdentityProvider) return true;
+            foreach (var auth in AuthTypes)
+                if (!(auth is Authentication.Ldap.LdapAuthenticationType) && auth.UsesExternalIdentityProvider) return true;
+
             return false;
         }
 
@@ -433,9 +540,13 @@ namespace Terradue.Corporate.Controller
         /// </summary>
         /// <param name="plan">Plan.</param>
         public void Upgrade (Plan plan){
-
             if (plan.Domain == null) plan.Domain = Domain.FromIdentifier (context, "terradue");
             if (plan.Role == null) throw new Exception ("Invalid role for user upgrade");
+            var role = this.GetRoleForDomain(plan.Domain);
+            if (role.Id == plan.Role.Id){
+                log.Debug(String.Format("Upgrade user {0} with role {1} for domain {2} - NOT NEEDED", this.Username, plan.Role.Name, plan.Domain.Name));
+                return;
+            }
             log.Info (String.Format ("Upgrade user {0} with role {1} for domain {2}", this.Username, plan.Role.Name, plan.Domain.Name));
             context.StartTransaction ();
 

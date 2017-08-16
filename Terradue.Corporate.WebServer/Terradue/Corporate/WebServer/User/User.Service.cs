@@ -330,6 +330,14 @@ namespace Terradue.Corporate.WebServer
                 user.Level = UserLevel.User;
                 user.PasswordAuthenticationAllowed = true;
 
+                //get username / lastname from email
+                var emailname = request.Email.Split("@".ToCharArray())[0];
+                var emailname2 = emailname.Split(".".ToCharArray());
+                if (emailname2.Length == 2) {
+                    user.FirstName = emailname2[0];
+                    user.LastName = emailname2[1];
+                } else user.LastName = emailname2[0];
+
                 try {
                     Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
                     client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
@@ -436,6 +444,43 @@ namespace Terradue.Corporate.WebServer
                 throw e;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Create user in db (must already be in ldap)
+        /// </summary>
+        /// <returns>The post.</returns>
+        /// <param name="request">Request.</param>
+        public object Post (CreateUserT2 request){
+            IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
+			WebUserT2 result;
+			try {
+				context.Open();
+                context.LogInfo(this, string.Format("/user POST LDAP username='{0}'", request.Username));
+
+				//test user already exists on ldap
+				Json2LdapFactory ldapfactory = new Json2LdapFactory(context);
+				var usr = ldapfactory.GetUserFromUid(request.Username);
+                if (usr == null) throw new Exception("User does not exists on LDAP");
+
+				AuthenticationType AuthType = IfyWebContext.GetAuthenticationType(typeof(LdapAuthenticationType));
+
+				//add user in db (tables usr, usr_cloud, usr_github)
+				var usert2 = new UserT2(context, usr);
+                usert2.Store();
+				usert2.LinkToAuthenticationProvider(AuthType, usert2.Username);
+				usert2.CreateGithubProfile();
+                usert2.CreatePrivateDomain();
+
+                result = new WebUserT2(usert2);
+
+				context.Close();
+			} catch (Exception e) {
+				context.LogError(this, e.Message + " - " + e.StackTrace);
+				context.Close();
+				throw e;
+			}
+			return result;
         }
 
         public object Post (UpgradeUserT2 request)

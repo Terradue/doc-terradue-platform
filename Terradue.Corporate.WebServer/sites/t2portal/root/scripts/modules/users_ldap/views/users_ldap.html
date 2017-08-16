@@ -41,7 +41,9 @@
 						<td>{{ FirstName }} {{ LastName }}</td>
 						<td>{{ Email }}</td>
 						<td>
-							{{#ifEquals Id 0 }}no{{/ifEquals}}
+							{{#ifEquals Id 0 }}
+								<a href="javascript://" class="btn btn-info createAccount" title="Create account" data-username="{{Username}}"><i class="fa fa-user-plus"></i></a>
+							{{/ifEquals}}
 							{{#ifNotEquals Id 0 }}yes{{/ifNotEquals}}
 						</td>
 					</tr>

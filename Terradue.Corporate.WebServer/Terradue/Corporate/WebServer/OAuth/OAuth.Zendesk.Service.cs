@@ -71,8 +71,7 @@ namespace Terradue.Corporate.WebServer {
                         response_type = "code",
                         nonce = Guid.NewGuid().ToString(),
                         state = Guid.NewGuid().ToString(),
-                        redirect_uri = "https://www.terradue.com/t2api/zendesk/cb",
-                        //redirect_uri = HttpUtility.UrlEncode(context.BaseUrl + "/t2api/zendesk/cb"),
+                        redirect_uri = context.BaseUrl + "/t2api/zendesk/cb",
                         ajax = false
                     });
                 }; 
@@ -96,7 +95,7 @@ namespace Terradue.Corporate.WebServer {
 
                 if(!string.IsNullOrEmpty(request.error)){
                     context.EndSession();
-                    HttpContext.Current.Response.Redirect(context.BaseUrl, true);
+                    return OAuthUtils.DoRedirect(context, context.BaseUrl, false);
                 }
 
                 Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
@@ -137,8 +136,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect(redirect, true);
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
         public object Get(OauthZendeskDeleteRequest request) {
@@ -166,8 +164,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect(redirect, true);
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
     }

@@ -80,7 +80,7 @@ namespace Terradue.Corporate.WebServer
                 throw e;
             }
 
-            return DoRedirect (context, url, false);
+            return OAuthUtils.DoRedirect (context, url, false);
         }
 
         public object Get (OauthEverestCallBackRequest request)
@@ -93,7 +93,7 @@ namespace Terradue.Corporate.WebServer
 
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
-                    HttpContext.Current.Response.Redirect (context.BaseUrl, true);
+                    return OAuthUtils.DoRedirect(context, context.BaseUrl, false);
                 }
 
                 var client = new EverestOauthClient (context);
@@ -102,7 +102,12 @@ namespace Terradue.Corporate.WebServer
                 EverestAuthenticationType auth = new EverestAuthenticationType (context);
                 auth.SetCLient (client);
 
-                user = (UserT2)auth.GetUserProfile (context);
+				try {
+					user = (UserT2)auth.GetUserProfile(context);
+				} catch (EmailAlreadyUsedException) {
+					OAuthUtils.DoRedirect(context, context.GetConfigValue("t2portal-emailAlreadyUsedEndpoint"), false);
+				}
+
                 if (user == null) throw new Exception ("Error to load user");
                 context.LogDebug (this, string.Format ("Loaded user '{0}'", user.Username));
 
@@ -158,8 +163,7 @@ namespace Terradue.Corporate.WebServer
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
         public object Get (OauthEverestDeleteRequest request)
@@ -188,22 +192,7 @@ namespace Terradue.Corporate.WebServer
                 context.Close();
                 throw e;
             }
-            HttpContext.Current.Response.Redirect (redirect, true);
-            return null;
-        }
-
-        private HttpResult DoRedirect (IfyContext context, string redirect, bool ajax)
-        {
-            context.LogDebug (this, string.Format ("redirect to {0}", redirect));
-            if (ajax) {
-                HttpResult redirectResponse = new HttpResult ();
-                redirectResponse.Headers [HttpHeaders.Location] = redirect;
-                redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
-                return redirectResponse;
-            } else {
-                HttpContext.Current.Response.Redirect (redirect, true);
-            }
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
     }

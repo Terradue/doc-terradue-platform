@@ -38,6 +38,7 @@
 							<dt>One Account</dt><dd>&nbsp;{{#if HasOneAccount}}<span class="label label-success">OK</span>{{else}}<span class="label label-danger">Not created</span>{{/if}}</dd>
 							<dt>Registration</dt><dd>&nbsp;{{ simpleDate FirstLoginDate "n/a" }}</dd>
 							<dt>Last login</dt><dd>&nbsp;{{ fromNow LastLoginDate "n/a" }}</dd>
+							{{#if Links}}<dt>Links</dt><dd>{{#each Links}}<a href="{{.}}" target="_blank">{{.}}</a><br>{{/each}}</dd>{{/if}}
 						</dl>
 					{{/user}}
 				</div>
@@ -207,6 +208,13 @@
 						<div class="form-group">
 							<label>Country</label>
 							<input type="text" class="form-control" name="Country" placeholder="Country" value="{{Country}}">
+						</div>
+						<div class="form-group">
+							<label>Links</label>
+							{{#if Links}}{{#each Links}}
+								<div class="row-fluid"><input type="text" class="form-control span11" name="Link" placeholder="Link" value="{{.}}"><a href="#" class="btn btn-small span1 removeLink"><i class="fa fa-minus-square text-danger"></i></a></div>
+							{{/each}}{{/if}}
+							<div class="row-fluid"><input type="text" class="form-control span11" name="Link" placeholder="Link" value=""><a href="#" class="btn btn-small span1 addLink"><i class="fa fa-plus-square text-info"></i></a></div>
 						</div>
 						<button type="submit" class="btn btn-warning">Save changes</button>
 						{{#if updateUserInfoLoading}} <i class="fa fa-spin fa-spinner"></i> Saving...{{/if}}

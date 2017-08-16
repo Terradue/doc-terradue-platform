@@ -109,7 +109,7 @@ namespace Terradue.Corporate.Controller {
                     } catch (Exception){}
                     if (emailUsed) {
                         client.RevokeSessionCookies ();
-                        HttpContext.Current.Response.Redirect (context.GetConfigValue ("t2portal-emailAlreadyUsedEndpoint"), true);
+                        throw new EmailAlreadyUsedException("Email already used, cannot create new user");
                     }
                     context.AccessLevel = EntityAccessLevel.Administrator;
                 }

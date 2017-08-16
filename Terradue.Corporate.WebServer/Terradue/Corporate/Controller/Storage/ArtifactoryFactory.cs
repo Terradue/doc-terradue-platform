@@ -168,7 +168,7 @@ namespace Terradue.Corporate.Controller {
         public void CreatePermissionForGroupOnRepo(string group, string repo){
 
             Dictionary<string, List<string>> dico = new Dictionary<string, List<string>>();
-            dico.Add(group, new List<string>{ JFrogArtifactoryClient.PERMISSION_ADMIN, JFrogArtifactoryClient.PERMISSION_DELETE, JFrogArtifactoryClient.PERMISSION_READ });
+            dico.Add(group, new List<string>{ JFrogArtifactoryClient.PERMISSION_DELETE, JFrogArtifactoryClient.PERMISSION_READ, JFrogArtifactoryClient.PERMISSION_DEPLOY, JFrogArtifactoryClient.PERMISSION_ANNOTATE });
 
             ArtifactoryPermission config = new ArtifactoryPermission();
             config.name = group;
