@@ -155,8 +155,10 @@ namespace Terradue.Corporate.Controller
                 return linkslist;
             }
             set {
-                linkslist = value;
-                Links = string.Join(",", linkslist);
+                if (value != null) {
+                    linkslist = value;
+                    Links = string.Join(",", linkslist);
+                }
             }
         }
 
@@ -543,7 +545,7 @@ namespace Terradue.Corporate.Controller
             if (plan.Domain == null) plan.Domain = Domain.FromIdentifier (context, "terradue");
             if (plan.Role == null) throw new Exception ("Invalid role for user upgrade");
             var role = this.GetRoleForDomain(plan.Domain);
-            if (role.Id == plan.Role.Id){
+            if (role != null && role.Id == plan.Role.Id){
                 log.Debug(String.Format("Upgrade user {0} with role {1} for domain {2} - NOT NEEDED", this.Username, plan.Role.Name, plan.Domain.Name));
                 return;
             }
