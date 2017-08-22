@@ -151,7 +151,10 @@ namespace Terradue.Corporate.Controller
         private List<string> linkslist;
         public List<string> LinksList { 
             get {
-                if(linkslist == null && Links != null) linkslist = Links.Split(",".ToCharArray()).ToList();
+                if (linkslist == null) {
+                    if (Links != null) linkslist = Links.Split(",".ToCharArray()).ToList();
+                    else linkslist = new List<string>();
+                }
                 return linkslist;
             }
             set {
