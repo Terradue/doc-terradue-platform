@@ -49,6 +49,7 @@ namespace Terradue.Corporate.WebServer
         {
             T2CorporateWebContext context = new T2CorporateWebContext (PagePrivileges.EverybodyView);
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding ();
+            string redirect = context.BaseUrl;
             try {
                 context.Open ();
                 var client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
@@ -68,18 +69,28 @@ namespace Terradue.Corporate.WebServer
 
                 HttpContext.Current.Session ["discourse-nonce"] = nonce;
 
+                redirect = string.Format("{0}?client_id={1}&response_type={2}&nonce={3}&state={4}&redirect_uri={5}&ajax={6}",
+                                                 context.BaseUrl + "/t2api/oauth",
+												 context.GetConfigValue("sso-clientId"),
+                                                 "code",
+                                                 nonce,
+                                                 Guid.NewGuid().ToString(),
+												 context.BaseUrl + "/t2api/discourse/cb",
+                                                 "false"
+                                                );
+
                 //redirect to t2 portal SSO
-                using (var service = base.ResolveService<OAuthGatewayService> ()) {
-                    var response = service.Get (new OAuthAuthorizationRequest {
-                        client_id = context.GetConfigValue
-                            ("sso-clientId"),
-                        response_type = "code",
-                        nonce = nonce,
-                        state = Guid.NewGuid ().ToString (),
-                        redirect_uri = context.BaseUrl + "/t2api/discourse/cb",
-                        ajax = false
-                    });
-                };
+                //using (var service = base.ResolveService<OAuthGatewayService> ()) {
+                //    var response = service.Get (new OAuthAuthorizationRequest {
+                //        client_id = context.GetConfigValue
+                //            ("sso-clientId"),
+                //        response_type = "code",
+                //        nonce = nonce,
+                //        state = Guid.NewGuid ().ToString (),
+                //        redirect_uri = context.BaseUrl + "/t2api/discourse/cb",
+                //        ajax = false
+                //    });
+                //};
 
                 context.Close ();
             } catch (Exception e) {
@@ -88,7 +99,7 @@ namespace Terradue.Corporate.WebServer
                 throw e;
             }
 
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
         public object Get (OauthDiscourseCallBackRequest request)
