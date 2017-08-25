@@ -24,8 +24,10 @@ namespace Terradue.Corporate.WebServer {
             try{
                 context.Open();
 
-                // Load the complete request
-                HttpRequest httpRequest = HttpContext.Current.Request;
+				// Load the complete request
+				HttpRequest httpRequest = HttpContext.Current.Request;
+
+                context.LogInfo(this, string.Format("/news/search GET query='{0}'", httpRequest.QueryString));
 
                 OpenSearchEngine ose = MasterCatalogue.OpenSearchEngine;
 
