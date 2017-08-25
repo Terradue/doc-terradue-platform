@@ -211,7 +211,9 @@ namespace Terradue.Corporate.Controller
         public UserT2 (IfyContext context, LdapUser user) : this (context)
         {
             this.Username = user.Username;
-            this.Load ();
+            try {
+                this.Load();
+            }catch(Exception){}
 
             this.FirstName = user.FirstName;
             this.LastName = user.LastName;
