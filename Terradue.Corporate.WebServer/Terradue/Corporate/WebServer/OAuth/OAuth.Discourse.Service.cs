@@ -125,12 +125,13 @@ namespace Terradue.Corporate.WebServer
                 var payload = string.Format ("nonce={0}&email={1}&external_id={2}&username={3}&name={4}&require_activation=true",
                                          nonce,
                                          user.Email,
-                                         user.Identifier,
                                          user.Username,
-                                         user.Name
+                                         user.Username,
+                                         user.Caption
                                         );
 
                 context.LogDebug(this, "payload = " + payload);
+
                 System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding ();
                 byte [] payloadBytes = encoding.GetBytes (payload);
                 var sso = System.Convert.ToBase64String (payloadBytes);
