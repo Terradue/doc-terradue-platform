@@ -62,6 +62,8 @@ namespace Terradue.Corporate.WebServer
             try {
                 context.Open ();
 
+                context.LogInfo(this, string.Format("/jupyterhub/sso GET"));
+
 				var base64Payload = System.Convert.FromBase64String(request.sso);
 				var payload = encoding.GetString(base64Payload);
 				var querystring = HttpUtility.ParseQueryString(payload);
@@ -83,19 +85,7 @@ namespace Terradue.Corporate.WebServer
 												 context.BaseUrl + "/t2api/jupyterhub/cb",
 												 "false"
 												);
-
-                //redirect to t2 portal SSO
-      //          using (var service = base.ResolveService<OAuthGatewayService> ()) {
-      //              var response = service.Get (new OAuthAuthorizationRequest {
-						//client_id = context.GetConfigValue("sso-jupyterhub-clientId"),
-                //        response_type = "code",
-                //        nonce = nonce,
-                //        state = Guid.NewGuid ().ToString (),
-                //        redirect_uri = context.BaseUrl + "/t2api/jupyterhub/cb",
-                //        ajax = false
-                //    });
-                //};
-
+                
                 context.Close ();
             } catch (Exception e) {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
@@ -113,6 +103,8 @@ namespace Terradue.Corporate.WebServer
             UserT2 user = null;
             try {
                 context.Open ();
+
+                context.LogInfo(this, string.Format("/jupyterhub/cb GET"));
 
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
@@ -140,10 +132,11 @@ namespace Terradue.Corporate.WebServer
 				var payload = string.Format("nonce={0}&email={1}&external_id={2}&username={3}&name={4}&require_activation=true",
 										 nonce,
 										 user.Email,
-										 user.Identifier,
 										 user.Username,
-										 user.Name
+										 user.Username,
+										 user.Caption
 										);
+                
 
 				System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
 				byte[] payloadBytes = encoding.GetBytes(payload);

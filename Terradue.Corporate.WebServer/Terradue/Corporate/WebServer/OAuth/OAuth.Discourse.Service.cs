@@ -52,6 +52,7 @@ namespace Terradue.Corporate.WebServer
             string redirect = context.BaseUrl;
             try {
                 context.Open ();
+                context.LogInfo(this, "/discourse/sso GET");
                 var client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue ("sso-clientId");
@@ -79,19 +80,6 @@ namespace Terradue.Corporate.WebServer
                                                  "false"
                                                 );
 
-                //redirect to t2 portal SSO
-                //using (var service = base.ResolveService<OAuthGatewayService> ()) {
-                //    var response = service.Get (new OAuthAuthorizationRequest {
-                //        client_id = context.GetConfigValue
-                //            ("sso-clientId"),
-                //        response_type = "code",
-                //        nonce = nonce,
-                //        state = Guid.NewGuid ().ToString (),
-                //        redirect_uri = context.BaseUrl + "/t2api/discourse/cb",
-                //        ajax = false
-                //    });
-                //};
-
                 context.Close ();
             } catch (Exception e) {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
@@ -109,6 +97,7 @@ namespace Terradue.Corporate.WebServer
             UserT2 user = null;
             try {
                 context.Open ();
+                context.LogInfo(this, "/discourse/cb GET");
 
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
@@ -141,6 +130,7 @@ namespace Terradue.Corporate.WebServer
                                          user.Name
                                         );
 
+                context.LogDebug(this, "payload = " + payload);
                 System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding ();
                 byte [] payloadBytes = encoding.GetBytes (payload);
                 var sso = System.Convert.ToBase64String (payloadBytes);

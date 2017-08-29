@@ -18,7 +18,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-
+                context.LogInfo(this, string.Format("/plans GET"));
                 PlanFactory pfactory = new PlanFactory(context);
                 foreach(var role in pfactory.GetAllRoles()){
                     result.Add (new WebRole (role));
@@ -40,7 +40,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext (PagePrivileges.EverybodyView);
             try {
                 context.Open ();
-
+                context.LogInfo(this, string.Format("/domains GET"));
                 PlanFactory pfactory = new PlanFactory (context);
                 foreach (var domain in pfactory.GetAllDomains ()) {
                     result.Add (new WebDomain (domain));

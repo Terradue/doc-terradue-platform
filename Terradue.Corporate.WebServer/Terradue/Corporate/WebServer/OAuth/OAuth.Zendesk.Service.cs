@@ -56,6 +56,7 @@ namespace Terradue.Corporate.WebServer {
             string redirect = context.BaseUrl;
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/zendesk/sso GET"));
                 var client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
@@ -73,20 +74,7 @@ namespace Terradue.Corporate.WebServer {
 												 context.BaseUrl + "/t2api/zendesk/cb",
 												 "false"
 												);
-                    
-                //redirect to t2 portal SSO
-                //using (var service = base.ResolveService<OAuthGatewayService>()) { 
-                //    var response = service.Get(new OAuthAuthorizationRequest{
-                //        client_id = context.GetConfigValue
-                //            ("sso-clientId"),
-                //        response_type = "code",
-                //        nonce = Guid.NewGuid().ToString(),
-                //        state = Guid.NewGuid().ToString(),
-                //        redirect_uri = context.BaseUrl + "/t2api/zendesk/cb",
-                //        ajax = false
-                //    });
-                //}; 
-
+                   
                 context.Close();
             } catch (Exception e) {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
@@ -103,6 +91,7 @@ namespace Terradue.Corporate.WebServer {
             UserT2 user = null;
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/zendesk/cb GET"));
 
                 if(!string.IsNullOrEmpty(request.error)){
                     context.EndSession();
@@ -155,6 +144,7 @@ namespace Terradue.Corporate.WebServer {
             var redirect = "";
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/zendesk/logout GET"));
 
                 Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");

@@ -90,6 +90,7 @@ namespace Terradue.Corporate.WebServer
             UserT2 user = null;
             try {
                 context.Open ();
+                context.LogInfo(this, string.Format("/everest/cb GET"));
 
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
@@ -172,6 +173,8 @@ namespace Terradue.Corporate.WebServer
             var redirect = "";
             try {
                 context.Open ();
+
+                context.LogInfo(this, string.Format("/everest/logout GET"));
 
                 Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
