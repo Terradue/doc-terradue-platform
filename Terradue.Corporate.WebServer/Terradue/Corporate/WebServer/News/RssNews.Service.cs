@@ -37,7 +37,8 @@ namespace Terradue.Corporate.WebServer {
                 EntityList<RssNews> rss = new EntityList<RssNews>(context);
                 rss.Load();
 
-                MultiGenericOpenSearchable multiOSE = new MultiGenericOpenSearchable(rss.Cast<IOpenSearchable>().ToList(), ose);
+				var settings = new OpenSearchableFactorySettings(ose);
+				MultiGenericOpenSearchable multiOSE = new MultiGenericOpenSearchable(rss.Cast<IOpenSearchable>().ToList(), settings);
 
                 result = ose.Query(multiOSE, httpRequest.QueryString, type);
 

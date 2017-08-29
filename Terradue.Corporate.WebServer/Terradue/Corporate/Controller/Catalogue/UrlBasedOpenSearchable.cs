@@ -1,194 +1,214 @@
 using System;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Hosting;
 using Terradue.OpenSearch;
 using Terradue.OpenSearch.Engine;
-using Terradue.OpenSearch.Response;
 using Terradue.OpenSearch.Schema;
 using Terradue.Portal;
 using Terradue.OpenSearch.Request;
 using Terradue.OpenSearch.Result;
+using System.Collections.Generic;
 
 namespace Terradue.Corporate.Controller {
 
     public class UrlBasedOpenSearchable : IOpenSearchable {
-        IfyContext context;
-        IOpenSearchable entity;
-        OpenSearchEngine ose;
-        OpenSearchUrl url;
-        OpenSearchDescription osd;
+		IfyContext context;
+		IOpenSearchable entity;
+		OpenSearchUrl url;
+		OpenSearchDescription osd;
+		OpenSearchableFactorySettings settings;
 
-        public UrlBasedOpenSearchable(IfyContext context, OpenSearchUrl url, OpenSearchEngine ose) {
+		public IEnumerable<IOpenSearchResultItem> Items;
 
-            this.context = context;
-            this.url = url;
-            this.ose = ose;
+		public UrlBasedOpenSearchable(IfyContext context, OpenSearchUrl url, OpenSearchableFactorySettings settings) {
 
-        }
+			this.context = context;
+			this.url = url;
+			this.settings = settings;
 
-        public UrlBasedOpenSearchable(IfyContext context, OpenSearchDescription osd, OpenSearchEngine ose) {
-            this.context = context;
-            this.osd = osd;
-            this.ose = ose;
-        }
+		}
 
-        public IOpenSearchable Entity {
-            get {
-                if (entity == null) {
-                    if (url.ToString().StartsWith(context.BaseUrl)) {
+		public UrlBasedOpenSearchable(IfyContext context, OpenSearchDescription osd, OpenSearchableFactorySettings settings) {
+			this.context = context;
+			this.osd = osd;
+			this.settings = settings;
+		}
 
-                        Match match = Regex.Match(url.LocalPath.Replace(new Uri(context.BaseUrl).LocalPath, ""), @"/(.*)/(.*)/search");
+		public IOpenSearchable Entity {
+			get {
+				if (entity == null) {
+					if (url.ToString().StartsWith(context.BaseUrl)) {
 
-                        if (match.Success) {
+						Match match = Regex.Match(url.LocalPath.Replace(new Uri(context.BaseUrl).LocalPath, ""), @"(/.*)(/?.*)/search");
 
-                            if (match.Groups[1].Value == "catalogue") {
-                                string seriesId = match.Groups[2].Value;
-                                Series ds = Series.FromIdentifier(context, seriesId);
-                                entity = ds;
-                            }
+						if (match.Success) {
 
-                            if (match.Groups[1].Value == "datapackage") {
-                                string datapackageId = match.Groups[2].Value;
-                                RemoteResourceSet dp = RemoteResourceSet.FromIdentifier(context, datapackageId);
-                                entity = dp;
-                            }
+							var ose = settings.OpenSearchEngine;
 
-                        }
+							if (match.Groups[1].Value == "/data/collection") {
+								string seriesId = match.Groups[2].Value;
+								Series ds = Series.FromIdentifier(context, seriesId);
+								entity = ds;
+							}
 
-                    }
-                    if (entity == null) entity = new GenericOpenSearchable(url, ose);
-                }
-                return entity;
-            }
-        }
+							if (match.Groups[1].Value == "/data/package") {
+                                EntityList<RemoteResourceSet> list = new EntityList<RemoteResourceSet>(context);
+								IOpenSearchResultCollection osr = ose.Query(list, url.SearchAttributes);
+								entity = list;
+							}
 
-        public bool IsProduct {
-            get {
-                if (Entity is DataSet) {
-                    try {
-                        if (String.IsNullOrEmpty(HttpUtility.ParseQueryString(url.Query)["id"])) return false;
-                    } catch (Exception) {
-                        return false;
-                    }
-                    return true;
-                }
-                return false;
-            }
-        }
+							if (match.Groups[1].Value == "/service/wps") {
+								EntityList<WpsProcessOffering> wpsProcesses = new EntityList<WpsProcessOffering>(context);
+								wpsProcesses.SetFilter("Available", "true");
+								wpsProcesses.OpenSearchEngine = ose;
+                                var entities = new List<IOpenSearchable> { wpsProcesses};
 
-        #region IOpenSearchable implementation
+								MultiGenericOpenSearchable multiOSE = new MultiGenericOpenSearchable(entities, settings);
+								IOpenSearchResultCollection osr = ose.Query(multiOSE, url.SearchAttributes);
+								entity = multiOSE;
+								Items = osr.Items;
+							}
 
-        public OpenSearchRequest Create(QuerySettings querySettings, NameValueCollection parameters) {
-            NameValueCollection nvc = new NameValueCollection(parameters);
-            nvc.Add(HttpUtility.ParseQueryString(url.Query));
-            return Entity.Create(querySettings, nvc);
-        }
+							if (match.Groups[1].Value == "/cr/wps") {
+								EntityList<WpsProvider> list = new EntityList<WpsProvider>(context);
+								IOpenSearchResultCollection osr = ose.Query(list, url.SearchAttributes);
+								entity = list;
+							}
 
-        public QuerySettings GetQuerySettings(OpenSearchEngine ose) {
-            IOpenSearchEngineExtension osee = ose.GetExtensionByContentTypeAbility(this.DefaultMimeType);
-            if (osee == null)
-                return null;
-            return new QuerySettings(this.DefaultMimeType, osee.ReadNative);
-        }
+							if (match.Groups[1].Value == "/user") {
+								EntityList<UserT2> list = new EntityList<UserT2>(context);
+								IOpenSearchResultCollection osr = ose.Query(list, url.SearchAttributes);
+								entity = list;
+							}
 
-        public string DefaultMimeType {
-            get {
-                return Entity.DefaultMimeType;
-            }
-        }
+						}
 
-        public string Name {
-            get {
-                return GetOpenSearchDescription().ShortName;
-            }
-        }
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Identifier {
-            get {
-                return Entity.Identifier;
-            }
-        }
+					}
+					if (entity == null) entity = OpenSearchFactory.FindOpenSearchable(settings, new OpenSearchUrl(url));
+				}
+				return entity;
+			}
+		}
 
-        public OpenSearchDescription GetOpenSearchDescription() {
-            if (osd == null) {
+		public bool IsProduct {
+			get {
+				if (Entity is DataSet) {
+					try {
+						if (String.IsNullOrEmpty(HttpUtility.ParseQueryString(url.Query)["id"])) return false;
+					} catch (Exception) {
+						return false;
+					}
+					return true;
+				}
+				return false;
+			}
+		}
 
-                osd = Entity.GetOpenSearchDescription();
-                return osd;
-            }
-            return osd;
-        }
+		#region IOpenSearchable implementation
 
-        public NameValueCollection GetOpenSearchParameters(string mimeType) {
-            foreach (OpenSearchDescriptionUrl url in this.GetOpenSearchDescription().Url) {
-                if (url.Type == mimeType) return HttpUtility.ParseQueryString(new Uri(url.Template).Query);
-            }
+		public OpenSearchRequest Create(QuerySettings querySettings, NameValueCollection parameters) {
+			NameValueCollection nvc = new NameValueCollection(parameters);
+			NameValueCollection query = HttpUtility.ParseQueryString(url.Query);
+			foreach (var key in query.AllKeys) {
+				nvc.Set(key, query[key]);
+			}
+			return Entity.Create(querySettings, nvc);
+		}
 
-            return null;
-        }
+		public QuerySettings GetQuerySettings(OpenSearchEngine ose) {
+			IOpenSearchEngineExtension osee = ose.GetExtensionByContentTypeAbility(this.DefaultMimeType);
+			if (osee == null)
+				return null;
+			return new QuerySettings(this.DefaultMimeType, osee.ReadNative);
+		}
 
-        public long TotalResults {
-            get {
-                if (IsProduct)
-                    return 1;
-                NameValueCollection nvc = new NameValueCollection();
-                nvc.Add("count", "0");
-                IOpenSearchResultCollection osr = ose.Query(Entity, nvc, typeof(AtomFeed));
-                AtomFeed feed = (AtomFeed)osr;
-                try {
-                    string s = feed.ElementExtensions.ReadElementExtensions<string>("totalResults", "http://a9.com/-/spec/opensearch/1.1/").Single();
-                    return long.Parse(s);
-                } catch (Exception e) {
-                }
-                return 0;
-            }
-        }
+		public string DefaultMimeType {
+			get {
+				return Entity.DefaultMimeType;
+			}
+		}
 
-        /// <summary>
-        /// Optional function that apply to the result after the search and before the result is returned by OpenSearchEngine.
-        /// </summary>
-        /// <param name="osr">IOpenSearchResult cotnaing the result of the a search</param>
-        /// <param name="request">Request.</param>
-        /// <param name="finalContentType">final Content Type.</param>
-        public void ApplyResultFilters(OpenSearchRequest request, ref IOpenSearchResultCollection osr, string finalContentType) {
-            Entity.ApplyResultFilters(request, ref osr, finalContentType);
-        }
+		public string Name {
+			get {
+				return GetOpenSearchDescription().ShortName;
+			}
+		}
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
+		public string Identifier {
+			get {
+				return Entity.Identifier;
+			}
+		}
 
+		public OpenSearchDescription GetOpenSearchDescription() {
+			if (osd == null) {
 
-        public bool CanCache {
-            get {
-                return Entity.CanCache;
-            }
-        }
-        #endregion
-    }
+				osd = Entity.GetOpenSearchDescription();
+				return osd;
+			}
+			return osd;
+		}
 
-    public class UrlBasedOpenSearchableFactory : IOpenSearchableFactory {
-        IfyContext context;
+		public NameValueCollection GetOpenSearchParameters(string mimeType) {
+			foreach (OpenSearchDescriptionUrl url in this.GetOpenSearchDescription().Url) {
+				if (url.Type == mimeType) return HttpUtility.ParseQueryString(new Uri(url.Template).Query);
+			}
 
-        OpenSearchEngine ose;
+			return null;
+		}
 
-        public UrlBasedOpenSearchableFactory(IfyContext context, OpenSearchEngine ose){
-            this.ose = ose;
-            this.context = context;
-        }
+		public long TotalResults {
+			get {
+				if (IsProduct) return 1;
+				NameValueCollection nvc = new NameValueCollection();
+				nvc.Set("count", "0");
+				var ose = settings.OpenSearchEngine;
+				IOpenSearchResultCollection osr = ose.Query(Entity, nvc, typeof(AtomFeed));
+				AtomFeed feed = (AtomFeed)osr;
+				try {
+					string s = feed.ElementExtensions.ReadElementExtensions<string>("totalResults", "http://a9.com/-/spec/opensearch/1.1/").Single();
+					return long.Parse(s);
+				} catch (Exception e) { }
+				return 0;
+			}
+		}
 
-        #region IOpenSearchableFactory implementation
-        public IOpenSearchable Create(OpenSearchUrl url) {
-            return new UrlBasedOpenSearchable(context, url, ose);
-        }
+		public void ApplyResultFilters(OpenSearchRequest request, ref IOpenSearchResultCollection osr, string finalContentType) {
+			Entity.ApplyResultFilters(request, ref osr, finalContentType);
+		}
 
-        public IOpenSearchable Create(OpenSearchDescription osd) {
-            return new UrlBasedOpenSearchable(context, osd, ose);
-        }
-        #endregion
-    }
+		public bool CanCache {
+			get {
+				return Entity.CanCache;
+			}
+		}
+		#endregion
+	}
+
+	public class UrlBasedOpenSearchableFactory : IOpenSearchableFactory {
+		IfyContext context;
+
+		public UrlBasedOpenSearchableFactory(IfyContext context, OpenSearchableFactorySettings settings) {
+			this.context = context;
+			Settings = (OpenSearchableFactorySettings)settings.Clone();
+		}
+
+		public OpenSearchableFactorySettings Settings { get; private set; }
+
+		#region IOpenSearchableFactory implementation
+		public IOpenSearchable Create(OpenSearchUrl url) {
+			return new UrlBasedOpenSearchable(context, url, Settings);
+		}
+
+		public IOpenSearchable Create(OpenSearchDescription osd) {
+			return new UrlBasedOpenSearchable(context, osd, Settings);
+		}
+		#endregion
+	}
 }
 
