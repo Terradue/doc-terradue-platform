@@ -963,8 +963,9 @@ var SettingsControl = BaseControl(
 			var self = this;
 			var catalogueData = this.catalogueData;
 
-			this.isLoginPromise.then(function(user){
+			this.fullUserPromise.then(function(user){
 				catalogueData.attr('loading', true);
+                catalogueData.attr('apikey', user.ApiKey);
 				ProfileModel.getCatalogueIndex().then(function(list){
 					if (list && list.length)
 						catalogueData.attr('list', list);
