@@ -134,7 +134,7 @@ namespace Terradue.Corporate.WebServer
 										 user.Email,
 										 user.Username,
 										 user.Username,
-										 user.Caption
+										 user.Caption != null ? user.Caption.Replace(" ", "+") : ""
 										);
                 
 
