@@ -736,6 +736,10 @@ namespace Terradue.Corporate.WebServer
                     githubProfile = GithubProfile.FromId (context, user.Id);
                     return new HttpResult (githubProfile.Email);
                     break;
+                case "apikey":
+                    user.LoadApiKey();
+                    return new HttpResult(user.ApiKey);
+                    break;
                 case "redmineApiKey":
                     /*
                      * string sql = String.Format ("SELECT apikey FROM usr_redmine WHERE id_usr={0};",this.Id);
