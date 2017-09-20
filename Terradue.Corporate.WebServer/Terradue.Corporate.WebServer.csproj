@@ -264,6 +264,7 @@
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Eosso.Service.cs" />
     <Compile Include="Terradue\Corporate\Controller\Auth\EossoAuthenticationType.cs" />
     <Compile Include="Terradue\Corporate\Controller\Exceptions\EmailAlreadyUsedException.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\Webhooks\Jira.Webhooks.Service.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -280,6 +281,7 @@
     <Folder Include="Terradue\Corporate\WebServer\Catalogue\" />
     <Folder Include="Terradue\Corporate\WebServer\Agent\" />
     <Folder Include="Terradue\Corporate\Controller\Exceptions\" />
+    <Folder Include="Terradue\Corporate\WebServer\Webhooks\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
