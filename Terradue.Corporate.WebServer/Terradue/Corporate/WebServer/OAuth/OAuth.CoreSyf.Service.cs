@@ -11,8 +11,8 @@ using System.Collections.Generic;
 namespace Terradue.Corporate.WebServer
 {
 
-    [Route ("/everest/cb", "GET")]
-    public class OauthEverestCallBackRequest
+    [Route("/coresyf/cb", "GET")]
+    public class OauthCoresyfCallBackRequest
     {
         [ApiMember (Name = "code", Description = "oauth code", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string Code { get; set; }
@@ -27,16 +27,16 @@ namespace Terradue.Corporate.WebServer
         public string error { get; set; }
     }
 
-    [Route ("/oauth/everest", "GET")]
-    public class OauthEverestSsoRequest
+    [Route("/oauth/coresyf", "GET")]
+    public class OauthCoresyfSsoRequest
     {
 
         [ApiMember (Name = "return_to", Description = "return_to url", ParameterType = "query", DataType = "string", IsRequired = true)]
         public string return_to { get; set; }
     }
 
-    [Route ("/everest/logout", "GET")]
-    public class OauthEverestDeleteRequest
+    [Route("/coresyf/logout", "GET")]
+    public class OauthCoresyfDeleteRequest
     {
 
         [ApiMember (Name = "kind", Description = "logout kind url", ParameterType = "query", DataType = "string", IsRequired = true)]
@@ -46,24 +46,24 @@ namespace Terradue.Corporate.WebServer
         public string message { get; set; }
     }
 
-    [Api ("Terradue Corporate webserver")]
-    [Restrict (EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
+    [Api("Terradue Corporate webserver")]
+    [Restrict(EndpointAttributes.InSecure | EndpointAttributes.InternalNetworkAccess | EndpointAttributes.Json,
               EndpointAttributes.Secure | EndpointAttributes.External | EndpointAttributes.Json)]
     /// <summary>
     /// OAuth service. Used to log into the system
     /// </summary>
-    public class OAuthEverestService : ServiceStack.ServiceInterface.Service
+    public class OAuthCoresyfService : ServiceStack.ServiceInterface.Service
     {
-        public object Get (OauthEverestSsoRequest request)
+        public object Get (OauthCoresyfSsoRequest request)
         {
             string url;
             T2CorporateWebContext context = new T2CorporateWebContext (PagePrivileges.EverybodyView);
             try {
                 context.Open ();
 
-                context.LogInfo (this, string.Format ("/oauth/everest GET"));
+                context.LogInfo (this, string.Format ("/oauth/coresyf GET"));
 
-                var client = new EverestOauthClient (context);
+                var client = new CoresyfOauthClient (context);
                 url = client.GetAuthorizationUrl ();
 
                 context.Close ();
@@ -76,24 +76,24 @@ namespace Terradue.Corporate.WebServer
             return OAuthUtils.DoRedirect (context, url, false);
         }
 
-        public object Get (OauthEverestCallBackRequest request)
+        public object Get (OauthCoresyfCallBackRequest request)
         {
             T2CorporateWebContext context = new T2CorporateWebContext (PagePrivileges.EverybodyView);
             var redirect = "";
             UserT2 user = null;
             try {
                 context.Open ();
-                context.LogInfo(this, string.Format("/everest/cb GET"));
+                context.LogInfo(this, string.Format("/coresyf/cb GET"));
 
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
                     return OAuthUtils.DoRedirect(context, context.BaseUrl, false);
                 }
 
-                var client = new EverestOauthClient (context);
+                var client = new CoresyfOauthClient (context);
                 client.AccessToken (request.Code);
 
-                EverestAuthenticationType auth = new EverestAuthenticationType (context);
+                CoresyfAuthenticationType auth = new CoresyfAuthenticationType (context);
                 auth.SetCLient (client);
 
 				try {
@@ -160,14 +160,14 @@ namespace Terradue.Corporate.WebServer
             return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
-        public object Get (OauthEverestDeleteRequest request)
+        public object Get (OauthCoresyfDeleteRequest request)
         {
             T2CorporateWebContext context = new T2CorporateWebContext (PagePrivileges.EverybodyView);
             var redirect = "";
             try {
                 context.Open ();
 
-                context.LogInfo(this, string.Format("/everest/logout GET"));
+                context.LogInfo(this, string.Format("/coresyf/logout GET"));
 
                 Connect2IdClient client = new Connect2IdClient (context, context.GetConfigValue ("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue ("sso-authEndpoint");
@@ -176,7 +176,7 @@ namespace Terradue.Corporate.WebServer
                 client.SSOApiToken = context.GetConfigValue ("sso-apiAccessToken");
 
                 if (!string.IsNullOrEmpty (request.kind) && request.kind.Equals ("error")) {
-                    redirect = context.BaseUrl + "/portal/error?msg=Error%20from%20everest&longmsg=" + request.message;
+                    redirect = context.BaseUrl + "/portal/error?msg=Error%20from%20coresyf&longmsg=" + request.message;
                 } else {
                     redirect = context.BaseUrl;
                 }

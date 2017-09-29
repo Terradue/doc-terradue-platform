@@ -104,3 +104,8 @@
 #signinPage .signinWith.signinWithEverest > img {
     border: 3px solid #c55041;
 }
+
+    #signinPage .signinWith.signinWithCoresyf > img {
+        width: 45px;
+        position: middle;
+    }

@@ -32,7 +32,7 @@ define([
 			console.log(data);
 			var self = this;
 			self.id = data.id;
-			
+   
 			this.userData = new can.Observe({});
 			
 			// get user info
@@ -58,6 +58,7 @@ define([
 					}
 					self.userData.user.attr('RegistrationOrigin', originIconUrl);
 				}
+                self.initSubmenu('info');
 			}).fail(function(){
 				self.errorView({}, 'Unable to get user info', 'The user doesn\'t exist or you can\'t access this page.', true);
 			});
@@ -71,13 +72,26 @@ define([
 
 			// load view
 			this.view({
-				url: 'modules/users_admin/views/details.html',
+				url: 'modules/users_admin/views/details2.html',
 				data: this.userData
 			});
 		},
 
-
-
+        initSubmenu: function(item){
+            this.element
+                .find('.submenu li.active')
+                .removeClass('active');
+            this.element
+                .find('.submenu li.useradmin-'+item)
+                .addClass('active');             
+            this.element
+                .find('.useradmin-container-right')
+                .addClass('hidden');
+            this.element
+                .find('.useradmin-'+item)
+                .removeClass('hidden');
+        },
+    
 		'.list-group-item click': function(el){
 			var self = this;
 			el.parent().find('a').removeClass('active');

@@ -254,7 +254,7 @@
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.Everest.Service.cs" />
     <Compile Include="Terradue\Corporate\Controller\Auth\EverestAuthenticationType.cs" />
     <Compile Include="Terradue\Corporate\Controller\Auth\EverestOauthClient.cs" />
-    <Compile Include="Terradue\Corporate\Controller\Auth\EverestOauthRequest.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Auth\OpenIdOauthRequest.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Agent\Actions.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.JupyterHub.Service.cs" />
     <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuthUtils.cs" />
@@ -262,6 +262,10 @@
     <Compile Include="Terradue\Corporate\Controller\Auth\EossoAuthenticationType.cs" />
     <Compile Include="Terradue\Corporate\Controller\Exceptions\EmailAlreadyUsedException.cs" />
     <Compile Include="Terradue\Corporate\WebServer\Webhooks\Jira.Webhooks.Service.cs" />
+    <Compile Include="Terradue\Corporate\WebServer\OAuth\OAuth.CoreSyf.Service.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Auth\CoresyfAuthenticationType.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Auth\OpenIdOauthClient.cs" />
+    <Compile Include="Terradue\Corporate\Controller\Auth\CoresyfOauthClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
