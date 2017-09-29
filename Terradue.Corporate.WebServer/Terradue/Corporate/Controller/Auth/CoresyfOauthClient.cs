@@ -30,7 +30,7 @@ namespace Terradue.Corporate.Controller {
         /// </summary>
         /// <returns>The logout URL.</returns>
 		public override string GetLogoutUrl() {
-            return string.Format("{0}?id_token_hint={1}&post_logout_redirect_uri={2}",LogoutEndpoint, LoadTokenId().Value, HttpUtility.UrlEncode(Context.BaseUrl));
+            return string.Format("{0}?id_token_hint={1}&post_logout_redirect_uri={2}",LogoutEndpoint, LoadTokenId().Value, Context.BaseUrl);
 		}
 
 		/// <summary>
