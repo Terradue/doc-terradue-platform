@@ -42,6 +42,7 @@ namespace Terradue.Corporate.Controller {
 			HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
 			webRequest.Method = "GET";
 			webRequest.Proxy = null;
+			webRequest.Headers[ServiceStack.Common.Web.HttpHeaders.Location] = url;
 
 			using (var httpResponse = (HttpWebResponse)webRequest.GetResponse()) {
 				using (var streamReader = new StreamReader(httpResponse.GetResponseStream())) {
