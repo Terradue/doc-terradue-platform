@@ -12,7 +12,7 @@ namespace Terradue.Corporate.WebServer {
 			if (ajax) {
 				HttpResult redirectResponse = new HttpResult();
                 var location = HttpContext.Current.Response.Headers[HttpHeaders.Location];
-                if(!string.IsNullOrEmpty(location) && !location.Equals(redirect))
+                if(string.IsNullOrEmpty(location) || !location.Equals(redirect))
 				    redirectResponse.Headers[HttpHeaders.Location] = redirect;
                 redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
 				return redirectResponse;

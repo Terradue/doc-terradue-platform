@@ -362,7 +362,7 @@ namespace Terradue.Corporate.WebServer {
                 context.Close();
                 throw e;
             }
-            return OAuthUtils.DoRedirect(context, redirect ?? context.BaseUrl + "/portal", request.ajax);
+            return OAuthUtils.DoRedirect(context, redirect ?? context.BaseUrl, request.ajax);
         }
 
         private OauthConsentRequest GenerateConsent(List<string> scope){
