@@ -11,8 +11,10 @@ namespace Terradue.Corporate.WebServer {
 			context.LogDebug(context, string.Format("redirect to {0}", redirect));
 			if (ajax) {
 				HttpResult redirectResponse = new HttpResult();
-				redirectResponse.Headers[HttpHeaders.Location] = redirect;
-				redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
+                var location = HttpContext.Current.Response.Headers[HttpHeaders.Location];
+                if(!string.IsNullOrEmpty(location) && !location.Equals(redirect))
+				    redirectResponse.Headers[HttpHeaders.Location] = redirect;
+                redirectResponse.StatusCode = System.Net.HttpStatusCode.NoContent;
 				return redirectResponse;
 			} else {
 				HttpResult redirectResponse = new HttpResult();

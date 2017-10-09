@@ -149,13 +149,7 @@ namespace Terradue.Corporate.Controller {
 		}
 
 		public override void EndExternalSession(IfyWebContext context, HttpRequest request, HttpResponse response) {
-
-            //TODO: currently the endsession redirect is not working on Coresyf side
-            //The correct behaviour would be to redirect on this page instead of calling the DeleteSession
-            //When it is working back, uncomment the following line and comment the one after
-			//response.Headers[HttpHeaders.Location] = client.GetLogoutUrl();
-			client.DeleteSession();
-
+			response.Headers[HttpHeaders.Location] = client.GetLogoutUrl();
             client.RevokeSessionCookies();
 		}
 	}
