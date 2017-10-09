@@ -111,10 +111,12 @@ namespace Terradue.Corporate.Controller {
 						throw new EmailAlreadyUsedException("Email already used, cannot create new user");
 					}
 					context.AccessLevel = EntityAccessLevel.Administrator;
+                    usr = UserT2.Create(context, usrInfo.user_name, usrInfo.email, accessToken, authType, AccountStatusType.Enabled, true, null, "Coresyf", false);
+
+                    //Add to Ldap domain
+                    usr.AddToLdapDomain(context.GetConfigValue("coresyf-ldapDomain"), context.GetConfigValue("coresyf-ldapDomainParent"));
 				}
 				usr = (UserT2)User.GetOrCreate(context, usrInfo.user_name, authType);
-
-				if (usr.AccountStatus == AccountStatusType.Disabled) usr.AccountStatus = AccountStatusType.Enabled;
 
 				//update user infos
 				if (!string.IsNullOrEmpty(usrInfo.given_name))
@@ -129,17 +131,10 @@ namespace Terradue.Corporate.Controller {
 					usr.Language = usrInfo.locale;
 
 				usr.Store();
-				if (!exists) {
-                    usr.LinkToAuthenticationProvider(authType, usrInfo.user_name);
-					usr.CreateGithubProfile();
-					usr.CreateLdapAccount(accessToken);//we use the accesstoken as pwd
-				} else if (tokenRefreshed) { //in case of Refresh token
+				if (exists && tokenRefreshed) { //in case of Refresh token
 					usr.ChangeLdapPassword(accessToken, null, true);
 				}
-
-				//update domain
-				//TODO
-
+				
 				return usr;
 			} else {
 
