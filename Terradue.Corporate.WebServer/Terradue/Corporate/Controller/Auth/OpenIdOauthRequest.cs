@@ -25,6 +25,8 @@ namespace Terradue.Corporate.Controller {
         //standard OpenId Connect claims
         [DataMember]
         public string sub { get; set; }
+		[DataMember]
+		public string user_name { get; set; }
         [DataMember]
         public string name { get; set; }
         [DataMember]
