@@ -10,7 +10,7 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('discussBaseUrl', 'string', 'discuss Base Url', 'discuss Base Url', 'http://discuss.terradue.com', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('discussApiKey', 'string', 'discuss Api key', 'discuss Api key', '', '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('discussApiUsername', 'string', 'discuss Api username', 'discuss Api username', '', '0');
-INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('coresyf-clientId', 'string', 'Coresyf Client Id', 'Enter the value of the client identifier for Coresyf', "@!61CE.4718.0E4C.47C9!0001!8DF9.D25D!0008!153F.6DCF.0146.5CF7", '0');
+INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('coresyf-clientId', 'string', 'Coresyf Client Id', 'Enter the value of the client identifier for Coresyf', "@!17A5.AB35.0843.41D6!0001!14BA.D05E!0008!A4EB.D4B3.C87D.7C78", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('coresyf-clientSecret', 'string', 'Coresyf Client Secret', 'Enter the value of the client secret password of Coresyf', "dGVycmFkdWU=", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('coresyf-tokenEndpoint', 'string', 'Coresyf Token Endpoint url', 'Enter the value of the url of the Token Endpoint of Coresyf', "https://gluu.coresyf.eu/oxauth/restv1/token", '0');
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('coresyf-userInfoEndpoint', 'string', 'Coresyf User Info Endpoint url', 'Enter the value of the url of the User Info Endpoint of Coresyf', "https://gluu.coresyf.eu/oxauth/restv1/userinfo", '0');
@@ -22,6 +22,8 @@ INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALU
 INSERT INTO config (`name`, `type`, `caption`, `hint`, `value`, `optional`) VALUES ('coresyf-ldapDomainParent', 'string', 'Coresyf users Ldap domain parent', 'Coresyf users Ldap domain parent', 'coresyf', '0');
 -- RESULT
 
-
+-- auth
+INSERT INTO auth (`identifier`, `name`, `description`, `type`, `enabled`, `activation_rule`, `normal_rule`, `refresh_period`) VALUES ('coresyf', 'Coresyf authentication', 'Coresyf authentication', 'Terradue.Corporate.Controller.CoresyfAuthenticationType, Terradue.Corporate.WebServer', '1', '2', '2', '0');
+-- RESULT
 
 /*****************************************************************************/
