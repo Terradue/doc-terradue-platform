@@ -35,6 +35,16 @@ namespace Terradue.Corporate.WebServer
         public string return_to { get; set; }
     }
 
+    [Route("/coresyf/user", "GET")]
+    public class CoresyfGetUserInfoRequest {
+
+        [ApiMember(Name = "payload", Description = "oauth payload", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string payload { get; set; }
+
+        [ApiMember(Name = "sig", Description = "oauth sig", ParameterType = "query", DataType = "string", IsRequired = true)]
+        public string sig { get; set; }
+    }
+
     [Route("/coresyf/logout", "GET")]
     public class OauthCoresyfDeleteRequest
     {
@@ -189,6 +199,51 @@ namespace Terradue.Corporate.WebServer
                 throw e;
             }
             return OAuthUtils.DoRedirect(context, redirect, false);
+        }
+
+        public object Get(CoresyfGetUserInfoRequest request) {
+            T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            UserT2 user = null;
+            WebEossoUser result = null;
+            try {
+                context.Open();
+                context.LogInfo(this, string.Format("/coresyf/user GET"));
+
+                System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+
+                //validate the payload using the SIG generated on EOSSO with the same secret key
+                var sig = OAuthUtils.HashHMAC(context.GetConfigValue("sso-eosso-secret"), request.payload);
+                if (!sig.Equals(request.sig)) throw new Exception("Invalid payload");
+
+                //read payload 
+                var base64Payload = System.Convert.FromBase64String(request.payload);
+                var payload = encoding.GetString(base64Payload);
+                var querystring = HttpUtility.ParseQueryString(payload);
+                var username = querystring["username"];
+                var scope = querystring["scope"];
+
+                context.LogDebug(this, string.Format("/coresyf/user GET username='{0}',scope='{1}'", username, scope));
+
+                //get user from username/email
+                var authType = new CoresyfAuthenticationType(context);
+                bool exists = User.DoesUserExist(context, username, authType);
+                if (!exists) throw new Exception("Error to load user");
+                context.LogDebug(this, string.Format("Loaded user '{0}'", user.Username));
+                var usr = (UserT2)User.GetOrCreate(context, username, authType);
+
+                result = new WebEossoUser {
+                    Username = user.Username,
+                    ApiKey = user.ApiKey
+                };
+
+                context.Close();
+            } catch (Exception e) {
+                context.LogError(this, e.Message);
+                context.Close();
+                return new HttpError(e.Message);
+                //throw e;
+            }
+            return result;
         }
 
     }
