@@ -559,15 +559,13 @@ namespace Terradue.Corporate.Controller
             case PlanFactory.NONE:
                 break;
             case PlanFactory.TRIAL:
-                if (!HasCloudAccount ()) CreateCloudAccount ();
-                break;
             case PlanFactory.EXPLORER:
             case PlanFactory.SCALER:
             case PlanFactory.PREMIUM:
                 if (!HasCloudAccount ()) CreateCloudAccount ();
                 if (!HasLdapDomain ()) CreateLdapDomain ();
-                //if (!HasCatalogueIndex()) CreateCatalogueIndex();
-                //if (!HasRepository()) CreateRepository();
+                if (!HasCatalogueIndex()) CreateCatalogueIndex();
+                if (!HasRepository()) CreateRepository();
                 break;
             default:
                 break;
