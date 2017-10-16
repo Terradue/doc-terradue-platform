@@ -489,7 +489,7 @@ namespace Terradue.Corporate.WebServer
             WebUserT2 result;
             try {
                 context.Open ();
-                context.LogInfo (this, string.Format ("/user/upgrade POST Id='{0}'", request.Id));
+                context.LogInfo (this, string.Format ("/user/upgrade POST Id='{0}', plan='{1}'", request.Id, request.Plan));
                 if (request.Id == 0) throw new Exception ("Wrong user Id");
 
                 UserT2 user = UserT2.FromId (context, request.Id);
@@ -735,6 +735,10 @@ namespace Terradue.Corporate.WebServer
                 case "githubEmail":
                     githubProfile = GithubProfile.FromId (context, user.Id);
                     return new HttpResult (githubProfile.Email);
+                    break;
+                case "apikey":
+                    user.LoadApiKey();
+                    return new HttpResult(user.ApiKey);
                     break;
                 case "redmineApiKey":
                     /*

@@ -103,7 +103,7 @@ var SettingsControl = BaseControl(
 			self.isLoginPromise.then(function(user){
 				var usernameDefault = (user.Username == null || user.Username == user.Email);
 				var accountEnabled = user.AccountStatus == 4;
-				var userHasPlan = (user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
+				var userHasPlan = (user.Plan == "Free Trial" || user.Plan == "Explorer" || user.Plan == "Scaler" || user.Plan == "Premium");
 				var userIsAdmin = user.Level == 4;
 				var userHasDomain = user.DomainId != 0;
 				self.data.attr({
@@ -963,8 +963,9 @@ var SettingsControl = BaseControl(
 			var self = this;
 			var catalogueData = this.catalogueData;
 
-			this.isLoginPromise.then(function(user){
+			this.fullUserPromise.then(function(user){
 				catalogueData.attr('loading', true);
+                catalogueData.attr('apikey', user.ApiKey);
 				ProfileModel.getCatalogueIndex().then(function(list){
 					if (list && list.length)
 						catalogueData.attr('list', list);

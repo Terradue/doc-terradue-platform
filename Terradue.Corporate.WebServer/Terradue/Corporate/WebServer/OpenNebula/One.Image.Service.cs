@@ -19,6 +19,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/one/img/{{id}} GET - id="+request.Id));
                 OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
                 IMAGE oneuser = one.ImageGetInfo(request.Id);
                 result = oneuser.NAME;

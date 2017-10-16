@@ -58,8 +58,11 @@ namespace Terradue.Corporate.WebServer
         {
             T2CorporateWebContext context = new T2CorporateWebContext (PagePrivileges.EverybodyView);
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding ();
+            string redirect = context.BaseUrl;
             try {
                 context.Open ();
+
+                context.LogInfo(this, string.Format("/jupyterhub/sso GET"));
 
 				var base64Payload = System.Convert.FromBase64String(request.sso);
 				var payload = encoding.GetString(base64Payload);
@@ -73,18 +76,16 @@ namespace Terradue.Corporate.WebServer
                 HttpContext.Current.Session["jupyterhub-nonce"] = nonce;
                 HttpContext.Current.Session["jupyterhub-callback"] = request.redirect_uri;
 
-                //redirect to t2 portal SSO
-                using (var service = base.ResolveService<OAuthGatewayService> ()) {
-                    var response = service.Get (new OAuthAuthorizationRequest {
-						client_id = context.GetConfigValue("sso-jupyterhub-clientId"),
-                        response_type = "code",
-                        nonce = nonce,
-                        state = Guid.NewGuid ().ToString (),
-                        redirect_uri = context.BaseUrl + "/t2api/jupyterhub/cb",
-                        ajax = false
-                    });
-                };
-
+				redirect = string.Format("{0}?client_id={1}&response_type={2}&nonce={3}&state={4}&redirect_uri={5}&ajax={6}",
+												 context.BaseUrl + "/t2api/oauth",
+												 context.GetConfigValue("sso-jupyterhub-clientId"),
+												 "code",
+												 nonce,
+												 Guid.NewGuid().ToString(),
+												 context.BaseUrl + "/t2api/jupyterhub/cb",
+												 "false"
+												);
+                
                 context.Close ();
             } catch (Exception e) {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
@@ -92,7 +93,7 @@ namespace Terradue.Corporate.WebServer
                 throw e;
             }
 
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
         public object Get (OauthJupyterHubCallBackRequest request)
@@ -102,6 +103,8 @@ namespace Terradue.Corporate.WebServer
             UserT2 user = null;
             try {
                 context.Open ();
+
+                context.LogInfo(this, string.Format("/jupyterhub/cb GET"));
 
                 if (!string.IsNullOrEmpty (request.error)) {
                     context.EndSession ();
@@ -129,10 +132,11 @@ namespace Terradue.Corporate.WebServer
 				var payload = string.Format("nonce={0}&email={1}&external_id={2}&username={3}&name={4}&require_activation=true",
 										 nonce,
 										 user.Email,
-										 user.Identifier,
 										 user.Username,
-										 user.Name
+										 user.Username,
+										 user.Caption != null ? user.Caption.Replace(" ", "+") : ""
 										);
+                
 
 				System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
 				byte[] payloadBytes = encoding.GetBytes(payload);

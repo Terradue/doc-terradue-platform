@@ -263,7 +263,7 @@ namespace Terradue.Corporate.WebServer {
                     //if user exists, sync Artifactory
                     try{
                         var usert2 = Terradue.Corporate.Controller.UserT2.FromUsernameOrEmail(context, request.username);
-                        if (usert2 != null) usert2.SyncArtifactory(request.username, request.password);
+                        if (usert2 != null) usert2.SyncArtifactory(usert2.Username, request.password);
                     }catch(Exception e){
                         context.LogError (this, string.Format ("{0} - {1}", e.Message, e.StackTrace));    
                     }

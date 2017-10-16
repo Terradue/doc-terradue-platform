@@ -25,6 +25,7 @@ namespace Terradue.Corporate.WebServer
             List<WebStorage> result = new List<WebStorage>();
             try {
                 context.Open ();
+                context.LogInfo(this, string.Format("/user/repository GET"));
                 UserT2 user = UserT2.FromId (context, request.Id != 0 ? request.Id : context.UserId);
                 log.InfoFormat ("Get repositories for user {0}", user.Username);
 
@@ -47,6 +48,7 @@ namespace Terradue.Corporate.WebServer
             List<WebStorage> result = new List<WebStorage>();
             try {
                 context.Open ();
+                context.LogInfo(this, string.Format("/user/repository POST"));
                 UserT2 user = UserT2.FromId (context, request.Id != 0 ? request.Id : context.UserId);
                 log.InfoFormat ("Create repository '{1}' for user {0}", user.Username, request.repo ?? user.Username);
 
@@ -71,6 +73,7 @@ namespace Terradue.Corporate.WebServer
             List<string> result = null;
             try {
                 context.Open ();
+                context.LogInfo(this, string.Format("/user/repository/group GET"));
                 UserT2 user = UserT2.FromId (context, request.Id != 0 ? request.Id : context.UserId);
 
                 log.InfoFormat ("Get repository group list for user {0}", user.Username);
@@ -92,6 +95,7 @@ namespace Terradue.Corporate.WebServer
             List<string> result = null;
             try {
                 context.Open ();
+                context.LogInfo(this, string.Format("/user/repository/group POST"));
                 UserT2 user = UserT2.FromId (context, request.Id);
 
                 log.InfoFormat ("Create repository group '{1}' for user {0}", user.Username, user.Username + ".owner");

@@ -21,6 +21,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.AdminOnly);
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/one/user GET"));
                 OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),context.GetConfigValue("One-admin-usr"),context.GetConfigValue("One-admin-pwd"));
                 USER_POOL pool = one.UserGetPoolInfo();
                 foreach(object u in pool.Items){
@@ -45,6 +46,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/one/user GET - id="+request.Id));
                 OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
                 OneClient one = oneCloud.XmlRpc;
                 USER oneuser = one.UserGetInfo(request.Id);
@@ -65,6 +67,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/one/user/current GET"));
                 User user = User.FromId(context, context.UserId);
                 OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
                 OneClient one = oneCloud.XmlRpc;
@@ -93,6 +96,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/one/user PUT - id="+request.Id));
                 OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
                 OneClient one = oneCloud.XmlRpc;
                 result = one.UserUpdatePassword(Int32.Parse(request.Id), request.Password);
@@ -110,6 +114,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/one/user POST - name=" + request.Name));
                 User user = User.FromId(context, context.UserId);
                 OneCloudProvider oneCloud = (OneCloudProvider)CloudProvider.FromId(context, context.GetConfigIntegerValue("One-default-provider"));
                 OneClient one = oneCloud.XmlRpc;

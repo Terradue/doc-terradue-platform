@@ -82,7 +82,7 @@ namespace Terradue.Corporate.WebServer {
                 //save nonce in session, will be used as security check in callback function
                 var nonce = Guid.NewGuid().ToString();
                 HttpContext.Current.Session["eosso-nonce"] = nonce;
-                var callback = context.BaseUrl + "/eosso/cb";
+                var callback = context.BaseUrl + "/t2api/eosso/cb";
 
                 //build payload (in base 64) + SIG (used to validate the payload on EOSSO side, using the same secret key)
                 var payload = string.Format("nonce={0}&redirect_uri={1}", nonce, callback);
@@ -222,7 +222,7 @@ namespace Terradue.Corporate.WebServer {
                 var originator = querystring["originator"];
                 var plan = querystring["plan"];
 
-                context.LogDebug(this, string.Format("/sso/user GET username='{0}',email='{1}'", username, email));
+                context.LogDebug(this, string.Format("/eosso/user GET username='{0}',email='{1}'", username, email));
 
                 //get user from username/email
                 var auth = new EossoAuthenticationType(context);

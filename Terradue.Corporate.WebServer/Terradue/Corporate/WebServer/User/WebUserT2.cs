@@ -373,8 +373,6 @@ namespace Terradue.Corporate.WebServer {
         /// <param name="admin">If set to <c>true</c> get all info for admin.</param>
         public WebUserT2(UserT2 entity, bool ldap = false, bool admin = false) : base(entity) {
 
-            log.DebugFormat ("Transforms UserT2 into WebUserT2");
-
             var role = entity.GetRoleForDomain ("terradue");
             this.Plan = role != null ? role.Name : PlanFactory.NONE;
 

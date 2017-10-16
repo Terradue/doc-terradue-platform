@@ -24,26 +24,30 @@ namespace Terradue.Corporate.WebServer {
             try{
                 context.Open();
 
-                // Load the complete request
-                HttpRequest httpRequest = HttpContext.Current.Request;
+				// Load the complete request
+				HttpRequest httpRequest = HttpContext.Current.Request;
+
+                context.LogInfo(this, string.Format("/news/search GET query='{0}'", httpRequest.QueryString));
 
                 OpenSearchEngine ose = MasterCatalogue.OpenSearchEngine;
 
                 Type type = OpenSearchFactory.ResolveTypeFromRequest(httpRequest, ose);
 
                 EntityList<Article> articles = new EntityList<Article>(context);
-                articles.Load();
-                var identifier = articles.Identifier;
+                articles.AddSort("Time", SortDirection.Descending);
+                //articles.Load();
+                //var identifier = articles.Identifier;
 
-                List<Article> tmp = articles.GetItemsAsList();
-                tmp.Sort();
-                tmp.Reverse();
+                //List<Article> tmp = articles.GetItemsAsList();
+                //tmp.Sort();
+                //tmp.Reverse();
 
-                articles = new EntityList<Article>(context);
-                articles.Identifier = identifier;
-                foreach (Article a in tmp) articles.Include(a);
+                //articles = new EntityList<Article>(context);
+                //articles.Identifier = identifier;
+                //foreach (Article a in tmp) articles.Include(a);
 
                 result = ose.Query(articles, httpRequest.QueryString, type);
+				OpenSearchFactory.ReplaceOpenSearchDescriptionLinks(articles, result);
 
                 context.Close ();
             }catch(Exception e) {

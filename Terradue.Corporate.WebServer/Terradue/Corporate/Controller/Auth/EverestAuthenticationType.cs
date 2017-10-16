@@ -171,8 +171,8 @@ namespace Terradue.Corporate.Controller {
         } 
 
         public override void EndExternalSession(IfyWebContext context, HttpRequest request, HttpResponse response) {
-            client.RevokeSessionCookies ();
             response.Headers[HttpHeaders.Location] = client.GetLogoutUrl ();
+            client.RevokeSessionCookies();
         }
 
         public static bool IsUserCitizens (IfyContext context, User user) { 

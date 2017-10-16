@@ -19,7 +19,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.UserView);
             try {
                 context.Open();
-
+                context.LogInfo(this, string.Format("/one/config GET"));
                 string key = "One-access";
                 result.Add(new KeyValuePair<string, string>(key,context.GetConfigValue(key)));
 
@@ -37,7 +37,7 @@ namespace Terradue.Corporate.WebServer {
             IfyWebContext context = T2CorporateWebContext.GetWebContext(PagePrivileges.EverybodyView);
             try {
                 context.Open();
-
+                context.LogInfo(this, string.Format("/one/auth GET - usr=" + request.User + " - target=" + request.Target));
                 OneClient one = new OneClient(context.GetConfigValue("One-xmlrpc-url"),request.User,request.Password);
 
                 one.StartDelegate(request.Target);

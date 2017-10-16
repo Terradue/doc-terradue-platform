@@ -53,8 +53,10 @@ namespace Terradue.Corporate.WebServer {
     public class OAuthZendeskService : ServiceStack.ServiceInterface.Service {
         public object Get(OauthZendeskSsoRequest request) {
             T2CorporateWebContext context = new T2CorporateWebContext(PagePrivileges.EverybodyView);
+            string redirect = context.BaseUrl;
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/zendesk/sso GET"));
                 var client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");
                 client.SSOApiClient = context.GetConfigValue("sso-clientId");
@@ -62,20 +64,17 @@ namespace Terradue.Corporate.WebServer {
                 client.SSOApiToken = context.GetConfigValue("sso-apiAccessToken");
 
                 HttpContext.Current.Session["zendesk-return_to"] = request.return_to;
-                    
-                //redirect to t2 portal SSO
-                using (var service = base.ResolveService<OAuthGatewayService>()) { 
-                    var response = service.Get(new OAuthAuthorizationRequest{
-                        client_id = context.GetConfigValue
-                            ("sso-clientId"),
-                        response_type = "code",
-                        nonce = Guid.NewGuid().ToString(),
-                        state = Guid.NewGuid().ToString(),
-                        redirect_uri = context.BaseUrl + "/t2api/zendesk/cb",
-                        ajax = false
-                    });
-                }; 
 
+				redirect = string.Format("{0}?client_id={1}&response_type={2}&nonce={3}&state={4}&redirect_uri={5}&ajax={6}",
+												 context.BaseUrl + "/t2api/oauth",
+												 context.GetConfigValue("sso-clientId"),
+												 "code",
+												 Guid.NewGuid().ToString(),
+												 Guid.NewGuid().ToString(),
+												 context.BaseUrl + "/t2api/zendesk/cb",
+												 "false"
+												);
+                   
                 context.Close();
             } catch (Exception e) {
                 context.LogError(this, e.Message + " - " + e.StackTrace);
@@ -83,7 +82,7 @@ namespace Terradue.Corporate.WebServer {
                 throw e;
             }
 
-            return null;
+            return OAuthUtils.DoRedirect(context, redirect, false);
         }
 
         public object Get(OauthZendeskCallBackRequest request) {
@@ -92,6 +91,7 @@ namespace Terradue.Corporate.WebServer {
             UserT2 user = null;
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/zendesk/cb GET"));
 
                 if(!string.IsNullOrEmpty(request.error)){
                     context.EndSession();
@@ -144,6 +144,7 @@ namespace Terradue.Corporate.WebServer {
             var redirect = "";
             try {
                 context.Open();
+                context.LogInfo(this, string.Format("/zendesk/logout GET"));
 
                 Connect2IdClient client = new Connect2IdClient(context, context.GetConfigValue("sso-configUrl"));
                 client.SSOAuthEndpoint = context.GetConfigValue("sso-authEndpoint");

@@ -151,12 +151,17 @@ namespace Terradue.Corporate.Controller
         private List<string> linkslist;
         public List<string> LinksList { 
             get {
-                if(linkslist == null && Links != null) linkslist = Links.Split(",".ToCharArray()).ToList();
+                if (linkslist == null) {
+                    if (Links != null) linkslist = Links.Split(",".ToCharArray()).ToList();
+                    else linkslist = new List<string>();
+                }
                 return linkslist;
             }
             set {
-                linkslist = value;
-                Links = string.Join(",", linkslist);
+                if (value != null) {
+                    linkslist = value;
+                    Links = string.Join(",", linkslist);
+                }
             }
         }
 
@@ -206,7 +211,9 @@ namespace Terradue.Corporate.Controller
         public UserT2 (IfyContext context, LdapUser user) : this (context)
         {
             this.Username = user.Username;
-            this.Load ();
+            try {
+                this.Load();
+            }catch(Exception){}
 
             this.FirstName = user.FirstName;
             this.LastName = user.LastName;
@@ -475,12 +482,7 @@ namespace Terradue.Corporate.Controller
         /// <returns>The token.</returns>
         public string GetToken ()
         {
-            var token = base.GetActivationToken ();
-            if (token == null) {
-                CreateActivationToken ();
-                token = base.GetActivationToken ();
-            }
-            return token;
+            return base.ActivationToken;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -543,7 +545,7 @@ namespace Terradue.Corporate.Controller
             if (plan.Domain == null) plan.Domain = Domain.FromIdentifier (context, "terradue");
             if (plan.Role == null) throw new Exception ("Invalid role for user upgrade");
             var role = this.GetRoleForDomain(plan.Domain);
-            if (role.Id == plan.Role.Id){
+            if (role != null && role.Id == plan.Role.Id){
                 log.Debug(String.Format("Upgrade user {0} with role {1} for domain {2} - NOT NEEDED", this.Username, plan.Role.Name, plan.Domain.Name));
                 return;
             }
@@ -557,15 +559,13 @@ namespace Terradue.Corporate.Controller
             case PlanFactory.NONE:
                 break;
             case PlanFactory.TRIAL:
-                if (!HasCloudAccount ()) CreateCloudAccount ();
-                break;
             case PlanFactory.EXPLORER:
             case PlanFactory.SCALER:
             case PlanFactory.PREMIUM:
                 if (!HasCloudAccount ()) CreateCloudAccount ();
                 if (!HasLdapDomain ()) CreateLdapDomain ();
-                //if (!HasCatalogueIndex()) CreateCatalogueIndex();
-                //if (!HasRepository()) CreateRepository();
+                if (!HasCatalogueIndex()) CreateCatalogueIndex();
+                if (!HasRepository()) CreateRepository();
                 break;
             default:
                 break;

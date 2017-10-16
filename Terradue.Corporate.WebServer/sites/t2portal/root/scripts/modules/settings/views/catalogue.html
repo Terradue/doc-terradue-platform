@@ -8,17 +8,21 @@
 			{{else}}
 				{{#if errorMessage}}
 					<p class="text-error"><i class="fa fa-exclamation-circle"></i> <strong>Oops!</strong> {{errorMessage}}</p>
-				{{else}}
-					{{#if list}}
-						<div class="cataloguePanel">
-							{{#each list}}
-								<i class="fa fa-check-square text-success"></i> Your index is available on <a href="{{.}}/description" target="_blank">{{.}}</a>
-							{{/each}}
-						</div>
-						<br/>
-					{{else}}
-						<button class="btn btn-warning createCatalogueIndex">Create Catalogue Index</button>
-					{{/if}}
+                {{else}}
+                    {{#if apikey}}
+    					{{#if list}}
+    						<div class="cataloguePanel">
+    							{{#each list}}
+    								<i class="fa fa-check-square text-success"></i> Your index is available here: <a href="{{.}}/search?apikey={{apikey}}" target="_blank">{{.}}</a>
+    							{{/each}}
+    						</div>
+    						<br/>
+    					{{else}}
+    						<button class="btn btn-warning createCatalogueIndex">Create Catalogue Index</button>
+                        {{/if}}
+                    {{else}}
+                        <p class="text-error"><i class="fa fa-exclamation-circle"></i> You need to create your <strong>Api Key</strong> to access your private catalogue index.</p>
+                    {{/if}}
 				{{/if}}
 			{{/if}}
 			<div>
